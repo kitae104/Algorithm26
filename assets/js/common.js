@@ -152,40 +152,66 @@
             topBtn.classList.toggle("is-visible", window.scrollY > 600);
         }, { passive: true });
 
-        /* ---------- 스크롤 진입 ---------- */
+        /* ---------- 스크롤 진입 ----------
+           정적 대상(.lesson-section, .how-card, .stat-tile)은 파싱 시점에
+           이미 DOM에 있으므로 여기서 동기적으로 표시하고 관찰한다 — 지연 없이
+           바로 처리해야 "보였다가 사라지는" 깜빡임이 생기지 않는다.
+
+           랜딩 페이지의 강좌 카드(.course-card)는 사정이 다르다: landing.js가
+           검색/필터가 바뀔 때마다 #course-grid를 통째로 다시 그린다. 그 카드를
+           이 핸들러가 직접 찾으러 가면(동기든, setTimeout/Promise로 미루든)
+           "이미 그려진 뒤에야 알아채는" 시점이 되어, 카드가 먼저 완전히
+           보이는 상태로 페인트된 다음에야 opacity:0으로 숨는 깜빡임 구간이
+           생길 수 있다. 이를 구조적으로 없애기 위해 window.AllReveal 훅을
+           공개한다: landing.js가 카드를 만들 때 "reveal-on-scroll" 클래스를
+           DOM 삽입 전에 직접 붙이고(그래서 카드는 첫 페인트부터 이미
+           opacity:0 상태), 카드를 다 그려 넣은 직후 이 훅을 호출해 방금
+           만든 카드만 골라 관찰을 (재)등록한다. 재렌더마다 이전 카드는 이미
+           DOM에서 제거된 상태이므로 관찰을 해제해 분리된 노드를 붙들고 있지
+           않는다. */
         (function () {
             var reduced = window.matchMedia &&
                 window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+            var revealSupported = !reduced && ("IntersectionObserver" in window);
 
-            /* reduced-motion이거나 IntersectionObserver가 없으면 그냥 보여준다 */
-            if (reduced || !("IntersectionObserver" in window)) return;
+            /* reduced-motion이거나 IntersectionObserver가 없으면 그냥 보여준다 —
+               reveal-on-scroll 클래스를 아무 데도 붙이지 않는다. */
+            window.AllReveal = {
+                enabled: revealSupported,
+                observeCourseCards: function () {}   /* 기본은 아무 것도 하지 않는다 */
+            };
+            if (!revealSupported) return;
 
-            /* 랜딩 페이지의 강좌 카드(.course-card)는 landing.js의 별도
-               DOMContentLoaded 핸들러가 이 핸들러 뒤에 그려 넣는다. 마이크로태스크는
-               각 리스너 실행 직후에 바로 소진되어 너무 이르므로, 매크로태스크로
-               미뤄 landing.js의 동기 렌더링까지 모두 끝난 뒤에 대상을 모은다.
-               초기 페인트보다 먼저 실행되므로 깜빡임도 없다. */
-            setTimeout(function () {
-                var targets = document.querySelectorAll(
-                    ".lesson-section, .course-card, .how-card, .stat-tile");
-                if (!targets.length) return;
-
-                Array.prototype.forEach.call(targets, function (node) {
-                    node.classList.add("reveal-on-scroll");
+            /* threshold: 0 — 뷰포트보다 훨씬 큰 섹션도 한 픽셀만 겹치면
+               반응해야 한다. threshold를 0보다 크게 두면 대상 높이가 커질수록
+               intersectionRatio의 상한(viewportHeight / targetHeight)이 낮아져,
+               아주 긴 섹션은 그 임계값에 영영 도달하지 못하고 opacity: 0으로
+               남을 수 있다. */
+            var revealObserver = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                    if (!entry.isIntersecting) return;
+                    entry.target.classList.add("is-revealed");
+                    revealObserver.unobserve(entry.target);   /* 1회만 — 되돌아가도 재생 안 함 */
                 });
+            }, { rootMargin: "0px 0px -8% 0px", threshold: 0 });
 
-                var revealObserver = new IntersectionObserver(function (entries) {
-                    entries.forEach(function (entry) {
-                        if (!entry.isIntersecting) return;
-                        entry.target.classList.add("is-revealed");
-                        revealObserver.unobserve(entry.target);   /* 1회만 — 되돌아가도 재생 안 함 */
-                    });
-                }, { rootMargin: "0px 0px -8% 0px", threshold: 0.05 });
+            var staticTargets = document.querySelectorAll(
+                ".lesson-section, .how-card, .stat-tile");
+            Array.prototype.forEach.call(staticTargets, function (node) {
+                node.classList.add("reveal-on-scroll");
+                revealObserver.observe(node);
+            });
 
-                Array.prototype.forEach.call(targets, function (node) {
-                    revealObserver.observe(node);
+            var observedCourseCards = [];
+            window.AllReveal.observeCourseCards = function (cards) {
+                Array.prototype.forEach.call(observedCourseCards, function (card) {
+                    revealObserver.unobserve(card);
                 });
-            }, 0);
+                observedCourseCards = cards || [];
+                Array.prototype.forEach.call(observedCourseCards, function (card) {
+                    revealObserver.observe(card);
+                });
+            };
         })();
 
         if (!isLessonPage) {

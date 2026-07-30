@@ -89,7 +89,12 @@
 
                 shown += 1;
 
-                var card = el("li", "course-card");
+                /* window.AllReveal이 켜져 있으면(reduced-motion이 아니고
+                   IntersectionObserver를 지원하면) 카드를 DOM에 넣기 전에
+                   reveal-on-scroll을 붙인다 — 삽입되는 순간부터 이미
+                   opacity: 0 상태이므로 "보였다가 사라지는" 깜빡임이 없다. */
+                var revealOn = Boolean(window.AllReveal && window.AllReveal.enabled);
+                var card = el("li", revealOn ? "course-card reveal-on-scroll" : "course-card");
 
                 var top = el("div", "course-card__top");
                 top.appendChild(el("span", "course-card__no", String(lesson.order).padStart(2, "0")));
@@ -130,6 +135,16 @@
             }
             if (emptyMsg) {
                 emptyMsg.classList.toggle("is-shown", shown === 0);
+            }
+
+            /* 방금 그린 카드만 골라 스크롤 진입 관찰을 다시 건다. render()는
+               검색어/필터가 바뀔 때마다 그리드를 통째로 새로 그리므로, 매번
+               호출해 이전 카드(이미 제거됨)에 대한 관찰을 해제하고 새 카드를
+               관찰 대상에 올린다 — 필터링으로 다시 나타난 카드가 opacity: 0에
+               갇힌 채 남는 경우가 없다. */
+            if (window.AllReveal) {
+                window.AllReveal.observeCourseCards(
+                    Array.prototype.slice.call(grid.querySelectorAll(".course-card")));
             }
         }
 
