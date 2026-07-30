@@ -1844,7 +1844,7 @@ EOF
 
 ### Task 9: note-box·본문 강조·죽은 CSS 제거
 
-138곳에 쓰이는 `note-box`의 위계를 정리하고, 본문 `strong`에 마킹을 주고, 사용 0건인 `inline-array` 규칙을 지운다.
+69곳에 쓰이는 `note-box`의 위계를 정리하고, 본문 `strong`에 마킹을 주고, 사용 0건인 `inline-array` 규칙을 지운다.
 
 **Files:**
 - Modify: `assets/css/common.css:638-673` (`note-box`), `assets/css/lesson.css:211-213` (`strong`), `assets/css/lesson.css:174-194` (섹션 헤더)
@@ -2041,7 +2041,7 @@ git add assets/css/common.css assets/css/lesson.css scripts/validate.mjs
 git commit -m "$(cat <<'EOF'
 feat: 안내 박스 위계 정리와 본문 강조 마킹
 
-note-box 변형마다 아이콘을 붙여 색만으로 구분하지 않게 한다(138곳 사용).
+note-box 변형마다 아이콘을 붙여 색만으로 구분하지 않게 한다(69곳 사용).
 본문 strong에 옅은 밑줄 배경을 줘서 훑을 때 눈에 걸리게 하고, 제목·박스
 타이틀처럼 이미 강조된 곳은 제외한다.
 
