@@ -105,7 +105,7 @@
 
 .hero-viz__bar.is-compare .hero-viz__bar-value { color: var(--state-compare); font-weight: 700; }
 .hero-viz__bar.is-min .hero-viz__bar-value { color: var(--state-visit); font-weight: 700; }
-.hero-viz__bar.is-done .hero-viz__bar-value { color: var(--state-done); }
+.hero-viz__bar.is-done .hero-viz__bar-value { color: var(--state-done); font-weight: 700; }
 
 .hero-viz__bar.is-compare {
     background: var(--state-compare-bg);
@@ -120,6 +120,22 @@
 .hero-viz__bar.is-done {
     background: var(--state-done-bg);
     border-color: var(--state-done);
+}
+
+/* 완료 상태는 색만으로 구분하지 않는다 — 체크 글리프를 겹쳐 그린다(오버레이라
+   막대 자체의 박스 크기·레이아웃에는 영향을 주지 않는다). */
+.hero-viz__bar.is-done::after {
+    content: "\2713";
+    position: absolute;
+    left: 50%;
+    bottom: 4px;
+    transform: translateX(-50%);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--state-done);
+    pointer-events: none;
 }
 
 .hero-viz__caption {

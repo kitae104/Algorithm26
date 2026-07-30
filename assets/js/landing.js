@@ -226,6 +226,24 @@
         var bars = [];
         var timer = null;
 
+        var REDUCED_NOTICE =
+            "선택 정렬의 한 장면입니다. 애니메이션 축소 설정이 감지되어 자동 재생을 멈췄습니다. ▶ 버튼으로 직접 넘겨볼 수 있습니다.";
+
+        /* 캡션은 항상 현재 재생 상태(timer)를 그대로 반영한다 — reset()/재생/정지
+           어느 경로를 거치든 "일시정지인데 실행 중"이라고 거짓말하지 않는다. */
+        function updateCaption() {
+            if (!captionHost) return;
+            captionHost.textContent = "";
+            if (!timer && reducedMotion) {
+                captionHost.textContent = REDUCED_NOTICE;
+                return;
+            }
+            var frame = frames[frameIndex];
+            var prefix = timer ? "선택 정렬 실행 중 · " : "일시 정지됨 · ";
+            captionHost.appendChild(el("b", null, prefix));
+            captionHost.appendChild(document.createTextNode(frame ? frame.text : ""));
+        }
+
         function buildBars() {
             barsHost.textContent = "";
             bars = values.map(function (value) {
@@ -253,11 +271,7 @@
                 bar.classList.toggle("is-min", i === frame.min);
                 bar.classList.toggle("is-compare", i === frame.compare);
             });
-            if (captionHost) {
-                captionHost.textContent = "";
-                captionHost.appendChild(el("b", null, "선택 정렬 실행 중 · "));
-                captionHost.appendChild(document.createTextNode(frame.text));
-            }
+            updateCaption();
             if (timelineHost) {
                 Array.prototype.forEach.call(timelineHost.children, function (tick, i) {
                     tick.classList.toggle("is-done", i < frame.round);
@@ -275,6 +289,7 @@
                 toggleBtn.textContent = "▶";
                 toggleBtn.setAttribute("aria-label", "자동 재생 시작");
             }
+            updateCaption();
         }
 
         function startAuto() {
@@ -287,6 +302,7 @@
                 toggleBtn.textContent = "⏸";
                 toggleBtn.setAttribute("aria-label", "자동 재생 일시 정지");
             }
+            updateCaption();
         }
 
         function reset(nextValues) {
@@ -322,11 +338,7 @@
         if (!reducedMotion) {
             startAuto();
         } else {
-            stopAuto();
-            if (captionHost) {
-                captionHost.textContent =
-                    "선택 정렬의 한 장면입니다. 애니메이션 축소 설정이 감지되어 자동 재생을 멈췄습니다. ▶ 버튼으로 직접 넘겨볼 수 있습니다.";
-            }
+            stopAuto();   /* updateCaption()이 reducedMotion + 정지 상태를 감지해 안내 문구를 그린다 */
         }
     });
 })();
