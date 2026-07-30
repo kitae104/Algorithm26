@@ -77,7 +77,8 @@
     display: flex;
     align-items: flex-end;
     gap: 8px;
-    height: 130px;
+    height: 170px;
+    padding-top: 22px;      /* 막대 위 값 라벨 자리 */
 }
 
 .hero-viz__bar {
@@ -90,16 +91,21 @@
     min-width: 20px;
 }
 
-.hero-viz__bar span {
+.hero-viz__bar-value {
     position: absolute;
-    bottom: -24px;
+    top: -20px;
     left: 0;
     right: 0;
     text-align: center;
     font-family: var(--font-mono);
     font-size: 0.72rem;
     color: var(--ink-faint);
+    transition: color var(--dur-fast) var(--ease-out);
 }
+
+.hero-viz__bar.is-compare .hero-viz__bar-value { color: var(--state-compare); font-weight: 700; }
+.hero-viz__bar.is-min .hero-viz__bar-value { color: var(--state-visit); font-weight: 700; }
+.hero-viz__bar.is-done .hero-viz__bar-value { color: var(--state-done); }
 
 .hero-viz__bar.is-compare {
     background: var(--state-compare-bg);
@@ -117,7 +123,7 @@
 }
 
 .hero-viz__caption {
-    margin: 34px 0 0;
+    margin: 16px 0 0;
     font-size: 0.86rem;
     color: var(--ink-soft);
     min-height: 44px;
@@ -126,6 +132,68 @@
 .hero-viz__caption b {
     color: var(--brand);
     font-family: var(--font-mono);
+}
+
+.hero-viz__foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 6px;
+}
+
+.hero-viz__timeline {
+    display: flex;
+    gap: 6px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.hero-viz__tick {
+    width: 9px;
+    height: 9px;
+    border-radius: 999px;
+    border: 1.5px solid var(--line-strong);
+    background: transparent;
+    transition: background var(--dur-base) var(--ease-out),
+                border-color var(--dur-base) var(--ease-out),
+                transform var(--dur-base) var(--ease-settle);
+}
+
+.hero-viz__tick.is-done {
+    background: var(--state-done);
+    border-color: var(--state-done);
+}
+
+.hero-viz__tick.is-current {
+    border-color: var(--brand);
+    background: var(--brand-soft);
+    transform: scale(1.35);
+}
+
+.hero-viz__controls {
+    display: flex;
+    gap: 6px;
+}
+
+.hero-viz__btn {
+    font: inherit;
+    font-size: 0.9rem;
+    line-height: 1;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--line-strong);
+    background: var(--surface);
+    color: var(--ink);
+    cursor: pointer;
+    transition: border-color var(--dur-fast) var(--ease-out),
+                background var(--dur-fast) var(--ease-out);
+}
+
+.hero-viz__btn:hover {
+    border-color: var(--brand);
+    background: var(--surface-2);
 }
 
 /* ---------- 통계 스트립 ---------- */

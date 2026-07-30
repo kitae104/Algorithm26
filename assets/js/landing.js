@@ -166,13 +166,26 @@
         /* ---------- 히어로 라이브 선택 정렬 ---------- */
         var barsHost = document.getElementById("hero-viz-bars");
         var captionHost = document.getElementById("hero-viz-caption");
+        var timelineHost = document.getElementById("hero-viz-timeline");
+        var toggleBtn = document.getElementById("hero-viz-toggle");
+        var shuffleBtn = document.getElementById("hero-viz-shuffle");
         if (!barsHost) return;
 
         var reducedMotion = window.matchMedia &&
             window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+        var MAX_VALUE = 44;
+
+        function randomValues() {
+            var out = [];
+            while (out.length < 7) {
+                var v = 6 + Math.floor(Math.random() * (MAX_VALUE - 6));
+                if (out.indexOf(v) === -1) out.push(v);   /* 중복 없는 값 — 교환 표시가 명확해진다 */
+            }
+            return out;
+        }
+
         var values = [34, 12, 27, 8, 40, 19, 31];
-        var maxValue = 40;
 
         /* 선택 정렬의 모든 단계를 미리 만든다 (시각화와 실제 알고리즘 동작 일치) */
         function buildFrames(arr) {
@@ -182,13 +195,13 @@
                 var minIndex = i;
                 for (var j = i + 1; j < a.length; j += 1) {
                     frames.push({
-                        arr: a.slice(), sortedUpto: i - 1, min: minIndex, compare: j,
+                        arr: a.slice(), sortedUpto: i - 1, min: minIndex, compare: j, round: i,
                         text: "인덱스 " + j + "의 값 " + a[j] + "을(를) 현재 최솟값 " + a[minIndex] + "과(와) 비교합니다."
                     });
                     if (a[j] < a[minIndex]) {
                         minIndex = j;
                         frames.push({
-                            arr: a.slice(), sortedUpto: i - 1, min: minIndex, compare: -1,
+                            arr: a.slice(), sortedUpto: i - 1, min: minIndex, compare: -1, round: i,
                             text: "새로운 최솟값 발견: " + a[minIndex] + " (인덱스 " + minIndex + ")"
                         });
                     }
@@ -197,33 +210,45 @@
                 a[i] = a[minIndex];
                 a[minIndex] = tmp;
                 frames.push({
-                    arr: a.slice(), sortedUpto: i, min: -1, compare: -1,
+                    arr: a.slice(), sortedUpto: i, min: -1, compare: -1, round: i,
                     text: (i + 1) + "회차 완료 — " + a[i] + "이(가) 인덱스 " + i + "에 확정되었습니다."
                 });
             }
             frames.push({
-                arr: a.slice(), sortedUpto: a.length - 1, min: -1, compare: -1,
+                arr: a.slice(), sortedUpto: a.length - 1, min: -1, compare: -1, round: a.length - 1,
                 text: "정렬 완료! 이 과정을 4강에서 직접 구현합니다."
             });
             return frames;
         }
 
-        var frames = buildFrames(values);
+        var frames = [];
         var frameIndex = 0;
+        var bars = [];
+        var timer = null;
 
-        var bars = values.map(function (value) {
-            var bar = el("div", "hero-viz__bar");
-            bar.style.height = Math.round((value / maxValue) * 100) + "%";
-            bar.appendChild(el("span", null, value));
-            barsHost.appendChild(bar);
-            return bar;
-        });
+        function buildBars() {
+            barsHost.textContent = "";
+            bars = values.map(function (value) {
+                var bar = el("div", "hero-viz__bar");
+                bar.appendChild(el("span", "hero-viz__bar-value", value));
+                barsHost.appendChild(bar);
+                return bar;
+            });
+        }
+
+        function buildTimeline() {
+            if (!timelineHost) return;
+            timelineHost.textContent = "";
+            for (var i = 0; i < values.length - 1; i += 1) {
+                timelineHost.appendChild(el("li", "hero-viz__tick"));
+            }
+        }
 
         function renderFrame(frame) {
             frame.arr.forEach(function (value, i) {
                 var bar = bars[i];
-                bar.style.height = Math.round((value / maxValue) * 100) + "%";
-                bar.querySelector("span").textContent = value;
+                bar.style.height = Math.round((value / MAX_VALUE) * 100) + "%";
+                bar.querySelector(".hero-viz__bar-value").textContent = value;
                 bar.classList.toggle("is-done", i <= frame.sortedUpto);
                 bar.classList.toggle("is-min", i === frame.min);
                 bar.classList.toggle("is-compare", i === frame.compare);
@@ -233,18 +258,75 @@
                 captionHost.appendChild(el("b", null, "선택 정렬 실행 중 · "));
                 captionHost.appendChild(document.createTextNode(frame.text));
             }
+            if (timelineHost) {
+                Array.prototype.forEach.call(timelineHost.children, function (tick, i) {
+                    tick.classList.toggle("is-done", i < frame.round);
+                    tick.classList.toggle("is-current", i === frame.round);
+                });
+            }
         }
 
-        renderFrame(frames[0]);
+        function stopAuto() {
+            if (timer) {
+                clearInterval(timer);
+                timer = null;
+            }
+            if (toggleBtn) {
+                toggleBtn.textContent = "▶";
+                toggleBtn.setAttribute("aria-label", "자동 재생 시작");
+            }
+        }
 
-        if (!reducedMotion) {
-            setInterval(function () {
+        function startAuto() {
+            if (timer) return;
+            timer = setInterval(function () {
                 frameIndex = (frameIndex + 1) % frames.length;
                 renderFrame(frames[frameIndex]);
             }, 1100);
-        } else if (captionHost) {
-            captionHost.textContent =
-                "선택 정렬의 한 장면입니다. 애니메이션 축소 설정이 감지되어 자동 재생을 멈췄습니다.";
+            if (toggleBtn) {
+                toggleBtn.textContent = "⏸";
+                toggleBtn.setAttribute("aria-label", "자동 재생 일시 정지");
+            }
+        }
+
+        function reset(nextValues) {
+            stopAuto();
+            values = nextValues;
+            frames = buildFrames(values);
+            frameIndex = 0;
+            buildBars();
+            buildTimeline();
+            renderFrame(frames[0]);
+        }
+
+        reset(values);
+
+        if (toggleBtn) {
+            toggleBtn.addEventListener("click", function () {
+                if (timer) {
+                    stopAuto();
+                } else {
+                    startAuto();
+                }
+            });
+        }
+
+        if (shuffleBtn) {
+            shuffleBtn.addEventListener("click", function () {
+                var wasPlaying = !!timer;
+                reset(randomValues());
+                if (wasPlaying && !reducedMotion) startAuto();
+            });
+        }
+
+        if (!reducedMotion) {
+            startAuto();
+        } else {
+            stopAuto();
+            if (captionHost) {
+                captionHost.textContent =
+                    "선택 정렬의 한 장면입니다. 애니메이션 축소 설정이 감지되어 자동 재생을 멈췄습니다. ▶ 버튼으로 직접 넘겨볼 수 있습니다.";
+            }
         }
     });
 })();
