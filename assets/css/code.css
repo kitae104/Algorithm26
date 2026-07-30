@@ -67,7 +67,7 @@
     border-radius: 7px;
     padding: 5px 12px;
     cursor: pointer;
-    transition: background 0.12s ease;
+    transition: background var(--dur-fast) var(--ease-out);
 }
 
 .copy-code-button:hover {

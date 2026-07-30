@@ -49,6 +49,14 @@
     --shadow-card: 0 1px 2px rgba(20, 30, 50, 0.05), 0 4px 16px rgba(20, 30, 50, 0.06);
     --shadow-pop: 0 6px 24px rgba(20, 30, 50, 0.14);
 
+    /* 모션 — 전환 시간과 이징의 단일 출처 */
+    --dur-fast: 140ms;      /* 색·테두리 등 즉각 반응 */
+    --dur-base: 240ms;      /* 일반 상태 전환 */
+    --dur-slow: 340ms;      /* 자리 교대, 높이 변화 */
+    --ease-out: cubic-bezier(0.22, 0.61, 0.36, 1);
+    --ease-settle: cubic-bezier(0.34, 1.26, 0.64, 1);   /* 약한 오버슈트 — 확정의 정착감 */
+    --ease-in-out: cubic-bezier(0.45, 0.05, 0.55, 0.95);
+
     --font-body: "Pretendard Variable", Pretendard, "Noto Sans KR", "Apple SD Gothic Neo",
         "Malgun Gothic", system-ui, sans-serif;
     --font-mono: "JetBrains Mono", "D2Coding", "Cascadia Code", Consolas, "Courier New", monospace;
@@ -155,8 +163,10 @@ html {
 }
 
 @media (prefers-reduced-motion: reduce) {
-    html {
-        scroll-behavior: auto;
+    :root {
+        --dur-fast: 0.01ms;
+        --dur-base: 0.01ms;
+        --dur-slow: 0.01ms;
     }
 
     *,
@@ -165,6 +175,7 @@ html {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
     }
 }
 
@@ -238,7 +249,7 @@ summary code {
     color: #fff;
     padding: 10px 16px;
     border-radius: var(--radius-s);
-    transition: top 0.15s ease;
+    transition: top var(--dur-fast) var(--ease-out);
 }
 
 .skip-link:focus {
@@ -482,7 +493,7 @@ summary code {
     color: var(--ink);
     cursor: pointer;
     text-decoration: none;
-    transition: background 0.12s ease, transform 0.12s ease;
+    transition: background var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
 }
 
 .button:hover {
@@ -571,7 +582,7 @@ html[data-theme="dark"] .button--primary:hover {
     width: 0%;
     border-radius: 999px;
     background: linear-gradient(90deg, var(--brand), var(--state-done));
-    transition: width 0.4s ease;
+    transition: width var(--dur-slow) var(--ease-out);
 }
 
 /* ---------- 맨 위로 버튼 ---------- */
@@ -591,7 +602,7 @@ html[data-theme="dark"] .button--primary:hover {
     box-shadow: var(--shadow-pop);
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.2s ease;
+    transition: opacity var(--dur-base) var(--ease-out);
 }
 
 .back-to-top.is-visible {

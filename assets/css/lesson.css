@@ -361,7 +361,7 @@
     padding: 16px 18px;
     text-decoration: none;
     color: var(--ink);
-    transition: border-color 0.12s ease;
+    transition: border-color var(--dur-fast) var(--ease-out);
 }
 
 .lesson-pager a:hover {

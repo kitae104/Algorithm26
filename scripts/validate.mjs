@@ -114,6 +114,31 @@ for (const lesson of lessons) {
     }
 }
 
+/* ---------- CSS 정적 불변식 ---------- */
+const commonCss = readFileSync(join(ROOT, "assets/css/common.css"), "utf8");
+
+const MOTION_TOKENS = [
+    "--dur-fast", "--dur-base", "--dur-slow",
+    "--ease-out", "--ease-settle", "--ease-in-out"
+];
+for (const token of MOTION_TOKENS) {
+    if (!commonCss.includes(token + ":")) {
+        fail(`common.css: 모션 토큰 정의 누락 — ${token}`);
+    }
+}
+
+/* reduced-motion 블록이 duration 토큰을 무력화하는지 */
+const reducedBlock = commonCss.match(/@media \(prefers-reduced-motion: reduce\)\s*\{[\s\S]*?\n\}/);
+if (!reducedBlock) {
+    fail("common.css: prefers-reduced-motion 블록을 찾을 수 없음");
+} else {
+    for (const token of ["--dur-fast", "--dur-base", "--dur-slow"]) {
+        if (!reducedBlock[0].includes(token)) {
+            fail(`common.css: reduced-motion에서 ${token}을 무력화하지 않음`);
+        }
+    }
+}
+
 /* ---------- index.html 링크 검증 ---------- */
 const indexPath = join(ROOT, "index.html");
 if (!existsSync(indexPath)) {

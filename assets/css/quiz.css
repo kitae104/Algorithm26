@@ -79,7 +79,7 @@
     padding: 10px 14px;
     cursor: pointer;
     background: var(--surface);
-    transition: border-color 0.1s ease, background 0.1s ease;
+    transition: border-color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out);
 }
 
 .quiz-choice:hover {
