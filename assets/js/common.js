@@ -218,6 +218,39 @@
             };
         })();
 
+        /* ---------- 읽는 진도 바 (강의 페이지) ---------- */
+        (function () {
+            if (!document.body.hasAttribute("data-lesson-id")) return;
+
+            var bar = document.createElement("div");
+            bar.id = "reading-progress";
+            bar.className = "reading-progress";
+            var fill = document.createElement("div");
+            fill.className = "reading-progress__fill";
+            bar.appendChild(fill);
+            document.body.appendChild(bar);
+
+            var ticking = false;
+
+            function update() {
+                var doc = document.documentElement;
+                var max = doc.scrollHeight - window.innerHeight;
+                var ratio = max > 0 ? window.scrollY / max : 0;
+                if (ratio < 0) ratio = 0;
+                if (ratio > 1) ratio = 1;
+                fill.style.width = (ratio * 100).toFixed(2) + "%";
+                ticking = false;
+            }
+
+            window.addEventListener("scroll", function () {
+                if (ticking) return;
+                ticking = true;
+                window.requestAnimationFrame(update);
+            });
+            window.addEventListener("resize", update);
+            update();
+        })();
+
         if (!isLessonPage) {
             return;
         }

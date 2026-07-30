@@ -159,4 +159,8 @@
         opacity: 1 !important;
         transform: none !important;
     }
+
+    .reading-progress {
+        display: none !important;
+    }
 }
