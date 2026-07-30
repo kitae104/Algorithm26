@@ -112,6 +112,14 @@ for (const lesson of lessons) {
         if (idx !== -1 && idx < lastIndex) warn(`${lesson.path}: 섹션 순서 어긋남 — ${id}`);
         if (idx !== -1) lastIndex = idx;
     }
+
+    /* 핵심 정리 섹션이 전용 카드 클래스를 쓰는지 */
+    const summaryMatch = html.match(/id="sec-summary"[\s\S]*?<\/section>/);
+    if (!summaryMatch) {
+        fail(`${lesson.path}: sec-summary 섹션을 찾을 수 없음`);
+    } else if (!summaryMatch[0].includes('class="summary-list"')) {
+        fail(`${lesson.path}: 핵심 정리 목록에 summary-list 클래스 없음`);
+    }
 }
 
 /* ---------- CSS 정적 불변식 ---------- */

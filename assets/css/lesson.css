@@ -237,6 +237,47 @@
     flex-shrink: 0;
 }
 
+/* 오늘의 핵심 정리 — 강의의 결론부를 전용 카드로 */
+.summary-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 10px;
+    counter-reset: summary;
+}
+
+.summary-list > li {
+    counter-increment: summary;
+    display: flex;
+    gap: 12px;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--brand);
+    border-radius: var(--radius-s);
+    padding: 13px 16px;
+    transition: border-color var(--dur-fast) var(--ease-out),
+                background var(--dur-fast) var(--ease-out);
+}
+
+.summary-list > li::before {
+    content: counter(summary);
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    font-weight: 700;
+    color: var(--brand);
+    background: var(--brand-soft);
+    border-radius: 6px;
+    padding: 1px 7px;
+    height: fit-content;
+    flex-shrink: 0;
+}
+
+.summary-list > li:hover {
+    border-left-color: var(--state-done);
+    background: var(--surface);
+}
+
 /* 사람이 해결하는 단계 카드 */
 .hand-step {
     border: 1px solid var(--line);
