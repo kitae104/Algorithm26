@@ -147,10 +147,14 @@ if (!reducedBlock) {
     }
 }
 
-/* 사용하지 않는 규칙이 다시 들어오지 않게 */
-const lessonCss = readFileSync(join(ROOT, "assets/css/lesson.css"), "utf8");
-if (lessonCss.includes(".inline-array")) {
-    fail("lesson.css: 사용처가 없는 .inline-array 규칙이 남아 있음");
+/* 사용하지 않는 규칙이 다시 들어오지 않게 (assets/css 전체를 스캔) */
+const cssDir = join(ROOT, "assets/css");
+for (const file of readdirSync(cssDir)) {
+    if (!file.endsWith(".css")) continue;
+    const css = readFileSync(join(cssDir, file), "utf8");
+    if (css.includes(".inline-array")) {
+        fail(`${file}: 사용처가 없는 .inline-array 규칙이 남아 있음`);
+    }
 }
 
 /* ---------- index.html 링크 검증 ---------- */
