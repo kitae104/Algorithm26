@@ -1652,18 +1652,34 @@ reduced-motion 블록 안에 안전장치를 더한다. JS가 관찰을 걸지 �
 
 - [ ] **Step 6: 인쇄에서 내용이 사라지지 않는지 확인한다**
 
+진입 전 상태로 되돌린 뒤, **인쇄 미디어를 에뮬레이트한 상태에서** 실제로 보이는지 확인한다.
+단순히 클래스 개수를 세면 아무것도 검증하지 못하므로, `matchMedia('print')`가 아니라
+브라우저 개발자도구의 "CSS 미디어 타입 에뮬레이션 = print"를 켜고 계산된 스타일을 읽는다.
+
 ```javascript
 (function () {
-    var hidden = 0;
-    document.querySelectorAll('.reveal-on-scroll').forEach(function (n) {
-        n.classList.remove('is-revealed');       // 진입 전 상태로 되돌린다
+    /* 진입 전 상태로 되돌린다 — 인쇄 시 가장 불리한 조건 */
+    Array.prototype.forEach.call(
+        document.querySelectorAll('.reveal-on-scroll'),
+        function (n) { n.classList.remove('is-revealed'); });
+
+    var nodes = Array.prototype.slice.call(document.querySelectorAll('.reveal-on-scroll'));
+    var invisible = nodes.filter(function (n) {
+        return parseFloat(getComputedStyle(n).opacity) < 0.99;
     });
-    /* 인쇄 미디어 규칙이 적용되는지 확인 */
-    return { restoredToPreReveal: document.querySelectorAll('.reveal-on-scroll:not(.is-revealed)').length };
+    return {
+        total: nodes.length,
+        invisibleUnderPrint: invisible.length,
+        firstInvisible: invisible.length ? invisible[0].id || invisible[0].className : null
+    };
 })()
 ```
 
-그다음 브라우저 인쇄 미리보기를 열어 모든 섹션이 보이는지 눈으로 확인한다. 학생용·교수자용 인쇄 버튼 양쪽 다 확인한다.
+기대(print 에뮬레이션 켠 상태): `invisibleUnderPrint: 0`.
+에뮬레이션을 끈 상태에서 같은 스니펫을 돌리면 `invisibleUnderPrint`가 `total`과 같아야 한다 —
+그래야 print 규칙이 실제로 효과를 낸 것이 증명된다.
+
+그다음 학생용·교수자용 인쇄 버튼 양쪽으로 미리보기를 열어 모든 섹션이 보이는지 눈으로 확인한다.
 
 - [ ] **Step 7: 커밋**
 
@@ -1942,12 +1958,21 @@ cd /d/Github/Algorithm_WS/Algorithm26 && grep -rn "inline-array" --include=*.htm
 
 - [ ] **Step 5: 본문 강조에 마킹을 준다**
 
-`assets/css/lesson.css:211-213`의 `strong` 규칙을 교체한다. 배경을 아주 옅게 줘서 훑을 때 눈에 걸리게 한다.
+`assets/css/lesson.css:211-213`의 `strong` 규칙은 **그대로 두고**, 마킹 규칙만 뒤에 추가한다.
+
+기존 규칙은 `.lesson-section strong { color: var(--ink); }`으로 표 셀·제목 안의 `strong`까지
+색을 지정한다. 이를 `p strong, li strong`으로 좁히면 표 안의 `strong`(13강 도구 총정리 표 등
+여러 곳에 있다)이 색 지정을 잃는다. 색 규칙은 넓게 유지하고 배경 마킹만 좁게 준다.
 
 ```css
+/* 기존 규칙 — 건드리지 않는다 */
+.lesson-section strong {
+    color: var(--ink);
+}
+
+/* 본문 문단·목록의 강조만 마킹한다 */
 .lesson-section p strong,
 .lesson-section li strong {
-    color: var(--ink);
     background: linear-gradient(transparent 62%, var(--brand-soft) 62%);
 }
 
