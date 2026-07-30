@@ -242,12 +242,33 @@
                 ticking = false;
             }
 
-            window.addEventListener("scroll", function () {
+            function scheduleUpdate() {
                 if (ticking) return;
                 ticking = true;
                 window.requestAnimationFrame(update);
-            });
-            window.addEventListener("resize", update);
+            }
+
+            window.addEventListener("scroll", scheduleUpdate);
+            window.addEventListener("resize", scheduleUpdate);
+
+            /* 스크롤/리사이즈만으로는 부족하다 — <details class="answer-box">를
+               열고 닫으면 scrollY는 그대로인데 문서 높이가 바뀌어 막대가
+               낡은 값에 멈춰 있게 된다("stale bar" 버그). 두 가지로 이를 잡는다.
+
+               1) toggle 이벤트: <details>가 열리고 닫힐 때 발생하지만 버블링되지
+                  않으므로 캡처 단계에서 document에 한 번만 걸어 두면 지금 있는
+                  것은 물론 나중에 추가되는 모든 <details>까지 한 줄로 커버한다.
+               2) ResizeObserver(지원 시): 문서 높이가 바뀌는 다른 원인
+                  (이미지 로드, 폰트 스왑, 스크롤 진입 트랜지션 등)까지 넓게
+                  잡아낸다. 미지원 브라우저에서는 스크롤/리사이즈/toggle만으로
+                  성능이 저하 없이 동작한다(우아한 성능 저하). */
+            document.addEventListener("toggle", scheduleUpdate, true);
+
+            if ("ResizeObserver" in window) {
+                var heightObserver = new ResizeObserver(scheduleUpdate);
+                heightObserver.observe(document.documentElement);
+            }
+
             update();
         })();
 
