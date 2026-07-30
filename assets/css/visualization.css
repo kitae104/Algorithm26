@@ -74,7 +74,10 @@
     font-weight: 700;
     font-size: 1rem;
     color: var(--ink);
-    transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+    transition: transform var(--dur-base) var(--ease-out),
+                background var(--dur-fast) var(--ease-out),
+                border-color var(--dur-fast) var(--ease-out),
+                opacity var(--dur-base) var(--ease-out);
 }
 
 .viz-cell small {
@@ -100,12 +103,14 @@
 .viz-cell--done {
     border-color: var(--state-done);
     background: var(--state-done-bg);
+    animation: viz-settle var(--dur-slow) var(--ease-settle);
 }
 
 .viz-cell--found {
     border-color: var(--state-done);
     background: var(--state-done);
     color: #fff;
+    animation: viz-pulse var(--dur-slow) var(--ease-out);
 }
 
 .viz-cell--error {
@@ -121,6 +126,7 @@
 
 .viz-cell--faded {
     opacity: 0.35;
+    transform: scale(0.92);
 }
 
 /* 자리 교대 중인 셀은 이웃 위로 올라온다 */
@@ -130,12 +136,17 @@
     box-shadow: var(--shadow-pop);
 }
 
-/* 앞으로 복사 중 날아가는 사본 */
+/* 앞으로 복사 중 날아가는 사본
+   원본 셀의 상태 클래스(--done/--found)를 그대로 물려받을 수 있는데,
+   그 키프레임은 transform을 애니메이션 중이라 비행에 쓰는 인라인
+   translateX를 재생 내내 덮어써 버린다. 고스트는 날아가는 동안만
+   보이므로 상태 모션은 항상 끈다. */
 .viz-cell--ghost {
     z-index: 30;
     pointer-events: none;
     box-shadow: var(--shadow-pop);
     opacity: 0.92;
+    animation: none;
 }
 
 /* 값이 덮어써질 셀은 옅어진다 */
@@ -205,6 +216,7 @@
 .viz-table td.viz-cell--error,
 .viz-table td.viz-cell--faded {
     transform: none;
+    animation: none;
 }
 
 /* ---------- 그래프 / 트리 (SVG) ---------- */
@@ -423,6 +435,21 @@
 .viz-legend i.lg-current { border-color: var(--state-visit); background: var(--state-visit-bg); }
 .viz-legend i.lg-done { border-color: var(--state-done); background: var(--state-done-bg); }
 .viz-legend i.lg-error { border-color: var(--state-error); background: var(--state-error-bg); }
+
+/* ---------- 상태 모션 키프레임 ---------- */
+
+/* 확정 — 제자리에 가라앉는 느낌 */
+@keyframes viz-settle {
+    0%   { transform: translateY(-4px); }
+    100% { transform: translateY(0); }
+}
+
+/* 발견 — 한 번의 짧은 맥박 */
+@keyframes viz-pulse {
+    0%   { transform: scale(1); }
+    45%  { transform: scale(1.09); }
+    100% { transform: scale(1); }
+}
 
 @media (max-width: 640px) {
     .viz__stage {
