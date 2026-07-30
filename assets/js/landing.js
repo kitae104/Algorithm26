@@ -58,6 +58,15 @@
         var difficultySelect = document.getElementById("filter-difficulty");
         var statusSelect = document.getElementById("filter-status");
 
+        /* render()는 검색어/필터가 바뀔 때마다 그리드를 통째로 새로 그린다.
+           스크롤 진입 애니메이션은 "스크롤해서 처음 만나는 콘텐츠"를 위한
+           것이지, 검색창에 한 글자 칠 때마다 이미 봤던 카드를 다시 재생하라는
+           뜻이 아니다. 그래서 강의 id별로 "이미 한 번 공개됐는지"를 기억해
+           두고, 이미 공개된 강의의 카드는 재렌더 시 처음부터 보이는 상태로
+           만든다(reveal-on-scroll을 아예 붙이지 않음) — 애니메이션은 강의당
+           최대 1회만 재생된다. */
+        var revealedLessonIds = {};
+
         function lessonStatus(entry) {
             if (entry && entry.completed) return "done";
             if (entry && entry.started) return "started";
@@ -89,12 +98,23 @@
 
                 shown += 1;
 
-                /* window.AllReveal이 켜져 있으면(reduced-motion이 아니고
-                   IntersectionObserver를 지원하면) 카드를 DOM에 넣기 전에
-                   reveal-on-scroll을 붙인다 — 삽입되는 순간부터 이미
-                   opacity: 0 상태이므로 "보였다가 사라지는" 깜빡임이 없다. */
-                var revealOn = Boolean(window.AllReveal && window.AllReveal.enabled);
+                /* window.AllReveal이 켜져 있고(reduced-motion이 아니고
+                   IntersectionObserver를 지원) 이 강의 카드가 아직 한 번도
+                   공개된 적이 없을 때만 reveal-on-scroll을 붙인다 — 카드를
+                   DOM에 넣기 전에 붙이므로 삽입되는 순간부터 이미
+                   opacity: 0 상태이고("보였다가 사라지는" 깜빡임 없음),
+                   이미 공개됐던 강의는 이 클래스를 아예 붙이지 않아 재렌더 시
+                   페이드 없이 즉시 보인다. */
+                var revealOn = Boolean(window.AllReveal && window.AllReveal.enabled) &&
+                    !revealedLessonIds[lesson.id];
                 var card = el("li", revealOn ? "course-card reveal-on-scroll" : "course-card");
+                if (revealOn) {
+                    /* forEach 콜백 인자라 강의별로 이미 별도 스코프이므로
+                       추가 클로저 없이 lesson.id를 그대로 참조해도 안전하다. */
+                    card.addEventListener("all:revealed", function () {
+                        revealedLessonIds[lesson.id] = true;
+                    });
+                }
 
                 var top = el("div", "course-card__top");
                 top.appendChild(el("span", "course-card__no", String(lesson.order).padStart(2, "0")));
@@ -137,14 +157,16 @@
                 emptyMsg.classList.toggle("is-shown", shown === 0);
             }
 
-            /* 방금 그린 카드만 골라 스크롤 진입 관찰을 다시 건다. render()는
-               검색어/필터가 바뀔 때마다 그리드를 통째로 새로 그리므로, 매번
-               호출해 이전 카드(이미 제거됨)에 대한 관찰을 해제하고 새 카드를
-               관찰 대상에 올린다 — 필터링으로 다시 나타난 카드가 opacity: 0에
+            /* 아직 공개되지 않아 reveal-on-scroll이 붙은 카드만 골라 스크롤
+               진입 관찰을 다시 건다(이미 공개된 강의의 카드는 애초에 이
+               클래스가 없으므로 관찰이 필요 없다). render()는 검색어/필터가
+               바뀔 때마다 그리드를 통째로 새로 그리므로, 매번 호출해 이전
+               카드(이미 제거됨)에 대한 관찰을 해제하고 새 카드를 관찰
+               대상에 올린다 — 필터링으로 다시 나타난 카드가 opacity: 0에
                갇힌 채 남는 경우가 없다. */
             if (window.AllReveal) {
                 window.AllReveal.observeCourseCards(
-                    Array.prototype.slice.call(grid.querySelectorAll(".course-card")));
+                    Array.prototype.slice.call(grid.querySelectorAll(".course-card.reveal-on-scroll")));
             }
         }
 

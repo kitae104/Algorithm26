@@ -191,6 +191,10 @@
                 entries.forEach(function (entry) {
                     if (!entry.isIntersecting) return;
                     entry.target.classList.add("is-revealed");
+                    /* 랜딩 페이지 카드가 실제로 공개된 시점을 landing.js에 알린다 —
+                       검색/필터로 카드가 다시 만들어질 때 "이미 본 카드"는
+                       재생하지 않고 곧바로 보이게 하기 위함 (landing.js가 구독). */
+                    entry.target.dispatchEvent(new CustomEvent("all:revealed"));
                     revealObserver.unobserve(entry.target);   /* 1회만 — 되돌아가도 재생 안 함 */
                 });
             }, { rootMargin: "0px 0px -8% 0px", threshold: 0 });
