@@ -390,6 +390,67 @@
         return { sig: groupSignature(group), block: block, body: body };
     }
 
+    /* ---------- 이동 감지 ----------
+     * 강의의 makeSteps 코드를 고치지 않고 step 데이터만 비교해 값의 이동을 추론한다.
+     * 교환: 정확히 두 위치의 값이 서로 맞바뀐다 (4강 선택 정렬의 tmp 교환).
+     */
+
+    function arrayValuesOf(view) {
+        var groups = view || [];
+        for (var i = 0; i < groups.length; i += 1) {
+            if (groups[i].type === "array") {
+                return (groups[i].cells || []).map(function (c) { return c.v; });
+            }
+        }
+        return null;
+    }
+
+    function detectSwap(prev, next) {
+        if (!prev || !next || prev.length !== next.length) return null;
+        var diff = [];
+        for (var i = 0; i < next.length; i += 1) {
+            if (prev[i] !== next[i]) {
+                diff.push(i);
+                if (diff.length > 2) return null;
+            }
+        }
+        if (diff.length !== 2) return null;
+        var a = diff[0];
+        var b = diff[1];
+        if (prev[a] === next[b] && prev[b] === next[a]) {
+            return { a: a, b: b };
+        }
+        return null;
+    }
+
+    function animateSwap(cells, a, b, durMs, onDone) {
+        var ra = cells[a].getBoundingClientRect();
+        var rb = cells[b].getBoundingClientRect();
+        var dx = rb.left - ra.left;
+        var finished = false;
+
+        function finish() {
+            if (finished) return;
+            finished = true;
+            [a, b].forEach(function (k) {
+                cells[k].style.transition = "";
+                cells[k].style.transform = "";
+                cells[k].classList.remove("is-moving");
+            });
+            onDone();
+        }
+
+        [a, b].forEach(function (k) {
+            cells[k].classList.add("is-moving");
+            cells[k].style.transition = "transform " + durMs + "ms var(--ease-in-out)";
+        });
+        cells[a].style.transform = "translateX(" + dx + "px)";
+        cells[b].style.transform = "translateX(" + (-dx) + "px)";
+
+        setTimeout(finish, durMs + 40);
+        return finish;
+    }
+
     /* ---------- 플레이어 ---------- */
 
     function create(config) {
@@ -403,6 +464,8 @@
         var index = 0;
         var timer = null;
         var mounted = [];
+        var pendingFinish = null;   // 진행 중인 이동 모션의 즉시 종료 함수
+        var prevValues = null;      // 직전 단계의 배열 값 (이동 감지용)
         var speedMs = SPEEDS[1].ms;
         var reducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -512,10 +575,7 @@
             });
         }
 
-        function renderStep() {
-            var step = steps[index];
-            if (!step) return;
-
+        function commitStep(step) {
             renderView(step.view);
 
             caption.textContent = "";
@@ -536,10 +596,49 @@
             btnPrev.disabled = index === 0;
             btnFirst.disabled = index === 0;
             btnNext.disabled = index >= steps.length - 1;
+            prevValues = arrayValuesOf(step.view);
 
             if (index >= steps.length - 1) {
                 stopAuto();
             }
+        }
+
+        function moveDuration() {
+            /* 자동 재생 중에는 모션이 재생 간격을 넘지 않게 조인다 */
+            var base = 340;
+            if (timer) return Math.min(base, Math.round(speedMs * 0.55));
+            return base;
+        }
+
+        function renderStep() {
+            var step = steps[index];
+            if (!step) return;
+
+            /* 진행 중인 모션이 있으면 즉시 끝내고 새 단계로 넘어간다 */
+            if (pendingFinish) {
+                var finishNow = pendingFinish;
+                pendingFinish = null;
+                finishNow();
+            }
+
+            var nextValues = arrayValuesOf(step.view);
+            var swap = reducedMotion ? null : detectSwap(prevValues, nextValues);
+
+            if (!swap) {
+                commitStep(step);
+                return;
+            }
+
+            var cells = stage.querySelectorAll(".viz-array .viz-cell");
+            if (cells.length !== nextValues.length) {
+                commitStep(step);
+                return;
+            }
+
+            pendingFinish = animateSwap(cells, swap.a, swap.b, moveDuration(), function () {
+                pendingFinish = null;
+                commitStep(step);
+            });
         }
 
         function rebuild() {
@@ -553,6 +652,8 @@
             }
             mounted = [];
             stage.textContent = "";
+            prevValues = null;
+            pendingFinish = null;
             index = 0;
             renderStep();
         }
@@ -576,6 +677,7 @@
         btnFirst.addEventListener("click", function () {
             stopAuto();
             index = 0;
+            prevValues = null;   /* 인접 단계가 아니므로 이동 감지를 끈다 */
             renderStep();
         });
 

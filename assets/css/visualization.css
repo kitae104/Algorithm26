@@ -123,6 +123,13 @@
     opacity: 0.35;
 }
 
+/* 자리 교대 중인 셀은 이웃 위로 올라온다 */
+.viz-cell.is-moving {
+    position: relative;
+    z-index: 2;
+    box-shadow: var(--shadow-pop);
+}
+
 .viz-cell--updated {
     border-color: var(--state-compare);
     background: var(--state-compare-bg);
