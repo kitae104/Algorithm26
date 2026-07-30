@@ -423,6 +423,27 @@
         return null;
     }
 
+    /* 앞으로 복사: 인접한 한 위치만 달라지고 그 값이 왼쪽 이웃에서 왔다.
+     * 삽입 정렬의 arr[j + 1] = arr[j] 패턴. key를 배열 밖 변수에 들고 있어
+     * 값이 복제되므로 값 구성이 달라지고 교환 감지기에는 걸리지 않는다.
+     */
+    function detectCopyForward(prev, next) {
+        if (!prev || !next || prev.length !== next.length) return null;
+        var diff = [];
+        for (var i = 0; i < next.length; i += 1) {
+            if (prev[i] !== next[i]) {
+                diff.push(i);
+                if (diff.length > 1) return null;
+            }
+        }
+        if (diff.length !== 1) return null;
+        var to = diff[0];
+        if (to > 0 && next[to] === prev[to - 1]) {
+            return { from: to - 1, to: to };
+        }
+        return null;
+    }
+
     /* ---------- 모션 수명 주기 (공통) ----------
      * "취소"와 "완료"를 분리한다: 어느 쪽이든 DOM 리셋(reset)은 반드시 하지만,
      * onDone(= 값 커밋)은 완료(finish) 경로에서만 호출한다. 재구성(rebuild)처럼
@@ -481,6 +502,40 @@
         });
         cells[a].style.transform = "translateX(" + dx + "px)";
         cells[b].style.transform = "translateX(" + (-dx) + "px)";
+
+        return createMotion(reset, onDone, durMs);
+    }
+
+    /* 무대가 가로 스크롤될 수 있어 position: fixed로 뷰포트 좌표를 쓴다.
+     * animateSwap과 동일하게 createMotion에 수명 주기를 통째로 위임한다 —
+     * reset()에서 고스트 노드 제거와 is-vacating 해제를 모두 처리해야
+     * cancel() 경로(재구성 도중 클릭)에서도 고스트가 반드시 사라진다.
+     */
+    function animateCopy(cells, from, to, durMs, onDone) {
+        var rf = cells[from].getBoundingClientRect();
+        var rt = cells[to].getBoundingClientRect();
+        var ghost = cells[from].cloneNode(true);
+
+        ghost.className = cells[from].className + " viz-cell--ghost";
+        ghost.style.position = "fixed";
+        ghost.style.left = rf.left + "px";
+        ghost.style.top = rf.top + "px";
+        ghost.style.width = rf.width + "px";
+        ghost.style.height = rf.height + "px";
+        ghost.style.margin = "0";
+        document.body.appendChild(ghost);
+        cells[to].classList.add("is-vacating");
+
+        function reset() {
+            if (ghost.parentNode) ghost.parentNode.removeChild(ghost);
+            cells[to].classList.remove("is-vacating");
+        }
+
+        /* 다음 프레임에 목표 위치를 지정해야 전환이 발동한다 */
+        requestAnimationFrame(function () {
+            ghost.style.transition = "transform " + durMs + "ms var(--ease-out)";
+            ghost.style.transform = "translateX(" + (rt.left - rf.left) + "px)";
+        });
 
         return createMotion(reset, onDone, durMs);
     }
@@ -684,8 +739,9 @@
 
             var nextValues = arrayValuesOf(step.view);
             var swap = reducedMotion ? null : detectSwap(prevValues, nextValues);
+            var copy = (reducedMotion || swap) ? null : detectCopyForward(prevValues, nextValues);
 
-            if (!swap) {
+            if (!swap && !copy) {
                 commitStep(step, stepIndex);
                 return;
             }
@@ -696,10 +752,17 @@
                 return;
             }
 
-            pendingMotion = animateSwap(cells, swap.a, swap.b, moveDuration(), function () {
-                pendingMotion = null;
-                commitStep(step, stepIndex);
-            });
+            if (swap) {
+                pendingMotion = animateSwap(cells, swap.a, swap.b, moveDuration(), function () {
+                    pendingMotion = null;
+                    commitStep(step, stepIndex);
+                });
+            } else {
+                pendingMotion = animateCopy(cells, copy.from, copy.to, moveDuration(), function () {
+                    pendingMotion = null;
+                    commitStep(step, stepIndex);
+                });
+            }
         }
 
         function rebuild() {

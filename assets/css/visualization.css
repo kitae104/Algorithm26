@@ -130,6 +130,20 @@
     box-shadow: var(--shadow-pop);
 }
 
+/* 앞으로 복사 중 날아가는 사본 */
+.viz-cell--ghost {
+    z-index: 30;
+    pointer-events: none;
+    box-shadow: var(--shadow-pop);
+    opacity: 0.92;
+}
+
+/* 값이 덮어써질 셀은 옅어진다 */
+.viz-cell.is-vacating {
+    opacity: 0.45;
+    transition: opacity var(--dur-fast) var(--ease-out);
+}
+
 .viz-cell--updated {
     border-color: var(--state-compare);
     background: var(--state-compare-bg);
