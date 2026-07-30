@@ -609,11 +609,11 @@
             });
         }
 
-        function commitStep(step) {
+        function commitStep(step, stepIndex) {
             renderView(step.view);
 
             caption.textContent = "";
-            caption.appendChild(el("strong", null, "단계 " + (index + 1) + ". "));
+            caption.appendChild(el("strong", null, "단계 " + (stepIndex + 1) + ". "));
             caption.appendChild(document.createTextNode(step.caption || ""));
 
             stats.textContent = "";
@@ -626,13 +626,13 @@
                 });
             }
 
-            counter.textContent = (index + 1) + " / " + steps.length;
-            btnPrev.disabled = index === 0;
-            btnFirst.disabled = index === 0;
-            btnNext.disabled = index >= steps.length - 1;
+            counter.textContent = (stepIndex + 1) + " / " + steps.length;
+            btnPrev.disabled = stepIndex === 0;
+            btnFirst.disabled = stepIndex === 0;
+            btnNext.disabled = stepIndex >= steps.length - 1;
             prevValues = arrayValuesOf(step.view);
 
-            if (index >= steps.length - 1) {
+            if (stepIndex >= steps.length - 1) {
                 stopAuto();
             }
         }
@@ -645,8 +645,12 @@
         }
 
         /* 진행 중인 모션을 "완료"시킨다: 리셋 후 onDone(값 커밋)까지 실행한다.
-         * 일반적인 단계 이동(다음/이전/처음부터)에서 쓴다 — 같은 실행 중에
-         * 새 단계를 이어서 커밋하므로 화면에는 보이지 않고 자연스럽게 이어진다. */
+         * 일반적인 단계 이동(다음/이전/처음부터)에서 쓴다. onDone은 그 모션이
+         * 시작될 때 캡처해 둔 stepIndex로 자신의 스텝을 정확한 라벨로 커밋하고,
+         * 곧바로 이어지는 새 단계 커밋이 그 위에 겹쳐 그려지므로 화면에는
+         * 보이지 않고 자연스럽게 이어진다. stepIndex를 캡처하지 않고 공유
+         * index를 읽으면(이미 호출자가 증가시킨 뒤이므로) 옛 스텝의 내용이
+         * 새 스텝의 번호표를 달고 잠깐 그려지는 라벨 불일치가 생긴다. */
         function finishPendingMotion() {
             if (pendingMotion) {
                 var motion = pendingMotion;
@@ -671,6 +675,9 @@
         function renderStep() {
             var step = steps[index];
             if (!step) return;
+            var stepIndex = index;   /* 이 호출이 다루는 스텝의 번호를 미리 고정해 둔다 —
+                                      * 이후 index가 다음 클릭으로 먼저 바뀌어도(강제 종료
+                                      * 경로) 이 스텝은 항상 자신의 올바른 번호로 커밋된다. */
 
             /* 진행 중인 모션이 있으면 즉시 끝내고(커밋) 새 단계로 넘어간다 */
             finishPendingMotion();
@@ -679,19 +686,19 @@
             var swap = reducedMotion ? null : detectSwap(prevValues, nextValues);
 
             if (!swap) {
-                commitStep(step);
+                commitStep(step, stepIndex);
                 return;
             }
 
             var cells = stage.querySelectorAll(".viz-array .viz-cell");
             if (cells.length !== nextValues.length) {
-                commitStep(step);
+                commitStep(step, stepIndex);
                 return;
             }
 
             pendingMotion = animateSwap(cells, swap.a, swap.b, moveDuration(), function () {
                 pendingMotion = null;
-                commitStep(step);
+                commitStep(step, stepIndex);
             });
         }
 
