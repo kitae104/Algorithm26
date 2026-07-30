@@ -147,6 +147,12 @@ if (!reducedBlock) {
     }
 }
 
+/* 사용하지 않는 규칙이 다시 들어오지 않게 */
+const lessonCss = readFileSync(join(ROOT, "assets/css/lesson.css"), "utf8");
+if (lessonCss.includes(".inline-array")) {
+    fail("lesson.css: 사용처가 없는 .inline-array 규칙이 남아 있음");
+}
+
 /* ---------- index.html 링크 검증 ---------- */
 const indexPath = join(ROOT, "index.html");
 if (!existsSync(indexPath)) {

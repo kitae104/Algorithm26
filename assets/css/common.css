@@ -665,24 +665,51 @@ table.data-table td code {
 
 /* ---------- 안내 박스 ---------- */
 .note-box {
+    position: relative;
     border-radius: var(--radius-m);
     border: 1px solid var(--line);
     border-left: 4px solid var(--brand);
     background: var(--surface-2);
-    padding: 14px 18px;
+    padding: 14px 18px 14px 46px;
     margin: 16px 0;
+    transition: border-color var(--dur-fast) var(--ease-out);
+}
+
+.note-box::before {
+    content: "ℹ";
+    position: absolute;
+    left: 16px;
+    top: 13px;
+    font-size: 1rem;
+    line-height: 1.3;
+    color: var(--brand);
 }
 
 .note-box--tip {
     border-left-color: var(--state-done);
 }
 
+.note-box--tip::before {
+    content: "✓";
+    color: var(--state-done);
+}
+
 .note-box--warn {
     border-left-color: var(--state-compare);
 }
 
+.note-box--warn::before {
+    content: "⚠";
+    color: var(--state-compare);
+}
+
 .note-box--danger {
     border-left-color: var(--state-error);
+}
+
+.note-box--danger::before {
+    content: "✕";
+    color: var(--state-error);
 }
 
 .note-box > :first-child {

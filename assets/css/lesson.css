@@ -179,7 +179,8 @@
     font-weight: 800;
     margin: 0 0 18px;
     padding-bottom: 12px;
-    border-bottom: 2px solid var(--surface-2);
+    border-bottom: 2px solid transparent;
+    border-image: linear-gradient(90deg, var(--brand) 0%, var(--surface-2) 42%) 1;
 }
 
 .lesson-section > h2 .section-no {
@@ -210,6 +211,20 @@
 
 .lesson-section strong {
     color: var(--ink);
+}
+
+/* 본문 문단·목록의 강조만 마킹한다 */
+.lesson-section p strong,
+.lesson-section li strong {
+    background: linear-gradient(transparent 62%, var(--brand-soft) 62%);
+}
+
+/* 강조 위에 또 강조가 겹치는 곳(제목·박스 타이틀)은 마킹하지 않는다 */
+.lesson-section .note-box__title,
+.lesson-section h2 strong,
+.lesson-section h3 strong,
+.lesson-section h4 strong {
+    background: none;
 }
 
 /* 학습 목표 목록 */
@@ -294,48 +309,6 @@
     color: var(--brand);
     display: block;
     margin-bottom: 4px;
-}
-
-/* 정적 배열 그림 (텍스트 기반) */
-.inline-array {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin: 12px 0;
-    font-family: var(--font-mono);
-}
-
-.inline-array .cell {
-    min-width: 46px;
-    text-align: center;
-    border: 1.5px solid var(--line-strong);
-    border-radius: 8px;
-    background: var(--surface);
-    padding: 8px 6px 2px;
-    font-weight: 600;
-    position: relative;
-}
-
-.inline-array .cell small {
-    display: block;
-    font-size: 0.66rem;
-    color: var(--ink-faint);
-    font-weight: 400;
-}
-
-.inline-array .cell.is-compare {
-    border-color: var(--state-compare);
-    background: var(--state-compare-bg);
-}
-
-.inline-array .cell.is-current {
-    border-color: var(--brand);
-    background: var(--state-visit-bg);
-}
-
-.inline-array .cell.is-done {
-    border-color: var(--state-done);
-    background: var(--state-done-bg);
 }
 
 /* 오류 찾기 카드 */
