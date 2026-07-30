@@ -241,6 +241,155 @@
         }
     };
 
+    /* ---------- 그룹 시그니처와 패치 ----------
+     * 시그니처가 같으면 기존 DOM을 재사용해 값·클래스만 갱신한다.
+     * 그래야 CSS 전환의 시작값이 존재해 실제로 애니메이션이 발동한다.
+     */
+
+    function cellItems(group) {
+        if (group.type === "array") return group.cells || [];
+        return group.items || [];
+    }
+
+    function groupSignature(group) {
+        var parts = [group.type, group.label || ""];
+        if (group.type === "table") {
+            parts.push((group.head || []).join(""));
+            parts.push((group.rows || []).map(function (r) { return r.length; }).join(","));
+        } else if (group.type === "graph") {
+            parts.push((group.nodes || []).map(function (n) { return n.id; }).join(","));
+            parts.push((group.edges || []).map(function (e) { return e.from + ">" + e.to; }).join(","));
+            parts.push(String(group.w || 560), String(group.h || 300));
+        } else if (group.type === "note") {
+            parts.push("note");
+        } else {
+            parts.push(String(cellItems(group).length));
+            parts.push(group.emptyText || "");
+        }
+        return parts.join("|");
+    }
+
+    function setCellText(cell, value) {
+        var text = value === undefined ? "" : String(value);
+        if (cell.firstChild && cell.firstChild.nodeType === 3) {
+            if (cell.firstChild.nodeValue !== text) {
+                cell.firstChild.nodeValue = text;
+            }
+        } else {
+            cell.insertBefore(document.createTextNode(text), cell.firstChild || null);
+        }
+    }
+
+    function setCellSub(cell, sub) {
+        var small = cell.querySelector("small");
+        if (sub === undefined || sub === null) {
+            if (small) small.parentNode.removeChild(small);
+            return;
+        }
+        if (!small) {
+            small = el("small");
+            cell.appendChild(small);
+        }
+        if (small.textContent !== String(sub)) {
+            small.textContent = String(sub);
+        }
+    }
+
+    function setClass(node, className) {
+        if (node.getAttribute("class") !== className) {
+            node.setAttribute("class", className);
+        }
+    }
+
+    function patchCells(container, items, baseClass, modifierPrefix) {
+        var nodes = container.querySelectorAll("." + baseClass);
+        for (var i = 0; i < items.length && i < nodes.length; i += 1) {
+            var item = items[i];
+            setCellText(nodes[i], item.v);
+            if (baseClass === "viz-cell") {
+                setCellSub(nodes[i], item.sub);
+            }
+            setClass(nodes[i], baseClass + (item.cls ? " " + modifierPrefix + item.cls : ""));
+        }
+    }
+
+    var GROUP_PATCHERS = {
+        array: function (body, group) {
+            patchCells(body, group.cells || [], "viz-cell", "viz-cell--");
+        },
+        stack: function (body, group) {
+            patchCells(body, group.items || [], "viz-cell", "viz-cell--");
+        },
+        queue: function (body, group) {
+            patchCells(body, group.items || [], "viz-cell", "viz-cell--");
+        },
+        frames: function (body, group) {
+            patchCells(body, group.items || [], "viz-frame", "viz-frame--");
+        },
+        table: function (body, group) {
+            var rows = body.querySelectorAll("tbody tr");
+            (group.rows || []).forEach(function (row, r) {
+                if (!rows[r]) return;
+                var cells = rows[r].children;
+                row.forEach(function (cellDef, c) {
+                    if (!cells[c]) return;
+                    var value = (cellDef === null || cellDef === undefined) ? "" : cellDef.v;
+                    cells[c].textContent = value === undefined ? "" : String(value);
+                    setClass(cells[c], cellDef && cellDef.cls ? "viz-cell--" + cellDef.cls : "");
+                });
+            });
+        },
+        graph: function (body, group) {
+            var nodeEls = body.querySelectorAll("g.node");
+            (group.nodes || []).forEach(function (node, i) {
+                if (!nodeEls[i]) return;
+                setClass(nodeEls[i], "node" + (node.cls ? " node--" + node.cls : ""));
+                var subEl = nodeEls[i].querySelector("text.node-sub");
+                if (node.sub === undefined || node.sub === null) {
+                    if (subEl) subEl.parentNode.removeChild(subEl);
+                } else if (subEl) {
+                    if (subEl.textContent !== String(node.sub)) {
+                        subEl.textContent = String(node.sub);
+                    }
+                } else {
+                    var sub = svgEl("text");
+                    sub.setAttribute("x", node.x);
+                    sub.setAttribute("y", node.y + (group.nodeRadius || 20) + 13);
+                    sub.setAttribute("class", "node-sub");
+                    sub.textContent = String(node.sub);
+                    nodeEls[i].appendChild(sub);
+                }
+            });
+            /* 간선은 svg에 line으로 순서대로 추가되고 라벨 text가 섞여 들어가지만
+             * line.edge로 필터하면 group.edges 순서가 그대로 유지된다 */
+            var edgeEls = body.querySelectorAll("line.edge");
+            (group.edges || []).forEach(function (edge, i) {
+                if (!edgeEls[i]) return;
+                var cls = "edge" + (edge.cls ? " edge--" + edge.cls : "");
+                if (edgeEls[i].getAttribute("class") !== cls) {
+                    edgeEls[i].setAttribute("class", cls);
+                }
+            });
+        },
+        note: function (body, group) {
+            if (body.textContent !== String(group.text)) {
+                body.textContent = String(group.text);
+            }
+        }
+    };
+
+    function mountGroup(group) {
+        var renderer = GROUP_RENDERERS[group.type];
+        if (!renderer) return null;
+        var block = el("div");
+        if (group.label) {
+            block.appendChild(el("p", "viz__group-label", group.label));
+        }
+        var body = renderer(group);
+        block.appendChild(body);
+        return { sig: groupSignature(group), block: block, body: body };
+    }
+
     /* ---------- 플레이어 ---------- */
 
     function create(config) {
@@ -253,6 +402,7 @@
         var steps = [];
         var index = 0;
         var timer = null;
+        var mounted = [];
         var speedMs = SPEEDS[1].ms;
         var reducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -331,25 +481,45 @@
             btnPlay.textContent = "▶ 자동 실행";
         }
 
+        function renderView(view) {
+            var groups = (view || []).filter(function (g) {
+                return !!GROUP_RENDERERS[g.type];
+            });
+
+            if (mounted.length !== groups.length) {
+                stage.textContent = "";
+                mounted = [];
+                groups.forEach(function (group) {
+                    var entry = mountGroup(group);
+                    if (!entry) return;
+                    stage.appendChild(entry.block);
+                    mounted.push(entry);
+                });
+                return;
+            }
+
+            groups.forEach(function (group, i) {
+                var sig = groupSignature(group);
+                if (mounted[i].sig !== sig) {
+                    var entry = mountGroup(group);
+                    if (!entry) return;
+                    stage.replaceChild(entry.block, mounted[i].block);
+                    mounted[i] = entry;
+                    return;
+                }
+                var patcher = GROUP_PATCHERS[group.type];
+                if (patcher) patcher(mounted[i].body, group);
+            });
+        }
+
         function renderStep() {
             var step = steps[index];
             if (!step) return;
 
-            stage.textContent = "";
-            (step.view || []).forEach(function (group) {
-                var renderer = GROUP_RENDERERS[group.type];
-                if (!renderer) return;
-                var block = el("div");
-                if (group.label) {
-                    block.appendChild(el("p", "viz__group-label", group.label));
-                }
-                block.appendChild(renderer(group));
-                stage.appendChild(block);
-            });
+            renderView(step.view);
 
             caption.textContent = "";
-            var stepTag = el("strong", null, "단계 " + (index + 1) + ". ");
-            caption.appendChild(stepTag);
+            caption.appendChild(el("strong", null, "단계 " + (index + 1) + ". "));
             caption.appendChild(document.createTextNode(step.caption || ""));
 
             stats.textContent = "";
@@ -381,6 +551,8 @@
             if (!steps.length) {
                 steps = [{ caption: "표시할 단계가 없습니다.", view: [] }];
             }
+            mounted = [];
+            stage.textContent = "";
             index = 0;
             renderStep();
         }
