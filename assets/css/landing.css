@@ -1,0 +1,438 @@
+/* ============================================================
+   랜딩 페이지
+   시그니처: 히어로의 "라이브 선택 정렬 스트립" —
+   사이트가 가르치는 것(단계별 알고리즘 실행)을
+   첫 화면에서 실제로 동작시켜 보여준다.
+   ============================================================ */
+
+.hero {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: clamp(36px, 7vw, 80px) 20px 30px;
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: clamp(24px, 5vw, 60px);
+    align-items: center;
+}
+
+@media (max-width: 900px) {
+    .hero {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+.hero__eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--brand);
+    letter-spacing: 0.05em;
+    margin: 0 0 10px;
+}
+
+.hero h1 {
+    font-size: clamp(1.9rem, 4.6vw, 3rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    margin: 0 0 14px;
+}
+
+.hero h1 .accent {
+    color: var(--brand);
+}
+
+.hero__lead {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 54ch;
+    margin: 0 0 22px;
+}
+
+.hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+/* ---------- 히어로 라이브 정렬 스트립 ---------- */
+.hero-viz {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-l);
+    box-shadow: var(--shadow-card);
+    padding: 22px;
+}
+
+.hero-viz__label {
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--ink-faint);
+    margin: 0 0 14px;
+}
+
+.hero-viz__bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    height: 130px;
+}
+
+.hero-viz__bar {
+    flex: 1;
+    border-radius: 7px 7px 3px 3px;
+    background: var(--surface-2);
+    border: 2px solid var(--line-strong);
+    transition: height 0.35s ease, background 0.25s ease, border-color 0.25s ease;
+    position: relative;
+    min-width: 20px;
+}
+
+.hero-viz__bar span {
+    position: absolute;
+    bottom: -24px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--ink-faint);
+}
+
+.hero-viz__bar.is-compare {
+    background: var(--state-compare-bg);
+    border-color: var(--state-compare);
+}
+
+.hero-viz__bar.is-min {
+    background: var(--state-visit-bg);
+    border-color: var(--state-visit);
+}
+
+.hero-viz__bar.is-done {
+    background: var(--state-done-bg);
+    border-color: var(--state-done);
+}
+
+.hero-viz__caption {
+    margin: 34px 0 0;
+    font-size: 0.86rem;
+    color: var(--ink-soft);
+    min-height: 44px;
+}
+
+.hero-viz__caption b {
+    color: var(--brand);
+    font-family: var(--font-mono);
+}
+
+/* ---------- 통계 스트립 ---------- */
+.stats-strip {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 10px 20px 26px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+}
+
+@media (max-width: 760px) {
+    .stats-strip {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.stat-tile {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-m);
+    padding: 16px 20px;
+}
+
+.stat-tile__value {
+    font-family: var(--font-mono);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--ink);
+}
+
+.stat-tile__label {
+    font-size: 0.84rem;
+    color: var(--ink-faint);
+}
+
+/* ---------- 학습 방법 안내 ---------- */
+.how-to {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 6px 20px 30px;
+}
+
+.how-to__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+}
+
+@media (max-width: 900px) {
+    .how-to__grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 560px) {
+    .how-to__grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.how-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-m);
+    padding: 18px 20px;
+}
+
+.how-card__step {
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    font-weight: 700;
+    color: var(--brand);
+    display: block;
+    margin-bottom: 6px;
+}
+
+.how-card h3 {
+    margin: 0 0 6px;
+    font-size: 1rem;
+}
+
+.how-card p {
+    margin: 0;
+    font-size: 0.88rem;
+    color: var(--ink-soft);
+}
+
+/* ---------- 전체 진행률 ---------- */
+.overall-progress {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px 26px;
+}
+
+.overall-progress__card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-m);
+    padding: 18px 22px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+}
+
+.overall-progress__text {
+    font-weight: 700;
+}
+
+.overall-progress__text b {
+    color: var(--brand);
+    font-family: var(--font-mono);
+}
+
+.overall-progress .progress-track {
+    flex: 1;
+    min-width: 180px;
+}
+
+/* ---------- 강좌 섹션 ---------- */
+.courses {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 8px 20px 60px;
+}
+
+.courses__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.courses__head h2 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin: 0;
+}
+
+.courses__count {
+    color: var(--ink-faint);
+    font-size: 0.9rem;
+    font-family: var(--font-mono);
+}
+
+/* 검색/필터 */
+.courses__filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 22px;
+}
+
+.courses__search {
+    flex: 1;
+    min-width: 220px;
+    font: inherit;
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: 1.5px solid var(--line-strong);
+    background: var(--surface);
+    color: var(--ink);
+}
+
+.courses__search:focus {
+    border-color: var(--brand);
+    outline: none;
+}
+
+.courses__select {
+    font: inherit;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1.5px solid var(--line-strong);
+    background: var(--surface);
+    color: var(--ink);
+    cursor: pointer;
+}
+
+.courses__empty {
+    display: none;
+    text-align: center;
+    color: var(--ink-faint);
+    padding: 40px 0;
+}
+
+.courses__empty.is-shown {
+    display: block;
+}
+
+/* 카드 그리드 */
+.course-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 18px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.course-card {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-l);
+    box-shadow: var(--shadow-card);
+    padding: 20px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.course-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--brand);
+}
+
+.course-card__top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.course-card__no {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--brand);
+    background: var(--brand-soft);
+    border-radius: 8px;
+    padding: 3px 10px;
+}
+
+.course-card__status {
+    margin-left: auto;
+    font-size: 0.78rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.course-card__status.is-done { color: var(--state-done); }
+.course-card__status.is-started { color: var(--state-compare); }
+.course-card__status.is-new { color: var(--ink-faint); }
+
+.course-card h3 {
+    font-size: 1.08rem;
+    margin: 0;
+    line-height: 1.45;
+}
+
+.course-card h3 a {
+    color: var(--ink);
+    text-decoration: none;
+}
+
+/* 카드 전체 클릭 영역 */
+.course-card h3 a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-l);
+}
+
+.course-card h3 a:hover {
+    color: var(--brand);
+}
+
+.course-card__english {
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    color: var(--ink-faint);
+    margin: 0;
+}
+
+.course-card__desc {
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+    margin: 0;
+    flex: 1;
+}
+
+.course-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    align-items: center;
+}
+
+.course-card__examples {
+    font-size: 0.8rem;
+    color: var(--ink-faint);
+    margin-left: auto;
+    font-family: var(--font-mono);
+}
+
+/* 퀴즈 점수 */
+.course-card__quiz {
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+}
+
+.course-card__quiz b {
+    color: var(--state-done);
+}

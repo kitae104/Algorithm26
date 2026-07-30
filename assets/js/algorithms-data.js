@@ -1,0 +1,176 @@
+/*
+ * 13개 강좌의 단일 데이터 소스.
+ * 랜딩 페이지 카드, 강의 페이지의 이전/다음 링크, 진행률 계산이 모두 이 배열을 사용한다.
+ * 새 강의를 추가할 때는 docs/adding-lessons.md 절차에 따라 이 파일과 data/algorithms.json을 함께 수정한다.
+ */
+window.ALGORITHMS = [
+    {
+        order: 1,
+        id: "algorithm-basics",
+        title: "알고리즘과 효율적인 문제 해결",
+        englishTitle: "Algorithms and Efficient Problem Solving",
+        category: "알고리즘 기초",
+        difficulty: "초급",
+        examples: 9,
+        language: "Java",
+        description:
+            "알고리즘의 의미와 문제 해결 과정, 시간 복잡도와 Big-O를 학습하고 두 가지 데이터 처리 방식의 실행 횟수를 직접 비교합니다.",
+        path: "algorithms/01-algorithm-basics.html"
+    },
+    {
+        order: 2,
+        id: "arrays-and-lists",
+        title: "배열과 리스트를 활용한 데이터 처리",
+        englishTitle: "Data Processing with Arrays and Lists",
+        category: "자료구조",
+        difficulty: "초급",
+        examples: 9,
+        language: "Java",
+        description:
+            "배열과 ArrayList를 순회하며 합계, 평균, 최댓값, 조건 검색, 빈도 계산을 구현하고 성적 분석 프로그램을 완성합니다.",
+        path: "algorithms/02-arrays-and-lists.html"
+    },
+    {
+        order: 3,
+        id: "brute-force-string-hash",
+        title: "완전 탐색과 문자열·해시 처리",
+        englishTitle: "Brute Force, Strings, and Hashing",
+        category: "알고리즘 기초",
+        difficulty: "초급",
+        examples: 9,
+        language: "Java",
+        description:
+            "모든 경우를 확인하는 완전 탐색과 문자열 처리, HashMap과 HashSet을 이용한 빈도 분석을 학습하고 단어 분석 프로그램을 만듭니다.",
+        path: "algorithms/03-brute-force-string-hash.html"
+    },
+    {
+        order: 4,
+        id: "sorting-algorithms",
+        title: "정렬 알고리즘과 객체 정렬",
+        englishTitle: "Sorting Algorithms and Object Sorting",
+        category: "정렬",
+        difficulty: "초급",
+        examples: 10,
+        language: "Java",
+        description:
+            "선택·버블·삽입 정렬의 동작 원리를 단계별로 구현하고 Comparable과 Comparator로 상품 목록을 다중 기준 정렬합니다.",
+        path: "algorithms/04-sorting-algorithms.html"
+    },
+    {
+        order: 5,
+        id: "search-algorithms",
+        title: "순차 탐색과 이진 탐색",
+        englishTitle: "Linear Search and Binary Search",
+        category: "탐색",
+        difficulty: "초급",
+        examples: 11,
+        language: "Java",
+        description:
+            "순차 탐색과 이진 탐색의 범위 축소 과정을 비교하고 도서·재고 검색 프로그램으로 정렬된 데이터의 힘을 확인합니다.",
+        path: "algorithms/05-search-algorithms.html"
+    },
+    {
+        order: 6,
+        id: "stack-and-queue",
+        title: "스택과 큐를 활용한 작업 처리",
+        englishTitle: "Task Processing with Stacks and Queues",
+        category: "자료구조",
+        difficulty: "초급",
+        examples: 11,
+        language: "Java",
+        description:
+            "LIFO 스택과 FIFO 큐의 동작을 구현하고 괄호 검사, 실행 취소, 고객 대기열 기능을 가진 작업 관리 프로그램을 만듭니다.",
+        path: "algorithms/06-stack-and-queue.html"
+    },
+    {
+        order: 7,
+        id: "recursion-and-backtracking",
+        title: "재귀 호출과 백트래킹",
+        englishTitle: "Recursion and Backtracking",
+        category: "탐색",
+        difficulty: "중급",
+        examples: 10,
+        language: "Java",
+        description:
+            "종료 조건과 호출 스택을 이해하고 선택-진행-취소 구조의 백트래킹으로 조합 생성과 미로 탈출 프로그램을 구현합니다.",
+        path: "algorithms/07-recursion-and-backtracking.html"
+    },
+    {
+        order: 8,
+        id: "tree-structures",
+        title: "트리 구조와 트리 순회",
+        englishTitle: "Tree Structures and Tree Traversal",
+        category: "자료구조",
+        difficulty: "중급",
+        examples: 9,
+        language: "Java",
+        description:
+            "루트, 부모·자식, 리프 개념부터 이진 탐색 트리의 삽입·검색과 전위·중위·후위·레벨 순회를 구현하고 조직도를 트리로 표현합니다.",
+        path: "algorithms/08-tree-structures.html"
+    },
+    {
+        order: 9,
+        id: "graph-search",
+        title: "그래프와 DFS·BFS 탐색",
+        englishTitle: "Graphs, DFS, and BFS",
+        category: "그래프",
+        difficulty: "중급",
+        examples: 9,
+        language: "Java",
+        description:
+            "인접 리스트와 방문 배열로 그래프를 표현하고 DFS와 BFS로 친구 관계, 네트워크 연결 상태를 탐색합니다.",
+        path: "algorithms/09-graph-search.html"
+    },
+    {
+        order: 10,
+        id: "greedy-algorithms",
+        title: "그리디 알고리즘",
+        englishTitle: "Greedy Algorithms",
+        category: "설계 기법",
+        difficulty: "중급",
+        examples: 11,
+        language: "Java",
+        description:
+            "매 순간 최선을 선택하는 그리디 전략으로 동전 교환과 회의실 배정을 해결하고 그리디가 실패하는 사례도 분석합니다.",
+        path: "algorithms/10-greedy-algorithms.html"
+    },
+    {
+        order: 11,
+        id: "dynamic-programming",
+        title: "동적 계획법",
+        englishTitle: "Dynamic Programming",
+        category: "설계 기법",
+        difficulty: "중급",
+        examples: 9,
+        language: "Java",
+        description:
+            "중복 계산을 메모이제이션과 DP 테이블로 제거하고 점화식을 세워 계단 오르기와 배낭 문제 기초를 해결합니다.",
+        path: "algorithms/11-dynamic-programming.html"
+    },
+    {
+        order: 12,
+        id: "shortest-path",
+        title: "최단 경로 알고리즘",
+        englishTitle: "Shortest Path Algorithms",
+        category: "그래프",
+        difficulty: "중급",
+        examples: 10,
+        language: "Java",
+        description:
+            "거리 배열과 우선순위 큐로 다익스트라 알고리즘을 구현하고 캠퍼스 건물 사이의 최소 이동 비용과 경로를 계산합니다.",
+        path: "algorithms/12-shortest-path.html"
+    },
+    {
+        order: 13,
+        id: "algorithm-project",
+        title: "알고리즘 종합 프로젝트",
+        englishTitle: "Algorithm Integration Project",
+        category: "프로젝트",
+        difficulty: "중급",
+        examples: 9,
+        language: "Java",
+        description:
+            "요구사항 분석부터 자료구조 선택, 알고리즘 결합, 테스트까지 배운 내용 전체를 사용해 실전 프로그램을 설계하고 완성합니다.",
+        path: "algorithms/13-algorithm-project.html"
+    }
+];

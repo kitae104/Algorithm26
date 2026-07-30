@@ -1,0 +1,125 @@
+/* ============================================================
+   코드 카드 / 실행 결과 / 문법 강조
+   ============================================================ */
+
+.code-card {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-m);
+    overflow: hidden;
+    margin: 18px 0;
+    background: var(--code-bg);
+    box-shadow: var(--shadow-card);
+}
+
+.code-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 9px 14px;
+    background: rgba(255, 255, 255, 0.06);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.code-card__info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.code-card__language {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--code-bg);
+    background: var(--code-number);
+    border-radius: 5px;
+    padding: 2px 8px;
+    flex-shrink: 0;
+}
+
+.code-card--output .code-card__language {
+    background: var(--code-type);
+}
+
+.code-card__filename {
+    font-family: var(--font-mono);
+    font-size: 0.84rem;
+    font-weight: 500;
+    color: var(--code-ink);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.copy-code-button {
+    flex-shrink: 0;
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 700;
+    font-family: var(--font-body);
+    color: var(--code-ink);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 7px;
+    padding: 5px 12px;
+    cursor: pointer;
+    transition: background 0.12s ease;
+}
+
+.copy-code-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.copy-code-button.is-copied {
+    color: #0b1017;
+    background: var(--state-done);
+    border-color: transparent;
+}
+
+.code-card pre {
+    margin: 0;
+    padding: 16px 18px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    tab-size: 4;
+}
+
+.code-card pre code {
+    font-family: var(--font-mono);
+    font-size: 0.86rem;
+    line-height: 1.65;
+    color: var(--code-ink);
+    background: transparent;
+    border: 0;
+    padding: 0;
+    white-space: pre;
+    display: block;
+}
+
+/* 커스텀 Java 문법 강조 (code-copy.js가 span을 주입) */
+.tok-kw { color: var(--code-keyword); font-weight: 600; }
+.tok-str { color: var(--code-string); }
+.tok-num { color: var(--code-number); }
+.tok-com { color: var(--code-comment); font-style: italic; }
+.tok-type { color: var(--code-type); }
+.tok-ann { color: var(--code-number); }
+
+/* 코드 diff 강조: 이전 단계 대비 새로 추가된 줄 */
+.code-card .line-added {
+    display: inline-block;
+    width: 100%;
+    background: rgba(52, 211, 153, 0.13);
+    border-left: 3px solid var(--state-done);
+    margin-left: -18px;
+    padding-left: 15px;
+}
+
+/* 코드 안 TODO 강조 */
+.tok-todo {
+    color: var(--state-compare);
+    font-weight: 700;
+}

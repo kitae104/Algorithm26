@@ -1,0 +1,1905 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>11강. 동적 계획법 — 초보 개발자를 위한 필수 알고리즘</title>
+    <meta name="description" content="재귀의 중복 계산을 실측으로 확인하고, 점화식·메모이제이션·DP 테이블로 피보나치와 계단 오르기를 해결합니다. 그리디가 실패한 동전 문제를 DP로 최적 해결합니다.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect x='8' y='55' width='20' height='38' rx='5' fill='%23e28800'/><rect x='40' y='25' width='20' height='68' rx='5' fill='%232b50e0'/><rect x='72' y='40' width='20' height='53' rx='5' fill='%230e9f6e'/></svg>">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+    <link rel="stylesheet" href="../assets/css/common.css">
+    <link rel="stylesheet" href="../assets/css/lesson.css">
+    <link rel="stylesheet" href="../assets/css/code.css">
+    <link rel="stylesheet" href="../assets/css/visualization.css">
+    <link rel="stylesheet" href="../assets/css/quiz.css">
+    <link rel="stylesheet" href="../assets/css/print.css">
+    <script src="../assets/js/theme.js"></script>
+</head>
+<body data-lesson-id="dynamic-programming" data-lesson-order="11">
+    <a class="skip-link" href="#sec-intro">본문으로 건너뛰기</a>
+
+    <header class="site-header" data-site-header></header>
+
+    <div class="lesson-layout">
+        <!-- 강의 헤더 -->
+        <section class="lesson-hero" aria-labelledby="lesson-title">
+            <p class="lesson-hero__eyebrow">LESSON 11 / 13</p>
+            <h1 id="lesson-title">동적 계획법</h1>
+            <p class="lesson-hero__english">Dynamic Programming</p>
+            <div class="lesson-hero__meta">
+                <span class="badge badge--category">설계 기법</span>
+                <span class="badge badge--intermediate">중급</span>
+                <span class="badge">Java 17+</span>
+            </div>
+            <p class="lesson-hero__desc">
+                7강의 재귀 피보나치는 n=35에서 약 3천만 번 호출됩니다. 같은 계산을 수백만 번 반복하기 때문입니다.
+                이번 강의에서는 "한 번 구한 답은 적어 두고 다시 쓴다"는 단순한 아이디어로
+                이 폭발을 잠재우는 <strong>동적 계획법(DP)</strong>을 배웁니다.
+                점화식을 세우는 3단계, 메모이제이션(탑다운)과 테이블(바텀업),
+                그리고 10강에서 그리디가 실패했던 동전 문제를 DP로 최적 해결하는 것까지 다룹니다.
+            </p>
+            <div class="lesson-hero__actions">
+                <button type="button" class="button" data-print="student">🖨 학생용 인쇄 (정답 숨김)</button>
+                <button type="button" class="button" data-print="instructor">🖨 교수자용 인쇄 (정답 포함)</button>
+            </div>
+        </section>
+
+        <!-- 내부 목차 (common.js가 자동 생성) -->
+        <nav class="lesson-toc" aria-label="이 강의의 목차">
+            <p class="lesson-toc__title">이 강의의 목차</p>
+            <ol id="lesson-toc-list"></ol>
+        </nav>
+
+        <div class="lesson-body">
+
+            <!-- 1. 강의 소개 -->
+            <section class="lesson-section" id="sec-intro" aria-labelledby="h-intro">
+                <h2 id="h-intro" data-toc-label="강의 소개"><span class="section-no">01</span>강의 소개</h2>
+                <p>
+                    지금까지 배운 알고리즘은 대부분 "어떤 자료구조를 쓰는가"의 이야기였습니다.
+                    이번 강의부터는 <strong>"문제를 어떻게 설계하는가"</strong>의 이야기입니다.
+                    동적 계획법(Dynamic Programming, DP)은 특정 자료구조가 아니라 <strong>설계 기법</strong>입니다.
+                    큰 문제를 작은 문제로 나누고, <strong>작은 문제의 답을 저장해서 다시 쓰는</strong> 것이 전부입니다.
+                </p>
+                <p>
+                    출발점은 7강에서 이미 만난 재귀 피보나치입니다.
+                    이 코드가 왜 느린지 <strong>호출 횟수를 실제로 세어</strong> 확인하고(n=35에서 29,860,703번!),
+                    답을 저장하는 것만으로 호출이 69번으로 줄어드는 것을 직접 봅니다.
+                    그다음 재귀 없이 표를 채우는 <strong>바텀업 테이블</strong>로 바꾸고,
+                    같은 요령으로 새 문제(계단 오르기)의 <strong>점화식을 스스로 세우는 3단계</strong>를 연습합니다.
+                    마지막에는 10강에서 그리디가 틀렸던 동전 문제를 DP로 최적 해결하며 두 기법의 차이를 확인합니다.
+                </p>
+            </section>
+
+            <!-- 2. 학습 목표 -->
+            <section class="lesson-section" id="sec-objectives" aria-labelledby="h-objectives">
+                <h2 id="h-objectives" data-toc-label="학습 목표"><span class="section-no">02</span>학습 목표</h2>
+                <p>이 강의를 마치면 다음을 할 수 있습니다.</p>
+                <ul class="objective-list">
+                    <li>학생은 순수 재귀 피보나치의 호출 횟수를 실측하여 중복 부분 문제가 무엇인지 예를 들어 설명할 수 있다.</li>
+                    <li>학생은 DP가 성립하는 두 조건(중복 부분 문제, 최적 부분 구조)을 자기 말로 설명할 수 있다.</li>
+                    <li>학생은 새 문제에 대해 점화식을 세우는 3단계(정의 → 기저 → 전이)를 적용하여 dp[i]를 말로 정의하고 식을 쓸 수 있다.</li>
+                    <li>학생은 같은 점화식을 메모이제이션(탑다운)과 테이블(바텀업) 두 방식의 Java 코드로 구현할 수 있다.</li>
+                    <li>학생은 그리디가 실패하는 동전 문제를 DP 테이블로 풀어 최소 동전 개수와 조합을 구할 수 있다.</li>
+                    <li>학생은 DP 테이블을 변수 2개로 줄이는 공간 최적화를 적용하고 그 조건을 설명할 수 있다.</li>
+                </ul>
+            </section>
+
+            <!-- 3. 선수 지식 -->
+            <section class="lesson-section" id="sec-prereq" aria-labelledby="h-prereq">
+                <h2 id="h-prereq" data-toc-label="선수 지식"><span class="section-no">03</span>선수 지식</h2>
+                <p>이 강의는 다음 내용을 이미 알고 있다고 가정합니다.</p>
+                <div class="table-scroll">
+                    <table class="data-table">
+                        <thead>
+                            <tr><th scope="col">항목</th><th scope="col">배운 강의</th><th scope="col">이 강의에서 쓰이는 곳</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>배열 선언·인덱스 접근</td><td>2강</td><td>DP 테이블 <code>long[] dp = new long[n + 1]</code></td></tr>
+                            <tr><td>연산 카운터</td><td>1강</td><td>재귀 호출 횟수 실측 <code>callCount++</code></td></tr>
+                            <tr><td>재귀와 기저 조건</td><td>7강</td><td>순수 재귀·메모이제이션 구현</td></tr>
+                            <tr><td>완전 탐색</td><td>3강</td><td>최종 문제의 DP 결과 검증</td></tr>
+                            <tr><td>그리디 선택과 반례</td><td>10강</td><td>동전 문제에서 그리디 vs DP 비교</td></tr>
+                            <tr><td><code>Math.min / Math.max</code></td><td>Java 기초</td><td>전이에서 더 좋은 선택 고르기</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 4. 실제 문제 상황 -->
+            <section class="lesson-section" id="sec-problem" aria-labelledby="h-problem">
+                <h2 id="h-problem" data-toc-label="실제 문제 상황"><span class="section-no">04</span>실제 문제 상황</h2>
+                <p>
+                    여러분은 모바일 게임 개발팀에서 이벤트 기능을 맡았습니다.
+                    캐릭터가 n칸짜리 계단을 <strong>한 번에 1칸 또는 2칸씩</strong> 올라가는데,
+                    "계단을 오르는 서로 다른 방법의 수"만큼 보상 경우의 수를 미리 계산해 둬야 합니다.
+                    7강에서 배운 재귀로 금방 구현했고, 테스트 서버의 계단 10칸에서는 잘 돌았습니다.
+                    그런데 이벤트 맵의 계단이 50칸으로 늘어나자 <strong>프로그램이 몇 분이 지나도 끝나지 않습니다</strong>.
+                    로그를 찍어 보니 같은 함수가 같은 인자로 <strong>수백억 번</strong> 호출되고 있었습니다.
+                    선배가 코드를 보더니 한마디 합니다. <strong>"한 번 구한 답을 왜 버려? 적어 두고 다시 써."</strong>
+                </p>
+                <div class="note-box">
+                    <span class="note-box__title">오늘의 핵심 질문</span>
+                    <p>재귀가 <strong>같은 작은 문제를 반복해서</strong> 푼다면 —
+                    작은 문제의 답을 <strong>저장해 두고 재사용</strong>하면 얼마나 빨라질까?</p>
+                </div>
+            </section>
+
+            <!-- 5. 사람이 직접 해결해 보기 -->
+            <section class="lesson-section" id="sec-hand" aria-labelledby="h-hand">
+                <h2 id="h-hand" data-toc-label="사람이 직접 해결해 보기"><span class="section-no">05</span>사람이 직접 해결해 보기</h2>
+                <p>
+                    코드를 만지기 전에, 작은 입력으로 두 가지를 손으로 확인합니다.
+                    (1) 재귀가 정말 같은 계산을 반복하는가? (2) 답을 적어 두면 정말 줄어드는가?
+                </p>
+
+                <h3>먼저 — 재귀 피보나치의 호출 나무 그리기</h3>
+                <div class="hand-step">
+                    <span class="hand-step__label">STEP 1</span>
+                    <p>
+                        종이에 fibo(5)의 호출 나무를 그려 봅시다. fibo(5)는 fibo(4)와 fibo(3)을 부르고,
+                        fibo(4)는 다시 fibo(3)과 fibo(2)를 부릅니다. 끝까지 그려 보세요.
+                    </p>
+                    <details class="reveal-box">
+                        <summary>질문: fibo(3)은 몇 번, fibo(2)는 몇 번 등장하나요?</summary>
+                        <div class="reveal-box__content">
+                            <p>fibo(3)은 <strong>2번</strong>(fibo(5)와 fibo(4)가 각각 부름),
+                            fibo(2)는 <strong>3번</strong>, fibo(1)은 <strong>5번</strong> 등장합니다.
+                            전체 호출은 15번입니다. <strong>같은 문제를 여러 번 다시 푸는 것</strong> —
+                            이것이 오늘의 적, "중복 부분 문제"입니다.</p>
+                        </div>
+                    </details>
+                </div>
+                <div class="hand-step">
+                    <span class="hand-step__label">STEP 2</span>
+                    <p>
+                        이번에는 수첩을 하나 준비합니다. fibo(2)를 처음 계산하면 수첩에 "fibo(2)=1"이라고 적고,
+                        다음부터 fibo(2)가 필요하면 <strong>계산하지 않고 수첩을 봅니다</strong>. 다시 나무를 그려 보세요.
+                    </p>
+                    <details class="reveal-box">
+                        <summary>질문: 수첩을 쓰면 호출이 몇 번으로 줄어드나요?</summary>
+                        <div class="reveal-box__content">
+                            <p><strong>9번</strong>으로 줄어듭니다. 각 fibo(k)를 실제로 계산하는 것은 딱 한 번씩이고,
+                            나머지는 수첩을 열어 보는 것뿐이기 때문입니다.
+                            이 수첩이 코드에서는 배열 <code>memo</code>가 되고, 이 기법의 이름이 <strong>메모이제이션</strong>입니다.</p>
+                        </div>
+                    </details>
+                </div>
+
+                <h3>다음 — 계단 4칸을 손으로 오르기</h3>
+                <div class="hand-step">
+                    <span class="hand-step__label">STEP 3</span>
+                    <p>
+                        계단 4칸을 1칸/2칸 걸음으로 오르는 방법을 전부 나열해 봅시다.
+                        (1+1+1+1), (1+1+2), (1+2+1), (2+1+1), (2+2) — 모두 <strong>5가지</strong>입니다.
+                    </p>
+                    <details class="reveal-box">
+                        <summary>질문: 5가지를 "마지막 걸음"으로 나누면 어떻게 묶이나요?</summary>
+                        <div class="reveal-box__content">
+                            <p>마지막 걸음이 <strong>1칸</strong>인 경우: (1+1+1+<u>1</u>), (1+2+<u>1</u>), (2+1+<u>1</u>) — 3가지.
+                            앞부분은 정확히 "3칸을 오르는 방법"입니다.<br>
+                            마지막 걸음이 <strong>2칸</strong>인 경우: (1+1+<u>2</u>), (2+<u>2</u>) — 2가지.
+                            앞부분은 정확히 "2칸을 오르는 방법"입니다.<br>
+                            즉 <strong>4칸의 답(5) = 3칸의 답(3) + 2칸의 답(2)</strong>. 큰 문제의 답이 작은 문제의 답으로 조립됩니다!</p>
+                        </div>
+                    </details>
+                </div>
+                <div class="hand-step">
+                    <span class="hand-step__label">STEP 4</span>
+                    <p>
+                        이 규칙이 항상 성립한다면, 나열하지 않고도 표를 채울 수 있습니다.
+                        1칸: 1가지, 2칸: 2가지에서 시작해 "앞의 두 칸을 더하기"만 반복해 8칸까지 채워 보세요.
+                    </p>
+                    <details class="reveal-box">
+                        <summary>질문: 표를 채우면 8칸의 답은 얼마인가요?</summary>
+                        <div class="reveal-box__content">
+                            <p>1, 2, 3, 5, 8, 13, 21, <strong>34</strong>. 즉 8칸은 34가지입니다.
+                            나열은 34개를 다 써야 하지만, 표는 <strong>덧셈 6번</strong>으로 끝났습니다.
+                            이 "표 채우기"가 바로 바텀업 DP입니다. 아래 시각화와 코드에서 똑같이 확인합니다.</p>
+                        </div>
+                    </details>
+                </div>
+            </section>
+
+            <!-- 6. 핵심 개념 -->
+            <section class="lesson-section" id="sec-concepts" aria-labelledby="h-concepts">
+                <h2 id="h-concepts" data-toc-label="핵심 개념"><span class="section-no">06</span>핵심 개념</h2>
+
+                <h3>동적 계획법(DP)이란?</h3>
+                <p>
+                    동적 계획법은 <strong>큰 문제를 작은 부분 문제로 나누고, 각 부분 문제의 답을 한 번만 계산해
+                    저장한 뒤 재사용하는 설계 기법</strong>입니다.
+                    이름의 "동적(dynamic)"에 특별한 뜻은 없습니다 — 핵심은 <strong>"저장하고 재사용한다"</strong>뿐입니다.
+                    정렬이나 스택 같은 특정 알고리즘·자료구조가 아니라, 문제에 접근하는 <strong>방법</strong>이라는 점에서
+                    10강의 그리디와 같은 "설계 기법" 분류에 속합니다.
+                </p>
+
+                <h3>DP가 통하는 두 가지 조건</h3>
+                <div class="table-scroll">
+                    <table class="data-table">
+                        <thead>
+                            <tr><th scope="col">조건</th><th scope="col">뜻</th><th scope="col">방금 손 풀이에서</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>중복 부분 문제</strong><br>(Overlapping Subproblems)</td>
+                                <td>같은 작은 문제가 여러 번 다시 등장한다</td>
+                                <td>fibo(5)의 호출 나무에서 fibo(3)이 2번, fibo(2)가 3번 등장</td>
+                            </tr>
+                            <tr>
+                                <td><strong>최적 부분 구조</strong><br>(Optimal Substructure)</td>
+                                <td>큰 문제의 (최적) 답을 작은 문제의 (최적) 답으로 조립할 수 있다</td>
+                                <td>계단 4칸의 답 = 3칸의 답 + 2칸의 답</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p>
+                    중복이 없다면 저장해 봐야 다시 쓸 일이 없고(그냥 분할 정복),
+                    조립이 안 된다면 작은 답을 모아도 큰 답이 안 됩니다.
+                    <strong>두 조건이 모두 성립할 때 DP가 위력을 발휘합니다.</strong>
+                </p>
+
+                <h3>점화식 — DP의 설계도 (코드보다 먼저!)</h3>
+                <p>
+                    "작은 문제의 답으로 큰 문제의 답을 만드는 규칙"을 식으로 적은 것이 <strong>점화식</strong>입니다.
+                    피보나치의 정의 자체가 점화식입니다: <strong>F(n) = F(n-1) + F(n-2)</strong>, 그리고 F(0) = 0, F(1) = 1.
+                </p>
+                <p>
+                    계단 오르기는 정의가 식으로 주어지지 않으므로 <strong>우리가 유도</strong>해야 합니다.
+                    손 풀이 STEP 3의 논리를 그대로 일반화하면 됩니다.
+                    n칸에 도착하는 <strong>마지막 걸음</strong>은 반드시 1칸 아니면 2칸입니다.
+                    마지막이 1칸이면 그 앞은 "n-1칸을 오르는 모든 방법", 마지막이 2칸이면 "n-2칸을 오르는 모든 방법"이고,
+                    두 묶음은 서로 겹치지 않습니다. 따라서:
+                </p>
+                <div class="note-box note-box--tip">
+                    <span class="note-box__title">계단 오르기의 점화식</span>
+                    <p><strong>dp[n] = dp[n-1] + dp[n-2]</strong> &nbsp;(단, dp[1] = 1, dp[2] = 2)</p>
+                    <p>dp[n]은 "n칸 계단을 오르는 방법의 수". 이 식이 확정되면 구현은 옮겨 적기에 가깝습니다.
+                    <strong>DP 문제의 승부는 코드가 아니라 점화식에서 납니다.</strong></p>
+                </div>
+
+                <h3>점화식을 세우는 3단계</h3>
+                <ol>
+                    <li><strong>정의</strong> — <code>dp[i]</code>가 무엇인지 <strong>완전한 한국어 문장</strong>으로 적는다.
+                        (예: "dp[i] = i칸 계단을 오르는 방법의 수") 여기가 모호하면 다음 단계가 전부 무너집니다.</li>
+                    <li><strong>기저 조건</strong> — 더 쪼갤 수 없는 가장 작은 문제의 답을 직접 적는다.
+                        (예: dp[1] = 1, dp[2] = 2) 7강 재귀의 기저 조건과 같은 역할입니다.</li>
+                    <li><strong>전이(점화식)</strong> — dp[i]를 <strong>이미 구한 앞의 답들</strong>로 만드는 규칙을 적는다.
+                        (예: dp[i] = dp[i-1] + dp[i-2]) "마지막 선택이 무엇이었나?"를 나눠 보는 것이 가장 흔한 요령입니다.</li>
+                </ol>
+
+                <h3>같은 점화식, 두 가지 구현 — 메모이제이션 vs 타뷸레이션</h3>
+                <p>점화식이 정해지면 구현 방향은 두 가지입니다. 위에서 내려가며 필요할 때 계산하거나, 아래에서 올라가며 미리 다 채우거나.</p>
+                <div class="table-scroll">
+                    <table class="data-table">
+                        <thead>
+                            <tr><th scope="col">구분</th><th scope="col">메모이제이션 (탑다운)</th><th scope="col">타뷸레이션 (바텀업)</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>방향</td><td>큰 문제 → 작은 문제 (필요한 것만)</td><td>작은 문제 → 큰 문제 (차례로 전부)</td></tr>
+                            <tr><td>구현 형태</td><td>재귀 + 저장 배열(<code>memo</code>)</td><td>반복문 + 테이블(<code>dp</code>)</td></tr>
+                            <tr><td>계산 범위</td><td>실제로 필요한 부분 문제만 계산</td><td>기저부터 목표까지 모든 칸을 계산</td></tr>
+                            <tr><td>호출 스택</td><td>재귀 깊이만큼 사용 (아주 큰 n에서는 StackOverflow 위험)</td><td>사용하지 않음 (반복문)</td></tr>
+                            <tr><td>코드 느낌</td><td>점화식 정의를 거의 그대로 옮김 — 직관적</td><td>채우는 순서를 직접 정해야 함 — 대신 빠르고 안전</td></tr>
+                            <tr><td>이 강의에서</td><td>구현 2단계 (Step2)</td><td>구현 3단계 (Step3) 이후 기본 방식</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>그리디(10강)와 DP의 차이</h3>
+                <p>
+                    그리디는 매 순간 <strong>하나의 선택을 확정</strong>하고 되돌리지 않습니다.
+                    DP는 각 부분 문제에서 <strong>가능한 모든 선택을 점화식으로 비교</strong>한 뒤 가장 좋은 답만 기록합니다.
+                    동전 문제로 말하면 — 그리디는 "일단 100원!"이지만,
+                    DP의 점화식 <code>dp[금액] = min(dp[금액 - 동전] + 1)</code>은
+                    <strong>모든 동전을 다 넣어 보고</strong> 최소를 고릅니다.
+                    그래서 그리디가 실패하는 동전 {1, 60, 100}에서도 DP는 항상 최적입니다.
+                    (16번 응용 섹션에서 실측으로 확인합니다.)
+                </p>
+            </section>
+
+            <!-- 7. 단계별 동작 과정 -->
+            <section class="lesson-section" id="sec-steps" aria-labelledby="h-steps">
+                <h2 id="h-steps" data-toc-label="단계별 동작 과정"><span class="section-no">07</span>단계별 동작 과정</h2>
+                <p>
+                    계단 오르기 DP 테이블이 채워지는 과정을 단계별로 봅니다.
+                    <strong>다음 단계 ▶</strong> 버튼으로 진행하세요.
+                    지금 계산 중인 칸은 <strong>파란색(현재)</strong>,
+                    점화식이 참조하는 앞의 두 칸은 <strong>앰버색(참조)</strong>,
+                    값이 확정된 칸은 <strong>초록색(확정)</strong>으로 표시됩니다.
+                </p>
+                <div id="viz-dp-table" aria-label="계단 오르기 DP 테이블이 채워지는 과정 시각화"></div>
+                <p>
+                    매 단계에서 하는 일은 단 하나 — <strong>이미 확정된 두 칸을 더해 다음 칸을 채우는 것</strong>입니다.
+                    재귀처럼 위에서 내려갔다 올라오는 여행이 없고, 왼쪽에서 오른쪽으로 한 번 지나가면 끝입니다.
+                    이것이 손 풀이 STEP 4의 "표 채우기"이고, 구현 3단계의 코드와 정확히 같은 동작입니다.
+                </p>
+            </section>
+
+            <!-- 8. 의사코드 -->
+            <section class="lesson-section" id="sec-pseudo" aria-labelledby="h-pseudo">
+                <h2 id="h-pseudo" data-toc-label="의사코드"><span class="section-no">08</span>의사코드</h2>
+                <p>점화식 3단계를 그대로 의사코드로 옮깁니다. 두 구현 방향을 나란히 봅니다.</p>
+
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Pseudo</span>
+                            <strong class="code-card__filename">방향 1 — 메모이제이션 (탑다운)</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-pseudo-memo" aria-label="메모이제이션 의사코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-pseudo-memo">알고리즘 Ways(n)                      // dp 정의: n칸을 오르는 방법의 수
+    n이 1이면 1을 반환한다             // 기저 조건
+    n이 2이면 2를 반환한다
+    memo[n]에 답이 있으면 그것을 반환한다   // 저장된 답 재사용 (중복 계산 제거)
+    memo[n] ← Ways(n-1) + Ways(n-2)   // 전이(점화식) 결과를 저장
+    memo[n]을 반환한다</code></pre>
+                </article>
+
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Pseudo</span>
+                            <strong class="code-card__filename">방향 2 — 타뷸레이션 (바텀업)</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-pseudo-table" aria-label="타뷸레이션 의사코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-pseudo-table">알고리즘 WaysByTable(n)
+    dp ← 크기 n+1의 표
+    dp[1] ← 1                         // 기저 조건을 표에 먼저 적는다
+    dp[2] ← 2
+    i를 3부터 n까지 반복:
+        dp[i] ← dp[i-1] + dp[i-2]     // 전이: 이미 채운 두 칸을 더한다
+    dp[n]을 반환한다                   // 표의 마지막 칸이 최종 답</code></pre>
+                </article>
+
+                <p>
+                    두 의사코드의 <strong>점화식은 완전히 같습니다</strong>. 다른 것은 계산 순서뿐입니다.
+                    탑다운은 "필요하면 내려가서 구해 오기", 바텀업은 "아래부터 미리 다 채워 두기"입니다.
+                </p>
+            </section>
+
+            <!-- 9. 점진적 Java 구현 -->
+            <section class="lesson-section" id="sec-impl" aria-labelledby="h-impl">
+                <h2 id="h-impl" data-toc-label="점진적 Java 구현"><span class="section-no">09</span>점진적 Java 구현</h2>
+                <p>
+                    완성 코드를 한 번에 쓰지 않습니다.
+                    <strong>문제를 실측 → 저장 추가(메모) → 반복문으로 전환(테이블) → 새 문제에 적용</strong>
+                    순서로, 매 단계에서 직전 단계와의 차이를 확인하며 나아갑니다.
+                </p>
+
+                <h3>구현 1단계 — 순수 재귀의 호출 횟수 실측</h3>
+                <p>
+                    7강의 재귀 피보나치에 1강의 연산 카운터를 붙입니다.
+                    "느리다더라"가 아니라 <strong>몇 번 호출되는지 숫자로</strong> 확인하는 것이 목적입니다.
+                </p>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">Step1FibonacciNaive.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-step1" aria-label="Step1FibonacciNaive.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-step1" class="language-java">public class Step1FibonacciNaive {
+
+    /** 재귀 호출 횟수 카운터 (1강의 연산 카운터를 재귀에 적용) */
+    static long callCount = 0;
+
+    /** 순수 재귀 피보나치: 점화식 F(n) = F(n-1) + F(n-2)를 그대로 옮긴 코드 */
+    static long fibo(int n) {
+        callCount++;                        // 호출될 때마다 1 증가
+        if (n &lt;= 1) {
+            return n;                       // 기저 조건: F(0) = 0, F(1) = 1
+        }
+        return fibo(n - 1) + fibo(n - 2);   // 점화식(전이): 두 작은 문제의 답을 더한다
+    }
+
+    public static void main(String[] args) {
+        int[] sizes = {10, 20, 30, 35};
+
+        System.out.println("n    | fibo(n)    | 재귀 호출 횟수");
+        System.out.println("-----+------------+---------------");
+
+        for (int n : sizes) {
+            callCount = 0;                  // 매번 카운터를 초기화한다
+            long result = fibo(n);
+            System.out.printf("%-4d | %-10d | %,d%n", n, result, callCount);
+        }
+
+        System.out.println();
+        System.out.println("n이 5 커질 때마다 호출 횟수가 약 11배씩 늘어난다.");
+        System.out.println("같은 fibo(k)를 몇 번이고 다시 계산하기 때문이다 — 중복 부분 문제!");
+    }
+}</code></pre>
+                </article>
+                <article class="code-card code-card--output">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">출력</span>
+                            <strong class="code-card__filename">실행 결과</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="out-step1" aria-label="Step1 실행 결과 복사">복사</button>
+                    </header>
+                    <pre><code id="out-step1">n    | fibo(n)    | 재귀 호출 횟수
+-----+------------+---------------
+10   | 55         | 177
+20   | 6765       | 21,891
+30   | 832040     | 2,692,537
+35   | 9227465    | 29,860,703
+
+n이 5 커질 때마다 호출 횟수가 약 11배씩 늘어난다.
+같은 fibo(k)를 몇 번이고 다시 계산하기 때문이다 — 중복 부분 문제!</code></pre>
+                </article>
+                <div class="note-box note-box--warn">
+                    <span class="note-box__title">실측이 말해 주는 것</span>
+                    <p>n이 10 → 20 → 30으로 커질 때 호출은 177 → 21,891 → 2,692,537번 — 약 <strong>123배씩</strong> 폭발합니다.
+                    이런 증가는 O(2ⁿ)에 가깝습니다. n=50이면 약 <strong>407억 번</strong>이라 사실상 끝나지 않습니다.
+                    문제 상황에서 프로그램이 멈춘 이유가 바로 이것입니다.</p>
+                </div>
+
+                <h3>구현 2단계 — 메모이제이션: 저장 배열 추가 (탑다운)</h3>
+                <p>
+                    1단계 코드에 달라지는 것은 <strong>배열 <code>memo</code>와 두 줄</strong>뿐입니다.
+                    답이 저장돼 있으면 즉시 반환하고, 없으면 계산한 뒤 저장합니다. 손 풀이 STEP 2의 "수첩" 그대로입니다.
+                </p>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">Step2FibonacciMemo.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-step2" aria-label="Step2FibonacciMemo.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-step2" class="language-java">public class Step2FibonacciMemo {
+
+    /** 재귀 호출 횟수 카운터 */
+    static long callCount = 0;
+
+    /** memo[k] = 이미 계산한 fibo(k)의 답 (0이면 아직 계산 전) */
+    static long[] memo;
+
+    /** 메모이제이션(탑다운): 계산한 답을 저장하고, 두 번째부터는 즉시 꺼내 쓴다 */
+    static long fibo(int n) {
+        callCount++;
+        if (n &lt;= 1) {
+            return n;                       // 기저 조건: F(0) = 0, F(1) = 1
+        }
+        if (memo[n] != 0) {
+            return memo[n];                 // 이미 계산한 답 → 다시 계산하지 않는다
+        }
+        memo[n] = fibo(n - 1) + fibo(n - 2);   // 점화식의 결과를 저장한 뒤
+        return memo[n];                        // 반환한다
+    }
+
+    /** 순수 재귀였다면 필요한 호출 횟수: 2 x F(n+1) - 1 (Step1의 실측값과 같은 식) */
+    static long naiveCallCount(int n) {
+        long prev = 0, curr = 1;            // F(0), F(1)
+        for (int i = 2; i &lt;= n + 1; i++) {
+            long next = prev + curr;
+            prev = curr;
+            curr = next;
+        }
+        return 2 * curr - 1;                // curr = F(n+1)
+    }
+
+    public static void main(String[] args) {
+        int[] sizes = {10, 20, 30, 35, 50};
+
+        System.out.println("n    | fibo(n)        | 메모 호출 횟수 | 순수 재귀라면");
+        System.out.println("-----+----------------+---------------+------------------");
+
+        for (int n : sizes) {
+            callCount = 0;
+            memo = new long[n + 1];         // 답을 저장할 공간 (0번~n번 → 크기 n + 1)
+            long result = fibo(n);
+            System.out.printf("%-4d | %-14d | %-13d | %,d%n",
+                    n, result, callCount, naiveCallCount(n));
+        }
+
+        System.out.println();
+        System.out.println("호출 횟수가 2n - 1로 줄었다: 각 fibo(k)를 딱 한 번만 계산하기 때문이다.");
+        System.out.println("n=50이면 약 407억 번이 99번이 된다 — 저장 공간 O(n)과 바꾼 속도다.");
+    }
+}</code></pre>
+                </article>
+                <article class="code-card code-card--output">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">출력</span>
+                            <strong class="code-card__filename">실행 결과</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="out-step2" aria-label="Step2 실행 결과 복사">복사</button>
+                    </header>
+                    <pre><code id="out-step2">n    | fibo(n)        | 메모 호출 횟수 | 순수 재귀라면
+-----+----------------+---------------+------------------
+10   | 55             | 19            | 177
+20   | 6765           | 39            | 21,891
+30   | 832040         | 59            | 2,692,537
+35   | 9227465        | 69            | 29,860,703
+50   | 12586269025    | 99            | 40,730,022,147
+
+호출 횟수가 2n - 1로 줄었다: 각 fibo(k)를 딱 한 번만 계산하기 때문이다.
+n=50이면 약 407억 번이 99번이 된다 — 저장 공간 O(n)과 바꾼 속도다.</code></pre>
+                </article>
+                <div class="note-box note-box--tip">
+                    <span class="note-box__title">관찰</span>
+                    <p>n=35에서 29,860,703번이 <strong>69번</strong>이 됐습니다.
+                    코드는 세 줄 늘었을 뿐인데 O(2ⁿ)이 O(n)이 됐습니다 —
+                    저장(메모리 O(n))과 시간을 맞바꾼 것입니다.
+                    1단계에서 몇 분씩 걸리던 n=50도 이제 즉시 끝납니다(12586269025).</p>
+                </div>
+
+                <h3>구현 3단계 — 타뷸레이션: 재귀를 반복문으로 (바텀업)</h3>
+                <p>
+                    메모이제이션은 여전히 재귀입니다. 그런데 잘 보면 fibo(n)에 필요한 것은
+                    fibo(0)부터 fibo(n-1)까지 — <strong>어차피 전부</strong>입니다.
+                    그렇다면 처음부터 작은 쪽에서 <strong>표를 차례로 채우면</strong> 재귀가 필요 없습니다.
+                </p>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">Step3FibonacciTable.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-step3" aria-label="Step3FibonacciTable.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-step3" class="language-java">public class Step3FibonacciTable {
+
+    /** 타뷸레이션(바텀업): 재귀 없이, 작은 답부터 표를 차례로 채운다 */
+    static long fiboByTable(int n) {
+        if (n &lt;= 1) {
+            return n;
+        }
+        long[] dp = new long[n + 1];        // dp[0]부터 dp[n]까지 → 크기는 n + 1
+        dp[0] = 0;                          // 기저 조건
+        dp[1] = 1;
+        for (int i = 2; i &lt;= n; i++) {
+            dp[i] = dp[i - 1] + dp[i - 2];  // 점화식: 이미 채운 두 칸을 더한다
+        }
+        return dp[n];                       // 표의 마지막 칸이 최종 답
+    }
+
+    public static void main(String[] args) {
+        // 1) n = 10의 테이블이 채워진 최종 모습을 눈으로 확인한다
+        int n = 10;
+        long[] dp = new long[n + 1];
+        dp[0] = 0;
+        dp[1] = 1;
+        for (int i = 2; i &lt;= n; i++) {
+            dp[i] = dp[i - 1] + dp[i - 2];
+        }
+
+        System.out.println("피보나치 DP 테이블 (n = " + n + ")");
+        System.out.print("인덱스:");
+        for (int i = 0; i &lt;= n; i++) {
+            System.out.printf("%6d", i);
+        }
+        System.out.println();
+        System.out.print("dp[i] :");
+        for (int i = 0; i &lt;= n; i++) {
+            System.out.printf("%6d", dp[i]);
+        }
+        System.out.println();
+        System.out.println();
+
+        // 2) 큰 n에서도 덧셈 n - 1번이면 끝난다
+        int[] sizes = {10, 20, 30, 35, 50};
+        System.out.println("n    | fiboByTable(n) | 덧셈 횟수 (n - 1)");
+        System.out.println("-----+----------------+------------------");
+        for (int size : sizes) {
+            System.out.printf("%-4d | %-14d | %d%n", size, fiboByTable(size), size - 1);
+        }
+
+        System.out.println();
+        System.out.println("재귀가 사라졌다: 반복문 한 번으로 끝나므로 호출 스택 걱정도 없다.");
+    }
+}</code></pre>
+                </article>
+                <article class="code-card code-card--output">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">출력</span>
+                            <strong class="code-card__filename">실행 결과</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="out-step3" aria-label="Step3 실행 결과 복사">복사</button>
+                    </header>
+                    <pre><code id="out-step3">피보나치 DP 테이블 (n = 10)
+인덱스:     0     1     2     3     4     5     6     7     8     9    10
+dp[i] :     0     1     1     2     3     5     8    13    21    34    55
+
+n    | fiboByTable(n) | 덧셈 횟수 (n - 1)
+-----+----------------+------------------
+10   | 55             | 9
+20   | 6765           | 19
+30   | 832040         | 29
+35   | 9227465        | 34
+50   | 12586269025    | 49
+
+재귀가 사라졌다: 반복문 한 번으로 끝나므로 호출 스택 걱정도 없다.</code></pre>
+                </article>
+                <div class="note-box">
+                    <span class="note-box__title">2단계와 3단계는 같은 점화식이다</span>
+                    <p>메모(59번 호출)와 테이블(29번 덧셈)의 결과는 n=30에서 둘 다 832040으로 같습니다.
+                    바뀐 것은 <strong>계산 방향</strong>뿐입니다. 테이블 방식은 호출 스택을 쓰지 않으므로
+                    n이 수십만이어도 StackOverflow 걱정이 없습니다. 이후 이 과정에서는 바텀업을 기본으로 씁니다.</p>
+                </div>
+
+                <h3>구현 4단계 — 새 문제에 적용: 계단 오르기</h3>
+                <p>
+                    이제 점화식 3단계를 <strong>새 문제에 스스로 적용</strong>합니다.
+                    ① 정의: dp[i] = i칸 계단을 오르는 방법의 수. ② 기저: dp[1] = 1, dp[2] = 2.
+                    ③ 전이: dp[i] = dp[i-1] + dp[i-2] (마지막 걸음이 1칸이냐 2칸이냐).
+                    순수 재귀와 테이블을 나란히 구현해 결과가 같은지 검증합니다.
+                </p>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">Step4ClimbStairs.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-step4" aria-label="Step4ClimbStairs.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-step4" class="language-java">public class Step4ClimbStairs {
+
+    /** 재귀 호출 횟수 카운터 */
+    static long callCount = 0;
+
+    /** 순수 재귀: ways(n) = ways(n-1) + ways(n-2) — 마지막 걸음이 1칸이냐 2칸이냐로 나눈다 */
+    static long waysByRecursion(int n) {
+        callCount++;
+        if (n == 1) {
+            return 1;                       // 기저 조건: 1칸은 [1] 한 가지
+        }
+        if (n == 2) {
+            return 2;                       // 기저 조건: 2칸은 [1+1], [2] 두 가지
+        }
+        return waysByRecursion(n - 1) + waysByRecursion(n - 2);   // 점화식
+    }
+
+    /** 바텀업 테이블: 같은 점화식을 반복문으로 채운다 */
+    static long waysByTable(int n) {
+        if (n == 1) {
+            return 1;
+        }
+        long[] dp = new long[n + 1];        // dp[1]부터 dp[n]까지 사용
+        dp[1] = 1;                          // 기저 조건
+        dp[2] = 2;
+        for (int i = 3; i &lt;= n; i++) {
+            dp[i] = dp[i - 1] + dp[i - 2];  // 점화식(전이)
+        }
+        return dp[n];
+    }
+
+    public static void main(String[] args) {
+        int[] sizes = {4, 10, 20, 30};
+
+        System.out.println("계단 오르기: n칸을 1칸/2칸 걸음으로 오르는 방법의 수");
+        System.out.println("n    | 재귀 결과  | 테이블 결과 | 재귀 호출 횟수 | 테이블 덧셈 횟수");
+        System.out.println("-----+-----------+------------+---------------+-----------------");
+
+        for (int n : sizes) {
+            callCount = 0;
+            long byRecursion = waysByRecursion(n);
+            long byTable = waysByTable(n);
+            System.out.printf("%-4d | %-9d | %-10d | %,-13d | %d%n",
+                    n, byRecursion, byTable, callCount, Math.max(n - 2, 0));
+
+            if (byRecursion != byTable) {
+                System.out.println("경고: 두 방법의 결과가 다릅니다! 점화식 구현에 오류가 있습니다.");
+            }
+        }
+
+        System.out.println();
+        System.out.println("피보나치와 다른 문제인데 점화식 모양은 같다 — 기저 조건만 1, 2로 다르다.");
+    }
+}</code></pre>
+                </article>
+                <article class="code-card code-card--output">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">출력</span>
+                            <strong class="code-card__filename">실행 결과</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="out-step4" aria-label="Step4 실행 결과 복사">복사</button>
+                    </header>
+                    <pre><code id="out-step4">계단 오르기: n칸을 1칸/2칸 걸음으로 오르는 방법의 수
+n    | 재귀 결과  | 테이블 결과 | 재귀 호출 횟수 | 테이블 덧셈 횟수
+-----+-----------+------------+---------------+-----------------
+4    | 5         | 5          | 5             | 2
+10   | 89        | 89         | 109           | 8
+20   | 10946     | 10946      | 13,529        | 18
+30   | 1346269   | 1346269    | 1,664,079     | 28
+
+피보나치와 다른 문제인데 점화식 모양은 같다 — 기저 조건만 1, 2로 다르다.</code></pre>
+                </article>
+                <div class="note-box note-box--tip">
+                    <span class="note-box__title">관찰</span>
+                    <p>n=4의 답 5는 손 풀이 STEP 3에서 나열한 5가지와 일치합니다.
+                    n=30에서 재귀는 1,664,079번 호출, 테이블은 <strong>덧셈 28번</strong>.
+                    점화식만 옳으면, 어떤 문제든 같은 방식으로 폭발을 잠재울 수 있습니다.</p>
+                </div>
+            </section>
+
+            <!-- 10. 완성 Java 코드 -->
+            <section class="lesson-section" id="sec-complete" aria-labelledby="h-complete">
+                <h2 id="h-complete" data-toc-label="완성 Java 코드"><span class="section-no">10</span>완성 Java 코드</h2>
+                <p>
+                    지금까지의 조각을 모아 계단 오르기를 <strong>네 가지 방법</strong>으로 구현하고 서로 검증하는
+                    프로그램을 완성합니다. 마지막 방법은 새로 등장하는 <strong>공간 최적화</strong>입니다 —
+                    점화식이 직전 두 칸만 참조하므로, 표 전체 대신 <strong>변수 2개</strong>만 유지해도 됩니다.
+                </p>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">ClimbStairsComplete.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-complete" aria-label="ClimbStairsComplete.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-complete" class="language-java">public class ClimbStairsComplete {
+
+    /** 방법별 호출/연산 횟수 카운터 */
+    static long recursionCalls = 0;
+    static long memoCalls = 0;
+
+    /** 방법 1: 순수 재귀 — 점화식 그대로. 느리다(중복 계산). */
+    static long waysByRecursion(int n) {
+        recursionCalls++;
+        if (n == 1) {
+            return 1;
+        }
+        if (n == 2) {
+            return 2;
+        }
+        return waysByRecursion(n - 1) + waysByRecursion(n - 2);
+    }
+
+    /** 방법 2: 메모이제이션(탑다운) — 계산한 답을 저장한다. */
+    static long waysByMemo(int n) {
+        long[] memo = new long[n + 1];
+        return memoHelper(n, memo);
+    }
+
+    static long memoHelper(int n, long[] memo) {
+        memoCalls++;
+        if (n == 1) {
+            return 1;
+        }
+        if (n == 2) {
+            return 2;
+        }
+        if (memo[n] != 0) {
+            return memo[n];
+        }
+        memo[n] = memoHelper(n - 1, memo) + memoHelper(n - 2, memo);
+        return memo[n];
+    }
+
+    /** 방법 3: 타뷸레이션(바텀업) — 표를 앞에서부터 채운다. */
+    static long waysByTable(int n) {
+        if (n == 1) {
+            return 1;
+        }
+        long[] dp = new long[n + 1];
+        dp[1] = 1;
+        dp[2] = 2;
+        for (int i = 3; i &lt;= n; i++) {
+            dp[i] = dp[i - 1] + dp[i - 2];
+        }
+        return dp[n];
+    }
+
+    /** 방법 4: 공간 최적화 — 항상 직전 두 칸만 쓰므로 변수 2개면 충분하다. */
+    static long waysByTwoVars(int n) {
+        if (n == 1) {
+            return 1;
+        }
+        long prev2 = 1;                     // dp[i - 2] 역할
+        long prev1 = 2;                     // dp[i - 1] 역할
+        for (int i = 3; i &lt;= n; i++) {
+            long current = prev1 + prev2;   // 같은 점화식
+            prev2 = prev1;                  // 두 변수를 한 칸씩 밀어 준다
+            prev1 = current;
+        }
+        return prev1;
+    }
+
+    public static void main(String[] args) {
+        int[] sizes = {10, 20, 30};
+
+        System.out.println("== 계단 오르기: 네 가지 구현 비교 ==");
+        System.out.println("n    | 결과      | 재귀 호출    | 메모 호출 | 테이블 덧셈");
+        System.out.println("-----+-----------+-------------+----------+------------");
+
+        for (int n : sizes) {
+            recursionCalls = 0;
+            memoCalls = 0;
+            long r1 = waysByRecursion(n);
+            long r2 = waysByMemo(n);
+            long r3 = waysByTable(n);
+            long r4 = waysByTwoVars(n);
+
+            System.out.printf("%-4d | %-9d | %,-11d | %-8d | %d%n",
+                    n, r1, recursionCalls, memoCalls, n - 2);
+
+            // 네 방법의 결과가 모두 같은지 정확성을 검증한다 (1강의 원칙)
+            if (r1 != r2 || r1 != r3 || r1 != r4) {
+                System.out.println("경고: 결과가 서로 다릅니다! 구현에 오류가 있습니다.");
+            }
+        }
+
+        System.out.println();
+        System.out.println("== 큰 입력: n = 50 (순수 재귀는 약 407억 번 호출이라 생략) ==");
+        memoCalls = 0;
+        System.out.println("메모이제이션 : " + waysByMemo(50) + " (호출 " + memoCalls + "번)");
+        System.out.println("타뷸레이션   : " + waysByTable(50) + " (덧셈 48번, 표 51칸)");
+        System.out.println("공간 최적화  : " + waysByTwoVars(50) + " (덧셈 48번, 변수 2개)");
+        System.out.println();
+        System.out.println("시간: O(2^n) → O(n), 공간: 테이블 O(n) → 변수 2개 O(1)");
+    }
+}</code></pre>
+                </article>
+                <article class="code-card code-card--output">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">출력</span>
+                            <strong class="code-card__filename">실행 결과</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="out-complete" aria-label="완성 코드 실행 결과 복사">복사</button>
+                    </header>
+                    <pre><code id="out-complete">== 계단 오르기: 네 가지 구현 비교 ==
+n    | 결과      | 재귀 호출    | 메모 호출 | 테이블 덧셈
+-----+-----------+-------------+----------+------------
+10   | 89        | 109         | 17       | 8
+20   | 10946     | 13,529      | 37       | 18
+30   | 1346269   | 1,664,079   | 57       | 28
+
+== 큰 입력: n = 50 (순수 재귀는 약 407억 번 호출이라 생략) ==
+메모이제이션 : 20365011074 (호출 97번)
+타뷸레이션   : 20365011074 (덧셈 48번, 표 51칸)
+공간 최적화  : 20365011074 (덧셈 48번, 변수 2개)
+
+시간: O(2^n) → O(n), 공간: 테이블 O(n) → 변수 2개 O(1)</code></pre>
+                </article>
+                <div class="note-box note-box--warn">
+                    <span class="note-box__title">공간 최적화는 언제 가능한가?</span>
+                    <p>점화식이 <strong>직전 몇 칸만</strong> 참조할 때만 가능합니다.
+                    dp[i]가 dp[i-1], dp[i-2]만 보면 변수 2개로 충분하지만,
+                    15번 섹션의 동전 문제처럼 dp[money - 60] 같은 <strong>먼 칸</strong>을 참조하면 표 전체가 필요합니다.
+                    최적화 전에 항상 "무엇을 참조하는가"를 먼저 확인하세요.</p>
+                </div>
+            </section>
+
+            <!-- 11. 실행 과정 추적 -->
+            <section class="lesson-section" id="sec-trace" aria-labelledby="h-trace">
+                <h2 id="h-trace" data-toc-label="실행 과정 추적"><span class="section-no">11</span>실행 과정 추적</h2>
+                <p>
+                    완성 코드의 테이블이 정말 시각화(7번 섹션)·손 풀이(5번 섹션)와 똑같이 채워지는지,
+                    매 칸의 계산 과정을 출력해 확인합니다. n=8로 실행합니다.
+                </p>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">DpTableTrace.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-trace" aria-label="DpTableTrace.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-trace" class="language-java">public class DpTableTrace {
+
+    public static void main(String[] args) {
+        int n = 8;
+        long[] dp = new long[n + 1];
+
+        System.out.println("계단 오르기 DP 테이블 채우기 추적 (n = " + n + ")");
+        System.out.println();
+
+        dp[1] = 1;
+        System.out.println("기저 dp[1] = 1              | " + tableString(dp, 1, n));
+        dp[2] = 2;
+        System.out.println("기저 dp[2] = 2              | " + tableString(dp, 2, n));
+
+        for (int i = 3; i &lt;= n; i++) {
+            dp[i] = dp[i - 1] + dp[i - 2];   // 점화식: 이미 확정된 두 칸을 참조
+            System.out.printf("dp[%d] = dp[%d] + dp[%d] = %2d + %2d = %2d | %s%n",
+                    i, i - 1, i - 2, dp[i - 1], dp[i - 2], dp[i], tableString(dp, i, n));
+        }
+
+        System.out.println();
+        System.out.println("최종 답: dp[" + n + "] = " + dp[n]
+                + " — " + n + "칸 계단을 오르는 방법은 " + dp[n] + "가지");
+    }
+
+    /** 테이블의 현재 상태를 문자열로 만든다. 아직 안 채운 칸은 - 로 표시. */
+    static String tableString(long[] dp, int filledUpTo, int n) {
+        StringBuilder sb = new StringBuilder("[");
+        for (int i = 1; i &lt;= n; i++) {
+            if (i &gt; 1) {
+                sb.append(", ");
+            }
+            sb.append(i &lt;= filledUpTo ? String.valueOf(dp[i]) : "-");
+        }
+        return sb.append("]").toString();
+    }
+}</code></pre>
+                </article>
+                <article class="code-card code-card--output">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">출력</span>
+                            <strong class="code-card__filename">실행 결과</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="out-trace" aria-label="추적 실행 결과 복사">복사</button>
+                    </header>
+                    <pre><code id="out-trace">계단 오르기 DP 테이블 채우기 추적 (n = 8)
+
+기저 dp[1] = 1              | [1, -, -, -, -, -, -, -]
+기저 dp[2] = 2              | [1, 2, -, -, -, -, -, -]
+dp[3] = dp[2] + dp[1] =  2 +  1 =  3 | [1, 2, 3, -, -, -, -, -]
+dp[4] = dp[3] + dp[2] =  3 +  2 =  5 | [1, 2, 3, 5, -, -, -, -]
+dp[5] = dp[4] + dp[3] =  5 +  3 =  8 | [1, 2, 3, 5, 8, -, -, -]
+dp[6] = dp[5] + dp[4] =  8 +  5 = 13 | [1, 2, 3, 5, 8, 13, -, -]
+dp[7] = dp[6] + dp[5] = 13 +  8 = 21 | [1, 2, 3, 5, 8, 13, 21, -]
+dp[8] = dp[7] + dp[6] = 21 + 13 = 34 | [1, 2, 3, 5, 8, 13, 21, 34]
+
+최종 답: dp[8] = 34 — 8칸 계단을 오르는 방법은 34가지</code></pre>
+                </article>
+                <p>
+                    테이블이 1 → 2 → 3 → 5 → 8 → 13 → 21 → 34로 채워지는 과정이
+                    손 풀이 STEP 4에서 적은 값, 7번 섹션 시각화의 각 단계와 모두 일치합니다.
+                    <strong>손 풀이 = 시각화 = 코드</strong>가 같은 절차임을 확인했습니다.
+                </p>
+            </section>
+
+            <!-- 12. 잘못된 코드와 오류 찾기 -->
+            <section class="lesson-section" id="sec-bugs" aria-labelledby="h-bugs">
+                <h2 id="h-bugs" data-toc-label="잘못된 코드와 오류 찾기"><span class="section-no">12</span>잘못된 코드와 오류 찾기</h2>
+                <p>DP를 처음 배울 때 가장 자주 나는 오류 두 가지입니다. 먼저 코드를 읽고 무엇이 잘못됐는지 생각한 뒤 해설을 여세요.</p>
+
+                <article class="bug-card">
+                    <h3 class="bug-card__title">오류 1 — 기저 조건이 없는 메모이제이션</h3>
+                    <div class="bug-card__body">
+                        <article class="code-card">
+                            <header class="code-card__header">
+                                <div class="code-card__info">
+                                    <span class="code-card__language">Java</span>
+                                    <strong class="code-card__filename">BuggyFiboNoBase.java (오류 있음)</strong>
+                                </div>
+                                <button type="button" class="copy-code-button" data-copy-target="code-bug1" aria-label="오류 1 코드 복사">코드 복사</button>
+                            </header>
+                            <pre><code id="code-bug1" class="language-java">public class BuggyFiboNoBase {
+
+    static long[] memo;
+
+    /** 메모이제이션 피보나치 — 그런데 무언가 빠졌다! */
+    static long fibo(int n) {
+        if (memo[n] != 0) {
+            return memo[n];
+        }
+        memo[n] = fibo(n - 1) + fibo(n - 2);
+        return memo[n];
+    }
+
+    public static void main(String[] args) {
+        int n = 30;
+        memo = new long[n + 1];
+        System.out.println("fibo(" + n + ") = " + fibo(n));
+    }
+}</code></pre>
+                        </article>
+                        <details class="answer-box">
+                            <summary>발생하는 문제와 수정 방법 확인</summary>
+                            <div class="answer-box__content">
+                                <p><strong>발생하는 문제:</strong> 실행하면 답 대신 예외가 납니다.</p>
+                                <pre class="quiz-code">Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: Index -1 out of bounds for length 31
+	at BuggyFiboNoBase.fibo(BuggyFiboNoBase.java:7)
+	at BuggyFiboNoBase.fibo(BuggyFiboNoBase.java:10)
+	...(fibo가 fibo를 부르는 줄이 계속 이어짐)</pre>
+                                <p><strong>원인:</strong> <strong>기저 조건이 없습니다.</strong>
+                                재귀가 멈출 곳이 없어 n = 1 → 0 → <strong>-1</strong>까지 내려가고,
+                                <code>memo[-1]</code>에서 음수 인덱스 예외가 납니다.
+                                (memo 배열조차 없었다면 7강에서 본 <code>StackOverflowError</code>가 났을 것입니다.)
+                                메모이제이션은 재귀입니다 — <strong>저장 로직을 추가해도 기저 조건은 여전히 필수</strong>입니다.</p>
+                                <p><strong>수정 방법:</strong> 메모 확인보다 먼저 기저 조건을 처리합니다.</p>
+                                <pre class="quiz-code">static long fibo(int n) {
+    if (n &lt;= 1) {
+        return n;          // 기저 조건이 가장 먼저!
+    }
+    if (memo[n] != 0) {
+        return memo[n];
+    }
+    memo[n] = fibo(n - 1) + fibo(n - 2);
+    return memo[n];
+}</pre>
+                                <p>수정 후 출력: <code>fibo(30) = 832040</code>.
+                                점화식 3단계에서 <strong>기저 조건이 ② 단계</strong>로 따로 있는 이유가 이것입니다.</p>
+                            </div>
+                        </details>
+                    </div>
+                </article>
+
+                <article class="bug-card">
+                    <h3 class="bug-card__title">오류 2 — 테이블 크기: n일까 n + 1일까</h3>
+                    <div class="bug-card__body">
+                        <article class="code-card">
+                            <header class="code-card__header">
+                                <div class="code-card__info">
+                                    <span class="code-card__language">Java</span>
+                                    <strong class="code-card__filename">BuggyTableSize.java (오류 있음)</strong>
+                                </div>
+                                <button type="button" class="copy-code-button" data-copy-target="code-bug2" aria-label="오류 2 코드 복사">코드 복사</button>
+                            </header>
+                            <pre><code id="code-bug2" class="language-java">public class BuggyTableSize {
+    public static void main(String[] args) {
+        int n = 10;
+        long[] dp = new long[n];        // dp[0]부터 dp[n]까지 쓸 계획인데...
+        dp[0] = 0;
+        dp[1] = 1;
+        for (int i = 2; i &lt;= n; i++) {
+            dp[i] = dp[i - 1] + dp[i - 2];
+        }
+        System.out.println("fibo(" + n + ") = " + dp[n]);
+    }
+}</code></pre>
+                        </article>
+                        <details class="answer-box">
+                            <summary>발생하는 문제와 수정 방법 확인</summary>
+                            <div class="answer-box__content">
+                                <p><strong>발생하는 문제:</strong> 마지막 회차(i = 10)에서 예외가 납니다.</p>
+                                <pre class="quiz-code">Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: Index 10 out of bounds for length 10
+	at BuggyTableSize.main(BuggyTableSize.java:8)</pre>
+                                <p><strong>원인:</strong> 인덱스 0부터 <strong>n까지</strong> 쓰려면 칸이 <strong>n + 1개</strong> 필요한데
+                                <code>new long[n]</code>은 0부터 n-1까지, n칸뿐입니다.
+                                2강에서 배운 "배열 크기 vs 마지막 인덱스"의 off-by-one이 DP 테이블에서 그대로 재현된 것입니다.
+                                dp[n]까지 쓰는 DP에서 아주 흔한 실수입니다.</p>
+                                <p><strong>수정 방법:</strong> 테이블 크기를 n + 1로 잡습니다.</p>
+                                <pre class="quiz-code">long[] dp = new long[n + 1];   // 인덱스 0 ~ n → 크기 n + 1</pre>
+                                <p>수정 후 출력: <code>fibo(10) = 55</code>.
+                                테이블을 선언할 때마다 "몇 번 인덱스까지 쓰는가?"를 소리 내어 확인하는 습관을 들이세요.</p>
+                            </div>
+                        </details>
+                    </div>
+                </article>
+            </section>
+
+            <!-- 13. 복잡도 및 특성 분석 -->
+            <section class="lesson-section" id="sec-complexity" aria-labelledby="h-complexity">
+                <h2 id="h-complexity" data-toc-label="복잡도 및 특성 분석"><span class="section-no">13</span>복잡도 및 특성 분석</h2>
+
+                <h3>입력 크기</h3>
+                <p><code>n</code>은 문제의 크기(피보나치의 n, 계단의 칸 수)입니다.
+                동전 문제(15번 섹션)에서는 금액과 동전 종류 수, 두 개의 크기가 등장합니다.</p>
+
+                <h3>주요 연산</h3>
+                <p>점화식 한 번의 계산(덧셈 또는 min 비교)과, 저장된 답의 조회입니다.
+                배열 조회는 O(1)이므로 <strong>전체 시간 = 채워야 할 칸 수 × 한 칸을 채우는 비용</strong>입니다.
+                이 공식은 어떤 DP에도 통합니다.</p>
+
+                <h3>시간·공간 복잡도</h3>
+                <div class="table-scroll">
+                    <table class="data-table">
+                        <thead>
+                            <tr><th scope="col">구현</th><th scope="col">시간</th><th scope="col">공간</th><th scope="col">n=35 실측(호출/덧셈)</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>순수 재귀</td><td><code>O(2ⁿ)</code></td><td>O(n) (호출 스택)</td><td>29,860,703번</td></tr>
+                            <tr><td>메모이제이션 (탑다운)</td><td><code>O(n)</code></td><td>O(n) (memo + 호출 스택)</td><td>69번</td></tr>
+                            <tr><td>타뷸레이션 (바텀업)</td><td><code>O(n)</code></td><td>O(n) (테이블)</td><td>34번</td></tr>
+                            <tr><td>공간 최적화</td><td><code>O(n)</code></td><td><code>O(1)</code> (변수 2개)</td><td>33번</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p>
+                    동전 문제의 시간은 "칸 수(금액+1) × 한 칸의 비용(동전 종류 수)" = <strong>O(금액 × 동전 종류)</strong>,
+                    공간은 O(금액)입니다.
+                </p>
+
+                <h3>알고리즘 특성</h3>
+                <ul>
+                    <li><strong>기법이지 알고리즘이 아니다:</strong> DP는 "저장하고 재사용"이라는 접근법입니다.
+                        문제마다 점화식이 다르므로, 연습의 핵심은 코드가 아니라 <strong>점화식 3단계</strong>입니다.</li>
+                    <li><strong>정확성의 근거:</strong> 전이가 가능한 모든 선택을 비교하므로,
+                        점화식이 옳다면 답은 항상 최적입니다. 그리디처럼 "운 좋게 맞는" 것이 아닙니다.</li>
+                    <li><strong>시간과 공간의 교환:</strong> O(2ⁿ) 시간을 O(n) 메모리와 맞바꿉니다.
+                        1강의 "데이터의 규칙을 알수록 빨라진다"가 "이미 푼 답을 알수록 빨라진다"로 확장된 것입니다.</li>
+                    <li><strong>한계:</strong> 상태(테이블 칸)가 너무 많으면 메모리가 먼저 터집니다.
+                        또 부분 문제가 겹치지 않으면 저장의 이득이 없습니다.</li>
+                </ul>
+            </section>
+
+            <!-- 14. 따라 하기 실습 -->
+            <section class="lesson-section" id="sec-practice" aria-labelledby="h-practice">
+                <h2 id="h-practice" data-toc-label="따라 하기 실습"><span class="section-no">14</span>따라 하기 실습</h2>
+
+                <h3>실습 1 — 데이터 변경</h3>
+                <p>
+                    <code>DpTableTrace.java</code>에서 <code>int n = 8;</code>을 <code>int n = 12;</code>로 바꾸고 실행하세요.
+                    테이블이 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233으로 채워지고
+                    최종 답이 <strong>233</strong>이 나오는지 확인하세요.
+                </p>
+
+                <h3>실습 2 — 점화식 변경</h3>
+                <p>
+                    캐릭터가 한 번에 <strong>1칸, 2칸, 3칸</strong>을 오를 수 있다면 점화식은 어떻게 될까요?
+                    마지막 걸음이 세 종류이므로 <code>dp[i] = dp[i-1] + dp[i-2] + dp[i-3]</code>입니다.
+                    <code>Step4ClimbStairs.java</code>의 <code>waysByTable</code>을 고쳐 보세요.
+                    기저 조건은 dp[1] = 1, dp[2] = 2, dp[3] = 4가 됩니다 (3칸: 1+1+1, 1+2, 2+1, 3).
+                    n=4의 답이 7인지 손으로도 검증해 보세요.
+                </p>
+
+                <h3>실습 3 — 코드 완성: 최대 연속 부분합</h3>
+                <p>
+                    일주일 매출 증감 <code>{3, -5, 4, -1, 6, -8, 2}</code>에서
+                    <strong>연속 구간의 합이 가장 큰 값</strong>(여기서는 4 + (-1) + 6 = 9)을 DP로 구합니다.
+                    점화식 3단계는 이미 세워 두었습니다 — ① dp[i] = "i번 원소에서 <strong>끝나는</strong>
+                    연속 부분합의 최댓값", ② dp[0] = data[0],
+                    ③ dp[i] = max(data[i], dp[i-1] + data[i]). TODO의 전이 한 줄만 채우세요.
+                </p>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">MaxSubarrayPractice.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-practice3" aria-label="MaxSubarrayPractice.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-practice3" class="language-java">public class MaxSubarrayPractice {
+
+    /** dp[i] = "i번 원소에서 끝나는" 연속 부분합의 최댓값 */
+    static int maxSubarraySum(int[] data) {
+        int n = data.length;
+        int[] dp = new int[n];
+        dp[0] = data[0];        // 기저 조건: 첫 원소에서 끝나는 부분합은 자기 자신뿐
+        int best = dp[0];
+
+        for (int i = 1; i &lt; n; i++) {
+            // TODO: 점화식으로 dp[i]를 채우세요.
+            //       dp[i] = max(data[i], dp[i - 1] + data[i])
+            //       (앞의 합을 이어받는 게 손해면 i에서 새로 시작한다)
+
+            if (dp[i] &gt; best) {
+                best = dp[i];   // 지금까지의 최댓값 갱신
+            }
+        }
+        return best;
+    }
+
+    public static void main(String[] args) {
+        int[] sales = {3, -5, 4, -1, 6, -8, 2};
+        System.out.println("최대 연속 부분합 = " + maxSubarraySum(sales) + " (기대값 9)");
+    }
+}</code></pre>
+                </article>
+                <details class="answer-box">
+                    <summary>실습 3 정답 확인</summary>
+                    <div class="answer-box__content">
+                        <pre class="quiz-code">for (int i = 1; i &lt; n; i++) {
+    dp[i] = Math.max(data[i], dp[i - 1] + data[i]);   // 전이: 새로 시작 vs 이어붙이기
+
+    if (dp[i] &gt; best) {
+        best = dp[i];
+    }
+}</pre>
+                        <p>TODO 상태의 출력은 <code>최대 연속 부분합 = 3 (기대값 9)</code>
+                        (dp[1] 이후가 0으로 남아 best가 dp[0]=3에서 멈춤),
+                        전이를 채우면 <code>최대 연속 부분합 = 9 (기대값 9)</code>가 나옵니다.
+                        dp 테이블은 [3, -2, 4, 3, 9, 1, 3]으로 채워지며, 최댓값은 dp[4] = 9입니다.
+                        "dp[i]를 <strong>i에서 끝나는</strong> 부분합"으로 정의했기 때문에
+                        전이가 두 선택(새로 시작 / 이어붙이기)의 max 하나로 끝납니다 — 정의(① 단계)의 힘입니다.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- 15. 실제 데이터 응용 예제 -->
+            <section class="lesson-section" id="sec-application" aria-labelledby="h-application">
+                <h2 id="h-application" data-toc-label="실제 데이터 응용 예제"><span class="section-no">15</span>실제 데이터 응용 예제</h2>
+
+                <h3>문제 상황 — 그리디가 실패한 그 동전, DP로 다시</h3>
+                <p>
+                    10강의 마지막 장면을 기억하나요? 이상한 나라의 자판기는 동전이 {1, 60, 100}원뿐이었고,
+                    120원을 거슬러 줄 때 그리디(큰 동전부터)는 100원을 덥석 집은 탓에
+                    100 + 1×20 = <strong>21개</strong>를 내놓았습니다. 최적은 60×2 = <strong>2개</strong>인데 말이죠.
+                    이제 우리에게는 DP가 있습니다. "모든 선택을 비교하고 기록한다"는 방식이
+                    이 문제를 어떻게 구하는지 확인합니다.
+                </p>
+
+                <h3>데이터 모델과 점화식 (코드보다 먼저!)</h3>
+                <ul>
+                    <li><strong>데이터:</strong> 동전 종류 <code>{100, 60, 1}</code>, 목표 금액 amount</li>
+                    <li><strong>① 정의:</strong> dp[money] = money원을 만드는 <strong>최소 동전 개수</strong></li>
+                    <li><strong>② 기저:</strong> dp[0] = 0 (0원은 동전 0개로 만든다)</li>
+                    <li><strong>③ 전이:</strong> 마지막에 넣은 동전이 coin이었다면 그 전 상태는 money - coin.
+                        따라서 <code>dp[money] = min(dp[money - coin] + 1)</code> — <strong>모든 동전 coin에 대해 비교</strong></li>
+                </ul>
+                <p>
+                    그리디와의 차이가 전이에 그대로 드러납니다. 그리디는 "가장 큰 동전 하나"만 보지만,
+                    이 점화식은 <strong>세 동전을 전부 넣어 보고</strong> 최소를 고릅니다.
+                    또 하나 — 이 점화식은 dp[money - 100]처럼 먼 칸을 참조하므로 변수 2개 최적화는 불가능하고 표 전체가 필요합니다.
+                </p>
+
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">CoinChangeDpApplication.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-app" aria-label="CoinChangeDpApplication.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-app" class="language-java">public class CoinChangeDpApplication {
+
+    /** "도달 불가능"을 나타내는 큰 값 (더해도 넘치지 않도록 절반으로) */
+    static final int IMPOSSIBLE = Integer.MAX_VALUE / 2;
+
+    /** 10강의 그리디: 큰 동전부터 최대한 많이 사용한다. */
+    static int greedyCount(int amount, int[] coinsDesc) {
+        int remaining = amount;
+        int totalCount = 0;
+        for (int coin : coinsDesc) {
+            totalCount += remaining / coin;
+            remaining = remaining % coin;
+        }
+        return totalCount;
+    }
+
+    /** DP: dp[money] = money원을 만드는 최소 동전 개수. 0원부터 표를 채운다. */
+    static int[] buildDpTable(int amount, int[] coins) {
+        int[] dp = new int[amount + 1];
+        dp[0] = 0;                          // 기저 조건: 0원은 동전 0개
+        for (int money = 1; money &lt;= amount; money++) {
+            dp[money] = IMPOSSIBLE;
+            for (int coin : coins) {
+                // 점화식: dp[money] = min(dp[money - coin] + 1)  (모든 동전을 비교)
+                if (coin &lt;= money &amp;&amp; dp[money - coin] + 1 &lt; dp[money]) {
+                    dp[money] = dp[money - coin] + 1;
+                }
+            }
+        }
+        return dp;
+    }
+
+    /** 완성된 테이블을 역추적해 실제로 어떤 동전을 몇 개 썼는지 알아낸다. */
+    static String reconstruct(int amount, int[] coinsDesc, int[] dp) {
+        StringBuilder sb = new StringBuilder();
+        int money = amount;
+        for (int coin : coinsDesc) {
+            int used = 0;
+            // dp[money - coin]이 정확히 1 작다면, 이 동전은 최적해의 일부다
+            while (coin &lt;= money &amp;&amp; dp[money - coin] == dp[money] - 1) {
+                money -= coin;
+                used++;
+            }
+            if (used &gt; 0) {
+                if (sb.length() &gt; 0) {
+                    sb.append(", ");
+                }
+                sb.append(coin).append("원 x ").append(used).append("개");
+            }
+        }
+        return sb.toString();
+    }
+
+    public static void main(String[] args) {
+        int[] coinsDesc = {100, 60, 1};     // 10강의 반례 동전: {1, 60, 100}
+        int[] amounts = {80, 120, 180, 200};
+
+        System.out.println("동전 {1, 60, 100}으로 거슬러 주기 — 그리디(10강) vs DP(11강)");
+        System.out.println("금액   | 그리디 개수 | DP 최소 개수 | DP가 고른 조합");
+        System.out.println("-------+------------+-------------+---------------------");
+
+        for (int amount : amounts) {
+            int greedy = greedyCount(amount, coinsDesc);
+            int[] dp = buildDpTable(amount, coinsDesc);
+            String combo = reconstruct(amount, coinsDesc, dp);
+            System.out.printf("%-6d | %-10d | %-11d | %s%n",
+                    amount, greedy, dp[amount], combo);
+        }
+
+        System.out.println();
+        System.out.println("120원: 그리디는 100원을 먼저 집어 21개, DP는 모든 동전을 비교해 2개(60+60).");
+        System.out.println("그리디는 지금의 최선만 보지만, DP는 점화식으로 모든 선택을 비교한다.");
+    }
+}</code></pre>
+                </article>
+                <article class="code-card code-card--output">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">출력</span>
+                            <strong class="code-card__filename">실행 결과</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="out-app" aria-label="응용 예제 실행 결과 복사">복사</button>
+                    </header>
+                    <pre><code id="out-app">동전 {1, 60, 100}으로 거슬러 주기 — 그리디(10강) vs DP(11강)
+금액   | 그리디 개수 | DP 최소 개수 | DP가 고른 조합
+-------+------------+-------------+---------------------
+80     | 21         | 21          | 60원 x 1개, 1원 x 20개
+120    | 21         | 2           | 60원 x 2개
+180    | 22         | 3           | 60원 x 3개
+200    | 2          | 2           | 100원 x 2개
+
+120원: 그리디는 100원을 먼저 집어 21개, DP는 모든 동전을 비교해 2개(60+60).
+그리디는 지금의 최선만 보지만, DP는 점화식으로 모든 선택을 비교한다.</code></pre>
+                </article>
+
+                <h3>코드 해설과 복잡도 분석</h3>
+                <ul>
+                    <li><strong>120원과 180원</strong>에서 DP가 그리디를 크게 이깁니다(2개 vs 21개, 3개 vs 22개).
+                        반면 <strong>200원</strong>처럼 큰 동전이 딱 맞아떨어지면 둘의 답이 같습니다 —
+                        그리디가 항상 틀리는 게 아니라, <strong>항상 옳다는 보장이 없는 것</strong>입니다.</li>
+                    <li><strong>80원</strong>은 그리디와 DP 모두 21개입니다. 이 동전 구성에서는 21개가 실제 최적이기 때문입니다.
+                        DP의 값은 "더 잘할 수 있는데 놓친 것"이 아니라 증명된 최소값입니다.</li>
+                    <li><code>reconstruct</code>는 완성된 테이블을 거꾸로 걸으며
+                        "dp[money - coin]이 정확히 1 작은 동전"을 찾습니다 —
+                        <strong>테이블에는 답의 크기뿐 아니라 답 자체를 복원할 정보</strong>도 들어 있습니다.
+                        12강에서 최단 경로를 복원할 때 같은 요령을 씁니다.</li>
+                    <li><strong>복잡도:</strong> 테이블 채우기는 (amount + 1)칸 × 동전 3종 = <strong>O(amount × 동전 종류)</strong>,
+                        공간 O(amount). 역추적은 O(amount).</li>
+                </ul>
+            </section>
+
+            <!-- 16. 최종 프로그램 작성 문제 -->
+            <section class="lesson-section" id="sec-final" aria-labelledby="h-final">
+                <h2 id="h-final" data-toc-label="최종 프로그램 작성 문제"><span class="section-no">16</span>최종 프로그램 작성 문제</h2>
+
+                <h3>문제 제목 — 유료 계단 최소 비용 계산기 "CheapClimb"</h3>
+
+                <h3>문제 배경</h3>
+                <p>
+                    이벤트 맵이 업데이트되어 계단마다 <strong>통행 요금</strong>이 붙었습니다.
+                    계단 i를 밟으면 <code>cost[i]</code> 골드를 내야 하고, 한 번에 1칸 또는 2칸을 오를 수 있습니다.
+                    출발은 바닥에서 하며, 첫 발은 0번 또는 1번 계단 어디에나 올릴 수 있습니다.
+                    목표는 마지막 계단 <strong>다음</strong>, 즉 꼭대기에 도착하는 것입니다.
+                    기획팀은 "가장 싸게 오르면 몇 골드인지"를 맵마다 자동 계산해 달라고 요청했습니다.
+                    경우의 수를 세던 이번 강의의 문제와 달리 이번에는 <strong>최소 비용</strong>을 구해야 합니다 —
+                    점화식 3단계를 처음부터 다시 밟아 보세요.
+                </p>
+
+                <h3>프로그램 목표</h3>
+                <p>비용 배열을 입력받아 DP 테이블을 채우고, 꼭대기까지의 최소 비용을 구한 뒤,
+                3강의 완전 탐색으로 결과를 검증하는 콘솔 프로그램을 완성합니다.</p>
+
+                <h3>필수 요구사항</h3>
+                <ol>
+                    <li>dp[i]를 <strong>"i번 계단을 밟고 서 있기까지의 최소 비용"</strong>으로 정의하고 주석으로 남긴다.</li>
+                    <li><code>buildDpTable(int[] cost)</code> — 기저 조건(dp[0], dp[1])과 전이
+                        <code>dp[i] = cost[i] + min(dp[i-1], dp[i-2])</code>로 테이블을 채워 반환한다.</li>
+                    <li><code>minTotalCost(int[] cost)</code> — 꼭대기에는 마지막 계단(n-1) 또는 그 아래(n-2)에서
+                        오를 수 있으므로 <code>min(dp[n-1], dp[n-2])</code>를 반환한다.</li>
+                    <li><code>bruteForceMin(int[] cost)</code> — 모든 경로를 시도하는 완전 탐색으로 같은 답이 나오는지 검증한다.</li>
+                    <li>세 가지 테스트 배열에 대해 DP 결과, 완전 탐색 결과, 일치 여부를 출력한다.</li>
+                </ol>
+
+                <h3>입력 데이터</h3>
+                <pre class="quiz-code">테스트 1: cost = {10, 15, 20}
+테스트 2: cost = {1, 100, 1, 1, 1, 100, 1, 1, 100, 1}
+테스트 3: cost = {10, 15}   (계단이 2칸뿐인 경계 조건)</pre>
+
+                <h3>예상 출력</h3>
+                <pre class="quiz-code">계단 비용 [10, 15, 20]
+  DP 최소 비용 = 15, 완전 탐색 검증 = 15, 일치 = true
+
+계단 비용 [1, 100, 1, 1, 1, 100, 1, 1, 100, 1]
+  DP 최소 비용 = 6, 완전 탐색 검증 = 6, 일치 = true
+
+계단 비용 [10, 15]
+  DP 최소 비용 = 10, 완전 탐색 검증 = 10, 일치 = true</pre>
+
+                <h3>제한 조건</h3>
+                <ul>
+                    <li>계단 수 n은 2 이상 10,000 이하, 각 비용은 0 이상 1,000 이하의 정수.</li>
+                    <li>DP 테이블과 합계는 <code>long</code>으로 계산한다.</li>
+                    <li>핵심 DP 로직을 라이브러리로 대체하지 않는다. (<code>Math.min</code>은 사용 가능)</li>
+                    <li>완전 탐색 검증은 n이 작은 테스트에서만 호출된다고 가정해도 된다.</li>
+                </ul>
+
+                <h3>구현 단계 안내</h3>
+                <ol>
+                    <li>점화식 3단계를 종이에 먼저 쓴다 — ① dp[i]의 정의, ② dp[0]과 dp[1], ③ 전이.</li>
+                    <li>TODO 1: 기저 조건. 바닥에서 바로 밟을 수 있는 0번, 1번 계단은 그 계단의 비용만 낸다.</li>
+                    <li>TODO 2: 전이. i번 계단에는 i-1번(1칸) 또는 i-2번(2칸)에서 도착한다 — 싼 쪽을 고른다.</li>
+                    <li>TODO 3: 꼭대기 도착. dp[n-1]과 dp[n-2] 중 작은 값이 답인 이유를 스스로 설명해 본다.</li>
+                    <li>완전 탐색 검증과 일치(true)하는지 세 테스트 모두 확인한다.</li>
+                </ol>
+
+                <h3>학생용 시작 코드</h3>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">MinCostStairsStarter.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-starter" aria-label="MinCostStairsStarter.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-starter" class="language-java">public class MinCostStairsStarter {
+
+    /**
+     * dp[i] = "i번 계단을 밟고 서 있기"까지의 최소 비용.
+     * 바닥에서 첫 발은 0번 또는 1번 계단에 바로 올릴 수 있다.
+     */
+    static long[] buildDpTable(int[] cost) {
+        int n = cost.length;
+        long[] dp = new long[n];
+
+        // TODO 1: 기저 조건 — dp[0]과 dp[1]을 채우세요.
+        //         (0번, 1번 계단은 바닥에서 바로 밟을 수 있으므로 그 계단의 비용만 낸다)
+
+        // TODO 2: 전이 — i = 2부터 n - 1까지,
+        //         dp[i] = cost[i] + min(dp[i - 1], dp[i - 2]) 로 채우세요.
+        //         (i번 계단에는 i-1번에서 1칸, 또는 i-2번에서 2칸 올라 도착한다)
+
+        return dp;
+    }
+
+    /** 꼭대기(마지막 계단 다음)까지의 최소 비용 */
+    static long minTotalCost(int[] cost) {
+        long[] dp = buildDpTable(cost);
+        int n = cost.length;
+
+        // TODO 3: 꼭대기에는 마지막 계단(n-1) 또는 그 아래 계단(n-2)에서 오를 수 있습니다.
+        //         dp[n - 1]과 dp[n - 2] 중 작은 값을 반환하세요.
+        return 0;
+    }
+
+    /** 검증용 완전 탐색(3강): i번 계단을 밟은 뒤 꼭대기까지의 모든 경로를 시도한다. */
+    static long bruteForceFrom(int[] cost, int i) {
+        if (i &gt;= cost.length) {
+            return 0;                       // 이미 꼭대기
+        }
+        long stepOne = bruteForceFrom(cost, i + 1);
+        long stepTwo = bruteForceFrom(cost, i + 2);
+        return cost[i] + Math.min(stepOne, stepTwo);
+    }
+
+    static long bruteForceMin(int[] cost) {
+        return Math.min(bruteForceFrom(cost, 0), bruteForceFrom(cost, 1));
+    }
+
+    public static void main(String[] args) {
+        int[][] tests = {
+                {10, 15, 20},
+                {1, 100, 1, 1, 1, 100, 1, 1, 100, 1},
+                {10, 15}
+        };
+
+        for (int[] cost : tests) {
+            long dpAnswer = minTotalCost(cost);
+            long bruteAnswer = bruteForceMin(cost);
+            System.out.println("계단 비용 " + java.util.Arrays.toString(cost));
+            System.out.println("  DP 최소 비용 = " + dpAnswer
+                    + ", 완전 탐색 검증 = " + bruteAnswer
+                    + ", 일치 = " + (dpAnswer == bruteAnswer));
+            System.out.println();
+        }
+    }
+}</code></pre>
+                </article>
+                <p>TODO를 채우기 전에도 컴파일과 실행이 됩니다 (DP 결과가 0으로 나와 일치 = false).
+                완전 탐색이 먼저 정답(15, 6, 10)을 알려 주므로, 그 값을 향해 TODO를 채워 가세요.</p>
+
+                <h3>테스트 데이터</h3>
+                <div class="table-scroll">
+                    <table class="data-table">
+                        <thead>
+                            <tr><th scope="col">종류</th><th scope="col">입력</th><th scope="col">기대 결과</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>일반 데이터</td>
+                                <td>cost = {10, 15, 20}</td>
+                                <td>15 (1번 계단만 밟고 2칸 올라 꼭대기)</td>
+                            </tr>
+                            <tr>
+                                <td>특수 데이터</td>
+                                <td>cost = {1, 100, 1, 1, 1, 100, 1, 1, 100, 1}</td>
+                                <td>6 (비용 100인 계단 3개를 모두 건너뛰는 경로)</td>
+                            </tr>
+                            <tr>
+                                <td>경계 조건</td>
+                                <td>cost = {10, 15} (최소 크기 n=2)</td>
+                                <td>10 (0번을 밟고 2칸 올라 꼭대기)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>자기 점검표</h3>
+                <ul class="checklist">
+                    <li><input type="checkbox" id="check1"><label for="check1">프로그램이 컴파일되는가?</label></li>
+                    <li><input type="checkbox" id="check2"><label for="check2">dp[i]의 정의를 주석(또는 말)로 정확히 설명할 수 있는가?</label></li>
+                    <li><input type="checkbox" id="check3"><label for="check3">기저 조건 dp[0], dp[1]이 cost 값으로 채워지는가?</label></li>
+                    <li><input type="checkbox" id="check4"><label for="check4">세 테스트 모두 완전 탐색과 일치(true)하는가?</label></li>
+                    <li><input type="checkbox" id="check5"><label for="check5">n=2 경계에서도 예외 없이 답 10이 나오는가?</label></li>
+                    <li><input type="checkbox" id="check6"><label for="check6">왜 답이 min(dp[n-1], dp[n-2])인지 설명할 수 있는가?</label></li>
+                </ul>
+
+                <h3>추가 도전 과제</h3>
+                <ol>
+                    <li><strong>경로 복원:</strong> 응용 예제의 <code>reconstruct</code>처럼 테이블을 역추적해서
+                        실제로 밟은 계단 번호를 출력해 보세요. (테스트 2의 답: 0 → 2 → 4 → 6 → 7 → 9)</li>
+                    <li><strong>공간 최적화:</strong> 점화식이 직전 두 칸만 참조하므로 변수 2개 버전
+                        <code>minTotalCostTwoVars</code>를 만들고 결과가 같은지 확인하세요.</li>
+                    <li><strong>3칸 점프 아이템:</strong> 한 번에 3칸까지 오를 수 있다면 전이가 어떻게 바뀔까요?
+                        min의 후보가 3개가 되도록 고치고, 완전 탐색도 함께 고쳐 검증하세요.</li>
+                </ol>
+            </section>
+
+            <!-- 17. 최종 문제 정답과 해설 -->
+            <section class="lesson-section" id="sec-answer" aria-labelledby="h-answer">
+                <h2 id="h-answer" data-toc-label="최종 문제 정답과 해설"><span class="section-no">17</span>최종 문제 정답과 해설</h2>
+                <p>스스로 충분히 시도한 뒤에 여세요. 막혔다면 점화식 3단계(정의 → 기저 → 전이)를 종이에 다시 써 보는 것이 가장 빠른 길입니다.</p>
+
+                <details class="answer-box">
+                    <summary>정답 코드와 해설 확인</summary>
+                    <div class="answer-box__content">
+                        <article class="code-card">
+                            <header class="code-card__header">
+                                <div class="code-card__info">
+                                    <span class="code-card__language">Java</span>
+                                    <strong class="code-card__filename">MinCostStairsSolution.java</strong>
+                                </div>
+                                <button type="button" class="copy-code-button" data-copy-target="code-solution" aria-label="MinCostStairsSolution.java 코드 복사">코드 복사</button>
+                            </header>
+                            <pre><code id="code-solution" class="language-java">public class MinCostStairsSolution {
+
+    /**
+     * dp[i] = "i번 계단을 밟고 서 있기"까지의 최소 비용.
+     * 바닥에서 첫 발은 0번 또는 1번 계단에 바로 올릴 수 있다.
+     */
+    static long[] buildDpTable(int[] cost) {
+        int n = cost.length;
+        long[] dp = new long[n];
+
+        dp[0] = cost[0];                    // 기저 조건: 바닥에서 바로 밟는다
+        dp[1] = cost[1];
+
+        for (int i = 2; i &lt; n; i++) {
+            // 점화식: i-1번에서 1칸 오르거나, i-2번에서 2칸 오르거나 — 싼 쪽을 고른다
+            dp[i] = cost[i] + Math.min(dp[i - 1], dp[i - 2]);
+        }
+        return dp;
+    }
+
+    /** 꼭대기(마지막 계단 다음)까지의 최소 비용 */
+    static long minTotalCost(int[] cost) {
+        long[] dp = buildDpTable(cost);
+        int n = cost.length;
+        // 꼭대기에는 마지막 계단(n-1)에서 1칸, 또는 그 아래(n-2)에서 2칸 올라 도착한다
+        return Math.min(dp[n - 1], dp[n - 2]);
+    }
+
+    /** 검증용 완전 탐색(3강): i번 계단을 밟은 뒤 꼭대기까지의 모든 경로를 시도한다. */
+    static long bruteForceFrom(int[] cost, int i) {
+        if (i &gt;= cost.length) {
+            return 0;                       // 이미 꼭대기
+        }
+        long stepOne = bruteForceFrom(cost, i + 1);
+        long stepTwo = bruteForceFrom(cost, i + 2);
+        return cost[i] + Math.min(stepOne, stepTwo);
+    }
+
+    static long bruteForceMin(int[] cost) {
+        return Math.min(bruteForceFrom(cost, 0), bruteForceFrom(cost, 1));
+    }
+
+    public static void main(String[] args) {
+        int[][] tests = {
+                {10, 15, 20},
+                {1, 100, 1, 1, 1, 100, 1, 1, 100, 1},
+                {10, 15}
+        };
+
+        for (int[] cost : tests) {
+            long[] dp = buildDpTable(cost);
+            long dpAnswer = minTotalCost(cost);
+            long bruteAnswer = bruteForceMin(cost);
+            System.out.println("계단 비용 " + java.util.Arrays.toString(cost));
+            System.out.println("  DP 테이블   = " + java.util.Arrays.toString(dp));
+            System.out.println("  DP 최소 비용 = " + dpAnswer
+                    + ", 완전 탐색 검증 = " + bruteAnswer
+                    + ", 일치 = " + (dpAnswer == bruteAnswer));
+            System.out.println();
+        }
+    }
+}</code></pre>
+                        </article>
+                        <article class="code-card code-card--output">
+                            <header class="code-card__header">
+                                <div class="code-card__info">
+                                    <span class="code-card__language">출력</span>
+                                    <strong class="code-card__filename">실행 결과</strong>
+                                </div>
+                                <button type="button" class="copy-code-button" data-copy-target="out-solution" aria-label="정답 실행 결과 복사">복사</button>
+                            </header>
+                            <pre><code id="out-solution">계단 비용 [10, 15, 20]
+  DP 테이블   = [10, 15, 30]
+  DP 최소 비용 = 15, 완전 탐색 검증 = 15, 일치 = true
+
+계단 비용 [1, 100, 1, 1, 1, 100, 1, 1, 100, 1]
+  DP 테이블   = [1, 100, 2, 3, 3, 103, 4, 5, 104, 6]
+  DP 최소 비용 = 6, 완전 탐색 검증 = 6, 일치 = true
+
+계단 비용 [10, 15]
+  DP 테이블   = [10, 15]
+  DP 최소 비용 = 10, 완전 탐색 검증 = 10, 일치 = true</code></pre>
+                        </article>
+
+                        <h4>구현 순서와 핵심 알고리즘 적용 부분</h4>
+                        <ol>
+                            <li><strong>정의가 절반입니다.</strong> dp[i]를 "i번 계단을 <strong>밟고</strong> 서 있기까지의 최소 비용"으로
+                                정의했기 때문에 전이가 <code>cost[i] + min(...)</code> 한 줄로 떨어집니다.
+                                "i번 계단을 지나가기까지"처럼 모호하게 정의하면 전이를 쓸 수 없습니다.</li>
+                            <li><strong>기저 조건:</strong> 첫 발은 0번 또는 1번에 바로 올릴 수 있으므로
+                                dp[0] = cost[0], dp[1] = cost[1]. dp[1]에 dp[0]을 더하지 않는 것이 포인트입니다.</li>
+                            <li><strong>전이:</strong> i번 계단에 도착하는 직전 상태는 i-1번 아니면 i-2번뿐 —
+                                "마지막 걸음으로 나누기"라는 계단 오르기의 논리가 min으로 바뀌었을 뿐입니다.</li>
+                            <li><strong>답 읽기:</strong> 꼭대기는 계단이 아니므로 테이블 밖에 있습니다.
+                                꼭대기 직전 상태(n-1 또는 n-2) 중 싼 쪽이 답입니다.</li>
+                            <li><strong>검증:</strong> 테스트 2에서 완전 탐색은 2^10 수준의 경로를 모두 확인해 6을 내고,
+                                DP는 덧셈·비교 몇 번으로 같은 6을 냅니다 — 정확성은 같고 일의 양만 다릅니다.</li>
+                        </ol>
+
+                        <h4>복잡도 분석</h4>
+                        <ul>
+                            <li>DP: 테이블 n칸 × 칸당 O(1) = <strong>시간 O(n), 공간 O(n)</strong>
+                                (변수 2개 최적화 시 공간 O(1)).</li>
+                            <li>완전 탐색: 경로 수가 피보나치처럼 늘어나 <strong>O(2ⁿ)</strong> —
+                                n=10,000 제한에서는 DP만 감당할 수 있습니다.</li>
+                        </ul>
+
+                        <h4>자주 발생하는 오류</h4>
+                        <ul>
+                            <li>dp[1]을 <code>cost[0] + cost[1]</code>로 채우는 실수 — 첫 발은 1번 계단에 <strong>바로</strong> 올릴 수 있습니다.</li>
+                            <li>답을 <code>dp[n - 1]</code>로만 읽는 실수 — 마지막 계단을 밟지 않고 n-2에서 2칸 올라가는 더 싼 경로를 놓칩니다. (테스트 1이 이 경우: 답은 dp[2]=30이 아니라 dp[1]=15)</li>
+                            <li>반복 범위를 <code>i &lt;= n</code>으로 써서 <code>dp[n]</code>에 접근 — 이 테이블은 크기가 n이므로 오류 2(테이블 크기)와 같은 예외가 납니다.</li>
+                        </ul>
+
+                        <h4>다른 해결 방법</h4>
+                        <p>
+                            같은 점화식을 <strong>탑다운(메모이제이션)</strong>으로도 구현할 수 있습니다.
+                            <code>minCostFrom(i)</code> = "i번 계단부터 꼭대기까지의 최소 비용"으로 정의하면
+                            <code>bruteForceFrom</code>에 memo 배열만 붙인 형태가 됩니다 —
+                            검증용 완전 탐색과 정답 DP가 사실 같은 식의 두 구현이라는 것을 확인해 보세요.
+                        </p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- 18. 확인 퀴즈 -->
+            <section class="lesson-section" id="sec-quiz" aria-labelledby="h-quiz">
+                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">18</span>확인 퀴즈</h2>
+                <div id="quiz-root"></div>
+            </section>
+
+            <!-- 19. 오늘의 핵심 정리 -->
+            <section class="lesson-section" id="sec-summary" aria-labelledby="h-summary">
+                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">19</span>오늘의 핵심 정리</h2>
+                <ul>
+                    <li><strong>동적 계획법(DP)</strong>은 작은 문제의 답을 <strong>저장하고 재사용</strong>하는 설계 기법이다.
+                        성립 조건은 <strong>중복 부분 문제</strong>와 <strong>최적 부분 구조</strong> 두 가지.</li>
+                    <li>순수 재귀 피보나치는 n=35에서 <strong>29,860,703번</strong> 호출된다(실측).
+                        답을 저장하면 <strong>69번</strong> — O(2ⁿ)이 O(n)이 된다.</li>
+                    <li>DP의 설계도는 <strong>점화식</strong>이며, 세우는 순서는
+                        <strong>① 정의(dp[i]를 문장으로) → ② 기저 조건 → ③ 전이</strong>다. 코드는 그다음이다.</li>
+                    <li>같은 점화식의 두 구현: <strong>메모이제이션</strong>(탑다운, 재귀+저장)과
+                        <strong>타뷸레이션</strong>(바텀업, 반복문+테이블). 기본은 바텀업.</li>
+                    <li>점화식이 직전 몇 칸만 참조하면 테이블을 <strong>변수 몇 개로 압축</strong>할 수 있다(공간 O(1)).</li>
+                    <li>그리디는 선택 하나를 확정하지만, DP는 점화식으로 <strong>모든 선택을 비교</strong>한다 —
+                        그래서 동전 {1, 60, 100}의 120원에서 그리디는 21개, DP는 2개.</li>
+                    <li>DP 테이블에는 최적값뿐 아니라 <strong>답을 복원할 정보</strong>도 들어 있다(역추적).</li>
+                </ul>
+                <div id="lesson-complete-slot"></div>
+            </section>
+
+            <!-- 20. 다음 강의 연결 -->
+            <section class="lesson-section" id="sec-next" aria-labelledby="h-next">
+                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">20</span>다음 강의 연결</h2>
+                <p>
+                    다음 강의는 <strong>12강. 최단 경로 알고리즘</strong>입니다.
+                    9강의 그래프, 10강의 그리디, 그리고 오늘의 점화식이 한 문제에서 만납니다.
+                </p>
+                <ul>
+                    <li>다익스트라의 <strong>거리 갱신</strong>
+                        <code>dist[v] = min(dist[v], dist[u] + w)</code>는 —
+                        오늘 동전 문제의 <code>dp[money] = min(dp[money - coin] + 1)</code>과 같은 모양의
+                        <strong>점화식</strong>입니다. "거리 갱신도 점화식"이라는 눈으로 보면 다익스트라가 훨씬 쉽게 읽힙니다.</li>
+                    <li>다익스트라는 "가장 가까운 정점부터 확정"하는 <strong>그리디 선택</strong>(10강)과
+                        우선순위 큐(6강)를 함께 씁니다 — 그리디가 이번엔 왜 옳은지도 다룹니다.</li>
+                    <li>오늘 배운 <strong>역추적</strong>(테이블에서 답 복원)이 최단 경로의 <strong>경로 복원</strong>으로 확장됩니다.</li>
+                </ul>
+                <div id="lesson-pager"></div>
+            </section>
+
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <p>Algorithm Learning Lab — 초보 개발자를 위한 필수 알고리즘 · 11강. 동적 계획법</p>
+    </footer>
+
+    <script src="../assets/js/algorithms-data.js"></script>
+    <script src="../assets/js/progress.js"></script>
+    <script src="../assets/js/common.js"></script>
+    <script src="../assets/js/code-copy.js"></script>
+    <script src="../assets/js/visualization.js"></script>
+    <script src="../assets/js/quiz.js"></script>
+    <script>
+        /* ===== 시각화: 계단 오르기 DP 테이블 채우기 ===== */
+        (function () {
+            function makeSteps(n) {
+                var steps = [];
+                var dp = new Array(n + 1);
+
+                function tableView(currentIdx, refA, refB, doneUpTo) {
+                    var cells = [];
+                    for (var i = 1; i <= n; i++) {
+                        var cls = "";
+                        if (i <= doneUpTo) cls = "done";
+                        if (i === refA || i === refB) cls = "compare";
+                        if (i === currentIdx) cls = "current";
+                        cells.push({
+                            v: dp[i] === undefined ? "·" : dp[i],
+                            sub: "dp[" + i + "]",
+                            cls: cls
+                        });
+                    }
+                    return { type: "array", label: "DP 테이블 — dp[i] = i칸 계단을 오르는 방법의 수", cells: cells };
+                }
+
+                steps.push({
+                    caption: "계단 " + n + "칸. 빈 테이블에서 시작합니다. 점화식: dp[i] = dp[i-1] + dp[i-2]",
+                    counters: { "덧셈": 0 },
+                    view: [tableView(-1, -1, -1, 0), { type: "note", text: "① 정의: dp[i] = i칸을 오르는 방법의 수 / ② 기저: dp[1]=1, dp[2]=2 / ③ 전이: 앞의 두 칸을 더한다" }]
+                });
+
+                dp[1] = 1;
+                steps.push({
+                    caption: "기저 조건: dp[1] = 1 (1칸은 [1] 한 가지)",
+                    counters: { "덧셈": 0 },
+                    view: [tableView(1, -1, -1, 0)]
+                });
+
+                dp[2] = 2;
+                steps.push({
+                    caption: "기저 조건: dp[2] = 2 (2칸은 [1+1], [2] 두 가지)",
+                    counters: { "덧셈": 0 },
+                    view: [tableView(2, -1, -1, 1)]
+                });
+
+                var addCount = 0;
+                for (var i = 3; i <= n; i++) {
+                    steps.push({
+                        caption: "dp[" + i + "]를 채울 차례 — 점화식이 참조하는 dp[" + (i - 1) + "]=" + dp[i - 1] + ", dp[" + (i - 2) + "]=" + dp[i - 2] + "는 이미 확정되어 있습니다.",
+                        counters: { "덧셈": addCount },
+                        view: [tableView(i, i - 1, i - 2, i - 1)]
+                    });
+
+                    dp[i] = dp[i - 1] + dp[i - 2];   // 실제 바텀업 DP 그대로
+                    addCount++;
+
+                    steps.push({
+                        caption: "dp[" + i + "] = dp[" + (i - 1) + "] + dp[" + (i - 2) + "] = " + dp[i - 1] + " + " + dp[i - 2] + " = " + dp[i],
+                        counters: { "덧셈": addCount },
+                        view: [
+                            tableView(i, -1, -1, i - 1),
+                            { type: "note", text: "덧셈 한 번으로 칸 하나가 확정됩니다." }
+                        ]
+                    });
+                }
+
+                steps.push({
+                    caption: "완료! " + n + "칸 계단을 오르는 방법은 dp[" + n + "] = " + dp[n] + "가지. 덧셈 " + addCount + "번으로 끝났습니다 — O(n)입니다.",
+                    counters: { "덧셈": addCount },
+                    view: [tableView(-1, -1, -1, n)]
+                });
+
+                return steps;
+            }
+
+            AlgoViz.create({
+                mount: "#viz-dp-table",
+                title: "계단 오르기 — 바텀업 DP 테이블 채우기",
+                legend: ["compare", "current", "done"],
+                initialInput: 8,
+                makeSteps: makeSteps,
+                makeInput: function () {
+                    return 5 + Math.floor(Math.random() * 6); // 5 ~ 10칸
+                }
+            });
+        })();
+
+        /* ===== 확인 퀴즈 ===== */
+        AlgoQuiz.init("#quiz-root", "dynamic-programming", [
+            {
+                type: "mc",
+                q: "동적 계획법이 위력을 발휘하기 위한 두 가지 조건은 무엇인가요?",
+                choices: [
+                    "정렬된 입력과 우선순위 큐",
+                    "중복 부분 문제와 최적 부분 구조",
+                    "재귀 호출과 호출 스택",
+                    "큰 동전과 작은 동전의 배수 관계"
+                ],
+                answer: 1,
+                explain: "같은 작은 문제가 반복 등장해야 저장의 이득이 있고(중복 부분 문제), 작은 답으로 큰 답을 조립할 수 있어야 점화식이 성립합니다(최적 부분 구조)."
+            },
+            {
+                type: "mc",
+                q: "점화식 dp[i] = dp[i-1] + dp[i-2]로 dp[10]을 계산할 때 직접 참조하는 값은 무엇인가요?",
+                choices: [
+                    "dp[0]과 dp[1]",
+                    "dp[9]와 dp[8]",
+                    "dp[1]부터 dp[9]까지 전부",
+                    "dp[10] 자기 자신"
+                ],
+                answer: 1,
+                explain: "전이는 직전 두 칸 dp[9], dp[8]만 봅니다. 그래서 이 점화식은 변수 2개로 공간 최적화가 가능합니다."
+            },
+            {
+                type: "mc",
+                q: "메모이제이션과 타뷸레이션에 대한 설명으로 옳은 것은 무엇인가요?",
+                choices: [
+                    "메모이제이션은 반복문으로 표를 앞에서부터 채운다",
+                    "타뷸레이션은 재귀 호출이 필수라서 StackOverflow 위험이 있다",
+                    "타뷸레이션은 작은 문제부터 반복문으로 표를 채우므로 호출 스택을 쓰지 않는다",
+                    "두 방식은 점화식 자체가 서로 다르다"
+                ],
+                answer: 2,
+                explain: "점화식은 같고 계산 순서만 다릅니다. 메모이제이션은 재귀(탑다운), 타뷸레이션은 반복문(바텀업)이며, 반복문 방식은 호출 스택을 쓰지 않습니다."
+            },
+            {
+                type: "tf",
+                q: "메모이제이션은 탑다운(위에서 아래로), 타뷸레이션은 바텀업(아래에서 위로) 방식이다.",
+                answer: true,
+                explain: "메모이제이션은 큰 문제에서 시작해 필요한 작은 문제를 재귀로 구해 오고, 타뷸레이션은 기저 조건부터 표를 차례로 채워 올라갑니다."
+            },
+            {
+                type: "tf",
+                q: "동전 {1, 60, 100}으로 120원을 만들 때, 그리디와 DP는 항상 같은 개수를 답한다.",
+                answer: false,
+                explain: "그리디는 100원을 먼저 집어 100 + 1x20 = 21개, DP는 모든 동전을 점화식으로 비교해 60+60 = 2개를 찾습니다. 이 동전 구성에서는 그리디가 최적을 보장하지 못합니다."
+            },
+            {
+                type: "predict",
+                q: "다음 코드의 출력은 무엇인가요? (계단 오르기 바텀업 DP)",
+                code: "int n = 6;\nlong[] dp = new long[n + 1];\ndp[1] = 1;\ndp[2] = 2;\nfor (int i = 3; i <= n; i++) {\n    dp[i] = dp[i - 1] + dp[i - 2];\n}\nSystem.out.println(dp[n]);",
+                choices: ["8", "11", "13", "21"],
+                answer: 2,
+                explain: "테이블은 1, 2, 3, 5, 8, 13으로 채워집니다. dp[6] = dp[5] + dp[4] = 8 + 5 = 13입니다."
+            },
+            {
+                type: "predict",
+                q: "메모이제이션 피보나치로 fibo(5)를 계산하면 fibo는 총 몇 번 호출되나요? (memo 조회로 즉시 반환되는 호출도 포함)",
+                code: "static long fibo(int n) {\n    callCount++;\n    if (n <= 1) return n;\n    if (memo[n] != 0) return memo[n];\n    memo[n] = fibo(n - 1) + fibo(n - 2);\n    return memo[n];\n}\n// memo = new long[6]; fibo(5); 호출",
+                choices: ["5번", "9번", "15번", "25번"],
+                answer: 1,
+                explain: "각 값을 실제로 계산하는 것은 한 번씩이고, 저장된 답을 꺼내는 호출이 조금 더해져 2n - 1 = 9번입니다. 순수 재귀라면 15번입니다."
+            },
+            {
+                type: "fill",
+                q: "dp[0]부터 dp[n]까지 모두 사용하는 DP 테이블을 선언하려고 합니다. 빈칸을 채우세요. long[] dp = new long[____];",
+                accept: ["n + 1", "n+1", "(n + 1)", "(n+1)"],
+                explain: "인덱스 0부터 n까지는 n + 1칸입니다. new long[n]으로 선언하면 dp[n] 접근에서 ArrayIndexOutOfBoundsException이 납니다 (오류 2)."
+            },
+            {
+                type: "debug",
+                q: "다음 메모이제이션 코드는 실행하면 ArrayIndexOutOfBoundsException: Index -1이 납니다. 원인은 무엇인가요?",
+                code: "static long fibo(int n) {\n    if (memo[n] != 0) {\n        return memo[n];\n    }\n    memo[n] = fibo(n - 1) + fibo(n - 2);\n    return memo[n];\n}",
+                choices: [
+                    "memo 배열을 long 대신 int로 선언해야 한다",
+                    "기저 조건(n <= 1이면 n 반환)이 없어 재귀가 음수까지 내려간다",
+                    "memo[n]에 저장하기 전에 반환해야 한다",
+                    "fibo(n - 2) 대신 fibo(n + 2)를 불러야 한다"
+                ],
+                answer: 1,
+                explain: "메모이제이션도 재귀이므로 기저 조건이 필수입니다. 멈출 곳이 없어 n이 -1까지 내려가 memo[-1]에서 예외가 납니다."
+            },
+            {
+                type: "think",
+                q: "같은 점화식을 메모이제이션(탑다운)과 타뷸레이션(바텀업)으로 모두 구현할 수 있습니다. 각 방식이 유리한 상황을 오늘 배운 내용(계산 범위, 호출 스택)과 연결해 설명해 보세요.",
+                modelAnswer: "메모이제이션은 점화식 정의를 거의 그대로 옮기므로 직관적이고, 전체 칸 중 실제로 필요한 부분 문제만 계산하므로 필요 칸이 드문 문제에서 유리합니다. 다만 재귀라서 n이 아주 크면 호출 스택이 넘칠 수 있습니다. 타뷸레이션은 채우는 순서를 직접 정해야 하지만 반복문이라 호출 스택을 쓰지 않고 대체로 더 빠르며, 계단 오르기처럼 어차피 모든 칸이 필요한 문제에 적합합니다. 또 직전 몇 칸만 참조하면 변수 몇 개로 공간을 O(1)로 줄일 수도 있습니다."
+            }
+        ]);
+    </script>
+</body>
+</html>

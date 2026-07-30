@@ -1,0 +1,420 @@
+/* ============================================================
+   알고리즘 시각화 엔진(visualization.js) 스타일
+   상태 색 의미:
+   - 앰버  = 지금 비교/검사 중
+   - 블루  = 현재 위치/방문
+   - 그린  = 확정/정렬 완료/발견
+   - 레드  = 오류/실패/제거
+   ============================================================ */
+
+.viz {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-m);
+    background: var(--surface);
+    margin: 20px 0;
+    overflow: hidden;
+}
+
+.viz__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding: 12px 18px;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--line);
+}
+
+.viz__title {
+    font-weight: 800;
+    font-size: 0.98rem;
+    margin: 0;
+}
+
+.viz__counter {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    color: var(--ink-faint);
+}
+
+.viz__stage {
+    padding: 22px 18px;
+    min-height: 120px;
+    display: grid;
+    gap: 18px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.viz__group-label {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--ink-faint);
+    margin: 0 0 7px;
+}
+
+/* ---------- 배열 ---------- */
+.viz-array {
+    display: flex;
+    gap: 7px;
+    flex-wrap: wrap;
+}
+
+.viz-cell {
+    min-width: 52px;
+    padding: 10px 6px 4px;
+    border: 2px solid var(--line-strong);
+    border-radius: 9px;
+    background: var(--surface);
+    text-align: center;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--ink);
+    transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+}
+
+.viz-cell small {
+    display: block;
+    font-size: 0.64rem;
+    font-weight: 400;
+    color: var(--ink-faint);
+    margin-top: 2px;
+}
+
+.viz-cell--compare {
+    border-color: var(--state-compare);
+    background: var(--state-compare-bg);
+    transform: translateY(-4px);
+}
+
+.viz-cell--current {
+    border-color: var(--state-visit);
+    background: var(--state-visit-bg);
+    transform: translateY(-4px);
+}
+
+.viz-cell--done {
+    border-color: var(--state-done);
+    background: var(--state-done-bg);
+}
+
+.viz-cell--found {
+    border-color: var(--state-done);
+    background: var(--state-done);
+    color: #fff;
+}
+
+.viz-cell--error {
+    border-color: var(--state-error);
+    background: var(--state-error-bg);
+}
+
+.viz-cell--min {
+    border-color: var(--state-compare);
+    background: var(--surface);
+    box-shadow: inset 0 0 0 2px var(--state-compare-bg);
+}
+
+.viz-cell--faded {
+    opacity: 0.35;
+}
+
+.viz-cell--updated {
+    border-color: var(--state-compare);
+    background: var(--state-compare-bg);
+}
+
+/* ---------- 스택 / 큐 ---------- */
+.viz-stack,
+.viz-queue {
+    display: flex;
+    gap: 7px;
+    align-items: flex-end;
+}
+
+.viz-stack {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    min-height: 60px;
+}
+
+.viz-stack .viz-cell,
+.viz-queue .viz-cell {
+    min-width: 62px;
+}
+
+.viz-endcap {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--ink-faint);
+    align-self: center;
+    white-space: nowrap;
+}
+
+/* ---------- 표 (DP 테이블, 인접 행렬, 거리 배열) ---------- */
+.viz-table {
+    border-collapse: collapse;
+    font-family: var(--font-mono);
+    font-size: 0.86rem;
+}
+
+.viz-table th,
+.viz-table td {
+    border: 1.5px solid var(--line);
+    min-width: 44px;
+    padding: 7px 9px;
+    text-align: center;
+}
+
+.viz-table th {
+    background: var(--surface-2);
+    color: var(--ink-faint);
+    font-weight: 600;
+    font-size: 0.76rem;
+}
+
+.viz-table td.viz-cell--compare,
+.viz-table td.viz-cell--current,
+.viz-table td.viz-cell--done,
+.viz-table td.viz-cell--updated,
+.viz-table td.viz-cell--error,
+.viz-table td.viz-cell--faded {
+    transform: none;
+}
+
+/* ---------- 그래프 / 트리 (SVG) ---------- */
+.viz-svg {
+    width: 100%;
+    max-width: 560px;
+    height: auto;
+    display: block;
+}
+
+.viz-svg .edge {
+    stroke: var(--line-strong);
+    stroke-width: 2;
+    fill: none;
+}
+
+.viz-svg .edge--active {
+    stroke: var(--state-compare);
+    stroke-width: 3.5;
+}
+
+.viz-svg .edge--done {
+    stroke: var(--state-done);
+    stroke-width: 3;
+}
+
+.viz-svg .edge--faded {
+    opacity: 0.25;
+}
+
+.viz-svg .edge-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    fill: var(--ink-soft);
+}
+
+.viz-svg .node circle,
+.viz-svg .node rect {
+    fill: var(--surface);
+    stroke: var(--line-strong);
+    stroke-width: 2;
+}
+
+.viz-svg .node text {
+    fill: var(--ink);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 700;
+    text-anchor: middle;
+    dominant-baseline: central;
+}
+
+.viz-svg .node--current circle,
+.viz-svg .node--current rect {
+    fill: var(--state-visit-bg);
+    stroke: var(--state-visit);
+    stroke-width: 3;
+}
+
+.viz-svg .node--compare circle,
+.viz-svg .node--compare rect {
+    fill: var(--state-compare-bg);
+    stroke: var(--state-compare);
+    stroke-width: 3;
+}
+
+.viz-svg .node--done circle,
+.viz-svg .node--done rect {
+    fill: var(--state-done-bg);
+    stroke: var(--state-done);
+}
+
+.viz-svg .node--visited circle,
+.viz-svg .node--visited rect {
+    fill: var(--state-visit-bg);
+    stroke: var(--state-visit);
+}
+
+.viz-svg .node-sub {
+    font-size: 10px !important;
+    font-weight: 400 !important;
+    fill: var(--ink-faint) !important;
+}
+
+/* ---------- 호출 스택 / 로그 ---------- */
+.viz-frames {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 5px;
+    max-width: 340px;
+}
+
+.viz-frame {
+    font-family: var(--font-mono);
+    font-size: 0.84rem;
+    border: 1.5px solid var(--line-strong);
+    border-radius: 7px;
+    background: var(--surface);
+    padding: 6px 12px;
+}
+
+.viz-frame--current {
+    border-color: var(--state-visit);
+    background: var(--state-visit-bg);
+    font-weight: 700;
+}
+
+.viz-frame--done {
+    border-color: var(--state-done);
+    background: var(--state-done-bg);
+}
+
+.viz-note {
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+    background: var(--surface-2);
+    border-radius: var(--radius-s);
+    padding: 10px 14px;
+    margin: 0;
+}
+
+/* ---------- 캡션 / 카운터 ---------- */
+.viz__caption {
+    padding: 12px 18px;
+    border-top: 1px dashed var(--line);
+    color: var(--ink);
+    font-size: 0.95rem;
+    min-height: 46px;
+}
+
+.viz__caption strong {
+    color: var(--brand);
+}
+
+.viz__stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 0 18px 12px;
+}
+
+.viz__stat {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 3px 12px;
+    color: var(--ink-soft);
+}
+
+.viz__stat b {
+    color: var(--ink);
+}
+
+/* ---------- 조작부 ---------- */
+.viz__controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 18px 16px;
+    border-top: 1px solid var(--line);
+    background: var(--surface-2);
+}
+
+.viz__controls .button {
+    padding: 7px 14px;
+    font-size: 0.88rem;
+}
+
+.viz__speed {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.84rem;
+    color: var(--ink-soft);
+    margin-left: auto;
+}
+
+.viz__speed select {
+    font: inherit;
+    padding: 5px 8px;
+    border-radius: 7px;
+    border: 1px solid var(--line-strong);
+    background: var(--surface);
+    color: var(--ink);
+}
+
+/* 범례 */
+.viz-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 10px 18px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+}
+
+.viz-legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.viz-legend i {
+    width: 14px;
+    height: 14px;
+    border-radius: 4px;
+    border: 2px solid var(--line-strong);
+    background: var(--surface);
+}
+
+.viz-legend i.lg-compare { border-color: var(--state-compare); background: var(--state-compare-bg); }
+.viz-legend i.lg-current { border-color: var(--state-visit); background: var(--state-visit-bg); }
+.viz-legend i.lg-done { border-color: var(--state-done); background: var(--state-done-bg); }
+.viz-legend i.lg-error { border-color: var(--state-error); background: var(--state-error-bg); }
+
+@media (max-width: 640px) {
+    .viz__stage {
+        padding: 16px 12px;
+    }
+
+    .viz-cell {
+        min-width: 42px;
+        font-size: 0.88rem;
+    }
+
+    .viz__speed {
+        margin-left: 0;
+        width: 100%;
+    }
+}

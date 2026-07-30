@@ -1,0 +1,2 @@
+교환 전: prices[0] = 26, prices[1] = 15
+교환 후: prices[0] = 15, prices[1] = 15

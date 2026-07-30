@@ -1,0 +1,2468 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>6강. 스택과 큐를 활용한 작업 처리 — 초보 개발자를 위한 필수 알고리즘</title>
+    <meta name="description" content="LIFO 스택과 FIFO 큐의 동작을 구현하고 괄호 검사, 실행 취소, 고객 대기열 기능을 가진 작업 관리 프로그램을 만듭니다.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect x='8' y='55' width='20' height='38' rx='5' fill='%23e28800'/><rect x='40' y='25' width='20' height='68' rx='5' fill='%232b50e0'/><rect x='72' y='40' width='20' height='53' rx='5' fill='%230e9f6e'/></svg>">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+    <link rel="stylesheet" href="../assets/css/common.css">
+    <link rel="stylesheet" href="../assets/css/lesson.css">
+    <link rel="stylesheet" href="../assets/css/code.css">
+    <link rel="stylesheet" href="../assets/css/visualization.css">
+    <link rel="stylesheet" href="../assets/css/quiz.css">
+    <link rel="stylesheet" href="../assets/css/print.css">
+    <script src="../assets/js/theme.js"></script>
+</head>
+<body data-lesson-id="stack-and-queue" data-lesson-order="6">
+    <a class="skip-link" href="#sec-intro">본문으로 건너뛰기</a>
+
+    <header class="site-header" data-site-header></header>
+
+    <div class="lesson-layout">
+        <!-- 강의 헤더 -->
+        <section class="lesson-hero" aria-labelledby="lesson-title">
+            <p class="lesson-hero__eyebrow">LESSON 06 / 13</p>
+            <h1 id="lesson-title">스택과 큐를 활용한 작업 처리</h1>
+            <p class="lesson-hero__english">Task Processing with Stacks and Queues</p>
+            <div class="lesson-hero__meta">
+                <span class="badge badge--category">자료구조</span>
+                <span class="badge badge--beginner">초급</span>
+                <span class="badge">Java 17+</span>
+            </div>
+            <p class="lesson-hero__desc">
+                데이터를 "어떤 순서로 꺼내느냐"는 규칙 하나가 자료구조를 결정합니다.
+                이번 강의에서는 나중에 넣은 것을 먼저 꺼내는 <strong>스택(LIFO)</strong>과
+                먼저 넣은 것을 먼저 꺼내는 <strong>큐(FIFO)</strong>를 배열로 직접 구현하고,
+                괄호 짝 검사와 고객 대기열 처리 같은 실제 작업에 적용합니다.
+            </p>
+            <div class="lesson-hero__actions">
+                <button type="button" class="button" data-print="student">🖨 학생용 인쇄 (정답 숨김)</button>
+                <button type="button" class="button" data-print="instructor">🖨 교수자용 인쇄 (정답 포함)</button>
+            </div>
+        </section>
+
+        <!-- 내부 목차 (common.js가 자동 생성) -->
+        <nav class="lesson-toc" aria-label="이 강의의 목차">
+            <p class="lesson-toc__title">이 강의의 목차</p>
+            <ol id="lesson-toc-list"></ol>
+        </nav>
+
+        <div class="lesson-body">
+
+            <!-- 1. 강의 소개 -->
+            <section class="lesson-section" id="sec-intro" aria-labelledby="h-intro">
+                <h2 id="h-intro" data-toc-label="강의 소개"><span class="section-no">01</span>강의 소개</h2>
+                <p>
+                    지금까지 우리는 배열에 데이터를 담고(2강), 순회하고(2·3강), 정렬하고(4강), 탐색했습니다(5강).
+                    그런데 실제 프로그램에는 "무엇을 저장하느냐"만큼이나
+                    <strong>"어떤 순서로 넣고 꺼내느냐"</strong>가 중요한 작업이 많습니다.
+                    문서 편집기의 실행 취소(Ctrl+Z)는 <strong>가장 최근 작업부터</strong> 되돌리고,
+                    프린터 대기열은 <strong>먼저 보낸 문서부터</strong> 인쇄합니다.
+                </p>
+                <p>
+                    이 두 가지 "꺼내는 순서 규칙"이 바로 오늘의 주인공입니다.
+                    나중에 넣은 것을 먼저 꺼내는 <strong>스택(Stack, LIFO)</strong>과
+                    먼저 넣은 것을 먼저 꺼내는 <strong>큐(Queue, FIFO)</strong>를
+                    2강에서 배운 배열 위에 직접 구현합니다.
+                    스택으로는 <strong>괄호 짝 검사기</strong>를, 큐로는 <strong>주문·고객 대기열 처리</strong>를 만들고,
+                    마지막에는 실행 취소와 대기열 기능을 모두 갖춘 <strong>미니 작업 관리기</strong>를 완성합니다.
+                    표준 라이브러리 <code>ArrayDeque</code>와, "먼저 온 순서" 대신 "중요한 순서"로 꺼내는
+                    <strong>우선순위 큐(PriorityQueue)</strong>도 맛보기로 소개합니다.
+                </p>
+            </section>
+
+            <!-- 2. 학습 목표 -->
+            <section class="lesson-section" id="sec-objectives" aria-labelledby="h-objectives">
+                <h2 id="h-objectives" data-toc-label="학습 목표"><span class="section-no">02</span>학습 목표</h2>
+                <p>이 강의를 마치면 다음을 할 수 있습니다.</p>
+                <ul class="objective-list">
+                    <li>학생은 스택의 LIFO 규칙과 큐의 FIFO 규칙을 실생활 예와 함께 설명할 수 있다.</li>
+                    <li>학생은 배열과 top 변수로 push, pop, peek, isEmpty를 가진 스택을 구현할 수 있다.</li>
+                    <li>학생은 배열과 front·rear 변수로 enqueue, dequeue를 가진 큐를 구현할 수 있다.</li>
+                    <li>학생은 스택을 이용해 괄호 문자열의 짝이 맞는지 검사하는 프로그램을 작성할 수 있다.</li>
+                    <li>학생은 빈 스택·빈 큐에서 꺼내려는 시도를 검사 코드로 안전하게 처리할 수 있다.</li>
+                    <li>학생은 직접 구현한 스택·큐와 <code>ArrayDeque</code>, <code>PriorityQueue</code>의 용도 차이를 설명할 수 있다.</li>
+                </ul>
+            </section>
+
+            <!-- 3. 선수 지식 -->
+            <section class="lesson-section" id="sec-prereq" aria-labelledby="h-prereq">
+                <h2 id="h-prereq" data-toc-label="선수 지식"><span class="section-no">03</span>선수 지식</h2>
+                <p>이 강의는 다음 내용을 이미 알고 있다고 가정합니다. 하나라도 낯설다면 해당 강의를 먼저 복습하세요.</p>
+                <div class="table-scroll">
+                    <table class="data-table">
+                        <thead>
+                            <tr><th scope="col">항목</th><th scope="col">필요한 수준</th><th scope="col">이 강의에서 쓰이는 곳</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>배열 선언과 인덱스 (2강)</td><td><code>new char[8]</code>, <code>arr[i]</code> 읽기·쓰기</td><td>스택·큐의 저장 공간</td></tr>
+                            <tr><td>문자열 순회 (3강)</td><td><code>charAt(i)</code>, <code>length()</code></td><td>괄호 검사 루프</td></tr>
+                            <tr><td>char 비교 (3강)</td><td><code>ch == '('</code>, <code>&amp;&amp;</code>, <code>||</code></td><td>여는·닫는 괄호 판정</td></tr>
+                            <tr><td>static 메서드 (1강)</td><td>매개변수와 반환값이 있는 메서드 작성</td><td><code>push</code>, <code>pop</code>, <code>enqueue</code>, <code>dequeue</code> 분리</td></tr>
+                            <tr><td>StringBuilder (3강)</td><td><code>append</code>로 문자열 조립</td><td>상태 출력, 최종 문제의 문서 편집</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 4. 실제 문제 상황 -->
+            <section class="lesson-section" id="sec-problem" aria-labelledby="h-problem">
+                <h2 id="h-problem" data-toc-label="실제 문제 상황"><span class="section-no">04</span>실제 문제 상황</h2>
+                <p>
+                    여러분이 작은 메모 앱을 만드는 개발팀에 합류했다고 상상해 봅시다.
+                    첫 출근 날, 두 개의 기능 요청이 기다리고 있습니다.
+                    첫째, <strong>실행 취소(Ctrl+Z)</strong> — 사용자가 입력한 내용을 "가장 최근 것부터" 순서대로 되돌려야 합니다.
+                    둘째, <strong>고객 문의 대기열</strong> — 문의를 남긴 고객을 "먼저 등록한 순서대로" 응대해야 합니다.
+                    거기에 팀장이 하나를 더 얹습니다. "메모에 코드 조각을 붙여 넣는 사용자가 많던데,
+                    <strong>괄호 짝이 안 맞으면 경고</strong>해 주는 기능도 넣어 줘."
+                    세 기능 모두 배열만으로 짜려니 "어디에 넣고 어디서 꺼낼지"가 매번 헷갈립니다.
+                    필요한 것은 <strong>꺼내는 순서를 규칙으로 보장하는 데이터 보관함</strong>입니다.
+                </p>
+                <div class="note-box">
+                    <span class="note-box__title">오늘의 핵심 질문</span>
+                    <p>데이터를 보관했다가 꺼낼 때, <strong>"나중에 넣은 것부터"</strong>와 <strong>"먼저 넣은 것부터"</strong> —
+                    두 규칙을 각각 어떤 구조로 구현하고, 어떤 작업에 어느 쪽을 골라야 할까?</p>
+                </div>
+            </section>
+
+            <!-- 5. 사람이 직접 해결해 보기 -->
+            <section class="lesson-section" id="sec-hand" aria-labelledby="h-hand">
+                <h2 id="h-hand" data-toc-label="사람이 직접 해결해 보기"><span class="section-no">05</span>사람이 직접 해결해 보기</h2>
+                <p>
+                    코드를 쓰기 전에, 작은 데이터로 두 가지 작업을 손으로 해 봅니다.
+                    먼저 괄호 검사입니다. 문자열 <strong>"([()])"</strong>의 괄호 짝이 맞는지,
+                    종이에 괄호를 <strong>접시 쌓듯</strong> 쌓아 가며 확인해 봅시다.
+                </p>
+
+                <h3>작업 1 — 괄호 짝 검사를 손으로</h3>
+                <div class="hand-step">
+                    <span class="hand-step__label">STEP 1</span>
+                    <p>
+                        왼쪽부터 한 글자씩 읽습니다. <strong>여는 괄호</strong>를 만나면 접시 더미 위에 올려놓습니다.
+                        '(' → 더미: <code>(</code>. '[' → 더미: <code>( [</code>. '(' → 더미: <code>( [ (</code>.
+                    </p>
+                    <details class="reveal-box">
+                        <summary>질문: 왜 여는 괄호를 "위에 쌓아" 두는 걸까요?</summary>
+                        <div class="reveal-box__content">
+                            <p>닫는 괄호가 나타났을 때 <strong>"가장 최근에 열린 괄호"</strong>와 짝을 맞춰야 하기 때문입니다.
+                            "([()])"에서 첫 ')'의 짝은 처음의 '('가 아니라 <strong>가장 나중에 열린</strong> 세 번째 '('입니다.
+                            "가장 최근 것"이 항상 맨 위에 있도록 쌓아 두면, 비교할 대상을 꺼내는 일이 "맨 위 접시 들기"만큼 쉬워집니다.</p>
+                        </div>
+                    </details>
+                </div>
+                <div class="hand-step">
+                    <span class="hand-step__label">STEP 2</span>
+                    <p>
+                        네 번째 글자 ')'는 <strong>닫는 괄호</strong>입니다. 더미 맨 위의 '('를 내려서 짝인지 확인합니다.
+                        '('와 ')'는 짝 → 통과. 더미: <code>( [</code>.
+                        다섯 번째 ']'도 맨 위 '['와 짝 → 통과. 더미: <code>(</code>.
+                        여섯 번째 ')'도 맨 위 '('와 짝 → 통과. 더미: <code>(비어 있음)</code>.
+                    </p>
+                    <details class="reveal-box">
+                        <summary>질문: 문자열을 다 읽었을 때 더미가 비어 있다는 것은 무엇을 뜻하나요?</summary>
+                        <div class="reveal-box__content">
+                            <p>열린 괄호가 <strong>모두 짝을 만나 닫혔다</strong>는 뜻입니다. 그래서 "([()])"는 유효합니다.
+                            반대로 "((("처럼 더미에 여는 괄호가 남아 있으면, 끝내 닫히지 못한 괄호가 있다는 뜻이므로 무효입니다.</p>
+                        </div>
+                    </details>
+                </div>
+                <div class="hand-step">
+                    <span class="hand-step__label">STEP 3</span>
+                    <p>실패하는 경우도 손으로 확인해 봅시다. "())"를 같은 방법으로 검사해 보세요.</p>
+                    <details class="reveal-box">
+                        <summary>질문: "())"는 몇 번째 글자에서, 왜 실패하나요?</summary>
+                        <div class="reveal-box__content">
+                            <p>'(' 쌓기 → ')'가 맨 위 '('와 짝 → 더미가 비었습니다.
+                            그런데 세 번째 ')'가 왔을 때 <strong>더미가 비어 있어 내릴 접시가 없습니다</strong>.
+                            짝 없는 닫는 괄호 — 즉시 무효 판정입니다.
+                            코드로 옮길 때 이 "빈 더미에서 꺼내려는 시도"를 반드시 검사해야 한다는 것을 기억해 두세요.</p>
+                        </div>
+                    </details>
+                </div>
+                <p>
+                    방금 사용한 접시 더미가 바로 <strong>스택</strong>입니다.
+                    올려놓기가 push, 내리기가 pop — 항상 <strong>맨 위에서만</strong> 넣고 꺼냈습니다.
+                </p>
+
+                <h3>작업 2 — 대기열 처리를 손으로</h3>
+                <div class="hand-step">
+                    <span class="hand-step__label">STEP 4</span>
+                    <p>
+                        이번에는 카페 주문 줄입니다. 김하늘, 이준호가 차례로 줄을 섭니다.
+                        한 명을 처리한 뒤 박서연이 도착합니다. 줄: 이준호, 박서연.
+                    </p>
+                    <details class="reveal-box">
+                        <summary>질문: 방금 처리된 사람은 누구이고, 박서연은 줄의 어디에 섰나요?</summary>
+                        <div class="reveal-box__content">
+                            <p>처리된 사람은 <strong>가장 먼저 온 김하늘</strong>이고, 박서연은 <strong>줄의 맨 뒤</strong>에 섰습니다.
+                            넣는 곳(맨 뒤)과 꺼내는 곳(맨 앞)이 <strong>서로 다른 쪽 끝</strong>이라는 것 —
+                            이것이 스택과의 결정적 차이입니다. 이 구조가 <strong>큐</strong>이고,
+                            줄 서기가 enqueue, 맨 앞 사람 처리가 dequeue입니다.</p>
+                        </div>
+                    </details>
+                </div>
+                <div class="hand-step">
+                    <span class="hand-step__label">STEP 5</span>
+                    <p>같은 데이터로 두 규칙을 비교해 봅시다. 김하늘 → 이준호 → 박서연 순서로 넣고, 셋을 모두 꺼냅니다.</p>
+                    <details class="reveal-box">
+                        <summary>질문: 스택으로 꺼내면 어떤 순서, 큐로 꺼내면 어떤 순서인가요?</summary>
+                        <div class="reveal-box__content">
+                            <p>스택(LIFO): <strong>박서연 → 이준호 → 김하늘</strong> (나중에 넣은 사람부터).
+                            큐(FIFO): <strong>김하늘 → 이준호 → 박서연</strong> (먼저 넣은 사람부터).
+                            저장하는 데이터는 같아도 <strong>꺼내는 규칙이 결과 순서를 완전히 바꿉니다</strong>.
+                            실행 취소에는 스택이, 대기열에는 큐가 맞는 이유입니다.</p>
+                        </div>
+                    </details>
+                </div>
+            </section>
+
+            <!-- 6. 핵심 개념 -->
+            <section class="lesson-section" id="sec-concepts" aria-labelledby="h-concepts">
+                <h2 id="h-concepts" data-toc-label="핵심 개념"><span class="section-no">06</span>핵심 개념</h2>
+
+                <h3>자료구조 = 데이터 + 규칙</h3>
+                <p>
+                    <strong>자료구조</strong>는 데이터를 담는 그릇과, 그 그릇을 다루는 <strong>규칙</strong>의 묶음입니다.
+                    스택과 큐는 저장 공간으로 똑같이 배열을 쓸 수 있습니다. 다른 것은 규칙뿐입니다 —
+                    <strong>어디에 넣고, 어디서 꺼내는가</strong>.
+                    규칙을 좁게 제한한 대가로, 남은 연산들은 전부 O(1)로 빨라지고 코드의 의도가 분명해집니다.
+                </p>
+
+                <h3>스택 (Stack) — LIFO</h3>
+                <p>
+                    스택은 <strong>한쪽 끝(맨 위, top)에서만 넣고 꺼내는</strong> 구조입니다.
+                    나중에 들어간 데이터가 먼저 나오므로 <strong>LIFO(Last-In, First-Out, 후입선출)</strong>라고 부릅니다.
+                    접시 더미, 브라우저 뒤로 가기, 실행 취소, 그리고 7강에서 배울 메서드 호출 스택이 모두 스택입니다.
+                </p>
+                <div class="table-scroll">
+                    <table class="data-table">
+                        <thead>
+                            <tr><th scope="col">연산</th><th scope="col">하는 일</th><th scope="col">배열 구현에서는</th><th scope="col">시간</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>push(v)</code></td><td>맨 위에 v를 올린다</td><td><code>top</code>을 1 올리고 <code>stack[top] = v</code></td><td>O(1)</td></tr>
+                            <tr><td><code>pop()</code></td><td>맨 위 값을 꺼내 제거한다</td><td><code>stack[top]</code>을 읽고 <code>top</code>을 1 내림</td><td>O(1)</td></tr>
+                            <tr><td><code>peek()</code></td><td>맨 위 값을 보기만 한다</td><td><code>stack[top]</code> 읽기 (top 유지)</td><td>O(1)</td></tr>
+                            <tr><td><code>isEmpty()</code></td><td>비었는지 확인한다</td><td><code>top == -1</code> 인지 검사</td><td>O(1)</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p>
+                    <code>top</code>은 "맨 위 칸의 인덱스"입니다. 비어 있을 때는 가리킬 칸이 없으므로
+                    <strong><code>top = -1</code>을 "비어 있음"의 약속</strong>으로 정합니다.
+                    쌓인 개수는 언제나 <code>top + 1</code>입니다.
+                </p>
+
+                <h3>큐 (Queue) — FIFO</h3>
+                <p>
+                    큐는 <strong>뒤(rear)로 넣고 앞(front)에서 꺼내는</strong> 구조입니다.
+                    먼저 들어간 데이터가 먼저 나오므로 <strong>FIFO(First-In, First-Out, 선입선출)</strong>라고 부릅니다.
+                    카페 주문 줄, 프린터 대기열, 고객센터 상담 순번, 그리고 8·9강에서 배울 레벨 순회·BFS가 모두 큐를 사용합니다.
+                </p>
+                <div class="table-scroll">
+                    <table class="data-table">
+                        <thead>
+                            <tr><th scope="col">연산</th><th scope="col">하는 일</th><th scope="col">배열 구현에서는</th><th scope="col">시간</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>enqueue(v)</code></td><td>맨 뒤에 v를 세운다</td><td><code>queue[rear] = v</code> 후 <code>rear</code>를 1 올림</td><td>O(1)</td></tr>
+                            <tr><td><code>dequeue()</code></td><td>맨 앞 값을 꺼내 제거한다</td><td><code>queue[front]</code>를 읽고 <code>front</code>를 1 올림</td><td>O(1)</td></tr>
+                            <tr><td><code>peek()</code></td><td>맨 앞 값을 보기만 한다</td><td><code>queue[front]</code> 읽기 (front 유지)</td><td>O(1)</td></tr>
+                            <tr><td><code>isEmpty()</code></td><td>비었는지 확인한다</td><td><code>front == rear</code> 인지 검사</td><td>O(1)</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p>
+                    <code>front</code>는 "다음에 꺼낼 자리", <code>rear</code>는 "다음에 넣을 자리"입니다.
+                    두 값이 같으면 꺼낼 것이 없다는 뜻 — <strong><code>front == rear</code>가 "비어 있음"의 약속</strong>이고,
+                    대기 중인 개수는 <code>rear - front</code>입니다.
+                </p>
+
+                <h3>스택 vs 큐 — 한눈에 비교</h3>
+                <div class="table-scroll">
+                    <table class="data-table">
+                        <thead>
+                            <tr><th scope="col">구분</th><th scope="col">스택</th><th scope="col">큐</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>규칙</td><td>LIFO (후입선출)</td><td>FIFO (선입선출)</td></tr>
+                            <tr><td>넣는 곳</td><td>맨 위 (top)</td><td>맨 뒤 (rear)</td></tr>
+                            <tr><td>꺼내는 곳</td><td>맨 위 (top) — 같은 쪽</td><td>맨 앞 (front) — 반대쪽</td></tr>
+                            <tr><td>상태 변수</td><td><code>top</code> 하나 (-1이면 빈 스택)</td><td><code>front</code>, <code>rear</code> 둘 (같으면 빈 큐)</td></tr>
+                            <tr><td>대표 용도</td><td>실행 취소, 괄호 검사, 호출 스택(7강)</td><td>대기열, 작업 순서 처리, BFS(9강)</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>표준 라이브러리는? — Deque와 ArrayDeque (비교 소개)</h3>
+                <p>
+                    실무 Java에서는 스택과 큐 둘 다 <code>java.util.Deque</code> 인터페이스의 구현체
+                    <code>ArrayDeque</code>를 주로 씁니다. Deque(덱)는 양쪽 끝에서 넣고 꺼낼 수 있는 구조라
+                    한쪽만 쓰면 스택, 반대쪽으로 흘리면 큐가 됩니다.
+                </p>
+                <ul>
+                    <li>스택처럼: <code>push(v)</code> / <code>pop()</code> / <code>peek()</code></li>
+                    <li>큐처럼: <code>offer(v)</code>(뒤에 넣기) / <code>poll()</code>(앞에서 꺼내기) / <code>peek()</code></li>
+                    <li><code>pop()</code>은 비어 있으면 예외를 던지고, <code>poll()</code>은 <code>null</code>을 반환합니다.</li>
+                    <li>옛날 클래스 <code>java.util.Stack</code>도 있지만, 불필요한 동기화 비용 때문에
+                        공식 문서도 <code>ArrayDeque</code> 사용을 권장합니다.</li>
+                </ul>
+                <p>
+                    오늘은 동작 원리를 이해하기 위해 <strong>배열로 직접 구현</strong>하고,
+                    완성 코드에서 직접 구현과 <code>ArrayDeque</code>의 결과가 같은지 비교만 합니다.
+                </p>
+
+                <h3>우선순위 큐 (PriorityQueue) 기초 — 세 번째 규칙 맛보기</h3>
+                <p>
+                    "먼저 온 순서"도 "나중에 온 순서"도 아닌 <strong>"중요한 순서"</strong>로 꺼내야 할 때가 있습니다.
+                    응급실은 도착 순서가 아니라 위급한 환자부터 진료합니다.
+                    <code>java.util.PriorityQueue</code>는 <code>offer</code>로 넣고 <code>poll</code>로 꺼내는 모양은 큐와 같지만,
+                    <strong>poll이 항상 우선순위가 가장 높은 값</strong>을 돌려줍니다.
+                    내부적으로 힙(heap)이라는 구조를 써서 넣고 꺼내기가 각각 O(log n)입니다.
+                    오늘은 응용 예제에서 맛만 보고, <strong>10강 그리디</strong>와 <strong>12강 최단 경로</strong>에서 핵심 도구로 다시 만납니다.
+                </p>
+            </section>
+
+            <!-- 7. 단계별 동작 과정 -->
+            <section class="lesson-section" id="sec-steps" aria-labelledby="h-steps">
+                <h2 id="h-steps" data-toc-label="단계별 동작 과정"><span class="section-no">07</span>단계별 동작 과정</h2>
+                <p>
+                    손으로 했던 두 작업을 시각화로 다시 확인합니다.
+                    <strong>다음 단계 ▶</strong> 버튼으로 한 단계씩 진행하며,
+                    스택·큐의 내용이 언제 늘고 줄어드는지 관찰하세요.
+                    현재 처리 중인 문자·데이터는 <strong>파란색(현재)</strong>, 처리를 마친 문자는 <strong>초록색(완료)</strong>,
+                    검사가 실패하는 지점은 <strong>붉은색(오류)</strong>으로 표시됩니다.
+                </p>
+
+                <h3>시각화 1 — 스택으로 괄호 짝 검사</h3>
+                <p>
+                    여는 괄호는 push, 닫는 괄호는 pop해서 짝을 비교합니다.
+                    "새 데이터" 버튼을 누르면 실패 사례("([)]", "(()", "())")도 만날 수 있습니다 —
+                    어느 지점에서 왜 무효 판정이 나는지 확인해 보세요.
+                </p>
+                <div id="viz-bracket" aria-label="스택으로 괄호 짝 검사 시각화"></div>
+
+                <h3>시각화 2 — 큐로 주문 대기열 처리</h3>
+                <p>
+                    enqueue는 항상 <strong>뒤(rear)</strong>에, dequeue는 항상 <strong>앞(front)</strong>에서 일어납니다.
+                    중간에 새 손님이 와도(enqueue) 처리 순서는 온 순서 그대로임을 확인하세요.
+                </p>
+                <div id="viz-queue" aria-label="큐로 주문 대기열 처리 시각화"></div>
+                <p>
+                    두 시각화 모두 각 단계에서 <strong>연산 횟수</strong>를 함께 셉니다.
+                    문자·손님 하나당 push/pop 또는 enqueue/dequeue가 최대 1번씩 —
+                    데이터가 n개면 전체 작업이 O(n)이라는 것을 눈으로 확인할 수 있습니다.
+                </p>
+            </section>
+
+            <!-- 8. 의사코드 -->
+            <section class="lesson-section" id="sec-pseudo" aria-labelledby="h-pseudo">
+                <h2 id="h-pseudo" data-toc-label="의사코드"><span class="section-no">08</span>의사코드</h2>
+                <p>코드를 쓰기 전에, 배열 위의 두 규칙과 괄호 검사 절차를 언어 중립적인 의사코드로 정리합니다.</p>
+
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Pseudo</span>
+                            <strong class="code-card__filename">배열 스택의 네 가지 연산</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-pseudo-stack" aria-label="배열 스택 의사코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-pseudo-stack">준비: 배열 stack, top ← -1          // top = 맨 위 칸의 인덱스, -1이면 빈 스택
+
+push(v):
+    top ← top + 1                    // 맨 위 자리를 한 칸 올리고
+    stack[top] ← v                   // 그 자리에 넣는다
+
+pop():
+    top = -1 이면 "빈 스택 오류"      // 꺼내기 전에 반드시 검사!
+    v ← stack[top]                   // 맨 위 값을 읽고
+    top ← top - 1                    // 맨 위 자리를 한 칸 내린다
+    v를 반환한다
+
+peek():
+    top = -1 이면 "빈 스택 오류"
+    stack[top]을 반환한다             // top은 그대로 둔다
+
+isEmpty():
+    top = -1 인지를 반환한다</code></pre>
+                </article>
+
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Pseudo</span>
+                            <strong class="code-card__filename">배열 큐의 네 가지 연산</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-pseudo-queue" aria-label="배열 큐 의사코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-pseudo-queue">준비: 배열 queue, front ← 0, rear ← 0
+      // front = 다음에 꺼낼 자리, rear = 다음에 넣을 자리, 같으면 빈 큐
+
+enqueue(v):
+    queue[rear] ← v                  // 맨 뒤 자리에 넣고
+    rear ← rear + 1                  // 다음에 넣을 자리를 한 칸 뒤로
+
+dequeue():
+    front = rear 이면 "빈 큐 오류"    // 꺼내기 전에 반드시 검사!
+    v ← queue[front]                 // 맨 앞 값을 읽고
+    front ← front + 1                // 다음에 꺼낼 자리를 한 칸 뒤로
+    v를 반환한다
+
+peek():
+    front = rear 이면 "빈 큐 오류"
+    queue[front]를 반환한다           // front는 그대로 둔다
+
+isEmpty():
+    front = rear 인지를 반환한다</code></pre>
+                </article>
+
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Pseudo</span>
+                            <strong class="code-card__filename">스택을 이용한 괄호 짝 검사</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-pseudo-bracket" aria-label="괄호 검사 의사코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-pseudo-bracket">알고리즘 CheckBrackets(text)
+    빈 스택 S를 준비한다
+    text의 각 문자 ch에 대해 순서대로 반복:
+        ch가 여는 괄호 ( [ { 이면:
+            S에 ch를 push한다
+        ch가 닫는 괄호 ) ] } 이면:
+            S가 비어 있으면 "무효"를 반환한다        // 짝 없는 닫는 괄호
+            open ← S에서 pop한 값
+            open과 ch가 짝이 아니면 "무효"를 반환한다  // 종류가 다른 괄호
+    반복이 끝난 뒤:
+        S가 비어 있으면 "유효", 아니면 "무효"를 반환한다  // 여는 괄호가 남음</code></pre>
+                </article>
+
+                <p>
+                    괄호 검사에는 무효 판정 경로가 <strong>세 갈래</strong> 있다는 점에 주목하세요 —
+                    (1) 빈 스택에서 닫는 괄호를 만남, (2) 종류가 다른 괄호끼리 만남, (3) 끝났는데 여는 괄호가 남음.
+                    세 경우 모두 손 풀이 STEP 3과 시각화에서 이미 확인한 상황입니다.
+                </p>
+            </section>
+
+            <!-- 9. 점진적 Java 구현 -->
+            <section class="lesson-section" id="sec-impl" aria-labelledby="h-impl">
+                <h2 id="h-impl" data-toc-label="점진적 Java 구현"><span class="section-no">09</span>점진적 Java 구현</h2>
+                <p>
+                    이제 의사코드를 Java로 옮깁니다. 완성 코드를 한 번에 쓰지 않고
+                    <strong>스택의 재료 → push → pop·peek와 예외 처리 → 괄호 검사 응용</strong>,
+                    이어서 <strong>큐의 재료와 enqueue → dequeue와 빈 큐 검사</strong> 순서로 확장합니다.
+                    각 단계의 코드는 모두 독립적으로 복사해서 실행할 수 있습니다.
+                </p>
+
+                <h3>구현 1단계 — 스택의 재료: 배열과 top 변수</h3>
+                <p>
+                    스택의 재료는 단 두 가지입니다. 값을 담을 <strong>배열</strong>과,
+                    맨 위 칸의 위치를 기억하는 <strong>top 변수</strong>.
+                    아직 아무것도 넣지 않았으므로 top은 "가리킬 칸 없음"을 뜻하는 -1로 시작합니다.
+                </p>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">Step1StackData.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-step1" aria-label="Step1StackData.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-step1" class="language-java">public class Step1StackData {
+    public static void main(String[] args) {
+        // 스택 = "데이터(배열)" + "규칙(맨 위에서만 넣고 꺼낸다, LIFO)"
+        // 먼저 데이터를 담을 배열과, 맨 위 칸의 위치를 기억할 변수를 준비한다
+        char[] stack = new char[8];   // 괄호 문자를 담을 공간 (용량 8)
+        int top = -1;                 // 맨 위 칸의 인덱스. -1이면 "비어 있음"이라는 약속
+
+        System.out.println("스택 용량 = " + stack.length);
+        System.out.println("top = " + top);
+        System.out.println("비어 있는가? = " + (top == -1));
+        System.out.println("쌓여 있는 데이터 개수 = " + (top + 1));
+    }
+}</code></pre>
+                </article>
+                <article class="code-card code-card--output">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">출력</span>
+                            <strong class="code-card__filename">실행 결과</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="out-step1" aria-label="Step1 실행 결과 복사">복사</button>
+                    </header>
+                    <pre><code id="out-step1">스택 용량 = 8
+top = -1
+비어 있는가? = true
+쌓여 있는 데이터 개수 = 0</code></pre>
+                </article>
+
+                <h3>구현 2단계 — push 하나 구현</h3>
+                <p>
+                    핵심 연산 push는 딱 두 줄입니다: <strong>top을 한 칸 올리고, 그 자리에 값을 넣는다</strong>.
+                    괄호 세 개를 push하면서 top과 개수가 어떻게 변하는지 관찰합니다.
+                    2강의 배열 순회로 바닥부터 꼭대기까지의 내용도 확인합니다.
+                </p>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">Step2StackPush.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-step2" aria-label="Step2StackPush.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-step2" class="language-java">public class Step2StackPush {
+
+    static char[] stack = new char[8];
+    static int top = -1;
+
+    /** push: top을 한 칸 올리고, 그 자리에 값을 넣는다 */
+    static void push(char value) {
+        top++;
+        stack[top] = value;
+        System.out.println("push '" + value + "' -&gt; top = " + top
+                + ", 개수 = " + (top + 1));
+    }
+
+    public static void main(String[] args) {
+        System.out.println("시작: top = " + top + " (비어 있음)");
+
+        push('(');
+        push('(');
+        push('[');
+
+        // 바닥(0번 칸)부터 꼭대기(top번 칸)까지 순서대로 확인한다
+        StringBuilder state = new StringBuilder();
+        for (int i = 0; i &lt;= top; i++) {
+            if (i &gt; 0) state.append(' ');
+            state.append(stack[i]);
+        }
+        System.out.println("스택 상태(바닥 -&gt; 꼭대기): " + state);
+        System.out.println("맨 위(top)의 값 = " + stack[top]);
+    }
+}</code></pre>
+                </article>
+                <article class="code-card code-card--output">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">출력</span>
+                            <strong class="code-card__filename">실행 결과</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="out-step2" aria-label="Step2 실행 결과 복사">복사</button>
+                    </header>
+                    <pre><code id="out-step2">시작: top = -1 (비어 있음)
+push '(' -&gt; top = 0, 개수 = 1
+push '(' -&gt; top = 1, 개수 = 2
+push '[' -&gt; top = 2, 개수 = 3
+스택 상태(바닥 -&gt; 꼭대기): ( ( [
+맨 위(top)의 값 = [</code></pre>
+                </article>
+                <div class="note-box note-box--tip">
+                    <span class="note-box__title">관찰</span>
+                    <p>push할 때마다 top이 -1 → 0 → 1 → 2로 오르고, 개수는 항상 <code>top + 1</code>입니다.
+                    가장 나중에 push한 '['가 맨 위(top) 자리에 있습니다 — 다음 단계에서 꺼낼 때 이 값이 먼저 나옵니다.</p>
+                </div>
+
+                <h3>구현 3단계 — pop과 peek, 그리고 예외 처리</h3>
+                <p>
+                    꺼내는 연산을 추가합니다. pop은 <strong>맨 위 값을 읽고 top을 한 칸 내리고</strong>,
+                    peek는 <strong>읽기만 하고 top을 그대로</strong> 둡니다.
+                    중요한 것은 <strong>빈 스택 검사</strong>입니다 — top이 -1인데 <code>stack[top]</code>을 읽으면
+                    프로그램이 예외로 죽습니다. 손 풀이 STEP 3의 "빈 더미에서 접시 내리기" 상황을
+                    <code>isEmpty()</code> 검사로 막습니다.
+                </p>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">Step3StackPopPeek.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-step3" aria-label="Step3StackPopPeek.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-step3" class="language-java">public class Step3StackPopPeek {
+
+    static char[] stack = new char[8];
+    static int top = -1;
+
+    /** 비었는지 검사: pop과 peek 전에 반드시 필요하다 */
+    static boolean isEmpty() {
+        return top == -1;
+    }
+
+    static void push(char value) {
+        top++;
+        stack[top] = value;
+    }
+
+    /** peek: 맨 위 값을 "보기만" 한다. top은 그대로 유지된다. */
+    static char peek() {
+        if (isEmpty()) {
+            System.out.println("경고: 빈 스택은 peek할 수 없습니다.");
+            return '?';
+        }
+        return stack[top];
+    }
+
+    /** pop: 맨 위 값을 꺼내고 top을 한 칸 내린다. */
+    static char pop() {
+        if (isEmpty()) {
+            System.out.println("경고: 빈 스택은 pop할 수 없습니다.");
+            return '?';
+        }
+        char value = stack[top];
+        top--;
+        return value;
+    }
+
+    public static void main(String[] args) {
+        push('(');
+        push('[');
+        System.out.println("push 2번 후 개수 = " + (top + 1));
+
+        System.out.println("peek() = " + peek() + " (top은 그대로 " + top + ")");
+        System.out.println("pop()  = " + pop() + " (pop 후 top = " + top + ")");
+        System.out.println("pop()  = " + pop() + " (pop 후 top = " + top + ")");
+        System.out.println("비어 있는가? = " + isEmpty());
+
+        // 비어 있는데 또 pop하면? isEmpty 검사 덕분에 프로그램이 죽지 않는다
+        System.out.println("pop()  = " + pop());
+    }
+}</code></pre>
+                </article>
+                <article class="code-card code-card--output">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">출력</span>
+                            <strong class="code-card__filename">실행 결과</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="out-step3" aria-label="Step3 실행 결과 복사">복사</button>
+                    </header>
+                    <pre><code id="out-step3">push 2번 후 개수 = 2
+peek() = [ (top은 그대로 1)
+pop()  = [ (pop 후 top = 0)
+pop()  = ( (pop 후 top = -1)
+비어 있는가? = true
+경고: 빈 스택은 pop할 수 없습니다.
+pop()  = ?</code></pre>
+                </article>
+                <div class="note-box note-box--tip">
+                    <span class="note-box__title">관찰 — LIFO가 코드로 증명됩니다</span>
+                    <p>'(' 다음에 '['를 push했는데, pop은 '[' → '(' 순서로 나왔습니다.
+                    <strong>나중에 넣은 것이 먼저 나온다(LIFO)</strong> — 규칙이 저절로 지켜지는 이유는
+                    넣는 곳과 꺼내는 곳이 <strong>같은 자리(top)</strong>이기 때문입니다.</p>
+                </div>
+
+                <h3>구현 4단계 — 스택 응용 완성: 괄호 짝 검사</h3>
+                <p>
+                    이제 스택을 실전에 투입합니다. 3강의 문자열 순회로 한 글자씩 읽으며,
+                    여는 괄호면 push, 닫는 괄호면 pop해서 짝을 비교합니다.
+                    의사코드의 무효 판정 세 갈래가 코드의 <code>return false</code> 두 곳과
+                    마지막 <code>return isEmpty()</code>에 그대로 대응합니다.
+                </p>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">Step4BracketCheckLoop.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-step4" aria-label="Step4BracketCheckLoop.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-step4" class="language-java">public class Step4BracketCheckLoop {
+
+    static char[] stack = new char[100];
+    static int top = -1;
+
+    static boolean isEmpty() { return top == -1; }
+    static void push(char value) { stack[++top] = value; }
+    static char pop() { return stack[top--]; }
+
+    /** 여는 괄호 open과 닫는 괄호 close가 서로 짝인지 확인한다 */
+    static boolean isPair(char open, char close) {
+        return (open == '(' &amp;&amp; close == ')')
+                || (open == '[' &amp;&amp; close == ']')
+                || (open == '{' &amp;&amp; close == '}');
+    }
+
+    /** 괄호 문자열이 유효한지 검사한다 */
+    static boolean isValid(String text) {
+        top = -1;   // 검사를 시작하기 전에 스택을 비운다
+
+        for (int i = 0; i &lt; text.length(); i++) {
+            char ch = text.charAt(i);
+
+            if (ch == '(' || ch == '[' || ch == '{') {
+                push(ch);                     // 여는 괄호: 스택에 쌓는다
+            } else if (ch == ')' || ch == ']' || ch == '}') {
+                if (isEmpty()) {
+                    return false;             // 짝이 없는 닫는 괄호
+                }
+                if (!isPair(pop(), ch)) {
+                    return false;             // 종류가 다른 괄호끼리 만남
+                }
+            }
+        }
+        // 루프가 끝난 뒤 스택이 비어 있어야 진짜 유효 (여는 괄호가 남으면 무효)
+        return isEmpty();
+    }
+
+    public static void main(String[] args) {
+        String[] tests = {"()", "([])", "{[()]}", "(]", "())", "((("};
+        for (String t : tests) {
+            System.out.println(t + " -&gt; " + (isValid(t) ? "유효" : "무효"));
+        }
+    }
+}</code></pre>
+                </article>
+                <article class="code-card code-card--output">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">출력</span>
+                            <strong class="code-card__filename">실행 결과</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="out-step4" aria-label="Step4 실행 결과 복사">복사</button>
+                    </header>
+                    <pre><code id="out-step4">() -&gt; 유효
+([]) -&gt; 유효
+{[()]} -&gt; 유효
+(] -&gt; 무효
+()) -&gt; 무효
+((( -&gt; 무효</code></pre>
+                </article>
+                <div class="note-box note-box--warn">
+                    <span class="note-box__title">++top과 top-- 를 한 줄로 줄였습니다</span>
+                    <p><code>stack[++top] = value</code>는 "top을 먼저 1 올린 뒤 그 자리에 넣기",
+                    <code>stack[top--]</code>는 "지금 top 자리를 읽은 뒤 top을 1 내리기"입니다.
+                    2·3단계의 두 줄짜리 push/pop과 완전히 같은 동작을 한 줄로 쓴 것입니다.
+                    순서를 바꿔 <code>stack[top++]</code>로 쓰면 엉뚱한 칸에 넣게 되니 주의하세요.</p>
+                </div>
+
+                <h3>구현 5단계 — 큐의 재료와 enqueue</h3>
+                <p>
+                    이번에는 큐입니다. 재료는 배열 하나와 <strong>변수 둘</strong> —
+                    다음에 꺼낼 자리 <code>front</code>, 다음에 넣을 자리 <code>rear</code>.
+                    스택은 top 하나로 충분했지만, 큐는 넣는 곳과 꺼내는 곳이 다르므로 둘 다 필요합니다.
+                    enqueue는 push와 닮았지만 <strong>rear 쪽에서만</strong> 일어납니다.
+                </p>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">Step5QueueEnqueue.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-step5" aria-label="Step5QueueEnqueue.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-step5" class="language-java">public class Step5QueueEnqueue {
+
+    static String[] queue = new String[8];   // 대기 이름을 담을 공간 (용량 8)
+    static int front = 0;                    // 다음에 꺼낼 자리 (맨 앞)
+    static int rear = 0;                     // 다음에 넣을 자리 (맨 뒤)
+
+    /** enqueue: rear 자리에 값을 넣고, rear를 한 칸 뒤로 옮긴다 */
+    static void enqueue(String name) {
+        queue[rear] = name;
+        rear++;
+        System.out.println("enqueue \"" + name + "\" -&gt; front = " + front
+                + ", rear = " + rear + ", 대기 " + (rear - front) + "명");
+    }
+
+    public static void main(String[] args) {
+        System.out.println("시작: front = " + front + ", rear = " + rear + " (비어 있음)");
+
+        enqueue("김하늘");
+        enqueue("이준호");
+        enqueue("박서연");
+
+        // 맨 앞(front)부터 맨 뒤(rear 직전)까지 순서대로 확인한다
+        StringBuilder state = new StringBuilder();
+        for (int i = front; i &lt; rear; i++) {
+            if (i &gt; front) state.append(' ');
+            state.append(queue[i]);
+        }
+        System.out.println("대기열 상태(앞 -&gt; 뒤): " + state);
+        System.out.println("맨 앞(front)의 값 = " + queue[front]);
+    }
+}</code></pre>
+                </article>
+                <article class="code-card code-card--output">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">출력</span>
+                            <strong class="code-card__filename">실행 결과</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="out-step5" aria-label="Step5 실행 결과 복사">복사</button>
+                    </header>
+                    <pre><code id="out-step5">시작: front = 0, rear = 0 (비어 있음)
+enqueue "김하늘" -&gt; front = 0, rear = 1, 대기 1명
+enqueue "이준호" -&gt; front = 0, rear = 2, 대기 2명
+enqueue "박서연" -&gt; front = 0, rear = 3, 대기 3명
+대기열 상태(앞 -&gt; 뒤): 김하늘 이준호 박서연
+맨 앞(front)의 값 = 김하늘</code></pre>
+                </article>
+                <div class="note-box note-box--tip">
+                    <span class="note-box__title">관찰</span>
+                    <p>enqueue를 해도 <strong>front는 0에서 움직이지 않습니다</strong>.
+                    줄이 길어져도 맨 앞 사람은 그대로인 것과 같습니다.
+                    대기 인원은 항상 <code>rear - front</code>입니다.</p>
+                </div>
+
+                <h3>구현 6단계 — dequeue와 빈 큐 검사</h3>
+                <p>
+                    꺼내는 연산 dequeue를 추가해 큐를 완성합니다.
+                    <strong>맨 앞(front) 값을 읽고 front를 한 칸 뒤로</strong> 옮깁니다.
+                    스택의 3단계와 똑같이, 꺼내기 전에 <code>isEmpty()</code>(<code>front == rear</code>) 검사가 필수입니다.
+                </p>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">Step6QueueDequeue.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-step6" aria-label="Step6QueueDequeue.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-step6" class="language-java">public class Step6QueueDequeue {
+
+    static String[] queue = new String[8];
+    static int front = 0;
+    static int rear = 0;
+
+    /** 비었는지 검사: front와 rear가 같으면 빈 큐다 */
+    static boolean isEmpty() {
+        return front == rear;
+    }
+
+    static void enqueue(String name) {
+        queue[rear] = name;
+        rear++;
+    }
+
+    /** peek: 맨 앞 값을 "보기만" 한다. front는 그대로 유지된다. */
+    static String peek() {
+        if (isEmpty()) {
+            System.out.println("경고: 빈 큐는 peek할 수 없습니다.");
+            return "?";
+        }
+        return queue[front];
+    }
+
+    /** dequeue: 맨 앞 값을 꺼내고 front를 한 칸 뒤로 옮긴다. */
+    static String dequeue() {
+        if (isEmpty()) {
+            System.out.println("경고: 빈 큐는 dequeue할 수 없습니다.");
+            return "?";
+        }
+        String value = queue[front];
+        front++;
+        return value;
+    }
+
+    public static void main(String[] args) {
+        enqueue("김하늘");
+        enqueue("이준호");
+        enqueue("박서연");
+        System.out.println("enqueue 3번 후 대기 인원 = " + (rear - front));
+
+        System.out.println("peek()    = " + peek() + " (front는 그대로 " + front + ")");
+        System.out.println("dequeue() = " + dequeue() + " (dequeue 후 front = " + front + ")");
+        System.out.println("dequeue() = " + dequeue() + " (dequeue 후 front = " + front + ")");
+        System.out.println("dequeue() = " + dequeue() + " (dequeue 후 front = " + front + ")");
+        System.out.println("비어 있는가? = " + isEmpty());
+
+        // 비어 있는데 또 dequeue하면? isEmpty 검사 덕분에 프로그램이 죽지 않는다
+        System.out.println("dequeue() = " + dequeue());
+    }
+}</code></pre>
+                </article>
+                <article class="code-card code-card--output">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">출력</span>
+                            <strong class="code-card__filename">실행 결과</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="out-step6" aria-label="Step6 실행 결과 복사">복사</button>
+                    </header>
+                    <pre><code id="out-step6">enqueue 3번 후 대기 인원 = 3
+peek()    = 김하늘 (front는 그대로 0)
+dequeue() = 김하늘 (dequeue 후 front = 1)
+dequeue() = 이준호 (dequeue 후 front = 2)
+dequeue() = 박서연 (dequeue 후 front = 3)
+비어 있는가? = true
+경고: 빈 큐는 dequeue할 수 없습니다.
+dequeue() = ?</code></pre>
+                </article>
+                <div class="note-box note-box--warn">
+                    <span class="note-box__title">단순 배열 큐의 한계 — 앞 공간의 낭비</span>
+                    <p>dequeue를 하면 front만 뒤로 이동하고, <code>queue[0]</code>, <code>queue[1]</code> 같은
+                    앞 칸은 다시 쓰이지 않습니다. 데이터가 많으면 배열 앞쪽이 계속 버려지는 셈입니다.
+                    실무에서는 인덱스가 끝에 닿으면 처음으로 되돌아가는 <strong>원형 큐</strong>로 해결하며
+                    (<code>rear = (rear + 1) % 용량</code>), <code>ArrayDeque</code>가 내부적으로 이 방식을 씁니다.
+                    오늘은 원리 이해를 위해 단순 버전을 유지합니다.</p>
+                </div>
+            </section>
+
+            <!-- 10. 완성 Java 코드 -->
+            <section class="lesson-section" id="sec-complete" aria-labelledby="h-complete">
+                <h2 id="h-complete" data-toc-label="완성 Java 코드"><span class="section-no">10</span>완성 Java 코드</h2>
+                <p>
+                    지금까지의 조각을 모아 하나의 프로그램으로 완성합니다.
+                    스택과 큐를 각각 <strong>독립된 클래스</strong>(<code>ArrayCharStack</code>, <code>ArrayStringQueue</code>)로 묶고,
+                    3단계의 "경고 출력" 대신 <strong>예외를 던지는 방식</strong>으로 바꿔 라이브러리처럼 만들었습니다.
+                    괄호 검사는 직접 구현한 스택과 표준 라이브러리 <code>ArrayDeque</code> 두 방식으로 풀어
+                    결과가 항상 같은지 검증하고, 주문 대기열은 직접 구현한 배열 큐로 처리한 뒤
+                    같은 작업을 <code>ArrayDeque</code>로도 해 봅니다.
+                </p>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">StackQueueComplete.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-complete" aria-label="StackQueueComplete.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-complete" class="language-java">import java.util.ArrayDeque;
+import java.util.Deque;
+
+public class StackQueueComplete {
+
+    /** 배열로 직접 구현한 문자 스택 — "자료구조 = 데이터(배열) + 규칙(LIFO)" */
+    static class ArrayCharStack {
+        private char[] data;
+        private int top = -1;
+
+        ArrayCharStack(int capacity) {
+            data = new char[capacity];
+        }
+
+        boolean isEmpty() {
+            return top == -1;
+        }
+
+        int size() {
+            return top + 1;
+        }
+
+        void push(char value) {
+            if (top == data.length - 1) {
+                throw new IllegalStateException("스택이 가득 찼습니다.");
+            }
+            data[++top] = value;
+        }
+
+        char pop() {
+            if (isEmpty()) {
+                throw new IllegalStateException("빈 스택에서는 pop할 수 없습니다.");
+            }
+            return data[top--];
+        }
+
+        char peek() {
+            if (isEmpty()) {
+                throw new IllegalStateException("빈 스택에서는 peek할 수 없습니다.");
+            }
+            return data[top];
+        }
+    }
+
+    /** 배열로 직접 구현한 문자열 큐 — "자료구조 = 데이터(배열) + 규칙(FIFO)" */
+    static class ArrayStringQueue {
+        private String[] data;
+        private int front = 0;   // 다음에 꺼낼 자리
+        private int rear = 0;    // 다음에 넣을 자리
+
+        ArrayStringQueue(int capacity) {
+            data = new String[capacity];
+        }
+
+        boolean isEmpty() {
+            return front == rear;
+        }
+
+        int size() {
+            return rear - front;
+        }
+
+        void enqueue(String value) {
+            if (rear == data.length) {
+                throw new IllegalStateException("큐가 가득 찼습니다.");
+            }
+            data[rear++] = value;
+        }
+
+        String dequeue() {
+            if (isEmpty()) {
+                throw new IllegalStateException("빈 큐에서는 dequeue할 수 없습니다.");
+            }
+            return data[front++];
+        }
+
+        String peek() {
+            if (isEmpty()) {
+                throw new IllegalStateException("빈 큐에서는 peek할 수 없습니다.");
+            }
+            return data[front];
+        }
+
+        /** 앞(front)부터 뒤(rear 직전)까지의 대기 상태 문자열 */
+        String state() {
+            if (isEmpty()) {
+                return "(비어 있음)";
+            }
+            StringBuilder sb = new StringBuilder("[");
+            for (int i = front; i &lt; rear; i++) {
+                if (i &gt; front) sb.append(", ");
+                sb.append(data[i]);
+            }
+            return sb.append("]").toString();
+        }
+    }
+
+    /** 여는 괄호 open과 닫는 괄호 close가 서로 짝인지 확인한다 */
+    static boolean isPair(char open, char close) {
+        return (open == '(' &amp;&amp; close == ')')
+                || (open == '[' &amp;&amp; close == ']')
+                || (open == '{' &amp;&amp; close == '}');
+    }
+
+    /** 방법 A: 직접 만든 배열 스택으로 괄호 검사 */
+    static boolean isValidWithArrayStack(String text) {
+        ArrayCharStack stack = new ArrayCharStack(text.length());
+        for (int i = 0; i &lt; text.length(); i++) {
+            char ch = text.charAt(i);
+            if (ch == '(' || ch == '[' || ch == '{') {
+                stack.push(ch);
+            } else if (ch == ')' || ch == ']' || ch == '}') {
+                if (stack.isEmpty() || !isPair(stack.pop(), ch)) {
+                    return false;
+                }
+            }
+        }
+        return stack.isEmpty();
+    }
+
+    /** 방법 B: 표준 라이브러리 ArrayDeque로 괄호 검사 — 실무 권장 방식 */
+    static boolean isValidWithDeque(String text) {
+        Deque&lt;Character&gt; stack = new ArrayDeque&lt;&gt;();
+        for (int i = 0; i &lt; text.length(); i++) {
+            char ch = text.charAt(i);
+            if (ch == '(' || ch == '[' || ch == '{') {
+                stack.push(ch);                       // 스택처럼 사용: 맨 앞에 쌓는다
+            } else if (ch == ')' || ch == ']' || ch == '}') {
+                if (stack.isEmpty() || !isPair(stack.pop(), ch)) {
+                    return false;
+                }
+            }
+        }
+        return stack.isEmpty();
+    }
+
+    public static void main(String[] args) {
+        System.out.println("== 1) 괄호 유효성 검사: 직접 구현 스택 vs ArrayDeque ==");
+        String[] tests = {"()", "{[()]}", "(a+b)*[c]", "(]", "())", "((("};
+        for (String t : tests) {
+            boolean a = isValidWithArrayStack(t);
+            boolean b = isValidWithDeque(t);
+            System.out.println(t + " -&gt; " + (a ? "유효" : "무효")
+                    + " (두 방식 일치 = " + (a == b) + ")");
+        }
+
+        System.out.println();
+        System.out.println("== 2) 직접 구현한 배열 큐로 주문 대기열 처리 (FIFO) ==");
+        ArrayStringQueue orders = new ArrayStringQueue(8);
+        orders.enqueue("김하늘");                       // 뒤(rear)에 넣는다
+        orders.enqueue("이준호");
+        orders.enqueue("박서연");
+        System.out.println("대기열: " + orders.state() + " (대기 " + orders.size() + "명)");
+        System.out.println("맨 앞(peek) = " + orders.peek());
+        while (!orders.isEmpty()) {
+            System.out.println("처리: " + orders.dequeue() + " -&gt; 남은 대기열 " + orders.state());
+        }
+
+        System.out.println();
+        System.out.println("== 3) 같은 대기열을 표준 라이브러리 ArrayDeque로 (실무 권장) ==");
+        Deque&lt;String&gt; queue = new ArrayDeque&lt;&gt;();
+        queue.offer("김하늘");                          // 큐처럼 사용: 뒤에 넣는다
+        queue.offer("이준호");
+        queue.offer("박서연");
+        System.out.println("대기열: " + queue);
+        while (!queue.isEmpty()) {
+            System.out.println("처리: " + queue.poll() + " -&gt; 남은 대기열 " + queue);
+        }
+        System.out.println("빈 큐에서 poll() = " + queue.poll() + " (null 반환, 예외 없음)");
+    }
+}</code></pre>
+                </article>
+                <article class="code-card code-card--output">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">출력</span>
+                            <strong class="code-card__filename">실행 결과</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="out-complete" aria-label="완성 코드 실행 결과 복사">복사</button>
+                    </header>
+                    <pre><code id="out-complete">== 1) 괄호 유효성 검사: 직접 구현 스택 vs ArrayDeque ==
+() -&gt; 유효 (두 방식 일치 = true)
+{[()]} -&gt; 유효 (두 방식 일치 = true)
+(a+b)*[c] -&gt; 유효 (두 방식 일치 = true)
+(] -&gt; 무효 (두 방식 일치 = true)
+()) -&gt; 무효 (두 방식 일치 = true)
+((( -&gt; 무효 (두 방식 일치 = true)
+
+== 2) 직접 구현한 배열 큐로 주문 대기열 처리 (FIFO) ==
+대기열: [김하늘, 이준호, 박서연] (대기 3명)
+맨 앞(peek) = 김하늘
+처리: 김하늘 -&gt; 남은 대기열 [이준호, 박서연]
+처리: 이준호 -&gt; 남은 대기열 [박서연]
+처리: 박서연 -&gt; 남은 대기열 (비어 있음)
+
+== 3) 같은 대기열을 표준 라이브러리 ArrayDeque로 (실무 권장) ==
+대기열: [김하늘, 이준호, 박서연]
+처리: 김하늘 -&gt; 남은 대기열 [이준호, 박서연]
+처리: 이준호 -&gt; 남은 대기열 [박서연]
+처리: 박서연 -&gt; 남은 대기열 []
+빈 큐에서 poll() = null (null 반환, 예외 없음)</code></pre>
+                </article>
+                <div class="note-box">
+                    <span class="note-box__title">경고 출력 대신 예외를 던지는 이유</span>
+                    <p>3단계의 <code>pop</code>은 빈 스택이면 <code>'?'</code>를 돌려줬습니다. 배우기에는 좋지만,
+                    호출한 쪽이 '?'가 실제 데이터인지 오류 표시인지 구분할 수 없습니다.
+                    완성 코드는 <code>IllegalStateException</code>을 던져 <strong>잘못된 사용을 즉시, 명확하게</strong> 알립니다.
+                    반면 <code>ArrayDeque.poll()</code>은 null을 돌려주는 관대한 방식입니다 —
+                    출력 마지막 줄에서 두 철학의 차이를 확인하세요.</p>
+                </div>
+            </section>
+
+            <!-- 11. 실행 과정 추적 -->
+            <section class="lesson-section" id="sec-trace" aria-labelledby="h-trace">
+                <h2 id="h-trace" data-toc-label="실행 과정 추적"><span class="section-no">11</span>실행 과정 추적</h2>
+                <p>
+                    괄호 검사가 정말 시각화(7번 섹션)와 똑같이 동작하는지,
+                    문자 하나를 처리할 때마다 <strong>(문자, 동작, 스택 상태)</strong>를 출력해 확인합니다.
+                    손으로 풀었던 "([()])"와, 실패의 두 갈래인 "(()", "())"를 추적합니다.
+                </p>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">BracketCheckTrace.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-trace" aria-label="BracketCheckTrace.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-trace" class="language-java">import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.Iterator;
+
+public class BracketCheckTrace {
+
+    static boolean isPair(char open, char close) {
+        return (open == '(' &amp;&amp; close == ')')
+                || (open == '[' &amp;&amp; close == ']')
+                || (open == '{' &amp;&amp; close == '}');
+    }
+
+    /** 스택 내용을 바닥 -&gt; 꼭대기 순서의 문자열로 만든다 */
+    static String stackState(Deque&lt;Character&gt; stack) {
+        if (stack.isEmpty()) {
+            return "(비어 있음)";
+        }
+        // ArrayDeque의 push는 앞쪽에 쌓이므로, 바닥부터 보려면 거꾸로 순회한다
+        StringBuilder sb = new StringBuilder();
+        Iterator&lt;Character&gt; it = stack.descendingIterator();
+        while (it.hasNext()) {
+            sb.append(it.next());
+            if (it.hasNext()) sb.append(' ');
+        }
+        return sb.toString();
+    }
+
+    /** 한 문자씩 처리하며 (문자, 동작, 스택 상태)를 추적 출력한다 */
+    static void trace(String text) {
+        System.out.println("입력: \"" + text + "\"");
+        Deque&lt;Character&gt; stack = new ArrayDeque&lt;&gt;();
+        boolean failed = false;
+
+        for (int i = 0; i &lt; text.length() &amp;&amp; !failed; i++) {
+            char ch = text.charAt(i);
+            String action;
+
+            if (ch == '(' || ch == '[' || ch == '{') {
+                stack.push(ch);
+                action = "push '" + ch + "'";
+            } else if (stack.isEmpty()) {
+                action = "실패! 짝이 없는 닫는 괄호";
+                failed = true;
+            } else {
+                char open = stack.pop();
+                if (isPair(open, ch)) {
+                    action = "pop '" + open + "' (짝 맞음)";
+                } else {
+                    action = "실패! '" + open + "'와 짝이 아님";
+                    failed = true;
+                }
+            }
+            System.out.println("  " + i + "번째 문자 '" + ch + "' : " + action
+                    + " -&gt; 스택: " + stackState(stack));
+        }
+
+        if (failed) {
+            System.out.println("  검사 중단 -&gt; 무효한 괄호");
+        } else if (stack.isEmpty()) {
+            System.out.println("  검사 종료: 스택이 비어 있음 -&gt; 유효한 괄호");
+        } else {
+            System.out.println("  검사 종료: 스택에 " + stackState(stack)
+                    + " 남음 -&gt; 무효 (여는 괄호가 남음)");
+        }
+        System.out.println();
+    }
+
+    public static void main(String[] args) {
+        trace("([()])");   // 성공 사례
+        trace("(()");      // 실패 사례 1: 여는 괄호가 남는다
+        trace("())");      // 실패 사례 2: 닫는 괄호의 짝이 없다
+    }
+}</code></pre>
+                </article>
+                <article class="code-card code-card--output">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">출력</span>
+                            <strong class="code-card__filename">실행 결과</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="out-trace" aria-label="추적 실행 결과 복사">복사</button>
+                    </header>
+                    <pre><code id="out-trace">입력: "([()])"
+  0번째 문자 '(' : push '(' -&gt; 스택: (
+  1번째 문자 '[' : push '[' -&gt; 스택: ( [
+  2번째 문자 '(' : push '(' -&gt; 스택: ( [ (
+  3번째 문자 ')' : pop '(' (짝 맞음) -&gt; 스택: ( [
+  4번째 문자 ']' : pop '[' (짝 맞음) -&gt; 스택: (
+  5번째 문자 ')' : pop '(' (짝 맞음) -&gt; 스택: (비어 있음)
+  검사 종료: 스택이 비어 있음 -&gt; 유효한 괄호
+
+입력: "(()"
+  0번째 문자 '(' : push '(' -&gt; 스택: (
+  1번째 문자 '(' : push '(' -&gt; 스택: ( (
+  2번째 문자 ')' : pop '(' (짝 맞음) -&gt; 스택: (
+  검사 종료: 스택에 ( 남음 -&gt; 무효 (여는 괄호가 남음)
+
+입력: "())"
+  0번째 문자 '(' : push '(' -&gt; 스택: (
+  1번째 문자 ')' : pop '(' (짝 맞음) -&gt; 스택: (비어 있음)
+  2번째 문자 ')' : 실패! 짝이 없는 닫는 괄호 -&gt; 스택: (비어 있음)
+  검사 중단 -&gt; 무효한 괄호</code></pre>
+                </article>
+                <p>
+                    "([()])"의 스택 상태 변화 <code>(</code> → <code>( [</code> → <code>( [ (</code> → <code>( [</code> →
+                    <code>(</code> → <code>(비어 있음)</code>이 손 풀이 STEP 1~2, 시각화 1과 정확히 일치합니다.
+                    "(()"는 끝났는데 '('가 남아 무효, "())"는 빈 스택에서 닫는 괄호를 만나 즉시 중단 —
+                    <strong>손 풀이 = 시각화 = 코드</strong>가 같은 절차임을 확인했습니다.
+                </p>
+            </section>
+
+            <!-- 12. 잘못된 코드와 오류 찾기 -->
+            <section class="lesson-section" id="sec-bugs" aria-labelledby="h-bugs">
+                <h2 id="h-bugs" data-toc-label="잘못된 코드와 오류 찾기"><span class="section-no">12</span>잘못된 코드와 오류 찾기</h2>
+                <p>초보자가 스택·큐에서 자주 만드는 오류 두 가지를 직접 찾아봅시다. 먼저 코드를 읽고 무엇이 잘못됐는지 생각한 뒤 해설을 여세요.</p>
+
+                <article class="bug-card">
+                    <h3 class="bug-card__title">오류 1 — 빈 스택 검사 없이 pop하는 괄호 검사</h3>
+                    <div class="bug-card__body">
+                        <article class="code-card">
+                            <header class="code-card__header">
+                                <div class="code-card__info">
+                                    <span class="code-card__language">Java</span>
+                                    <strong class="code-card__filename">BuggyBracketPop.java (오류 있음)</strong>
+                                </div>
+                                <button type="button" class="copy-code-button" data-copy-target="code-bug1" aria-label="오류 1 코드 복사">코드 복사</button>
+                            </header>
+                            <pre><code id="code-bug1" class="language-java">public class BuggyBracketPop {
+
+    static char[] stack = new char[100];
+    static int top = -1;
+
+    static void push(char value) { stack[++top] = value; }
+    static char pop() { return stack[top--]; }
+
+    /** 여는 괄호 open과 닫는 괄호 close가 서로 짝인지 확인한다 */
+    static boolean isPair(char open, char close) {
+        return (open == '(' &amp;&amp; close == ')')
+                || (open == '[' &amp;&amp; close == ']')
+                || (open == '{' &amp;&amp; close == '}');
+    }
+
+    static boolean isValid(String text) {
+        top = -1;
+        for (int i = 0; i &lt; text.length(); i++) {
+            char ch = text.charAt(i);
+            if (ch == '(' || ch == '[' || ch == '{') {
+                push(ch);
+            } else if (ch == ')' || ch == ']' || ch == '}') {
+                if (!isPair(pop(), ch)) {   // 닫는 괄호: 바로 pop해서 비교한다
+                    return false;
+                }
+            }
+        }
+        return top == -1;
+    }
+
+    public static void main(String[] args) {
+        System.out.println("() -&gt; " + isValid("()"));
+        System.out.println("()) -&gt; " + isValid("())"));
+    }
+}</code></pre>
+                        </article>
+                        <details class="answer-box">
+                            <summary>발생하는 문제와 수정 방법 확인</summary>
+                            <div class="answer-box__content">
+                                <p><strong>발생하는 문제:</strong> "()"까지는 잘 동작하지만, "())"를 검사하는 순간 프로그램이 예외로 죽습니다.</p>
+                                <pre class="quiz-code">() -&gt; true
+Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: Index -1 out of bounds for length 100
+	at BuggyBracketPop.pop(BuggyBracketPop.java:7)
+	at BuggyBracketPop.isValid(BuggyBracketPop.java:23)
+	at BuggyBracketPop.main(BuggyBracketPop.java:33)
+</pre>
+                                <p><strong>오류가 나타나는 입력:</strong> "())", ")("처럼 <strong>짝 없는 닫는 괄호</strong>가 있는 모든 문자열.
+                                유효한 문자열만 테스트하면 통과한 것처럼 보이는 것이 함정입니다.</p>
+                                <p><strong>원인:</strong> 닫는 괄호를 만났을 때 <strong>스택이 비었는지 확인하지 않고</strong> 바로
+                                <code>pop()</code>을 호출했습니다. top이 -1인 상태에서 <code>stack[top--]</code>은
+                                <code>stack[-1]</code>을 읽으므로 <code>ArrayIndexOutOfBoundsException</code>이 발생합니다.
+                                손 풀이 STEP 3의 "빈 더미에서 접시 내리기"가 바로 이 상황입니다.</p>
+                                <p><strong>수정 방법:</strong> pop 전에 빈 스택이면 "무효"로 판정하고 반환합니다.</p>
+                                <pre class="quiz-code">} else if (ch == ')' || ch == ']' || ch == '}') {
+    if (top == -1) {          // 빈 스택 검사가 pop보다 먼저!
+        return false;         // 짝 없는 닫는 괄호 → 무효
+    }
+    if (!isPair(pop(), ch)) {
+        return false;
+    }
+}</pre>
+                                <p>수정 후 "())"는 예외 없이 <code>false</code>(무효)로 판정됩니다.
+                                <strong>꺼내는 연산 앞에는 반드시 빈 검사</strong> — 스택과 큐 공통의 철칙입니다.</p>
+                            </div>
+                        </details>
+                    </div>
+                </article>
+
+                <article class="bug-card">
+                    <h3 class="bug-card__title">오류 2 — front를 옮기지 않는 dequeue</h3>
+                    <div class="bug-card__body">
+                        <article class="code-card">
+                            <header class="code-card__header">
+                                <div class="code-card__info">
+                                    <span class="code-card__language">Java</span>
+                                    <strong class="code-card__filename">BuggyQueueFront.java (오류 있음)</strong>
+                                </div>
+                                <button type="button" class="copy-code-button" data-copy-target="code-bug2" aria-label="오류 2 코드 복사">코드 복사</button>
+                            </header>
+                            <pre><code id="code-bug2" class="language-java">public class BuggyQueueFront {
+
+    static String[] queue = new String[8];
+    static int front = 0;
+    static int rear = 0;
+
+    static void enqueue(String name) { queue[rear++] = name; }
+
+    /** 맨 앞 고객을 꺼낸다 ... 고 생각했지만? */
+    static String dequeue() {
+        return queue[front];   // 값을 돌려주기만 한다
+    }
+
+    public static void main(String[] args) {
+        enqueue("김하늘");
+        enqueue("이준호");
+        enqueue("박서연");
+
+        for (int i = 1; i &lt;= 3; i++) {
+            System.out.println(i + "번째 처리: " + dequeue());
+        }
+        System.out.println("남은 대기 인원 = " + (rear - front));
+    }
+}</code></pre>
+                        </article>
+                        <details class="answer-box">
+                            <summary>발생하는 문제와 수정 방법 확인</summary>
+                            <div class="answer-box__content">
+                                <p><strong>발생하는 문제:</strong> 세 명을 처리했는데 전부 같은 사람이고, 대기 인원도 줄지 않습니다.</p>
+                                <pre class="quiz-code">1번째 처리: 김하늘
+2번째 처리: 김하늘
+3번째 처리: 김하늘
+남은 대기 인원 = 3
+</pre>
+                                <p><strong>오류가 나타나는 입력:</strong> dequeue를 2번 이상 호출하는 모든 경우.
+                                예외가 나지 않고 <strong>조용히 틀린 결과</strong>가 나오므로 오류 1보다 발견하기 어렵습니다.</p>
+                                <p><strong>원인:</strong> <code>dequeue()</code>가 <code>queue[front]</code> 값을 돌려주기만 하고
+                                <strong><code>front</code>를 한 칸 뒤로 옮기지 않았습니다</strong>.
+                                "꺼낸다"는 것은 값 읽기 + 자리 이동, 두 동작의 묶음입니다.
+                                줄 맨 앞 손님이 주문만 하고 비켜 주지 않는 것과 같습니다.</p>
+                                <p><strong>수정 방법:</strong> 값을 읽은 뒤 front를 이동합니다 (빈 큐 검사도 함께).</p>
+                                <pre class="quiz-code">static String dequeue() {
+    if (front == rear) {
+        System.out.println("경고: 빈 큐는 dequeue할 수 없습니다.");
+        return "?";
+    }
+    String value = queue[front];
+    front++;                  // 맨 앞 자리를 한 칸 뒤로 — 이 줄이 핵심!
+    return value;
+}</pre>
+                                <p>수정 후 출력은 김하늘 → 이준호 → 박서연 순서가 되고, 남은 대기 인원은 0명이 됩니다.
+                                스택에서 <code>top--</code>를 빼먹는 실수도 완전히 같은 유형입니다.</p>
+                            </div>
+                        </details>
+                    </div>
+                </article>
+            </section>
+
+            <!-- 13. 복잡도 및 특성 분석 -->
+            <section class="lesson-section" id="sec-complexity" aria-labelledby="h-complexity">
+                <h2 id="h-complexity" data-toc-label="복잡도 및 특성 분석"><span class="section-no">13</span>복잡도 및 특성 분석</h2>
+
+                <h3>입력 크기</h3>
+                <p>
+                    괄호 검사에서 <code>n</code>은 문자열의 길이, 대기열 처리에서 <code>n</code>은 처리할 데이터(고객·작업)의 수입니다.
+                </p>
+
+                <h3>주요 연산</h3>
+                <p>
+                    스택은 <code>push</code>/<code>pop</code>, 큐는 <code>enqueue</code>/<code>dequeue</code>가 핵심 연산입니다.
+                    네 연산 모두 배열 인덱스 한 칸을 읽거나 쓰고 변수 하나를 1 움직일 뿐입니다 — 반복문이 없습니다.
+                </p>
+                <div class="table-scroll">
+                    <table class="data-table">
+                        <thead>
+                            <tr><th scope="col">작업</th><th scope="col">최선</th><th scope="col">평균</th><th scope="col">최악</th><th scope="col">Big-O</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>push / pop / peek / isEmpty</td><td>1번</td><td>1번</td><td>1번</td><td><code>O(1)</code></td></tr>
+                            <tr><td>enqueue / dequeue / peek / isEmpty</td><td>1번</td><td>1번</td><td>1번</td><td><code>O(1)</code></td></tr>
+                            <tr><td>괄호 검사 (길이 n)</td><td>1번 비교*</td><td>-</td><td>문자당 push/pop 1번씩</td><td><code>O(n)</code></td></tr>
+                            <tr><td>대기열 n명 전체 처리</td><td>n번</td><td>n번</td><td>n번</td><td><code>O(n)</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p>
+                    * 괄호 검사의 최선은 첫 글자가 닫는 괄호인 경우("()"의 짝이 없는 ")(" 등) —
+                    빈 스택 검사에서 <strong>즉시 무효로 조기 중단</strong>합니다. 1강에서 본 조기 중단 패턴 그대로입니다.
+                    유효한 문자열은 항상 끝까지 읽어야 하므로 n번 처리합니다.
+                </p>
+
+                <h3>공간 복잡도</h3>
+                <p>
+                    괄호 검사의 스택은 최악의 경우("((((...") 문자열의 모든 글자를 담을 수 있어야 하므로 <strong>O(n)</strong>,
+                    대기열도 n명이 모두 줄을 서면 <strong>O(n)</strong>입니다.
+                    top, front, rear 같은 관리 변수는 O(1)입니다.
+                </p>
+
+                <h3>알고리즘 특성</h3>
+                <ul>
+                    <li><strong>규칙의 대가로 얻는 속도:</strong> "맨 위/맨 앞만 만진다"는 제한 덕분에 모든 기본 연산이 O(1)입니다.
+                        배열 중간 삽입·삭제가 O(n)이었던 것(2강)과 비교해 보세요.</li>
+                    <li><strong>단순 배열 큐의 공간 낭비:</strong> front가 지나간 앞 칸은 재사용되지 않습니다.
+                        원형 큐(인덱스를 <code>% 용량</code>으로 순환)로 해결하며, <code>ArrayDeque</code>가 이 방식입니다.</li>
+                    <li><strong>용량의 한계:</strong> 배열 기반이므로 가득 차면 push/enqueue가 실패합니다.
+                        완성 코드는 예외를 던지고, <code>ArrayDeque</code>는 내부 배열을 자동으로 키웁니다.</li>
+                    <li><strong>우선순위 큐와의 비교:</strong> <code>PriorityQueue</code>는 "중요한 순서"를 보장하는 대신
+                        offer/poll이 O(log n)입니다. 순서 규칙이 복잡해질수록 연산 비용이 커지는 교환 관계입니다.</li>
+                </ul>
+            </section>
+
+            <!-- 14. 따라 하기 실습 -->
+            <section class="lesson-section" id="sec-practice" aria-labelledby="h-practice">
+                <h2 id="h-practice" data-toc-label="따라 하기 실습"><span class="section-no">14</span>따라 하기 실습</h2>
+
+                <h3>실습 1 — 데이터 변경</h3>
+                <p>
+                    <code>Step4BracketCheckLoop.java</code>의 <code>tests</code> 배열에
+                    <code>"{[}]"</code>와 <code>"[]"</code>를 추가하고 실행하세요.
+                    예상 결과: <code>{[}]</code>는 <strong>무효</strong>('['를 pop했는데 '}'와 짝이 아님),
+                    <code>[]</code>는 <strong>유효</strong>. 실행해서 예상과 일치하는지 확인하세요.
+                </p>
+
+                <h3>실습 2 — 조건 변경</h3>
+                <p>
+                    <code>Step6QueueDequeue.java</code>의 <code>main</code>에서 dequeue를 2번만 하도록 줄이고,
+                    그 뒤에 <code>enqueue("최민재")</code>를 추가한 다음
+                    <code>front</code>, <code>rear</code>, 대기 인원을 출력해 보세요.
+                    예상: front = 2, rear = 4, 대기 2명(박서연, 최민재).
+                    이때 <code>queue[0]</code>, <code>queue[1]</code> 칸이 다시 쓰이지 않는 것 —
+                    이것이 6단계 노트에서 말한 단순 배열 큐의 공간 낭비입니다.
+                </p>
+
+                <h3>실습 3 — 코드 완성: 스택으로 문자열 뒤집기</h3>
+                <p>
+                    스택의 LIFO 성질을 이용하면 문자열을 뒤집을 수 있습니다 —
+                    앞에서부터 모두 push한 뒤 pop하면 <strong>역순</strong>으로 나오기 때문입니다.
+                    아래 클래스의 TODO를 채워 완성하세요. (TODO 상태로도 컴파일과 실행이 됩니다 — 빈 문자열이 나올 뿐입니다.)
+                </p>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">StringReversePractice.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-practice3" aria-label="StringReversePractice.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-practice3" class="language-java">public class StringReversePractice {
+
+    /** 스택을 이용해 text를 뒤집은 문자열을 반환한다 */
+    static String reverse(String text) {
+        char[] stack = new char[text.length()];
+        int top = -1;
+
+        // TODO 1: text의 모든 문자를 앞에서부터 순서대로 스택에 push하세요.
+        //         (힌트: stack[++top] = text.charAt(i))
+
+        StringBuilder result = new StringBuilder();
+        // TODO 2: 스택이 빌 때까지(top != -1) pop한 문자를 result에 붙이세요.
+        //         (힌트: result.append(stack[top--]))
+
+        return result.toString();
+    }
+
+    public static void main(String[] args) {
+        String[] tests = {"stack", "abc", "a"};
+        for (String t : tests) {
+            System.out.println("\"" + t + "\" -&gt; \"" + reverse(t) + "\"");
+        }
+    }
+}</code></pre>
+                </article>
+                <details class="answer-box">
+                    <summary>실습 3 정답 확인</summary>
+                    <div class="answer-box__content">
+                        <pre class="quiz-code">static String reverse(String text) {
+    char[] stack = new char[text.length()];
+    int top = -1;
+
+    for (int i = 0; i &lt; text.length(); i++) {
+        stack[++top] = text.charAt(i);      // 앞에서부터 전부 push
+    }
+
+    StringBuilder result = new StringBuilder();
+    while (top != -1) {
+        result.append(stack[top--]);        // 빌 때까지 pop — 역순으로 나온다
+    }
+
+    return result.toString();
+}</pre>
+                        <p>완성 후 실행 결과:</p>
+                        <pre class="quiz-code">"stack" -&gt; "kcats"
+"abc" -&gt; "cba"
+"a" -&gt; "a"
+</pre>
+                        <p>push n번 + pop n번이므로 O(n)입니다.
+                        "넣은 순서의 반대로 나온다"는 성질은 7강 재귀에서 호출이 풀려나오는 순서를 이해하는 열쇠가 됩니다.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- 15. 실제 데이터 응용 예제 -->
+            <section class="lesson-section" id="sec-application" aria-labelledby="h-application">
+                <h2 id="h-application" data-toc-label="실제 데이터 응용 예제"><span class="section-no">15</span>실제 데이터 응용 예제</h2>
+
+                <h3>문제 상황</h3>
+                <p>
+                    은행 지점의 창구 호출 시스템을 만듭니다. 고객이 도착하면 접수 번호를 받고 대기열에 등록되며,
+                    창구는 대기열에서 한 명씩 호출합니다. 기본 정책은 <strong>도착 순서대로(FIFO)</strong>입니다.
+                    그런데 지점장이 새 요구를 추가했습니다. "VIP 고객은 일반 고객보다 먼저 호출해 주세요.
+                    같은 등급끼리는 접수 번호 순서로요." — 도착 순서가 아니라 <strong>우선순위</strong>가 기준이 되는 순간,
+                    일반 큐로는 부족해집니다.
+                </p>
+
+                <h3>데이터 모델과 자료구조 선택 기준</h3>
+                <ul>
+                    <li><strong>데이터:</strong> 고객 <code>Customer</code> = 이름, 접수 번호(<code>ticketNo</code>), VIP 여부(<code>vip</code>)</li>
+                    <li><strong>방식 A (일반 큐):</strong> 도착 순서 = 처리 순서가 규칙일 때 — <code>ArrayDeque</code>, offer/poll O(1)</li>
+                    <li><strong>방식 B (우선순위 큐):</strong> "중요한 순서"가 규칙일 때 — <code>PriorityQueue</code> +
+                        <code>Comparator</code>(VIP 먼저, 같으면 번호 순), offer/poll O(log n)</li>
+                </ul>
+
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">BankQueueApplication.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-app" aria-label="BankQueueApplication.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-app" class="language-java">import java.util.ArrayDeque;
+import java.util.Comparator;
+import java.util.PriorityQueue;
+import java.util.Queue;
+
+public class BankQueueApplication {
+
+    /** 은행 고객: 이름, 접수 번호, VIP 여부 */
+    static class Customer {
+        String name;
+        int ticketNo;
+        boolean vip;
+
+        Customer(String name, int ticketNo, boolean vip) {
+            this.name = name;
+            this.ticketNo = ticketNo;
+            this.vip = vip;
+        }
+
+        @Override
+        public String toString() {
+            return name + "(" + ticketNo + "번" + (vip ? ", VIP" : "") + ")";
+        }
+    }
+
+    public static void main(String[] args) {
+        Customer[] arrivals = {
+                new Customer("김하늘", 1, false),
+                new Customer("이준호", 2, false),
+                new Customer("박서연", 3, true),
+                new Customer("최민재", 4, false),
+                new Customer("정다은", 5, true)
+        };
+
+        System.out.println("== 방식 A: 일반 큐 — 도착 순서 = 처리 순서 (FIFO) ==");
+        Queue&lt;Customer&gt; queue = new ArrayDeque&lt;&gt;();
+        for (Customer c : arrivals) {
+            queue.offer(c);
+            System.out.println("접수: " + c + " -&gt; 대기 " + queue.size() + "명");
+        }
+        int orderA = 1;
+        while (!queue.isEmpty()) {
+            System.out.println(orderA + "번째 창구 호출: " + queue.poll());
+            orderA++;
+        }
+
+        System.out.println();
+        System.out.println("== 방식 B: 우선순위 큐 맛보기 — VIP 먼저, 같은 등급은 접수 번호 순 ==");
+        PriorityQueue&lt;Customer&gt; priorityQueue = new PriorityQueue&lt;&gt;(
+                Comparator.comparing((Customer c) -&gt; !c.vip)   // VIP(false가 앞)부터
+                          .thenComparing(c -&gt; c.ticketNo));    // 같은 등급이면 번호 순
+        for (Customer c : arrivals) {
+            priorityQueue.offer(c);
+        }
+        int orderB = 1;
+        while (!priorityQueue.isEmpty()) {
+            System.out.println(orderB + "번째 창구 호출: " + priorityQueue.poll());
+            orderB++;
+        }
+
+        System.out.println();
+        System.out.println("일반 큐는 '들어온 순서', 우선순위 큐는 '중요한 순서'로 꺼낸다. (10강에서 자세히)");
+    }
+}</code></pre>
+                </article>
+                <article class="code-card code-card--output">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">출력</span>
+                            <strong class="code-card__filename">실행 결과</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="out-app" aria-label="응용 예제 실행 결과 복사">복사</button>
+                    </header>
+                    <pre><code id="out-app">== 방식 A: 일반 큐 — 도착 순서 = 처리 순서 (FIFO) ==
+접수: 김하늘(1번) -&gt; 대기 1명
+접수: 이준호(2번) -&gt; 대기 2명
+접수: 박서연(3번, VIP) -&gt; 대기 3명
+접수: 최민재(4번) -&gt; 대기 4명
+접수: 정다은(5번, VIP) -&gt; 대기 5명
+1번째 창구 호출: 김하늘(1번)
+2번째 창구 호출: 이준호(2번)
+3번째 창구 호출: 박서연(3번, VIP)
+4번째 창구 호출: 최민재(4번)
+5번째 창구 호출: 정다은(5번, VIP)
+
+== 방식 B: 우선순위 큐 맛보기 — VIP 먼저, 같은 등급은 접수 번호 순 ==
+1번째 창구 호출: 박서연(3번, VIP)
+2번째 창구 호출: 정다은(5번, VIP)
+3번째 창구 호출: 김하늘(1번)
+4번째 창구 호출: 이준호(2번)
+5번째 창구 호출: 최민재(4번)
+
+일반 큐는 '들어온 순서', 우선순위 큐는 '중요한 순서'로 꺼낸다. (10강에서 자세히)</code></pre>
+                </article>
+
+                <h3>코드 해설과 복잡도 분석</h3>
+                <ul>
+                    <li>방식 A는 도착 순서 1→2→3→4→5 그대로 호출합니다. offer/poll이 각각 O(1),
+                        n명 전체 처리는 O(n)입니다.</li>
+                    <li>방식 B는 VIP(박서연 3번, 정다은 5번)를 먼저, 그다음 일반 고객을 번호 순으로 호출합니다.
+                        순서를 정하는 기준은 <code>Comparator.comparing((Customer c) -&gt; !c.vip)</code> —
+                        <code>false</code>가 <code>true</code>보다 앞이므로 VIP(<code>!vip == false</code>)가 먼저 나오고,
+                        <code>thenComparing</code>이 동률(같은 등급)을 접수 번호로 정렬합니다. 4강의 Comparator가 여기서 다시 쓰였습니다.</li>
+                    <li>방식 B의 offer/poll은 O(log n)이므로 n명 전체 처리는 O(n log n)입니다.
+                        "순서 규칙이 강해질수록 연산이 비싸진다"는 교환 관계를 기억하세요.</li>
+                    <li>같은 문제라도 <strong>정책(규칙)이 자료구조를 결정</strong>합니다 — 도착 순서면 큐,
+                        되돌리기면 스택, 중요도 순이면 우선순위 큐.</li>
+                </ul>
+            </section>
+
+            <!-- 16. 최종 프로그램 작성 문제 -->
+            <section class="lesson-section" id="sec-final" aria-labelledby="h-final">
+                <h2 id="h-final" data-toc-label="최종 프로그램 작성 문제"><span class="section-no">16</span>최종 프로그램 작성 문제</h2>
+
+                <h3>문제 제목 — 미니 작업 관리기 "TaskFlow"</h3>
+
+                <h3>문제 배경</h3>
+                <p>
+                    4번 섹션의 메모 앱 팀으로 돌아갑니다. 이제 도구가 준비되었으니 실제 기능을 만들 차례입니다.
+                    사용자가 입력하는 명령은 네 종류입니다. <code>type:내용</code>은 문서 끝에 내용을 덧붙이고,
+                    <code>undo</code>는 가장 최근 입력부터 취소합니다 — 전형적인 <strong>스택(LIFO)</strong> 작업입니다.
+                    <code>enqueue:이름</code>은 문의 고객을 대기열에 등록하고, <code>serve</code>는 가장 먼저
+                    등록된 고객부터 응대를 시작합니다 — 전형적인 <strong>큐(FIFO)</strong> 작업입니다.
+                    빈 스택에서 undo하거나 빈 큐에서 serve해도 프로그램이 죽지 않아야 합니다.
+                    명령 목록을 순서대로 처리하고 마지막에 최종 상태를 요약 출력하는 프로그램을 완성하세요.
+                </p>
+
+                <h3>프로그램 목표</h3>
+                <p>실행 취소 스택과 고객 대기열 큐를 함께 사용하는 명령 처리 프로그램을 완성합니다.</p>
+
+                <h3>필수 요구사항</h3>
+                <ol>
+                    <li><code>type(String text)</code> — 문서(<code>StringBuilder</code>) 끝에 text를 붙이고, 취소를 위해 <code>undoStack</code>에 push한다.</li>
+                    <li><code>undo()</code> — 가장 최근 입력을 pop해서 그 길이만큼 문서 끝에서 지운다. 빈 스택이면 안내 메시지만 출력한다.</li>
+                    <li><code>enqueue(String name)</code> — 고객을 <code>waitQueue</code> 뒤에 등록하고 대기 인원을 출력한다.</li>
+                    <li><code>serve()</code> — 대기열 맨 앞 고객을 꺼내 응대를 시작한다. 빈 큐이면 안내 메시지만 출력한다.</li>
+                    <li>명령 배열을 앞에서부터 순서대로 해석해 네 메서드를 호출한다 (해석 코드는 시작 코드에 제공됨).</li>
+                    <li>모든 명령 처리 후 최종 문서 내용, 남은 대기 고객, 취소 가능한 입력 개수를 출력한다.</li>
+                </ol>
+
+                <h3>입력 데이터</h3>
+                <pre class="quiz-code">commands = {
+    "type:안녕", "type:하세요", "enqueue:김하늘", "type:!!",
+    "undo", "enqueue:이준호", "serve", "serve", "serve",
+    "undo", "undo", "undo"
+}</pre>
+
+                <h3>예상 출력</h3>
+                <pre class="quiz-code">[type] "안녕" 입력 -&gt; 문서 = "안녕"
+[type] "하세요" 입력 -&gt; 문서 = "안녕하세요"
+[enqueue] 김하늘 님 등록 -&gt; 대기 1명
+[type] "!!" 입력 -&gt; 문서 = "안녕하세요!!"
+[undo] "!!" 입력 취소 -&gt; 문서 = "안녕하세요"
+[enqueue] 이준호 님 등록 -&gt; 대기 2명
+[serve] 김하늘 님 응대 시작 -&gt; 남은 대기 1명
+[serve] 이준호 님 응대 시작 -&gt; 남은 대기 0명
+[serve] 대기 중인 고객이 없습니다
+[undo] "하세요" 입력 취소 -&gt; 문서 = "안녕"
+[undo] "안녕" 입력 취소 -&gt; 문서 = ""
+[undo] 취소할 입력이 없습니다
+
+== 최종 상태 ==
+문서 내용 = ""
+남은 대기 고객 = 0명 []
+취소 가능한 입력 = 0개</pre>
+
+                <h3>제한 조건</h3>
+                <ul>
+                    <li>실행 취소는 반드시 <strong>스택(LIFO)</strong>으로, 대기열은 반드시 <strong>큐(FIFO)</strong>로 처리한다.
+                        (시작 코드의 <code>ArrayDeque</code>를 스택은 <code>push</code>/<code>pop</code>으로,
+                        큐는 <code>offer</code>/<code>poll</code>로 사용한다.)</li>
+                    <li>빈 스택 undo, 빈 큐 serve에서 예외가 발생하면 안 된다 — 꺼내기 전에 반드시 <code>isEmpty()</code>를 검사한다.</li>
+                    <li>명령은 최대 100개, <code>type</code> 내용과 이름에 공백은 없다고 가정한다.</li>
+                    <li>출력 형식(대괄호 태그, 화살표 등)은 예상 출력과 정확히 일치해야 한다.</li>
+                </ul>
+
+                <h3>구현 단계 안내</h3>
+                <ol>
+                    <li>시작 코드의 명령 해석 루프(main)를 읽고, 네 메서드가 언제 호출되는지 파악한다.</li>
+                    <li><code>type</code>부터 완성한다 — append 한 줄 + push 한 줄이면 된다.</li>
+                    <li><code>undo</code>를 완성한다 — <strong>빈 스택 검사 → pop → 길이만큼 삭제</strong> 순서를 지킨다.</li>
+                    <li><code>enqueue</code>를 완성한다 — offer 후 <code>waitQueue.size()</code>로 대기 인원을 출력한다.</li>
+                    <li><code>serve</code>를 완성한다 — <strong>빈 큐 검사 → poll → 남은 인원 출력</strong> 순서를 지킨다.</li>
+                    <li>예상 출력과 줄 단위로 비교한다 — 특히 세 번째 <code>serve</code>와 마지막 <code>undo</code>가
+                        "없습니다" 메시지를 내는지 확인한다.</li>
+                </ol>
+
+                <h3>학생용 시작 코드</h3>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">TaskManagerStarter.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-starter" aria-label="TaskManagerStarter.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-starter" class="language-java">import java.util.ArrayDeque;
+import java.util.Deque;
+
+public class TaskManagerStarter {
+
+    /** 문서 내용 (type한 글자들이 이어 붙는다) */
+    static StringBuilder document = new StringBuilder();
+
+    /** 실행 취소용 스택: 가장 최근에 입력한 문자열이 맨 위에 온다 (LIFO) */
+    static Deque&lt;String&gt; undoStack = new ArrayDeque&lt;&gt;();
+
+    /** 고객 대기열 큐: 먼저 등록한 고객이 먼저 나간다 (FIFO) */
+    static Deque&lt;String&gt; waitQueue = new ArrayDeque&lt;&gt;();
+
+    /** 명령 1: text를 문서 끝에 붙이고, 취소할 수 있도록 스택에 기록한다. */
+    static void type(String text) {
+        // TODO 1: document 끝에 text를 붙이세요. (힌트: document.append(text))
+        // TODO 2: undoStack에 text를 push하세요.
+        System.out.println("[type] \"" + text + "\" 입력 -&gt; 문서 = \"" + document + "\"");
+    }
+
+    /** 명령 2: 가장 최근에 입력한 내용을 취소한다. */
+    static void undo() {
+        // TODO 3: undoStack이 비어 있으면 "[undo] 취소할 입력이 없습니다"를 출력하고 끝내세요.
+        // TODO 4: 비어 있지 않으면 pop한 문자열의 길이만큼 document 끝에서 지우고,
+        //         "[undo] \"내용\" 입력 취소 -&gt; 문서 = \"...\"" 형식으로 출력하세요.
+        //         (힌트: document.delete(document.length() - last.length(), document.length()))
+        System.out.println("[undo] 아직 구현되지 않았습니다");
+    }
+
+    /** 명령 3: 고객을 대기열 뒤에 등록한다. */
+    static void enqueue(String name) {
+        // TODO 5: waitQueue에 name을 offer하고,
+        //         "[enqueue] 이름 님 등록 -&gt; 대기 n명" 형식으로 출력하세요.
+        System.out.println("[enqueue] 아직 구현되지 않았습니다");
+    }
+
+    /** 명령 4: 대기열 맨 앞 고객의 응대를 시작한다. */
+    static void serve() {
+        // TODO 6: waitQueue가 비어 있으면 "[serve] 대기 중인 고객이 없습니다"를 출력하세요.
+        // TODO 7: 비어 있지 않으면 poll한 고객으로
+        //         "[serve] 이름 님 응대 시작 -&gt; 남은 대기 n명" 형식으로 출력하세요.
+        System.out.println("[serve] 아직 구현되지 않았습니다");
+    }
+
+    public static void main(String[] args) {
+        String[] commands = {
+                "type:안녕",
+                "type:하세요",
+                "enqueue:김하늘",
+                "type:!!",
+                "undo",
+                "enqueue:이준호",
+                "serve",
+                "serve",
+                "serve",
+                "undo",
+                "undo",
+                "undo"
+        };
+
+        for (String command : commands) {
+            if (command.startsWith("type:")) {
+                type(command.substring(5));
+            } else if (command.equals("undo")) {
+                undo();
+            } else if (command.startsWith("enqueue:")) {
+                enqueue(command.substring(8));
+            } else if (command.equals("serve")) {
+                serve();
+            }
+        }
+
+        System.out.println();
+        System.out.println("== 최종 상태 ==");
+        System.out.println("문서 내용 = \"" + document + "\"");
+        System.out.println("남은 대기 고객 = " + waitQueue.size() + "명 " + waitQueue);
+        System.out.println("취소 가능한 입력 = " + undoStack.size() + "개");
+    }
+}</code></pre>
+                </article>
+                <p>
+                    시작 코드는 TODO 상태로도 컴파일·실행됩니다 —
+                    <code>type</code>의 출력만 나오고 나머지는 "아직 구현되지 않았습니다"가 출력됩니다.
+                </p>
+
+                <h3>테스트 데이터</h3>
+                <div class="table-scroll">
+                    <table class="data-table">
+                        <thead>
+                            <tr><th scope="col">종류</th><th scope="col">입력</th><th scope="col">기대 결과</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>일반 데이터</td>
+                                <td>주어진 명령 12개 전체</td>
+                                <td>예상 출력과 완전히 일치 (최종: 문서 "", 대기 0명, 취소 가능 0개)</td>
+                            </tr>
+                            <tr>
+                                <td>특수 데이터</td>
+                                <td>7~9번째 명령: serve 3연속 (대기 2명뿐)</td>
+                                <td>세 번째 serve는 "대기 중인 고객이 없습니다" 출력, 예외 없음</td>
+                            </tr>
+                            <tr>
+                                <td>경계 조건</td>
+                                <td>첫 명령을 "undo"로 바꿔 실행</td>
+                                <td>"취소할 입력이 없습니다" 출력 후 다음 명령 계속 처리</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>자기 점검표</h3>
+                <ul class="checklist">
+                    <li><input type="checkbox" id="check1"><label for="check1">프로그램이 컴파일되는가?</label></li>
+                    <li><input type="checkbox" id="check2"><label for="check2">undo가 가장 최근 입력부터 취소하는가? ("!!"가 "안녕"보다 먼저 취소)</label></li>
+                    <li><input type="checkbox" id="check3"><label for="check3">serve가 먼저 등록한 고객부터 응대하는가? (김하늘이 이준호보다 먼저)</label></li>
+                    <li><input type="checkbox" id="check4"><label for="check4">빈 스택 undo와 빈 큐 serve에서 예외 없이 안내 메시지가 나오는가?</label></li>
+                    <li><input type="checkbox" id="check5"><label for="check5">undo 후 문서 내용이 정확히 입력 전 상태로 돌아가는가?</label></li>
+                    <li><input type="checkbox" id="check6"><label for="check6">최종 상태 3줄(문서·대기·취소 가능)이 예상 출력과 일치하는가?</label></li>
+                </ul>
+
+                <h3>추가 도전 과제</h3>
+                <ol>
+                    <li><strong>다시 실행(redo):</strong> undo로 취소한 내용을 <code>redoStack</code>에 쌓아 두었다가
+                        <code>redo</code> 명령으로 되살려 보세요. 새 <code>type</code>이 들어오면 redo 스택을 비워야 자연스럽습니다.</li>
+                    <li><strong>VIP 대기열:</strong> <code>enqueue:이름:vip</code> 형식을 추가하고, 응용 예제의
+                        <code>PriorityQueue</code>를 이용해 VIP를 먼저 serve하도록 바꿔 보세요.</li>
+                    <li><strong>용량 제한:</strong> 대기열 정원을 5명으로 제한하고, 가득 찼을 때 enqueue하면
+                        "대기열이 가득 찼습니다"를 출력하며 등록을 거절해 보세요.</li>
+                </ol>
+            </section>
+
+            <!-- 17. 최종 문제 정답과 해설 -->
+            <section class="lesson-section" id="sec-answer" aria-labelledby="h-answer">
+                <h2 id="h-answer" data-toc-label="최종 문제 정답과 해설"><span class="section-no">17</span>최종 문제 정답과 해설</h2>
+                <p>스스로 충분히 시도한 뒤에 여세요. 막혔다면 "구현 단계 안내"를 다시 읽고, 구현 3단계(pop과 예외 처리)와 6단계(dequeue와 빈 큐 검사)를 복습해 보세요.</p>
+
+                <details class="answer-box">
+                    <summary>정답 코드와 해설 확인</summary>
+                    <div class="answer-box__content">
+                        <article class="code-card">
+                            <header class="code-card__header">
+                                <div class="code-card__info">
+                                    <span class="code-card__language">Java</span>
+                                    <strong class="code-card__filename">TaskManagerSolution.java</strong>
+                                </div>
+                                <button type="button" class="copy-code-button" data-copy-target="code-solution" aria-label="TaskManagerSolution.java 코드 복사">코드 복사</button>
+                            </header>
+                            <pre><code id="code-solution" class="language-java">import java.util.ArrayDeque;
+import java.util.Deque;
+
+public class TaskManagerSolution {
+
+    /** 문서 내용 (type한 글자들이 이어 붙는다) */
+    static StringBuilder document = new StringBuilder();
+
+    /** 실행 취소용 스택: 가장 최근에 입력한 문자열이 맨 위에 온다 (LIFO) */
+    static Deque&lt;String&gt; undoStack = new ArrayDeque&lt;&gt;();
+
+    /** 고객 대기열 큐: 먼저 등록한 고객이 먼저 나간다 (FIFO) */
+    static Deque&lt;String&gt; waitQueue = new ArrayDeque&lt;&gt;();
+
+    /** 명령 1: text를 문서 끝에 붙이고, 취소할 수 있도록 스택에 기록한다. */
+    static void type(String text) {
+        document.append(text);
+        undoStack.push(text);           // 가장 최근 입력이 맨 위로
+        System.out.println("[type] \"" + text + "\" 입력 -&gt; 문서 = \"" + document + "\"");
+    }
+
+    /** 명령 2: 가장 최근에 입력한 내용을 취소한다. */
+    static void undo() {
+        if (undoStack.isEmpty()) {      // 빈 스택 검사가 반드시 먼저!
+            System.out.println("[undo] 취소할 입력이 없습니다");
+            return;
+        }
+        String last = undoStack.pop();  // 가장 최근 입력부터 취소 (LIFO)
+        document.delete(document.length() - last.length(), document.length());
+        System.out.println("[undo] \"" + last + "\" 입력 취소 -&gt; 문서 = \"" + document + "\"");
+    }
+
+    /** 명령 3: 고객을 대기열 뒤에 등록한다. */
+    static void enqueue(String name) {
+        waitQueue.offer(name);          // 뒤(rear)에 넣는다
+        System.out.println("[enqueue] " + name + " 님 등록 -&gt; 대기 " + waitQueue.size() + "명");
+    }
+
+    /** 명령 4: 대기열 맨 앞 고객의 응대를 시작한다. */
+    static void serve() {
+        if (waitQueue.isEmpty()) {      // 빈 큐 검사가 반드시 먼저!
+            System.out.println("[serve] 대기 중인 고객이 없습니다");
+            return;
+        }
+        String name = waitQueue.poll(); // 앞(front)에서 꺼낸다 (FIFO)
+        System.out.println("[serve] " + name + " 님 응대 시작 -&gt; 남은 대기 " + waitQueue.size() + "명");
+    }
+
+    public static void main(String[] args) {
+        String[] commands = {
+                "type:안녕",
+                "type:하세요",
+                "enqueue:김하늘",
+                "type:!!",
+                "undo",
+                "enqueue:이준호",
+                "serve",
+                "serve",
+                "serve",
+                "undo",
+                "undo",
+                "undo"
+        };
+
+        for (String command : commands) {
+            if (command.startsWith("type:")) {
+                type(command.substring(5));
+            } else if (command.equals("undo")) {
+                undo();
+            } else if (command.startsWith("enqueue:")) {
+                enqueue(command.substring(8));
+            } else if (command.equals("serve")) {
+                serve();
+            }
+        }
+
+        System.out.println();
+        System.out.println("== 최종 상태 ==");
+        System.out.println("문서 내용 = \"" + document + "\"");
+        System.out.println("남은 대기 고객 = " + waitQueue.size() + "명 " + waitQueue);
+        System.out.println("취소 가능한 입력 = " + undoStack.size() + "개");
+    }
+}</code></pre>
+                        </article>
+                        <article class="code-card code-card--output">
+                            <header class="code-card__header">
+                                <div class="code-card__info">
+                                    <span class="code-card__language">출력</span>
+                                    <strong class="code-card__filename">실행 결과</strong>
+                                </div>
+                                <button type="button" class="copy-code-button" data-copy-target="out-solution" aria-label="정답 실행 결과 복사">복사</button>
+                            </header>
+                            <pre><code id="out-solution">[type] "안녕" 입력 -&gt; 문서 = "안녕"
+[type] "하세요" 입력 -&gt; 문서 = "안녕하세요"
+[enqueue] 김하늘 님 등록 -&gt; 대기 1명
+[type] "!!" 입력 -&gt; 문서 = "안녕하세요!!"
+[undo] "!!" 입력 취소 -&gt; 문서 = "안녕하세요"
+[enqueue] 이준호 님 등록 -&gt; 대기 2명
+[serve] 김하늘 님 응대 시작 -&gt; 남은 대기 1명
+[serve] 이준호 님 응대 시작 -&gt; 남은 대기 0명
+[serve] 대기 중인 고객이 없습니다
+[undo] "하세요" 입력 취소 -&gt; 문서 = "안녕"
+[undo] "안녕" 입력 취소 -&gt; 문서 = ""
+[undo] 취소할 입력이 없습니다
+
+== 최종 상태 ==
+문서 내용 = ""
+남은 대기 고객 = 0명 []
+취소 가능한 입력 = 0개</code></pre>
+                        </article>
+
+                        <h4>구현 순서와 핵심 알고리즘 적용 부분</h4>
+                        <ol>
+                            <li><code>type</code>은 문서에 <code>append</code> + 스택에 <code>push</code> — "작업을 하면서 되돌릴 기록을 함께 남긴다"는
+                                실행 취소 기능의 기본 패턴입니다.</li>
+                            <li><code>undo</code>의 핵심은 <strong>LIFO</strong>입니다 — pop은 항상 가장 최근 입력을 돌려주므로,
+                                "!!" → "하세요" → "안녕" 순서(입력의 역순)로 취소됩니다.
+                                지울 범위는 <code>document.length() - last.length()</code>부터 끝까지입니다.</li>
+                            <li><code>enqueue</code>/<code>serve</code>의 핵심은 <strong>FIFO</strong>입니다 —
+                                offer는 뒤에 넣고 poll은 앞에서 꺼내므로 김하늘(먼저 등록)이 이준호보다 먼저 응대됩니다.</li>
+                            <li>네 메서드 모두에서 <strong>꺼내기 전 빈 검사</strong>(isEmpty)가 예외를 막습니다 —
+                                세 번째 serve와 네 번째 undo가 안내 메시지로 안전하게 처리되는 이유입니다.</li>
+                        </ol>
+
+                        <h4>복잡도 분석</h4>
+                        <ul>
+                            <li>명령 1개 처리: push/pop/offer/poll 모두 O(1).
+                                (undo의 <code>delete</code>는 지우는 길이에 비례하지만, 명령 내용 길이가 상수 수준이므로 O(1)로 봅니다.)</li>
+                            <li>명령이 m개면 전체 O(m) — 명령 수에 정비례하는 선형 프로그램입니다.</li>
+                            <li>공간: 취소 기록과 대기열이 각각 최대 명령 수만큼 자라므로 O(m)입니다.</li>
+                        </ul>
+
+                        <h4>자주 발생하는 오류</h4>
+                        <ul>
+                            <li>빈 검사 없이 <code>pop()</code>/<code>poll()</code>부터 호출 —
+                                <code>ArrayDeque.pop()</code>은 빈 스택에서 <code>NoSuchElementException</code>을 던집니다 (오류 1 유형).</li>
+                            <li><code>undoStack.push</code> 대신 <code>offer</code>(뒤에 넣기)를 써서 undo가
+                                가장 오래된 입력부터 취소되는 경우 — LIFO가 FIFO로 바뀌는 실수입니다.</li>
+                            <li><code>document.delete</code>의 범위를 <code>0, last.length()</code>로 써서
+                                문서의 <strong>앞부분</strong>이 지워지는 경우 — 끝에서 지워야 합니다.</li>
+                            <li>serve에서 poll한 뒤의 <code>size()</code>가 아니라 poll 전의 크기를 출력해
+                                "남은 대기"가 1 크게 나오는 경우.</li>
+                        </ul>
+
+                        <h4>다른 해결 방법</h4>
+                        <p>
+                            이번 강의 전반부처럼 <strong>배열 + top/front/rear</strong>로 스택·큐를 직접 만들어 풀 수도 있습니다 —
+                            동작은 같고, 용량 관리(가득 참 처리)를 직접 해야 한다는 점만 다릅니다.
+                            또 <code>undoStack</code>에 문자열 대신 "문서 전체의 스냅숏"을 저장하는 방법도 있습니다.
+                            구현은 더 단순하지만 문서가 길어질수록 메모리를 많이 쓰는 교환 관계가 있습니다.
+                        </p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- 18. 확인 퀴즈 -->
+            <section class="lesson-section" id="sec-quiz" aria-labelledby="h-quiz">
+                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">18</span>확인 퀴즈</h2>
+                <div id="quiz-root"></div>
+            </section>
+
+            <!-- 19. 오늘의 핵심 정리 -->
+            <section class="lesson-section" id="sec-summary" aria-labelledby="h-summary">
+                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">19</span>오늘의 핵심 정리</h2>
+                <ul>
+                    <li><strong>자료구조 = 데이터 + 규칙.</strong> 스택과 큐는 배열 위에 "넣고 꺼내는 규칙"을 얹은 것이다.</li>
+                    <li><strong>스택은 LIFO</strong> — 맨 위(top)에서만 push/pop. <code>top = -1</code>이 빈 스택,
+                        개수는 <code>top + 1</code>. 실행 취소, 괄호 검사, 호출 스택에 쓰인다.</li>
+                    <li><strong>큐는 FIFO</strong> — 뒤(rear)로 넣고 앞(front)에서 꺼낸다. <code>front == rear</code>가 빈 큐,
+                        개수는 <code>rear - front</code>. 대기열과 순서 보장 작업에 쓰인다.</li>
+                    <li>push/pop/enqueue/dequeue는 모두 <strong>O(1)</strong> — 규칙을 제한한 대가로 얻는 속도다.</li>
+                    <li><strong>꺼내기 전에는 반드시 빈 검사</strong> — 빈 스택 pop, 빈 큐 dequeue는 예외 또는 조용한 오류의 원인이다.</li>
+                    <li>괄호 검사의 핵심: 닫는 괄호의 짝은 <strong>가장 최근에 열린 괄호</strong> — 그래서 스택이 정답이다.
+                        무효 판정은 세 갈래(빈 스택 pop, 짝 불일치, 여는 괄호 남음)임을 기억하자.</li>
+                    <li>실무에서는 <code>ArrayDeque</code>를 스택·큐로 쓰고, "중요한 순서"가 필요하면
+                        <code>PriorityQueue</code>(O(log n))를 쓴다 — 10·12강에서 다시 만난다.</li>
+                </ul>
+                <div id="lesson-complete-slot"></div>
+            </section>
+
+            <!-- 20. 다음 강의 연결 -->
+            <section class="lesson-section" id="sec-next" aria-labelledby="h-next">
+                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">20</span>다음 강의 연결</h2>
+                <p>
+                    다음 강의는 <strong>7강. 재귀와 백트래킹</strong>입니다.
+                    오늘 배운 스택이 다음 강의의 문을 여는 열쇠입니다 —
+                    <strong>메서드 호출 자체가 스택으로 동작</strong>하기 때문입니다.
+                </p>
+                <ul>
+                    <li>메서드를 호출하면 호출 정보가 <strong>호출 스택(call stack)</strong>에 push되고,
+                        return하면 pop됩니다 — 오늘 만든 push/pop 그대로입니다.</li>
+                    <li>재귀 호출이 "가장 최근 호출부터 되돌아오는" 이유가 바로 <strong>LIFO</strong>입니다 —
+                        실습 3에서 본 "넣은 순서의 반대로 나온다"가 재귀의 풀림 순서가 됩니다.</li>
+                    <li>재귀를 너무 깊이 들어가면 만나는 <code>StackOverflowError</code>는
+                        말 그대로 "호출 스택이 가득 찼다"는 뜻입니다 — 배열 스택이 가득 차던 상황과 같습니다.</li>
+                    <li>백트래킹의 "선택 → 진행 → 취소"에서 취소가 곧 pop입니다 —
+                        오늘의 실행 취소(undo) 패턴이 탐색 알고리즘으로 확장됩니다.</li>
+                    <li>오늘 맛본 큐는 8강 트리의 레벨 순회, 9강 BFS에서 주인공이 됩니다.</li>
+                </ul>
+                <div id="lesson-pager"></div>
+            </section>
+
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <p>Algorithm Learning Lab — 초보 개발자를 위한 필수 알고리즘 · 6강. 스택과 큐를 활용한 작업 처리</p>
+    </footer>
+
+    <script src="../assets/js/algorithms-data.js"></script>
+    <script src="../assets/js/progress.js"></script>
+    <script src="../assets/js/common.js"></script>
+    <script src="../assets/js/code-copy.js"></script>
+    <script src="../assets/js/visualization.js"></script>
+    <script src="../assets/js/quiz.js"></script>
+    <script>
+        /* ===== 시각화 1: 스택으로 괄호 짝 검사 ===== */
+        (function () {
+            var OPEN = "([{";
+            var CLOSE = ")]}";
+
+            function isPair(open, close) {
+                return (open === "(" && close === ")")
+                    || (open === "[" && close === "]")
+                    || (open === "{" && close === "}");
+            }
+
+            function makeSteps(text) {
+                var steps = [];
+                var stack = [];
+                var pushCount = 0;
+                var popCount = 0;
+
+                function textView(currentIdx, doneUpto, errorIdx) {
+                    return {
+                        type: "array",
+                        label: "검사할 문자열",
+                        cells: text.split("").map(function (ch, i) {
+                            var cls = "";
+                            if (i < doneUpto) cls = "done";
+                            if (i === currentIdx) cls = "current";
+                            if (i === errorIdx) cls = "error";
+                            return { v: ch, sub: String(i), cls: cls };
+                        })
+                    };
+                }
+
+                function stackView(topCls) {
+                    return {
+                        type: "stack",
+                        label: "스택",
+                        items: stack.map(function (ch, i) {
+                            return { v: ch, cls: (topCls && i === stack.length - 1) ? topCls : "" };
+                        })
+                    };
+                }
+
+                function counters() {
+                    return { "push": pushCount, "pop": popCount };
+                }
+
+                steps.push({
+                    caption: "\"" + text + "\" 검사를 시작합니다. 스택은 비어 있습니다.",
+                    counters: counters(),
+                    view: [textView(-1, 0, -1), stackView(null)]
+                });
+
+                var valid = true;
+                var i;
+                for (i = 0; i < text.length && valid; i++) {
+                    var ch = text.charAt(i);
+                    if (OPEN.indexOf(ch) !== -1) {
+                        stack.push(ch);
+                        pushCount++;
+                        steps.push({
+                            caption: i + "번 문자 '" + ch + "'는 여는 괄호 → push합니다. 맨 위(top)가 '" + ch + "'가 됩니다.",
+                            counters: counters(),
+                            view: [textView(i, i, -1), stackView("current")]
+                        });
+                    } else if (CLOSE.indexOf(ch) !== -1) {
+                        if (stack.length === 0) {
+                            valid = false;
+                            steps.push({
+                                caption: i + "번 문자 '" + ch + "'는 닫는 괄호인데 스택이 비어 있습니다 — 짝 없는 닫는 괄호, 무효!",
+                                counters: counters(),
+                                view: [textView(-1, i, i), stackView(null),
+                                       { type: "note", text: "빈 스택에서 pop할 수 없습니다. 검사를 즉시 중단합니다." }]
+                            });
+                        } else {
+                            var open = stack.pop();
+                            popCount++;
+                            if (isPair(open, ch)) {
+                                steps.push({
+                                    caption: i + "번 문자 '" + ch + "' → 맨 위 '" + open + "'를 pop. 짝이 맞으므로 통과합니다.",
+                                    counters: counters(),
+                                    view: [textView(i, i, -1), stackView(null),
+                                           { type: "note", text: "'" + open + "' ↔ '" + ch + "' 짝 맞음" }]
+                                });
+                            } else {
+                                valid = false;
+                                steps.push({
+                                    caption: i + "번 문자 '" + ch + "' → pop한 '" + open + "'와 짝이 아닙니다 — 무효!",
+                                    counters: counters(),
+                                    view: [textView(-1, i, i), stackView(null),
+                                           { type: "note", text: "'" + open + "' ↔ '" + ch + "' 종류가 다른 괄호끼리 만났습니다." }]
+                                });
+                            }
+                        }
+                    } else {
+                        steps.push({
+                            caption: i + "번 문자 '" + ch + "'는 괄호가 아니므로 건너뜁니다.",
+                            counters: counters(),
+                            view: [textView(i, i, -1), stackView(null)]
+                        });
+                    }
+                }
+
+                if (valid) {
+                    if (stack.length === 0) {
+                        steps.push({
+                            caption: "끝까지 읽었고 스택이 비어 있습니다 → \"" + text + "\"는 유효한 괄호입니다.",
+                            counters: counters(),
+                            view: [textView(-1, text.length, -1), stackView(null),
+                                   { type: "note", text: "모든 여는 괄호가 짝을 만나 닫혔습니다." }]
+                        });
+                    } else {
+                        steps.push({
+                            caption: "끝까지 읽었지만 스택에 여는 괄호 " + stack.length + "개가 남았습니다 → 무효입니다.",
+                            counters: counters(),
+                            view: [textView(-1, text.length, -1), stackView("error"),
+                                   { type: "note", text: "끝내 닫히지 못한 여는 괄호가 남아 있습니다." }]
+                        });
+                    }
+                }
+
+                return steps;
+            }
+
+            AlgoViz.create({
+                mount: "#viz-bracket",
+                title: "스택으로 괄호 짝 검사",
+                legend: ["current", "done", "error"],
+                initialInput: "([()])",
+                makeSteps: makeSteps,
+                makeInput: function () {
+                    var samples = ["{[()]}", "(())", "([)]", "(()", "())", "(a+b)*[c]"];
+                    return samples[Math.floor(Math.random() * samples.length)];
+                }
+            });
+        })();
+
+        /* ===== 시각화 2: 큐로 주문 대기열 처리 ===== */
+        (function () {
+            function makeSteps(ops) {
+                var steps = [];
+                var queue = [];
+                var enqueueCount = 0;
+                var dequeueCount = 0;
+
+                function queueView(newIdx) {
+                    return {
+                        type: "queue",
+                        label: "대기열",
+                        items: queue.map(function (name, i) {
+                            return { v: name, cls: (newIdx !== null && i === newIdx) ? "current" : "" };
+                        })
+                    };
+                }
+
+                function counters() {
+                    return { "enqueue": enqueueCount, "dequeue": dequeueCount, "대기": queue.length };
+                }
+
+                steps.push({
+                    caption: "카페 주문 대기열을 시작합니다. 대기열은 비어 있습니다.",
+                    counters: counters(),
+                    view: [queueView(null)]
+                });
+
+                ops.forEach(function (op) {
+                    if (op.type === "enqueue") {
+                        queue.push(op.name);
+                        enqueueCount++;
+                        steps.push({
+                            caption: "enqueue: " + op.name + " 님이 대기열 맨 뒤(rear)에 섭니다. 대기 " + queue.length + "명.",
+                            counters: counters(),
+                            view: [queueView(queue.length - 1)]
+                        });
+                    } else {
+                        if (queue.length === 0) {
+                            steps.push({
+                                caption: "dequeue 시도 — 대기열이 비어 있어 꺼낼 수 없습니다. (꺼내기 전 빈 검사!)",
+                                counters: counters(),
+                                view: [queueView(null), { type: "note", text: "빈 큐에서는 dequeue할 수 없습니다." }]
+                            });
+                        } else {
+                            var served = queue.shift();
+                            dequeueCount++;
+                            steps.push({
+                                caption: "dequeue: 맨 앞(front)의 " + served + " 님 주문을 처리합니다. 남은 대기 " + queue.length + "명.",
+                                counters: counters(),
+                                view: [queueView(null),
+                                       { type: "note", text: "먼저 온 " + served + " 님이 먼저 나갑니다 (FIFO)." }]
+                            });
+                        }
+                    }
+                });
+
+                steps.push({
+                    caption: "시뮬레이션 종료 — 넣은 순서 그대로 처리되었습니다. 손님 1명당 enqueue/dequeue 각 1번, 전체 O(n)입니다.",
+                    counters: counters(),
+                    view: [queueView(null)]
+                });
+
+                return steps;
+            }
+
+            AlgoViz.create({
+                mount: "#viz-queue",
+                title: "큐로 주문 대기열 처리 (enqueue / dequeue)",
+                legend: ["current"],
+                initialInput: [
+                    { type: "enqueue", name: "김하늘" },
+                    { type: "enqueue", name: "이준호" },
+                    { type: "dequeue" },
+                    { type: "enqueue", name: "박서연" },
+                    { type: "dequeue" },
+                    { type: "dequeue" }
+                ],
+                makeSteps: makeSteps,
+                makeInput: function () {
+                    var pool = ["최민재", "정다은", "강지훈", "윤소미", "한도윤"];
+                    var names = pool.slice();
+                    names.sort(function () { return Math.random() - 0.5; });
+                    return [
+                        { type: "enqueue", name: names[0] },
+                        { type: "enqueue", name: names[1] },
+                        { type: "dequeue" },
+                        { type: "enqueue", name: names[2] },
+                        { type: "enqueue", name: names[3] },
+                        { type: "dequeue" },
+                        { type: "dequeue" },
+                        { type: "dequeue" }
+                    ];
+                }
+            });
+        })();
+
+        /* ===== 확인 퀴즈 ===== */
+        AlgoQuiz.init("#quiz-root", "stack-and-queue", [
+            {
+                type: "mc",
+                q: "가장 나중에 넣은 데이터를 가장 먼저 꺼내는(LIFO) 자료구조는 무엇인가요?",
+                choices: ["큐", "스택", "배열", "우선순위 큐"],
+                answer: 1,
+                explain: "스택은 넣는 곳과 꺼내는 곳이 같은 쪽 끝(top)이라서, 나중에 넣은 것이 먼저 나옵니다(LIFO). 큐는 반대로 먼저 넣은 것이 먼저 나옵니다(FIFO)."
+            },
+            {
+                type: "mc",
+                q: "배열로 구현한 큐에서 enqueue와 dequeue가 일어나는 위치를 옳게 짝지은 것은 무엇인가요?",
+                choices: [
+                    "rear에 넣고 front에서 꺼낸다",
+                    "front에 넣고 rear에서 꺼낸다",
+                    "둘 다 front에서 일어난다",
+                    "둘 다 rear에서 일어난다"
+                ],
+                answer: 0,
+                explain: "큐는 뒤(rear)로 넣고 앞(front)에서 꺼냅니다. 넣는 곳과 꺼내는 곳이 반대쪽 끝이라서 FIFO가 보장됩니다. 둘 다 같은 쪽이면 그것은 스택입니다."
+            },
+            {
+                type: "mc",
+                q: "괄호 검사 알고리즘에서 닫는 괄호를 만났을 때 해야 할 일로 올바른 것은 무엇인가요?",
+                choices: [
+                    "닫는 괄호도 무조건 스택에 push한다",
+                    "스택이 비었는지 확인한 뒤, pop한 여는 괄호와 짝이 맞는지 비교한다",
+                    "문자열을 처음부터 다시 읽는다",
+                    "스택의 내용을 모두 비운다"
+                ],
+                answer: 1,
+                explain: "닫는 괄호의 짝은 '가장 최근에 열린 괄호' = 스택의 맨 위입니다. 빈 스택 검사 → pop → 짝 비교 순서로 처리하며, 빈 스택이거나 짝이 다르면 무효입니다."
+            },
+            {
+                type: "tf",
+                q: "스택의 pop은 가장 먼저 push한 값을 꺼낸다.",
+                answer: false,
+                explain: "pop은 가장 나중에 push한 값(맨 위, top)을 꺼냅니다. 가장 먼저 넣은 값부터 꺼내는 것은 큐의 dequeue입니다."
+            },
+            {
+                type: "tf",
+                q: "괄호 검사에서 문자열을 끝까지 읽는 동안 오류가 없었다면, 마지막에 스택에 여는 괄호가 남아 있어도 유효한 문자열이다.",
+                answer: false,
+                explain: "\"(((\"처럼 여는 괄호가 남아 있으면 끝내 닫히지 못한 괄호가 있다는 뜻이므로 무효입니다. 마지막에 반드시 스택이 비어 있는지 확인해야 합니다."
+            },
+            {
+                type: "predict",
+                q: "빈 문자 스택에 다음 연산을 순서대로 실행하면, 출력되는 세 값은 무엇인가요?",
+                code: "push('A');\npush('B');\nSystem.out.println(pop());\npush('C');\nSystem.out.println(pop());\nSystem.out.println(pop());",
+                choices: ["A, B, C", "B, C, A", "C, B, A", "B, A, C"],
+                answer: 1,
+                explain: "push A, B 후 pop → B. push C 후 pop → C. 마지막 pop → A. 스택은 항상 그 시점의 맨 위 값을 꺼냅니다."
+            },
+            {
+                type: "predict",
+                q: "빈 큐에 다음 연산을 순서대로 실행하면, 출력되는 세 값은 무엇인가요?",
+                code: "enqueue(\"가\"); enqueue(\"나\");\nSystem.out.println(dequeue());\nenqueue(\"다\");\nSystem.out.println(dequeue());\nSystem.out.println(dequeue());",
+                choices: ["가, 다, 나", "다, 나, 가", "가, 나, 다", "나, 가, 다"],
+                answer: 2,
+                explain: "큐는 넣은 순서 그대로 나옵니다. 중간에 \"다\"가 들어와도 먼저 온 \"가\", \"나\"보다 뒤에 서므로 출력은 가, 나, 다입니다."
+            },
+            {
+                type: "fill",
+                q: "배열 스택에서 '비어 있음'을 검사하는 코드의 빈칸을 채우세요. static boolean isEmpty() { return top == ____; }",
+                accept: ["-1", "(-1)", "- 1"],
+                explain: "top은 맨 위 칸의 인덱스이므로, 아무것도 없을 때는 가리킬 칸이 없다는 뜻으로 -1을 약속합니다. push하면 0이 되고, 모두 pop하면 다시 -1로 돌아갑니다."
+            },
+            {
+                type: "debug",
+                q: "다음 pop 메서드를 호출해도 스택의 데이터 개수가 줄어들지 않습니다. 원인은 무엇인가요?",
+                code: "static char pop() {\n    char value = stack[top];\n    return value;\n}",
+                choices: [
+                    "value 변수를 거치지 말고 바로 return해야 한다",
+                    "top을 한 칸 내리는 top-- 가 빠져 있다",
+                    "stack[top] 대신 stack[0]을 읽어야 한다",
+                    "반환형을 char가 아니라 int로 해야 한다"
+                ],
+                answer: 1,
+                explain: "'꺼낸다'는 값 읽기 + top 이동의 묶음입니다. top을 내리지 않으면 같은 값이 계속 맨 위로 남습니다. 오류 2의 front를 옮기지 않는 dequeue와 같은 유형의 실수입니다."
+            },
+            {
+                type: "think",
+                q: "브라우저의 '뒤로 가기' 기능과 음식점의 '번호표 호출' 중 어느 것이 스택이고 어느 것이 큐인지, 오늘 배운 LIFO/FIFO 규칙과 연결해 이유를 설명해 보세요.",
+                modelAnswer: "뒤로 가기는 스택입니다. 방문한 페이지를 순서대로 쌓아 두었다가, 가장 최근에 본 페이지부터(LIFO) 되돌아가야 하기 때문입니다. 번호표 호출은 큐입니다. 먼저 뽑은(먼저 온) 손님부터 순서대로(FIFO) 호출해야 공정하기 때문입니다. 두 경우 모두 '무엇을 저장하느냐'보다 '어떤 순서로 꺼내느냐'가 기능의 본질을 결정합니다."
+            }
+        ]);
+    </script>
+</body>
+</html>
