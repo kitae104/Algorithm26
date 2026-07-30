@@ -423,21 +423,56 @@
         return null;
     }
 
-    function animateSwap(cells, a, b, durMs, onDone) {
-        var ra = cells[a].getBoundingClientRect();
-        var rb = cells[b].getBoundingClientRect();
-        var dx = rb.left - ra.left;
+    /* ---------- 모션 수명 주기 (공통) ----------
+     * "취소"와 "완료"를 분리한다: 어느 쪽이든 DOM 리셋(reset)은 반드시 하지만,
+     * onDone(= 값 커밋)은 완료(finish) 경로에서만 호출한다. 재구성(rebuild)처럼
+     * 진행 중인 애니메이션의 스텝 데이터가 이미 못 쓰게 된 상황에서는 cancel()을
+     * 써서 리셋만 하고 커밋은 절대 실행하지 않는다.
+     * animateSwap과 (Task 4의) animateCopy가 이 헬퍼를 공유해 pendingMotion을
+     * 다루는 코드를 두 번 만들지 않는다.
+     */
+    function createMotion(resetFn, onDone, durMs) {
         var finished = false;
+        var timeoutId = null;
+
+        function clearPendingTimeout() {
+            if (timeoutId !== null) {
+                clearTimeout(timeoutId);
+                timeoutId = null;
+            }
+        }
 
         function finish() {
             if (finished) return;
             finished = true;
+            clearPendingTimeout();
+            resetFn();
+            onDone();
+        }
+
+        function cancel() {
+            if (finished) return;
+            finished = true;
+            clearPendingTimeout();
+            resetFn();
+            /* onDone은 호출하지 않는다 — 이 모션의 스텝은 절대 커밋되면 안 된다 */
+        }
+
+        timeoutId = setTimeout(finish, durMs + 40);
+        return { finish: finish, cancel: cancel };
+    }
+
+    function animateSwap(cells, a, b, durMs, onDone) {
+        var ra = cells[a].getBoundingClientRect();
+        var rb = cells[b].getBoundingClientRect();
+        var dx = rb.left - ra.left;
+
+        function reset() {
             [a, b].forEach(function (k) {
                 cells[k].style.transition = "";
                 cells[k].style.transform = "";
                 cells[k].classList.remove("is-moving");
             });
-            onDone();
         }
 
         [a, b].forEach(function (k) {
@@ -447,8 +482,7 @@
         cells[a].style.transform = "translateX(" + dx + "px)";
         cells[b].style.transform = "translateX(" + (-dx) + "px)";
 
-        setTimeout(finish, durMs + 40);
-        return finish;
+        return createMotion(reset, onDone, durMs);
     }
 
     /* ---------- 플레이어 ---------- */
@@ -464,7 +498,7 @@
         var index = 0;
         var timer = null;
         var mounted = [];
-        var pendingFinish = null;   // 진행 중인 이동 모션의 즉시 종료 함수
+        var pendingMotion = null;   // 진행 중인 이동 모션 { cancel, finish } (createMotion 참고)
         var prevValues = null;      // 직전 단계의 배열 값 (이동 감지용)
         var speedMs = SPEEDS[1].ms;
         var reducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -610,16 +644,36 @@
             return base;
         }
 
+        /* 진행 중인 모션을 "완료"시킨다: 리셋 후 onDone(값 커밋)까지 실행한다.
+         * 일반적인 단계 이동(다음/이전/처음부터)에서 쓴다 — 같은 실행 중에
+         * 새 단계를 이어서 커밋하므로 화면에는 보이지 않고 자연스럽게 이어진다. */
+        function finishPendingMotion() {
+            if (pendingMotion) {
+                var motion = pendingMotion;
+                pendingMotion = null;
+                motion.finish();
+            }
+        }
+
+        /* 진행 중인 모션을 "취소"한다: 리셋만 하고 onDone은 호출하지 않는다.
+         * rebuild()처럼 스텝 데이터 자체가 통째로 바뀌는 상황에서 쓴다 —
+         * 여기서 onDone을 부르면 새로 지어진 stage/mounted에 옛 스텝의
+         * 값이 뒤늦게(setTimeout 이후) 커밋되어 화면이 되돌아가는
+         * 잔상 버그가 생긴다. */
+        function cancelPendingMotion() {
+            if (pendingMotion) {
+                var motion = pendingMotion;
+                pendingMotion = null;
+                motion.cancel();
+            }
+        }
+
         function renderStep() {
             var step = steps[index];
             if (!step) return;
 
-            /* 진행 중인 모션이 있으면 즉시 끝내고 새 단계로 넘어간다 */
-            if (pendingFinish) {
-                var finishNow = pendingFinish;
-                pendingFinish = null;
-                finishNow();
-            }
+            /* 진행 중인 모션이 있으면 즉시 끝내고(커밋) 새 단계로 넘어간다 */
+            finishPendingMotion();
 
             var nextValues = arrayValuesOf(step.view);
             var swap = reducedMotion ? null : detectSwap(prevValues, nextValues);
@@ -635,13 +689,18 @@
                 return;
             }
 
-            pendingFinish = animateSwap(cells, swap.a, swap.b, moveDuration(), function () {
-                pendingFinish = null;
+            pendingMotion = animateSwap(cells, swap.a, swap.b, moveDuration(), function () {
+                pendingMotion = null;
                 commitStep(step);
             });
         }
 
         function rebuild() {
+            /* 진행 중인 모션이 있다면 취소만 한다 — 절대 완료(커밋)시키지 않는다.
+             * steps/stage가 곧 통째로 교체되므로 옛 스텝을 커밋하면 새 데이터 위에
+             * 옛 값이 지연 반영되는 버그가 생긴다. */
+            cancelPendingMotion();
+
             try {
                 steps = config.makeSteps(input) || [];
             } catch (e) {
@@ -653,7 +712,6 @@
             mounted = [];
             stage.textContent = "";
             prevValues = null;
-            pendingFinish = null;
             index = 0;
             renderStep();
         }
