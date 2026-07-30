@@ -162,6 +162,19 @@ html {
     scroll-padding-top: calc(var(--header-h) + 16px);
 }
 
+/* ---------- 스크롤 진입 ---------- */
+.reveal-on-scroll {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity var(--dur-slow) var(--ease-out),
+                transform var(--dur-slow) var(--ease-out);
+}
+
+.reveal-on-scroll.is-revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
 @media (prefers-reduced-motion: reduce) {
     :root {
         --dur-fast: 0.01ms;
@@ -176,6 +189,11 @@ html {
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
         scroll-behavior: auto !important;
+    }
+
+    .reveal-on-scroll {
+        opacity: 1;
+        transform: none;
     }
 }
 

@@ -152,6 +152,42 @@
             topBtn.classList.toggle("is-visible", window.scrollY > 600);
         }, { passive: true });
 
+        /* ---------- 스크롤 진입 ---------- */
+        (function () {
+            var reduced = window.matchMedia &&
+                window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+            /* reduced-motion이거나 IntersectionObserver가 없으면 그냥 보여준다 */
+            if (reduced || !("IntersectionObserver" in window)) return;
+
+            /* 랜딩 페이지의 강좌 카드(.course-card)는 landing.js의 별도
+               DOMContentLoaded 핸들러가 이 핸들러 뒤에 그려 넣는다. 마이크로태스크는
+               각 리스너 실행 직후에 바로 소진되어 너무 이르므로, 매크로태스크로
+               미뤄 landing.js의 동기 렌더링까지 모두 끝난 뒤에 대상을 모은다.
+               초기 페인트보다 먼저 실행되므로 깜빡임도 없다. */
+            setTimeout(function () {
+                var targets = document.querySelectorAll(
+                    ".lesson-section, .course-card, .how-card, .stat-tile");
+                if (!targets.length) return;
+
+                Array.prototype.forEach.call(targets, function (node) {
+                    node.classList.add("reveal-on-scroll");
+                });
+
+                var revealObserver = new IntersectionObserver(function (entries) {
+                    entries.forEach(function (entry) {
+                        if (!entry.isIntersecting) return;
+                        entry.target.classList.add("is-revealed");
+                        revealObserver.unobserve(entry.target);   /* 1회만 — 되돌아가도 재생 안 함 */
+                    });
+                }, { rootMargin: "0px 0px -8% 0px", threshold: 0.05 });
+
+                Array.prototype.forEach.call(targets, function (node) {
+                    revealObserver.observe(node);
+                });
+            }, 0);
+        })();
+
         if (!isLessonPage) {
             return;
         }

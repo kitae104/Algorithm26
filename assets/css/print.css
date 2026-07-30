@@ -154,4 +154,10 @@
     .viz__stage {
         overflow: visible;
     }
+
+    /* 스크롤 진입 전 상태가 인쇄물에 남아 내용이 사라지지 않도록 강제 표시 */
+    .reveal-on-scroll {
+        opacity: 1 !important;
+        transform: none !important;
+    }
 }
