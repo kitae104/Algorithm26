@@ -12,7 +12,7 @@
 
 - **ES5만 사용한다.** 프로젝트 전체가 `var`·`function`·IIFE이고 트랜스파일 단계가 없다. `const`/`let`/화살표 함수/템플릿 리터럴/`class`를 쓰지 않는다.
 - **외부 라이브러리를 추가하지 않는다.** npm 런타임 의존성 0개를 유지한다.
-- **`AlgoViz` 공개 API를 바꾸지 않는다.** `AlgoViz.create(config)`, 반환 객체의 `rebuild()`·`setInput(next)`, step 객체 형식(`caption`/`counters`/`view`), view group 형식(`array`/`stack`/`queue`/`table`/`graph`/`frames`/`note`)이 모두 그대로여야 한다. 13개 강의에 있는 **15개 시각화 호출부의 `makeSteps` 코드는 한 줄도 고치지 않는다.**
+- **`AlgoViz` 공개 API를 바꾸지 않는다.** `AlgoViz.create(config)`, 반환 객체의 `rebuild()`·`setInput(next)`, step 객체 형식(`caption`/`counters`/`view`), view group 형식(`array`/`stack`/`queue`/`table`/`graph`/`frames`/`note`)이 모두 그대로여야 한다. 13개 강의에 있는 **16개 시각화 호출부의 `makeSteps` 코드는 한 줄도 고치지 않는다.**
 - **`prefers-reduced-motion: reduce`를 존중한다.** 이 상태에서 자동 재생·이동 모션·스크롤 진입이 모두 비활성이어야 하고, 수동 조작은 계속 가능해야 한다.
 - **색상만으로 상태를 구분하지 않는다.** `docs/adding-lessons.md`의 접근성 규칙이다. 모든 상태는 색 + 형태/위치/텍스트 중 하나를 함께 쓴다.
 - **인쇄 호환.** 학생용·교수자용 인쇄가 핵심 기능이다. 애니메이션 중간 상태(예: 스크롤 진입 전 `opacity: 0`)가 인쇄물에 남으면 안 된다.
@@ -478,7 +478,7 @@ Step 1의 스니펫을 다시 실행한다.
 
 기대: `{ sameLength: true, identityPreserved: true }`
 
-- [ ] **Step 7: 15개 시각화가 회귀하지 않았는지 확인한다**
+- [ ] **Step 7: 16개 시각화가 회귀하지 않았는지 확인한다**
 
 각 강의 페이지에서 아래를 실행한다. 시각화별로 처음부터 끝까지 단계를 넘기며 캡션·카운터가 정상인지 본다.
 
@@ -521,7 +521,7 @@ renderStep이 매 단계 stage.textContent로 무대를 비워 새 셀이 상태
 
 그룹 시그니처(종류+라벨+개수)가 같으면 기존 DOM을 재사용해 값·서브라벨·
 상태 클래스만 갱신하도록 바꾼다. 공개 API와 step 데이터 형식은 그대로여서
-15개 시각화 호출부는 무변경이다.
+16개 시각화 호출부는 무변경이다.
 
 Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
 EOF
@@ -2188,7 +2188,7 @@ node scripts/validate.mjs
 
 브라우저 확인 목록.
 
-1. **15개 시각화 전수** — 13개 강의를 모두 열어 Task 2 Step 7의 스니펫으로 `reachedEnd: true`, `errors: 0` 확인
+1. **16개 시각화 전수** — 13개 강의를 모두 열어 Task 2 Step 7의 스니펫으로 `reachedEnd: true`, `errors: 0` 확인
 2. **자동 재생 3속도** — 느리게/보통/빠르게에서 모션이 밀리지 않는지, 잔여 인라인 스타일이 없는지 확인
 
 ```javascript
