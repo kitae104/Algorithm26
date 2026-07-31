@@ -169,6 +169,27 @@ for (const file of readdirSync(cssDir)) {
     }
 }
 
+/* 인쇄용 색 재정의가 빠짐없는지.
+   common.css의 :root가 정의한 색 토큰 중 하나라도 @media print에서 덮이지
+   않으면 다크 테마 인쇄에서 그 토큰만 어두운 값으로 남아 잉크와 충돌한다.
+   (실제로 --brand-soft가 빠져 본문 강조가 검정 on 남색 1.54:1이 된 적 있음) */
+const NON_COLOR_TOKEN = /^--(dur|ease|font|radius|shadow|header|space|z)-/;
+const rootBlock = commonCss.match(/^:root\s*\{[\s\S]*?^\}/m);
+if (!rootBlock) {
+    fail("common.css: :root 토큰 블록을 찾을 수 없음");
+} else {
+    const printCss = readFileSync(join(ROOT, "assets/css/print.css"), "utf8");
+    const printBlock = printCss.match(/@media print\s*\{[\s\S]*\}/);
+    const colorTokens = [...rootBlock[0].matchAll(/(--[a-z0-9-]+)\s*:/g)]
+        .map(m => m[1])
+        .filter(t => !NON_COLOR_TOKEN.test(t));
+    for (const token of colorTokens) {
+        if (!printBlock || !new RegExp(token + "\\s*:").test(printBlock[0])) {
+            fail(`print.css: 색 토큰 ${token}을 인쇄용으로 재정의하지 않음 — 다크 테마 인쇄에서 잉크와 충돌한다`);
+        }
+    }
+}
+
 /* 인쇄 진입점(window.print 호출)이 다시 들어오지 않게 */
 const commonJs = readFileSync(join(ROOT, "assets/js/common.js"), "utf8");
 if (/window\.print\s*\(/.test(commonJs)) {

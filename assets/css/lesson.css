@@ -237,15 +237,16 @@
     background: var(--surface-2);
     border: 1px solid var(--line);
     border-radius: var(--radius-s);
-    padding: 11px 14px 11px 36px;
+    padding-block: 11px;
+    padding-inline: 36px 14px;   /* 앞쪽은 글머리 자리 */
 }
 
 .objective-list li::before {
     content: "✓";
     position: absolute;
-    left: 14px;
+    inset-inline-start: 14px;
     top: 11px;
-    color: var(--state-done);
+    color: var(--glyph-ink-done);
     font-weight: 800;
 }
 
@@ -265,15 +266,17 @@
     position: relative;
     background: var(--surface-2);
     border: 1px solid var(--line);
-    border-left: 3px solid var(--brand);
+    border-inline-start: 3px solid var(--brand);
     border-radius: var(--radius-s);
-    padding: 13px 16px 13px 46px;
+    padding-block: 13px;
+    /* 48 = 배지 시작 16 + 배지 폭 약 20 + 본문과의 간격 12 */
+    padding-inline: 48px 16px;
 }
 
 .summary-list > li::before {
     content: counter(summary);
     position: absolute;
-    left: 16px;
+    inset-inline-start: 16px;
     top: 13px;
     font-family: var(--font-mono);
     font-size: 0.76rem;

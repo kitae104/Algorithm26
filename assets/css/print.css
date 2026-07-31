@@ -33,6 +33,26 @@
         --code-number: #8a4b00;
         --code-comment: #666666;
         --code-type: #005e56;
+
+        /* 액센트도 함께 종이용으로 내려야 한다. 잉크·표면만 바꾸면 본문 강조
+           마킹(.lesson-section p strong = 검은 글자 위 --brand-soft 밑줄)이
+           검정 글자 on 다크 남색 1.54:1이 되어 오히려 화면보다 나빠진다.
+           아래 값은 모두 흰 종이/각자의 -bg 위에서 4.5:1 이상이다. */
+        --brand: #1a3aa8;
+        --brand-strong: #12277a;
+        --brand-soft: #e8ecf8;
+        --brand-soft-2: #d8e0f2;
+        --state-compare: #8a5000;
+        --state-compare-bg: #fbf0dc;
+        --state-done: #0a7a54;
+        --state-done-bg: #e6f4ee;
+        --state-error: #a82a35;
+        --state-error-bg: #fbe9ea;
+        --state-visit: #1a3aa8;
+        --state-visit-bg: #e8ecf8;
+        --glyph-ink-done: #0a7a54;
+        --glyph-ink-warn: #8a5000;
+        --glyph-ink-danger: #a82a35;
     }
 
     body {

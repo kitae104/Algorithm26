@@ -103,9 +103,12 @@
     transition: color var(--dur-fast) var(--ease-out);
 }
 
-.hero-viz__bar.is-compare .hero-viz__bar-value { color: var(--state-compare); font-weight: 700; }
+/* 값 라벨은 상태색 그대로 쓰면 자기 막대의 --state-*-bg 위에서 라이트 테마
+   기준 2.5~3:1로 읽히지 않는다. 글리프와 같은 전용 잉크를 쓴다.
+   --state-visit는 그 배경 위에서 5.36:1이라 그대로 둔다. */
+.hero-viz__bar.is-compare .hero-viz__bar-value { color: var(--glyph-ink-warn); font-weight: 700; }
 .hero-viz__bar.is-min .hero-viz__bar-value { color: var(--state-visit); font-weight: 700; }
-.hero-viz__bar.is-done .hero-viz__bar-value { color: var(--state-done); font-weight: 700; }
+.hero-viz__bar.is-done .hero-viz__bar-value { color: var(--glyph-ink-done); font-weight: 700; }
 
 .hero-viz__bar.is-compare {
     background: var(--state-compare-bg);
