@@ -190,6 +190,24 @@ if (!rootBlock) {
     }
 }
 
+/* 브라우저 JS는 ES5 문법만 쓴다 (scripts/는 Node ESM이라 제외).
+   주석을 걷어낸 뒤 검사한다 — "async/await를 쓰지 않는다" 같은 설명문에
+   걸리면 안 된다. 문자열 리터럴 안의 우연한 일치를 피하려고 문법으로만
+   등장하는 형태(async function / async ( / await <식>)로 좁힌다. */
+const jsDir = join(ROOT, "assets/js");
+for (const file of readdirSync(jsDir)) {
+    if (!file.endsWith(".js")) continue;
+    const src = readFileSync(join(jsDir, file), "utf8")
+        .replace(/\/\*[\s\S]*?\*\//g, "")
+        .replace(/(^|[^:])\/\/[^\n]*/g, "$1");
+    if (/\basync\s+function\b|\basync\s*\(/.test(src)) {
+        fail(`assets/js/${file}: async 함수 — 브라우저 JS는 ES5 문법만 허용`);
+    }
+    if (/\bawait\s+[\w$([]/.test(src)) {
+        fail(`assets/js/${file}: await — 브라우저 JS는 ES5 문법만 허용`);
+    }
+}
+
 /* 인쇄 진입점(window.print 호출)이 다시 들어오지 않게 */
 const commonJs = readFileSync(join(ROOT, "assets/js/common.js"), "utf8");
 if (/window\.print\s*\(/.test(commonJs)) {

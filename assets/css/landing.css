@@ -410,7 +410,9 @@
 /* 카드 그리드 */
 .course-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    /* min(300px, 100%) — 뷰포트가 300px보다 좁으면 트랙이 컨테이너를 넘어
+       페이지가 가로로 밀린다(320px에서 35px 초과). */
+    grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
     gap: 18px;
     list-style: none;
     padding: 0;
@@ -459,8 +461,9 @@
     white-space: nowrap;
 }
 
-.course-card__status.is-done { color: var(--state-done); }
-.course-card__status.is-started { color: var(--state-compare); }
+/* 카드 표면(흰색) 위 상태 글자 — 상태색 그대로면 2.7~2.9:1 */
+.course-card__status.is-done { color: var(--glyph-ink-done); }
+.course-card__status.is-started { color: var(--glyph-ink-warn); }
 .course-card__status.is-new { color: var(--ink-faint); }
 
 .course-card h3 {

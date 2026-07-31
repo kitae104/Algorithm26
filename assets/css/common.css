@@ -34,10 +34,11 @@
     --state-visit: #2b50e0;        /* 방문 (블루) */
     --state-visit-bg: #e7ecfd;
 
-    /* 안내 박스 글리프 전용 잉크.
-       상태색을 그대로 쓰면 --surface-2 위에서 tip 2.99:1 / warn 2.39:1로
-       WCAG 1.4.11(비텍스트 3:1)에 미달한다. 글리프는 "색만으로 구분하지
-       않기" 위한 신호 자체이므로 대비를 4.5:1 이상으로 따로 확보한다.
+    /* 액센트 잉크 — 상태색이 "칠하는 색"이 아니라 "읽히는 색"으로 쓰이는 곳.
+       --state-*는 배경·테두리용으로 맞춰진 값이라 자기 -bg나 카드 표면 위에
+       얹으면 라이트 테마에서 2.4~3.7:1로 떨어진다. 글리프(안내 박스 ✓·⚠,
+       히어로 완료 체크), 칩 글자(난이도 배지, 강좌 상태), 오류 카드 제목이
+       모두 이 층을 쓴다. 대비는 4.5:1 이상으로 따로 확보한다.
        다크 테마는 상태색 그대로도 5.8:1 이상이라 별도 값이 필요 없다. */
     --glyph-ink-done: #0a7a54;
     --glyph-ink-warn: #9a5a00;
@@ -223,6 +224,13 @@ body {
     font-size: 16px;
     line-height: 1.7;
     -webkit-font-smoothing: antialiased;
+    /* ArrayIndexOutOfBoundsException처럼 공백 없는 긴 식별자가 본문·퀴즈
+       보기에 그대로 등장한다. 320px에서 이런 토큰 하나가 페이지 전체를
+       가로 스크롤시켰다. break-word는 "한 줄에 통째로 못 들어갈 때"만
+       끊으므로 평소 줄바꿈에는 영향이 없다. 상속되어 본문 전체에 적용된다.
+       (white-space: pre인 코드 블록은 애초에 이 규칙이 작동하지 않고
+       .code-card pre / pre.quiz-code가 가로 스크롤로 처리한다.) */
+    overflow-wrap: break-word;
 }
 
 img,
@@ -272,7 +280,9 @@ summary code {
     border-radius: 5px;
     padding: 0.08em 0.35em;
     color: var(--ink);
-    white-space: nowrap;
+    /* nowrap은 쓰지 않는다. Comparator.comparingDouble(...) 같은 긴 식별자가
+       줄바꿈되지 못해 320px에서 페이지 전체가 가로 스크롤됐다.
+       줄바꿈 규칙은 body에서 상속받는다(break-word). */
 }
 
 /* ---------- 스킵 링크 / 스크린리더 ---------- */
@@ -335,6 +345,15 @@ summary code {
     font-weight: 700;
     font-size: 1.02rem;
     white-space: nowrap;
+    /* 좁은 화면에서 사이트명이 헤더를 밀어내지 않도록 줄어들 수 있게 둔다.
+       min-width 기본값 auto면 플렉스 아이템이 내용보다 작아지지 않는다. */
+    min-width: 0;
+}
+
+.site-brand__name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .site-brand:hover {
@@ -586,16 +605,18 @@ html[data-theme="dark"] .button--primary:hover {
     white-space: nowrap;
 }
 
+/* 칩 위 글자는 상태색을 그대로 쓰면 자기 배경 위에서 라이트 테마 기준
+   2.9~3:1로 본문 대비에 못 미친다. 글리프와 같은 액센트 잉크를 쓴다. */
 .badge--beginner {
     background: var(--state-done-bg);
     border-color: transparent;
-    color: var(--state-done);
+    color: var(--glyph-ink-done);
 }
 
 .badge--intermediate {
     background: var(--state-compare-bg);
     border-color: transparent;
-    color: var(--state-compare);
+    color: var(--glyph-ink-warn);
 }
 
 .badge--category {

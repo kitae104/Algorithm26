@@ -42,7 +42,9 @@
             mark.appendChild(el("i"));
             mark.appendChild(el("i"));
             brand.appendChild(mark);
-            brand.appendChild(document.createTextNode("초보 개발자를 위한 필수 알고리즘"));
+            /* 맨 텍스트 노드로 두면 320px에서 헤더가 41px 넘치는데도
+               말줄임을 걸 수 없다(익명 플렉스 아이템). span으로 감싼다. */
+            brand.appendChild(el("span", "site-brand__name", "초보 개발자를 위한 필수 알고리즘"));
             inner.appendChild(brand);
 
             var menuBtn = el("button", "icon-button mobile-menu-button", "☰ 메뉴");

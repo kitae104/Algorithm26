@@ -13,8 +13,28 @@
         document.body.appendChild(live);
     });
 
-    /* ---------- 복사 버튼 ---------- */
-    document.addEventListener("click", async function (event) {
+    /* ---------- 복사 버튼 ----------
+       async/await를 쓰지 않는다 — 이 디렉터리는 ES5 문법만 허용한다.
+       navigator.clipboard는 Promise를 돌려주므로 .then/.catch로 충분하고,
+       API 자체가 없거나 거부될 때는 execCommand 폴백으로 내려간다. */
+    function fallbackCopy(text) {
+        var textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = "fixed";
+        textArea.style.opacity = "0";
+        document.body.appendChild(textArea);
+        textArea.select();
+        var ok = false;
+        try {
+            ok = document.execCommand("copy");
+        } catch (e) {
+            ok = false;
+        }
+        document.body.removeChild(textArea);
+        return ok;
+    }
+
+    document.addEventListener("click", function (event) {
         var button = event.target.closest("[data-copy-target]");
 
         if (!button) {
@@ -30,33 +50,31 @@
 
         var originalText = button.dataset.originalLabel || button.textContent;
         button.dataset.originalLabel = originalText;
-        var copiedOk = false;
+        var source = codeElement.textContent;
 
-        try {
-            await navigator.clipboard.writeText(codeElement.textContent);
-            copiedOk = true;
-        } catch (error) {
-            /* 클립보드 API 실패 시 폴백 */
-            var textArea = document.createElement("textarea");
-            textArea.value = codeElement.textContent;
-            textArea.style.position = "fixed";
-            textArea.style.opacity = "0";
-            document.body.appendChild(textArea);
-            textArea.select();
-            copiedOk = document.execCommand("copy");
-            document.body.removeChild(textArea);
+        function finish(copiedOk) {
+            button.textContent = copiedOk ? "복사 완료" : "복사 실패";
+            button.classList.toggle("is-copied", copiedOk);
+            live.textContent = copiedOk
+                ? "코드가 클립보드에 복사되었습니다."
+                : "코드 복사에 실패했습니다. 코드를 직접 선택해 복사해 주세요.";
+
+            window.setTimeout(function () {
+                button.textContent = originalText;
+                button.classList.remove("is-copied");
+            }, 1500);
         }
 
-        button.textContent = copiedOk ? "복사 완료" : "복사 실패";
-        button.classList.toggle("is-copied", copiedOk);
-        live.textContent = copiedOk
-            ? "코드가 클립보드에 복사되었습니다."
-            : "코드 복사에 실패했습니다. 코드를 직접 선택해 복사해 주세요.";
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(source).then(function () {
+                finish(true);
+            }, function () {
+                finish(fallbackCopy(source));
+            });
+            return;
+        }
 
-        window.setTimeout(function () {
-            button.textContent = originalText;
-            button.classList.remove("is-copied");
-        }, 1500);
+        finish(fallbackCopy(source));
     });
 
     /* ---------- 경량 Java 문법 강조 ---------- */
