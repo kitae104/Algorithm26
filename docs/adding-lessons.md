@@ -22,7 +22,8 @@
 - `<body data-lesson-id="강의id" data-lesson-order="N">`
 - body 시작: skip-link → `<header class="site-header" data-site-header></header>` (내용은 common.js가 채움)
 - `<div class="lesson-layout">` 안에:
-  - `<section class="lesson-hero">` (eyebrow `LESSON NN / 13`, h1, 영문 제목, 배지, 소개, 인쇄 버튼 2개: `data-print="student"`, `data-print="instructor"`)
+  - `<section class="lesson-hero">` (eyebrow `LESSON NN / 13`, h1, 영문 제목, 배지, 소개)
+    - 인쇄 버튼은 두지 않는다. 화면에서 인쇄 기능을 제공하지 않으며, `print.css`는 브라우저 자체 인쇄(Ctrl+P) 대비용으로만 남아 있다.
   - `<nav class="lesson-toc"><p class="lesson-toc__title">이 강의의 목차</p><ol id="lesson-toc-list"></ol></nav>` (목차는 자동 생성)
   - `<div class="lesson-body">` 안에 20개 섹션
 - body 끝 스크립트(순서대로): `algorithms-data.js`, `progress.js`, `common.js`, `code-copy.js`, `visualization.js`, `quiz.js`, 그리고 인라인 `<script>`(시각화 + 퀴즈 초기화)

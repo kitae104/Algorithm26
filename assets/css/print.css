@@ -2,8 +2,13 @@
    인쇄 / PDF 저장 스타일
    - 조작 UI(내비게이션, 버튼, 시각화 컨트롤)는 숨긴다.
    - 코드와 표가 페이지 중간에서 잘리지 않도록 한다.
-   - 기본은 학생용(정답 숨김). 교수자용 인쇄는 body.print-instructor.
-     (강의 페이지의 "인쇄" 메뉴에서 선택)
+   - 정답은 숨긴 채 인쇄한다.
+
+   현재 사이트에는 인쇄 버튼이 없다. 인쇄 기능은 화면에서 제공하지 않으며,
+   이 파일은 브라우저 자체 인쇄(Ctrl+P)를 대비한 최소 보정만 담당한다.
+   body.print-instructor(정답 포함 인쇄)를 켜는 UI도 함께 제거되어
+   아래 print-instructor 규칙은 현재 어떤 경로로도 활성화되지 않는다.
+   인쇄 기능을 되살릴 때 진입점과 함께 다시 배선할 것.
    ============================================================ */
 
 @media print {
@@ -43,12 +48,10 @@
     .quiz__footer .button,
     .lesson-pager,
     .lesson-toc,
-    .lesson-hero__actions,
     .lesson-complete-slot,
     .hero__actions,
     .courses__filters,
     .theme-toggle,
-    .print-button,
     .mobile-menu-button,
     .skip-link {
         display: none !important;
@@ -119,7 +122,7 @@
        교수자용: body.print-instructor일 때 정답을 펼쳐 인쇄. */
     details.answer-box:not([open])::after,
     details.reveal-box:not([open])::after {
-        content: "정답과 해설은 웹 강의 페이지 또는 교수자용 인쇄물에서 확인하세요.";
+        content: "정답과 해설은 웹 강의 페이지에서 확인하세요.";
         display: block;
         padding: 8pt 12pt;
         color: #666;

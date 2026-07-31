@@ -1,6 +1,6 @@
 /*
  * 모든 페이지 공통 동작
- * - 상단 내비게이션 구성([data-site-header] 채움: 홈, 강의 목차 드롭다운, 다크 모드, 인쇄)
+ * - 상단 내비게이션 구성([data-site-header] 채움: 홈, 강의 목차 드롭다운, 다크 모드)
  * - 강의 페이지: 내부 목차 자동 생성 + 스크롤스파이, 이전/다음 강의, 완료 버튼, 학습 위치 저장
  * - 맨 위로 버튼
  * 강의 페이지는 <body data-lesson-id="..."> 로 자신을 식별한다.
@@ -102,18 +102,6 @@
             menuWrap.appendChild(menuToggle);
             menuWrap.appendChild(menuList);
             nav.appendChild(menuWrap);
-
-            /* 인쇄 (강의 페이지에서만) */
-            if (isLessonPage) {
-                var printBtn = el("button", "icon-button print-button", "🖨 인쇄");
-                printBtn.type = "button";
-                printBtn.setAttribute("aria-label", "이 강의 인쇄 (학생용, 정답 숨김)");
-                printBtn.addEventListener("click", function () {
-                    document.body.classList.remove("print-instructor");
-                    window.print();
-                });
-                nav.appendChild(printBtn);
-            }
 
             /* 다크 모드 */
             var themeBtn = el("button", "icon-button theme-toggle");
@@ -355,18 +343,6 @@
                     "마지막 강의입니다. 13강까지 완주를 축하합니다! 🎉"));
             }
         }
-
-        /* ---------- 교수자용 인쇄 버튼 ([data-print]) ---------- */
-        document.querySelectorAll("[data-print]").forEach(function (button) {
-            button.addEventListener("click", function () {
-                var mode = button.dataset.print;
-                document.body.classList.toggle("print-instructor", mode === "instructor");
-                window.print();
-            });
-        });
-        window.addEventListener("afterprint", function () {
-            document.body.classList.remove("print-instructor");
-        });
 
         /* ---------- 완료 버튼 ---------- */
         var completeSlot = document.getElementById("lesson-complete-slot");

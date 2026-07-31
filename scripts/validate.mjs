@@ -67,6 +67,12 @@ const REQUIRED_MARKERS = [
     ["details class=\"answer-box\"", "정답 접기"]
 ];
 
+/* 화면에서 제거한 기능이 다시 들어오지 않게 (인쇄 버튼) */
+const FORBIDDEN_MARKERS = [
+    ["data-print", "인쇄 버튼(현재 인쇄 기능은 화면에서 제공하지 않음)"],
+    ["lesson-hero__actions", "인쇄 버튼 래퍼(빈 껍데기)"]
+];
+
 for (const lesson of lessons) {
     const filePath = join(ROOT, lesson.path);
     if (!existsSync(filePath)) {
@@ -83,6 +89,9 @@ for (const lesson of lessons) {
     }
     for (const [marker, label] of REQUIRED_MARKERS) {
         if (!html.includes(marker)) fail(`${lesson.path}: ${label}(${marker}) 누락`);
+    }
+    for (const [marker, label] of FORBIDDEN_MARKERS) {
+        if (html.includes(marker)) fail(`${lesson.path}: 제거된 마크업이 남아 있음 — ${label}(${marker})`);
     }
 
     /* 4. code-card 복사 대상 검증 + id 중복 */
@@ -148,13 +157,22 @@ if (!reducedBlock) {
 }
 
 /* 사용하지 않는 규칙이 다시 들어오지 않게 (assets/css 전체를 스캔) */
+const DEAD_SELECTORS = [".inline-array", ".lesson-hero__actions", ".print-button"];
 const cssDir = join(ROOT, "assets/css");
 for (const file of readdirSync(cssDir)) {
     if (!file.endsWith(".css")) continue;
     const css = readFileSync(join(cssDir, file), "utf8");
-    if (css.includes(".inline-array")) {
-        fail(`${file}: 사용처가 없는 .inline-array 규칙이 남아 있음`);
+    for (const selector of DEAD_SELECTORS) {
+        if (css.includes(selector)) {
+            fail(`${file}: 사용처가 없는 ${selector} 규칙이 남아 있음`);
+        }
     }
+}
+
+/* 인쇄 진입점(window.print 호출)이 다시 들어오지 않게 */
+const commonJs = readFileSync(join(ROOT, "assets/js/common.js"), "utf8");
+if (/window\.print\s*\(/.test(commonJs)) {
+    fail("common.js: 인쇄 진입점(window.print)이 남아 있음 — 인쇄 기능은 현재 제공하지 않음");
 }
 
 /* ---------- index.html 링크 검증 ---------- */

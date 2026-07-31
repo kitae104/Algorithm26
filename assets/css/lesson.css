@@ -74,13 +74,6 @@
     margin: 0;
 }
 
-.lesson-hero__actions {
-    margin-top: 18px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
 /* ---------- 내부 목차 (사이드바) ---------- */
 .lesson-toc {
     position: sticky;
@@ -271,8 +264,6 @@
     border-left: 3px solid var(--brand);
     border-radius: var(--radius-s);
     padding: 13px 16px;
-    transition: border-color var(--dur-fast) var(--ease-out),
-                background var(--dur-fast) var(--ease-out);
 }
 
 .summary-list > li::before {
@@ -286,11 +277,6 @@
     padding: 1px 7px;
     height: fit-content;
     flex-shrink: 0;
-}
-
-.summary-list > li:hover {
-    border-left-color: var(--state-done);
-    background: var(--surface);
 }
 
 /* 사람이 해결하는 단계 카드 */
