@@ -229,20 +229,24 @@
     gap: 10px;
 }
 
+/* 글머리 기호는 absolute로 띄운다. flex/grid 컨테이너로 만들면 항목 안의
+   <strong>·<code>가 blockify되어 각각 별도 컬럼이 되고, 문장이 좌우로 쪼개진
+   뒤 컬럼마다 따로 줄바꿈해 단어가 중간에서 끊긴다. */
 .objective-list li {
-    display: flex;
-    gap: 10px;
+    position: relative;
     background: var(--surface-2);
     border: 1px solid var(--line);
     border-radius: var(--radius-s);
-    padding: 11px 14px;
+    padding: 11px 14px 11px 36px;
 }
 
 .objective-list li::before {
     content: "✓";
+    position: absolute;
+    left: 14px;
+    top: 11px;
     color: var(--state-done);
     font-weight: 800;
-    flex-shrink: 0;
 }
 
 /* 오늘의 핵심 정리 — 강의의 결론부를 전용 카드로 */
@@ -255,19 +259,22 @@
     counter-reset: summary;
 }
 
+/* 번호 배지도 같은 이유로 absolute — 본문 문장이 인라인 흐름을 유지해야 한다. */
 .summary-list > li {
     counter-increment: summary;
-    display: flex;
-    gap: 12px;
+    position: relative;
     background: var(--surface-2);
     border: 1px solid var(--line);
     border-left: 3px solid var(--brand);
     border-radius: var(--radius-s);
-    padding: 13px 16px;
+    padding: 13px 16px 13px 46px;
 }
 
 .summary-list > li::before {
     content: counter(summary);
+    position: absolute;
+    left: 16px;
+    top: 13px;
     font-family: var(--font-mono);
     font-size: 0.76rem;
     font-weight: 700;
@@ -275,8 +282,6 @@
     background: var(--brand-soft);
     border-radius: 6px;
     padding: 1px 7px;
-    height: fit-content;
-    flex-shrink: 0;
 }
 
 /* 사람이 해결하는 단계 카드 */

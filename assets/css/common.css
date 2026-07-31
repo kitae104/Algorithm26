@@ -34,6 +34,15 @@
     --state-visit: #2b50e0;        /* 방문 (블루) */
     --state-visit-bg: #e7ecfd;
 
+    /* 안내 박스 글리프 전용 잉크.
+       상태색을 그대로 쓰면 --surface-2 위에서 tip 2.99:1 / warn 2.39:1로
+       WCAG 1.4.11(비텍스트 3:1)에 미달한다. 글리프는 "색만으로 구분하지
+       않기" 위한 신호 자체이므로 대비를 4.5:1 이상으로 따로 확보한다.
+       다크 테마는 상태색 그대로도 5.8:1 이상이라 별도 값이 필요 없다. */
+    --glyph-ink-done: #0a7a54;
+    --glyph-ink-warn: #9a5a00;
+    --glyph-ink-danger: #b8323d;
+
     /* 코드 */
     --code-bg: #10161f;
     --code-ink: #dbe4f0;
@@ -89,6 +98,9 @@
         --state-error-bg: #431f24;
         --state-visit: #8ba3ff;
         --state-visit-bg: #202c52;
+        --glyph-ink-done: #34d399;
+        --glyph-ink-warn: #ffb224;
+        --glyph-ink-danger: #ff7b85;
         --code-bg: #0b1017;
         --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.35);
         --shadow-pop: 0 6px 24px rgba(0, 0, 0, 0.5);
@@ -117,6 +129,9 @@ html[data-theme="light"] {
     --state-error-bg: #fde8ea;
     --state-visit: #2b50e0;
     --state-visit-bg: #e7ecfd;
+    --glyph-ink-done: #0a7a54;
+    --glyph-ink-warn: #9a5a00;
+    --glyph-ink-danger: #b8323d;
     --code-bg: #10161f;
     --shadow-card: 0 1px 2px rgba(20, 30, 50, 0.05), 0 4px 16px rgba(20, 30, 50, 0.06);
     --shadow-pop: 0 6px 24px rgba(20, 30, 50, 0.14);
@@ -144,6 +159,9 @@ html[data-theme="dark"] {
     --state-error-bg: #431f24;
     --state-visit: #8ba3ff;
     --state-visit-bg: #202c52;
+    --glyph-ink-done: #34d399;
+    --glyph-ink-warn: #ffb224;
+    --glyph-ink-danger: #ff7b85;
     --code-bg: #0b1017;
     --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.35);
     --shadow-pop: 0 6px 24px rgba(0, 0, 0, 0.5);
@@ -691,7 +709,7 @@ table.data-table td code {
 
 .note-box--tip::before {
     content: "✓";
-    color: var(--state-done);
+    color: var(--glyph-ink-done);
 }
 
 .note-box--warn {
@@ -700,7 +718,7 @@ table.data-table td code {
 
 .note-box--warn::before {
     content: "⚠";
-    color: var(--state-compare);
+    color: var(--glyph-ink-warn);
 }
 
 .note-box--danger {
@@ -709,7 +727,7 @@ table.data-table td code {
 
 .note-box--danger::before {
     content: "✕";
-    color: var(--state-error);
+    color: var(--glyph-ink-danger);
 }
 
 .note-box > :first-child {

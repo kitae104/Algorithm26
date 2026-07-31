@@ -248,13 +248,13 @@
                   것은 물론 나중에 추가되는 모든 <details>까지 한 줄로 커버한다.
                2) ResizeObserver(지원 시): 문서 높이가 바뀌는 다른 원인
                   (이미지 로드, 폰트 스왑, 스크롤 진입 트랜지션 등)까지 넓게
-                  잡아낸다. 미지원 브라우저에서는 스크롤/리사이즈/toggle만으로
-                  성능이 저하 없이 동작한다(우아한 성능 저하). */
+                  잡아낸다. 미지원 브라우저에서는 답 상자 개폐(toggle)까지는
+                  그대로 동작하고, 이미지 로드·폰트 스왑으로 생긴 높이 변화만
+                  다음 스크롤 때까지 반영이 늦는다. */
             document.addEventListener("toggle", scheduleUpdate, true);
 
             if ("ResizeObserver" in window) {
-                var heightObserver = new ResizeObserver(scheduleUpdate);
-                heightObserver.observe(document.documentElement);
+                new ResizeObserver(scheduleUpdate).observe(document.documentElement);
             }
 
             update();
