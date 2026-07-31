@@ -74,6 +74,293 @@
     margin: 0;
 }
 
+/* ---------- 히어로 개념 모티프 ----------
+   히어로는 본문이 62ch로 묶여 우측이 늘 비어 있었다. 강의 주제를 한 컷으로
+   요약하는 SVG를 그 자리에 넣는다. 클래스는 common.js가 모티프를 실제로
+   주입했을 때만 붙으므로, 스크립트가 없거나 실패하면 지금까지의 1단
+   레이아웃이 그대로 남는다. */
+.lesson-hero--with-motif {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 340px);
+    column-gap: clamp(20px, 3vw, 36px);
+    align-items: center;
+}
+
+.lesson-hero__motif {
+    --motif-dur: 6s;   /* 순차 점등의 animation-delay가 이 값을 나눠 쓴다 */
+}
+
+.lesson-hero__motif svg {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+/* 2단을 유지할 폭이 안 나오는 구간에서는 내리지 않고 숨긴다.
+   장식이므로 정보 손실이 없고, 모바일에서 본문까지의 스크롤도 늘지 않는다. */
+/* 히어로 본문이 모티프 폭까지 늘어나지 않도록, 2단일 때는 62ch 제한을 푼다
+   (열 자체가 이미 좁다). */
+.lesson-hero--with-motif .lesson-hero__desc {
+    max-width: none;
+}
+
+@media (max-width: 980px) {
+    .lesson-hero--with-motif {
+        display: block;
+    }
+
+    .lesson-hero__motif {
+        display: none;
+    }
+}
+
+/* ---------- 모티프 시각 문법 (13개 공통) ----------
+   프리미티브: .m-cell(사각) .m-node(원) .m-edge(선) .m-curve(경로) .m-label(글자)
+   상태:       기본 / .is-active(진행 중) / .is-done(확정) / .is-dim(제외)
+
+   규약 1 — 기본 스타일이 곧 "정지 프레임"이다. 애니메이션은 0%에서 이전
+   상태로 되돌렸다가 진행하므로, animation을 끄면 자연히 의미 있는 마지막
+   장면에 머문다(reduced-motion에서 빈 그림이 되지 않는다).
+
+   규약 2 — 상태를 색으로만 구분하지 않는다. 확정은 선 굵기로도 구분한다. */
+.lesson-hero__motif .m-cell {
+    fill: var(--surface-2);
+    stroke: var(--line-strong);
+    stroke-width: 1.5;
+}
+
+.lesson-hero__motif .m-node {
+    fill: var(--surface-2);
+    stroke: var(--line-strong);
+    stroke-width: 1.5;
+}
+
+.lesson-hero__motif .m-edge {
+    stroke: var(--line-strong);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+}
+
+.lesson-hero__motif .m-curve {
+    fill: none;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+}
+
+.lesson-hero__motif .m-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    fill: var(--ink-faint);
+}
+
+.lesson-hero__motif .is-active {
+    fill: var(--state-compare-bg);
+    stroke: var(--state-compare);
+    stroke-width: 2.5;
+}
+
+.lesson-hero__motif .is-done {
+    fill: var(--state-done-bg);
+    stroke: var(--state-done);
+    stroke-width: 2.5;   /* 색 외 단서 */
+}
+
+.lesson-hero__motif .is-dim {
+    opacity: 0.3;
+}
+
+/* 재생 제어 — 히어로가 뷰포트 안에 있을 때만 돈다.
+   기본이 paused라서 본문을 읽는 동안에는 아무것도 움직이지 않는다. */
+.lesson-hero__motif [class*="m-anim"] {
+    animation-duration: var(--motif-dur, 6s);
+    animation-iteration-count: infinite;
+    animation-timing-function: var(--ease-in-out);
+    animation-play-state: paused;
+}
+
+.lesson-hero.is-playing .lesson-hero__motif [class*="m-anim"] {
+    animation-play-state: running;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .lesson-hero__motif [class*="m-anim"] {
+        animation: none !important;
+    }
+}
+
+/* 순차 점등 — 트리 순회, 그래프 탐색, DP 표처럼 "정해진 순서로 하나씩
+   확정되어 쌓인다"를 보여주는 모티프가 공유한다.
+
+   같은 키프레임을 animation-delay로 밀어 쓰는 방법은 쓸 수 없다. 그러면 각
+   원소가 자기 주기의 앞부분에만 비어 있어서, 다 채워진 표 위로 빈 칸 몇
+   개가 굴러다니는 모습이 된다(누적이 되지 않는다). 대신 원소마다 "언제
+   켜지는가"가 다른 키프레임이 필요하므로 common.js가 슬롯 수에 맞춰
+   m-fill-<k>-<n>을 생성해 <style>로 넣는다. 여기서는 공통 속성만 준다. */
+.lesson-hero__motif .m-anim-fill {
+    animation-timing-function: linear;
+}
+
+/* 이동 — 원소가 제자리를 찾아간다(정렬의 교환, 삽입으로 밀리기, 조각 모으기).
+   목적지는 원소마다 다르므로 --dx/--dy로 받는다. 정지 프레임은 도착 상태다. */
+.lesson-hero__motif .m-moved {
+    transform: translate(var(--dx, 0), var(--dy, 0));
+}
+
+@keyframes m-move {
+    0%, 18%   { transform: translate(0, 0); }
+    62%, 100% { transform: translate(var(--dx, 0), var(--dy, 0)); }
+}
+
+.lesson-hero__motif .m-anim-move { animation-name: m-move; }
+
+/* 왕복 — 넣은 쪽으로 도로 나온다(스택). 정지 프레임은 얹혀 있는 상태. */
+@keyframes m-shuttle {
+    0%, 12%   { transform: translate(0, 0); }
+    38%, 56%  { transform: translate(var(--dx, 0), var(--dy, 0)); }
+    82%, 100% { transform: translate(0, 0); }
+}
+
+.lesson-hero__motif .m-anim-shuttle { animation-name: m-shuttle; }
+
+/* 통과 — 들어온 반대쪽으로 빠져나간다(큐). 양 끝이 투명해 루프가 튀지 않는다. */
+@keyframes m-through {
+    0%, 8%    { transform: translateX(var(--dx, 40px)); opacity: 0; }
+    22%       { transform: translateX(var(--dx, 40px)); opacity: 1; }
+    50%       { transform: translateX(0); opacity: 1; }
+    78%       { transform: translateX(var(--dx2, -40px)); opacity: 1; }
+    92%, 100% { transform: translateX(var(--dx2, -40px)); opacity: 0; }
+}
+
+.lesson-hero__motif .m-anim-through { animation-name: m-through; }
+
+/* 그리기 — 선이 자란다(복잡도 곡선, 되돌아오는 화살표).
+   pathLength="100"으로 정규화해 길이가 달라도 같은 키프레임을 쓴다. */
+@keyframes m-draw {
+    0%, 12%   { stroke-dashoffset: 100; }
+    68%, 100% { stroke-dashoffset: 0; }
+}
+
+.lesson-hero__motif .m-anim-draw {
+    animation-name: m-draw;
+    stroke-dasharray: 100;
+}
+
+@keyframes m-fade-in {
+    0%, 30%   { opacity: 0; }
+    62%, 100% { opacity: 1; }
+}
+
+.lesson-hero__motif .m-anim-fade-in { animation-name: m-fade-in; }
+
+/* 곡선 색 구분 — 좋은 쪽/나쁜 쪽을 색만이 아니라 굵기로도 나눈다 */
+.lesson-hero__motif .m-curve--good { stroke: var(--state-done); }
+.lesson-hero__motif .m-curve--bad  { stroke: var(--state-error); stroke-width: 3.5; }
+
+.lesson-hero__motif .m-axis {
+    stroke: var(--line-strong);
+    stroke-width: 1.5;
+}
+
+.lesson-hero__motif .m-caption {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    fill: var(--ink-faint);
+    text-anchor: middle;
+}
+
+/* 3강 대조 창 — 한 칸씩 미끄러지다 일치 지점에서 확정된다.
+   정지 프레임은 일치 지점(맨 오른쪽). */
+.lesson-hero__motif .m-window {
+    fill: none;
+    stroke: var(--state-done);
+    stroke-width: 3;
+    transform: translateX(190px);
+}
+
+@keyframes m-slide-window {
+    0%, 18%   { transform: translateX(0);     stroke: var(--brand); }
+    25%, 43%  { transform: translateX(76px);  stroke: var(--brand); }
+    50%, 68%  { transform: translateX(114px); stroke: var(--brand); }
+    75%, 100% { transform: translateX(190px); stroke: var(--state-done); }
+}
+
+.lesson-hero__motif .m-anim-slide { animation-name: m-slide-window; }
+
+/* 이탈 — 큐의 앞이 빠져나간다. 정지 프레임은 "이미 나간" 상태다. */
+.lesson-hero__motif .m-exited {
+    transform: translateX(var(--dx, -40px));
+    opacity: 0;
+}
+
+@keyframes m-exit {
+    0%, 18%   { transform: translateX(0); opacity: 1; }
+    62%, 100% { transform: translateX(var(--dx, -40px)); opacity: 0; }
+}
+
+.lesson-hero__motif .m-anim-exit { animation-name: m-exit; }
+
+/* 5강 이진 탐색 — 후보에서 빠진 칸이 단계마다 흐려지고, 탐침이 남은 범위의
+   가운데로 뛴다. SVG 지오메트리(x/width)는 브라우저별 애니메이션 지원이
+   고르지 않으므로 opacity와 transform만 쓴다. */
+@keyframes m-drop-1 { 0%, 18% { opacity: 1; } 25%, 100% { opacity: 0.3; } }
+@keyframes m-drop-2 { 0%, 43% { opacity: 1; } 50%, 100% { opacity: 0.3; } }
+@keyframes m-drop-3 { 0%, 68% { opacity: 1; } 75%, 100% { opacity: 0.3; } }
+
+@keyframes m-probe-jump {
+    0%, 18%   { transform: translateX(0); }
+    25%, 43%  { transform: translateX(76px); }
+    50%, 100% { transform: translateX(114px); }
+}
+
+@keyframes m-target-hit {
+    0%, 68% {
+        fill: var(--surface-2);
+        stroke: var(--line-strong);
+        stroke-width: 1.5;
+    }
+    75%, 100% {
+        fill: var(--state-done-bg);
+        stroke: var(--state-done);
+        stroke-width: 2.5;
+    }
+}
+
+.lesson-hero__motif .m-anim-drop-1 { animation-name: m-drop-1; }
+.lesson-hero__motif .m-anim-drop-2 { animation-name: m-drop-2; }
+.lesson-hero__motif .m-anim-drop-3 { animation-name: m-drop-3; }
+.lesson-hero__motif .m-anim-probe  { animation-name: m-probe-jump; }
+.lesson-hero__motif .m-anim-target { animation-name: m-target-hit; }
+
+/* 후보에서 빠진 칸의 정지 상태 */
+.lesson-hero__motif .m-dropped { opacity: 0.3; }
+
+/* 탐침의 정지 위치 — 마지막으로 확정된 칸 위 */
+.lesson-hero__motif .m-probe {
+    fill: var(--brand);
+    transform: translateX(114px);
+}
+
+.lesson-hero__motif .m-node-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    fill: var(--ink);
+    text-anchor: middle;
+    dominant-baseline: central;
+}
+
+.lesson-hero__motif .m-arrow {
+    fill: none;
+    stroke: var(--brand);
+    stroke-width: 2;
+    stroke-linecap: round;
+}
+
+.lesson-hero__motif .m-arrow-head {
+    fill: var(--brand);
+}
+
 /* ---------- 내부 목차 (사이드바) ---------- */
 .lesson-toc {
     position: sticky;

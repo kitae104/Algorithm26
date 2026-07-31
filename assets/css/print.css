@@ -191,4 +191,14 @@
     .reading-progress {
         display: none !important;
     }
+
+    /* 히어로 모티프는 장식이고 애니메이션이 전제라 종이에서는 뺀다.
+       빼면서 히어로도 1단으로 되돌린다. */
+    .lesson-hero__motif {
+        display: none !important;
+    }
+
+    .lesson-hero--with-motif {
+        display: block !important;
+    }
 }

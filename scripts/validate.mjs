@@ -210,6 +210,19 @@ for (const file of readdirSync(jsDir)) {
 
 /* 인쇄 진입점(window.print 호출)이 다시 들어오지 않게 */
 const commonJs = readFileSync(join(ROOT, "assets/js/common.js"), "utf8");
+
+/* 히어로 모티프가 13개 강의 전부에 있는지.
+   빠지면 그 강의만 히어로 우측이 조용히 비므로 눈으로는 놓치기 쉽다. */
+const motifBlock = commonJs.match(/var MOTIFS = \{[\s\S]*?\n {4}\};/);
+if (!motifBlock) {
+    fail("common.js: MOTIFS 정의를 찾을 수 없음");
+} else {
+    for (const lesson of lessons) {
+        if (!motifBlock[0].includes(`"${lesson.id}":`)) {
+            fail(`common.js: 강의 ${lesson.id}의 히어로 모티프가 없음`);
+        }
+    }
+}
 if (/window\.print\s*\(/.test(commonJs)) {
     fail("common.js: 인쇄 진입점(window.print)이 남아 있음 — 인쇄 기능은 현재 제공하지 않음");
 }
