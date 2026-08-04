@@ -427,7 +427,10 @@
             brand.appendChild(mark);
             /* 맨 텍스트 노드로 두면 320px에서 헤더가 41px 넘치는데도
                말줄임을 걸 수 없다(익명 플렉스 아이템). span으로 감싼다. */
-            brand.appendChild(el("span", "site-brand__name", "초보 개발자를 위한 필수 알고리즘"));
+            brand.appendChild(el("span", "site-brand__name", "고급알고리즘"));
+            /* 소속은 과목명보다 뒤에 온다. 좁은 화면에서는 통째로 사라지고
+               과목명만 남는다(둘을 함께 줄이면 둘 다 못 읽는다). */
+            brand.appendChild(el("span", "site-brand__dept", "인하공전 컴퓨터시스템공학과"));
             inner.appendChild(brand);
 
             var menuBtn = el("button", "icon-button mobile-menu-button", "☰ 메뉴");
@@ -656,6 +659,16 @@
         if (window.AllProgress) {
             window.AllProgress.markStarted(lessonId);
         }
+
+        /* ---------- 히어로 분류 칩에 학습 영역 색 배선 ----------
+           랜딩의 카드·칩과 같은 색으로 읽혀야 한다. 13개 HTML을 고치는 대신
+           헤더·모티프와 같은 방식으로 여기서 붙인다. 분류 이름은 이미 칩에
+           글자로 적혀 있으므로 색은 그 이름을 되짚어 주는 층일 뿐이다. */
+        (function () {
+            var chip = document.querySelector(".lesson-hero .badge--category");
+            var key = current && window.CATEGORY_KEYS ? window.CATEGORY_KEYS[current.category] : "";
+            if (chip && key) chip.setAttribute("data-cat", key);
+        })();
 
         /* ---------- 히어로 개념 모티프 ---------- */
         (function () {

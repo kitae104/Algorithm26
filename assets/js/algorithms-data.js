@@ -3,6 +3,21 @@
  * 랜딩 페이지 카드, 강의 페이지의 이전/다음 링크, 진행률 계산이 모두 이 배열을 사용한다.
  * 새 강의를 추가할 때는 docs/adding-lessons.md 절차에 따라 이 파일과 data/algorithms.json을 함께 수정한다.
  */
+/*
+ * 분류 이름 → 색 키. common.css의 [data-cat] 표와 짝을 이룬다.
+ * 여기에 없는 분류는 색이 붙지 않고 중립색으로 남는다(조용히 깨지지 않는다).
+ * 새 분류를 만들 때는 이 표와 common.css의 --cat-* 토큰을 함께 늘린다.
+ */
+window.CATEGORY_KEYS = {
+    "알고리즘 기초": "basics",
+    "자료구조": "structure",
+    "정렬": "sorting",
+    "탐색": "search",
+    "그래프": "graph",
+    "설계 기법": "design",
+    "프로젝트": "project"
+};
+
 window.ALGORITHMS = [
     {
         order: 1,

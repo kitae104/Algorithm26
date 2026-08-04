@@ -1,6 +1,6 @@
 # 새 강의 추가 가이드 (제작 계약서)
 
-이 문서는 Algorithm Learning Lab에 새 강의를 추가할 때 반드시 따라야 하는 규칙이다.
+이 문서는 고급알고리즘 강의 사이트에 새 강의를 추가할 때 반드시 따라야 하는 규칙이다.
 **모범 예시는 `algorithms/01-algorithm-basics.html`** — 새 강의는 이 파일의 구조를 그대로 따른다.
 
 ## 1. 추가 절차 요약
@@ -16,8 +16,9 @@
 ### head / body 뼈대
 
 - `<html lang="ko">`, UTF-8, viewport 메타 필수
-- `<title>N강. 제목 — 초보 개발자를 위한 필수 알고리즘</title>`
-- CSS(순서대로): Pretendard CDN → `../assets/css/common.css` → `lesson.css` → `code.css` → `visualization.css` → `quiz.css` → `print.css`
+- `<title>N강. 제목 — 고급알고리즘</title>`
+- 웹폰트: `fonts.googleapis.com` preconnect 2줄 → Google Fonts(IBM Plex Sans KR + JetBrains Mono) → Pretendard CDN
+- CSS(순서대로): `../assets/css/common.css` → `lesson.css` → `code.css` → `visualization.css` → `quiz.css` → `print.css`
 - `<head>` 마지막에 `<script src="../assets/js/theme.js"></script>` (동기 로드)
 - `<body data-lesson-id="강의id" data-lesson-order="N">`
 - body 시작: skip-link → `<header class="site-header" data-site-header></header>` (내용은 common.js가 채움)

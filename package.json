@@ -1,7 +1,7 @@
 {
   "name": "algorithm-learning-lab",
   "version": "1.0.0",
-  "description": "초보 개발자를 위한 필수 알고리즘 13강 - Java 기반 HTML 강의 사이트",
+  "description": "인하공업전문대학 컴퓨터시스템공학과 전공심화과정 고급알고리즘 13강 - Java 기반 HTML 강의 사이트",
   "private": true,
   "type": "module",
   "scripts": {

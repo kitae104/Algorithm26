@@ -1,8 +1,11 @@
 /* ============================================================
-   Algorithm Learning Lab — 공통 스타일
+   인하공업전문대학 컴퓨터시스템공학과 전공심화과정 — 고급알고리즘
+   공통 스타일
    디자인 콘셉트: "알고리즘 실행 추적 노트"
    시각화 상태 색(비교=앰버, 확정=그린, 방문=블루)이
    사이트 전체의 액센트 시스템을 이룬다.
+   그 위에 7개 학습 영역(분류)이 각자의 색을 하나씩 갖는다 —
+   같은 분류는 랜딩 카드, 분류 칩, 강의 히어로에서 언제나 같은 색으로 읽힌다.
    ============================================================ */
 
 :root {
@@ -16,7 +19,7 @@
     /* 글자 */
     --ink: #1b2430;
     --ink-soft: #46536a;
-    --ink-faint: #7c8aa0;
+    --ink-faint: #59677f;
 
     /* 브랜드(방문·현재 위치의 블루) */
     --brand: #2b50e0;
@@ -44,6 +47,26 @@
     --glyph-ink-warn: #9a5a00;
     --glyph-ink-danger: #b8323d;
 
+    /* 학습 영역(분류) 색 — 13개 강의를 7개 영역으로 가르는 유일한 색 축.
+       --cat-<영역>은 칠하는 색이 아니라 읽는 색이라, 흰 표면과 짝인 -bg
+       위에서 모두 4.5:1 이상으로 잡는다(실측 5.35~7.88:1).
+       정렬·설계 기법·프로젝트는 이미 있는 액센트 잉크를 그대로 이어받아
+       사이트가 쓰는 색의 총량을 늘리지 않는다. */
+    --cat-basics: #5b30c4;          /* 알고리즘 기초 */
+    --cat-basics-bg: #efe9fe;
+    --cat-structure: #0d6b64;       /* 자료구조 */
+    --cat-structure-bg: #d8f2ef;
+    --cat-sorting: #9a5a00;         /* 정렬 */
+    --cat-sorting-bg: #fff0d6;
+    --cat-search: #2246c9;          /* 탐색 */
+    --cat-search-bg: #e4ebfe;
+    --cat-graph: #a81f77;           /* 그래프 */
+    --cat-graph-bg: #fce4f1;
+    --cat-design: #0a7a54;          /* 설계 기법 */
+    --cat-design-bg: #dcf5ec;
+    --cat-project: #b8323d;         /* 프로젝트 */
+    --cat-project-bg: #fde8ea;
+
     /* 코드 */
     --code-bg: #10161f;
     --code-ink: #dbe4f0;
@@ -67,6 +90,14 @@
     --ease-settle: cubic-bezier(0.34, 1.26, 0.64, 1);   /* 약한 오버슈트 — 확정의 정착감 */
     --ease-in-out: cubic-bezier(0.45, 0.05, 0.55, 0.95);
 
+    /* 타이포 — 세 얼굴이 각자 하나씩 맡는다.
+       제목은 IBM Plex Sans KR: 공학 도면에서 온 그로테스크라 자·모음이 각지고
+       폭이 좁아, 본문 Pretendard와 나란히 놓아도 "제목"으로 먼저 읽힌다.
+       본문은 Pretendard 그대로 — 긴 한글 지문에서 가장 잘 읽힌다.
+       수·코드·라벨은 JetBrains Mono. 지금까지 이 스택의 첫 얼굴로 적혀 있었지만
+       실제로 내려받은 적이 없어 Consolas로 떨어지고 있었다. */
+    --font-display: "IBM Plex Sans KR", "Pretendard Variable", Pretendard, "Noto Sans KR",
+        "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
     --font-body: "Pretendard Variable", Pretendard, "Noto Sans KR", "Apple SD Gothic Neo",
         "Malgun Gothic", system-ui, sans-serif;
     --font-mono: "JetBrains Mono", "D2Coding", "Cascadia Code", Consolas, "Courier New", monospace;
@@ -86,7 +117,7 @@
         --line-strong: #3c4d6b;
         --ink: #e6ecf6;
         --ink-soft: #a9b6ca;
-        --ink-faint: #71809a;
+        --ink-faint: #8695ae;
         --brand: #8ba3ff;
         --brand-strong: #a9baff;
         --brand-soft: #202c52;
@@ -102,6 +133,20 @@
         --glyph-ink-done: #34d399;
         --glyph-ink-warn: #ffb224;
         --glyph-ink-danger: #ff7b85;
+        --cat-basics: #b9a4ff;
+        --cat-basics-bg: #2a2352;
+        --cat-structure: #5fded4;
+        --cat-structure-bg: #0f3733;
+        --cat-sorting: #ffb224;
+        --cat-sorting-bg: #3a2c10;
+        --cat-search: #8ba3ff;
+        --cat-search-bg: #202c52;
+        --cat-graph: #ff8fd0;
+        --cat-graph-bg: #43203c;
+        --cat-design: #34d399;
+        --cat-design-bg: #10352a;
+        --cat-project: #ff7b85;
+        --cat-project-bg: #431f24;
         --code-bg: #0b1017;
         --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.35);
         --shadow-pop: 0 6px 24px rgba(0, 0, 0, 0.5);
@@ -117,7 +162,7 @@ html[data-theme="light"] {
     --line-strong: #b9c4d4;
     --ink: #1b2430;
     --ink-soft: #46536a;
-    --ink-faint: #7c8aa0;
+    --ink-faint: #59677f;
     --brand: #2b50e0;
     --brand-strong: #1d3ab8;
     --brand-soft: #e7ecfd;
@@ -133,6 +178,20 @@ html[data-theme="light"] {
     --glyph-ink-done: #0a7a54;
     --glyph-ink-warn: #9a5a00;
     --glyph-ink-danger: #b8323d;
+    --cat-basics: #5b30c4;
+    --cat-basics-bg: #efe9fe;
+    --cat-structure: #0d6b64;
+    --cat-structure-bg: #d8f2ef;
+    --cat-sorting: #9a5a00;
+    --cat-sorting-bg: #fff0d6;
+    --cat-search: #2246c9;
+    --cat-search-bg: #e4ebfe;
+    --cat-graph: #a81f77;
+    --cat-graph-bg: #fce4f1;
+    --cat-design: #0a7a54;
+    --cat-design-bg: #dcf5ec;
+    --cat-project: #b8323d;
+    --cat-project-bg: #fde8ea;
     --code-bg: #10161f;
     --shadow-card: 0 1px 2px rgba(20, 30, 50, 0.05), 0 4px 16px rgba(20, 30, 50, 0.06);
     --shadow-pop: 0 6px 24px rgba(20, 30, 50, 0.14);
@@ -147,7 +206,7 @@ html[data-theme="dark"] {
     --line-strong: #3c4d6b;
     --ink: #e6ecf6;
     --ink-soft: #a9b6ca;
-    --ink-faint: #71809a;
+    --ink-faint: #8695ae;
     --brand: #8ba3ff;
     --brand-strong: #a9baff;
     --brand-soft: #202c52;
@@ -163,11 +222,37 @@ html[data-theme="dark"] {
     --glyph-ink-done: #34d399;
     --glyph-ink-warn: #ffb224;
     --glyph-ink-danger: #ff7b85;
+    --cat-basics: #b9a4ff;
+    --cat-basics-bg: #2a2352;
+    --cat-structure: #5fded4;
+    --cat-structure-bg: #0f3733;
+    --cat-sorting: #ffb224;
+    --cat-sorting-bg: #3a2c10;
+    --cat-search: #8ba3ff;
+    --cat-search-bg: #202c52;
+    --cat-graph: #ff8fd0;
+    --cat-graph-bg: #43203c;
+    --cat-design: #34d399;
+    --cat-design-bg: #10352a;
+    --cat-project: #ff7b85;
+    --cat-project-bg: #431f24;
     --code-bg: #0b1017;
     --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.35);
     --shadow-pop: 0 6px 24px rgba(0, 0, 0, 0.5);
     color-scheme: dark;
 }
+
+/* ---------- 학습 영역 색 배선 ----------
+   data-cat 하나가 그 안의 모든 자손에게 --cat-ink / --cat-bg를 열어 준다.
+   덕분에 카드·칩·아이콘 규칙은 분류를 몰라도 되고, 분류가 늘어나도
+   이 표에 한 줄만 더하면 된다. */
+[data-cat="basics"] { --cat-ink: var(--cat-basics); --cat-bg: var(--cat-basics-bg); }
+[data-cat="structure"] { --cat-ink: var(--cat-structure); --cat-bg: var(--cat-structure-bg); }
+[data-cat="sorting"] { --cat-ink: var(--cat-sorting); --cat-bg: var(--cat-sorting-bg); }
+[data-cat="search"] { --cat-ink: var(--cat-search); --cat-bg: var(--cat-search-bg); }
+[data-cat="graph"] { --cat-ink: var(--cat-graph); --cat-bg: var(--cat-graph-bg); }
+[data-cat="design"] { --cat-ink: var(--cat-design); --cat-bg: var(--cat-design-bg); }
+[data-cat="project"] { --cat-ink: var(--cat-project); --cat-bg: var(--cat-project-bg); }
 
 /* ---------- 리셋 ---------- */
 *,
@@ -231,6 +316,11 @@ body {
        (white-space: pre인 코드 블록은 애초에 이 규칙이 작동하지 않고
        .code-card pre / pre.quiz-code가 가로 스크롤로 처리한다.) */
     overflow-wrap: break-word;
+    /* 한글은 기본값(normal)에서 음절 아무 데서나 줄이 바뀐다 — "목표로 합니/다"
+       처럼 한 낱말이 두 줄로 찢어져 읽는 속도가 떨어진다. keep-all은 어절
+       단위로만 끊는다. 위의 break-word가 그대로 남아 있으므로 한 줄에 도저히
+       못 들어가는 긴 식별자는 여전히 끊긴다(좁은 화면 가로 스크롤 회귀 방지). */
+    word-break: keep-all;
 }
 
 img,
@@ -258,7 +348,10 @@ h1,
 h2,
 h3,
 h4 {
+    font-family: var(--font-display);
+    font-weight: 700;
     line-height: 1.35;
+    letter-spacing: -0.015em;
     color: var(--ink);
     overflow-wrap: break-word;
 }
@@ -351,9 +444,28 @@ summary code {
 }
 
 .site-brand__name {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.site-brand__dept {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--ink-faint);
+    padding-left: 10px;
+    margin-left: 2px;
+    border-left: 1px solid var(--line);
+    white-space: nowrap;
+}
+
+@media (max-width: 860px) {
+    .site-brand__dept {
+        display: none;
+    }
 }
 
 .site-brand:hover {
@@ -605,24 +717,49 @@ html[data-theme="dark"] .button--primary:hover {
     white-space: nowrap;
 }
 
-/* 칩 위 글자는 상태색을 그대로 쓰면 자기 배경 위에서 라이트 테마 기준
-   2.9~3:1로 본문 대비에 못 미친다. 글리프와 같은 액센트 잉크를 쓴다. */
-.badge--beginner {
-    background: var(--state-done-bg);
-    border-color: transparent;
-    color: var(--glyph-ink-done);
+/* 난이도는 분류와 다른 축이다. 여기에도 색을 주면 카드 하나에 서로 뜻이 다른
+   두 색이 겹쳐 어느 쪽이 분류인지 읽히지 않는다. 난이도는 색을 내려놓고
+   단계 점(●○ / ●●)으로만 말한다 — 색을 못 보는 화면에서도 그대로 읽힌다. */
+.badge--beginner,
+.badge--intermediate {
+    background: var(--surface-2);
+    border-color: var(--line);
+    color: var(--ink-soft);
 }
 
-.badge--intermediate {
-    background: var(--state-compare-bg);
-    border-color: transparent;
-    color: var(--glyph-ink-warn);
+.badge--beginner::after,
+.badge--intermediate::after {
+    font-size: 0.62em;
+    letter-spacing: 0.12em;
+    line-height: 1;
+    opacity: 0.85;
 }
+
+.badge--beginner::after { content: "\25CF\25CB"; }
+.badge--intermediate::after { content: "\25CF\25CF"; }
 
 .badge--category {
     background: var(--brand-soft);
     border-color: transparent;
     color: var(--brand);
+}
+
+/* 분류를 아는 칩은 자기 영역 색으로 읽힌다. data-cat이 없으면 위의 브랜드
+   색이 그대로 남으므로, 배선되지 않은 자리도 조용히 깨지지 않는다. */
+.badge--category[data-cat] {
+    background: var(--cat-bg);
+    color: var(--cat-ink);
+}
+
+/* 칩 앞의 점 — 분류명은 이미 글자로 적혀 있으므로 정보가 아니라 조준점이다.
+   목록을 훑을 때 같은 색 점끼리 먼저 눈에 묶인다. */
+.badge--category[data-cat]::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--cat-ink);
+    flex: none;
 }
 
 /* ---------- 진행률 바 ---------- */
@@ -822,6 +959,11 @@ details[open].reveal-box > summary::before {
     text-align: center;
     color: var(--ink-faint);
     font-size: 0.88rem;
+}
+
+/* 푸터는 패딩으로 간격을 잡는다 — 문단이 둘 이상이어도 사이가 벌어지지 않게 */
+.site-footer p {
+    margin: 0;
 }
 
 .site-footer a {

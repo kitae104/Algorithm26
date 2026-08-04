@@ -53,6 +53,24 @@
         --glyph-ink-done: #0a7a54;
         --glyph-ink-warn: #8a5000;
         --glyph-ink-danger: #a82a35;
+
+        /* 학습 영역 색 — 종이에서도 7개 영역이 서로 구분돼야 하므로 회색으로
+           뭉개지 않고 색상환은 유지한 채 명도만 잉크 쪽으로 내린다.
+           -bg는 잉크젯에서 뭉치지 않을 만큼 옅게 잡는다. */
+        --cat-basics: #4a2a9e;
+        --cat-basics-bg: #efeafa;
+        --cat-structure: #0a5c56;
+        --cat-structure-bg: #e2f2f0;
+        --cat-sorting: #8a5000;
+        --cat-sorting-bg: #fbf0dc;
+        --cat-search: #1a3aa8;
+        --cat-search-bg: #e8ecf8;
+        --cat-graph: #8f1a63;
+        --cat-graph-bg: #fae3ef;
+        --cat-design: #0a7a54;
+        --cat-design-bg: #e6f4ee;
+        --cat-project: #a82a35;
+        --cat-project-bg: #fbe9ea;
     }
 
     body {
@@ -76,6 +94,7 @@
     .lesson-complete-slot,
     .hero__actions,
     .courses__filters,
+    .cat-chips,
     .theme-toggle,
     .mobile-menu-button,
     .skip-link {

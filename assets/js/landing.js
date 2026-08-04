@@ -1,7 +1,7 @@
 /*
  * 랜딩 페이지
  * - window.ALGORITHMS 기반 강의 카드 렌더링
- * - 제목 검색 / 분류 필터 / 난이도 필터
+ * - 제목 검색 / 학습 영역 칩 / 난이도 · 학습 상태 필터
  * - 전체 통계, 학습 진행률, 강의별 학습 상태
  * - 히어로 라이브 선택 정렬 스트립
  */
@@ -15,6 +15,53 @@
         return node;
     }
 
+    /* ---------- 학습 영역 아이콘 ----------
+       한 영역이 실제로 하는 일 한 컷씩. 24x24 격자를 공유하고 선 굵기도 같아
+       카드가 나란히 놓였을 때 굵기가 튀지 않는다. 색은 넣지 않는다 —
+       currentColor로 그려 --cat-ink가 그대로 흘러들어 온다. */
+    function svgIcon(inner) {
+        return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" ' +
+            'stroke-linecap="round" stroke-linejoin="round" focusable="false">' + inner + "</svg>";
+    }
+
+    var CATEGORY_ICONS = {
+        /* 기초 — 같은 문제라도 방법에 따라 갈라지는 두 곡선 */
+        basics: svgIcon('<path d="M4 4v16h16"/>' +
+            '<path d="M5.5 19C10 18.4 13.6 15 15.8 5.5"/>' +
+            '<path d="M5.5 19 20 14.2"/>'),
+        /* 자료구조 — 칸이 나뉜 한 덩어리(배열·리스트).
+           칸마다 rect를 따로 두면 20px로 줄었을 때 1.8 굵기의 테두리가 속을
+           거의 다 먹어 검은 덩어리로 뭉친다. 테두리 하나에 칸막이만 긋는다. */
+        structure: svgIcon('<rect x="2" y="7" width="20" height="10" rx="2.6"/>' +
+            '<path d="M8.7 7v10M15.3 7v10"/>'),
+        /* 정렬 — 키 순으로 선 막대 */
+        sorting: svgIcon('<path d="M4 20v-4.5M9.3 20v-8M14.6 20v-11.5M19.9 20V4.5"/>'),
+        /* 탐색 — 범위를 좁혀 하나를 찾아낸다 */
+        search: svgIcon('<circle cx="10.5" cy="10.5" r="6.5"/>' +
+            '<path d="m15.4 15.4 4.6 4.6"/>' +
+            '<circle cx="10.5" cy="10.5" r="1.7" fill="currentColor" stroke="none"/>'),
+        /* 그래프 — 정점과 간선 */
+        graph: svgIcon('<circle cx="5.8" cy="6.6" r="2.8"/>' +
+            '<circle cx="18.2" cy="6.6" r="2.8"/>' +
+            '<circle cx="12" cy="18" r="2.8"/>' +
+            '<path d="M8.6 6.6h6.8"/><path d="m7.7 8.8 2.6 6.6"/><path d="m16.3 8.8-2.6 6.6"/>'),
+        /* 설계 기법 — 갈림길에서 하나를 고른다 */
+        design: svgIcon('<circle cx="4.6" cy="12" r="2"/>' +
+            '<circle cx="19.4" cy="5.8" r="2"/>' +
+            '<circle cx="19.4" cy="18.2" r="2"/>' +
+            '<path d="M6.6 12h2.6l4.2-6.2h4"/><path d="m9.2 12 4.2 6.2h4"/>'),
+        /* 프로젝트 — 다 모아 하나를 세운다 */
+        project: svgIcon('<path d="M6 21V3.5"/><path d="M6 4.5h11.5l-2.6 4.2 2.6 4.2H6"/>'),
+        /* 표에 없는 분류를 만났을 때의 중립 글리프 */
+        fallback: svgIcon('<circle cx="12" cy="12" r="7.5"/><path d="M12 8.5v7M8.5 12h7"/>')
+    };
+
+    var CATEGORY_KEYS = window.CATEGORY_KEYS || {};
+
+    function categoryKey(name) {
+        return CATEGORY_KEYS[name] || "";
+    }
+
     document.addEventListener("DOMContentLoaded", function () {
         var lessons = window.ALGORITHMS || [];
 
@@ -25,28 +72,70 @@
         var beginnerCount = lessons.filter(function (lesson) { return lesson.difficulty === "초급"; }).length;
         var intermediateCount = lessons.length - beginnerCount;
 
+        var categories = [];
+        lessons.forEach(function (lesson) {
+            if (categories.indexOf(lesson.category) === -1) categories.push(lesson.category);
+        });
+
         function setText(id, text) {
             var node = document.getElementById(id);
             if (node) node.textContent = text;
         }
 
         setText("stat-total", lessons.length + "개");
+        setText("stat-categories", categories.length + "개");
         setText("stat-examples", totalExamples + "개");
-        setText("stat-beginner", beginnerCount + "개");
-        setText("stat-intermediate", intermediateCount + "개");
+        setText("stat-beginner", beginnerCount);
+        setText("stat-intermediate", intermediateCount);
 
-        /* ---------- 분류 필터 옵션 ---------- */
-        var categorySelect = document.getElementById("filter-category");
-        if (categorySelect) {
-            var categories = [];
-            lessons.forEach(function (lesson) {
-                if (categories.indexOf(lesson.category) === -1) categories.push(lesson.category);
+        /* ---------- 학습 영역 칩 ----------
+           색 범례와 필터를 겸한다. 칩 하나가 곧 그 영역의 색 견본이므로
+           아래 카드의 띠·아이콘 색이 무엇을 뜻하는지 따로 설명할 필요가 없다. */
+        var chipHost = document.getElementById("filter-category");
+        var activeCategory = "";        /* "" = 전체 */
+
+        function buildChips() {
+            if (!chipHost) return;
+            chipHost.textContent = "";
+
+            var items = [{ value: "", label: "전체", count: lessons.length, key: "" }];
+            categories.forEach(function (name) {
+                var count = lessons.filter(function (lesson) {
+                    return lesson.category === name;
+                }).length;
+                items.push({ value: name, label: name, count: count, key: categoryKey(name) });
             });
-            categories.forEach(function (category) {
-                var option = document.createElement("option");
-                option.value = category;
-                option.textContent = category;
-                categorySelect.appendChild(option);
+
+            items.forEach(function (item) {
+                var chip = el("button", "cat-chip");
+                chip.type = "button";
+                chip.setAttribute("data-value", item.value);
+                if (item.key) chip.setAttribute("data-cat", item.key);
+                chip.setAttribute("aria-pressed", item.value === activeCategory ? "true" : "false");
+
+                var dot = el("span", "cat-chip__dot");
+                dot.setAttribute("aria-hidden", "true");
+                chip.appendChild(dot);
+                chip.appendChild(document.createTextNode(item.label));
+                chip.appendChild(el("span", "cat-chip__n", item.count));
+
+                chip.addEventListener("click", function () {
+                    /* 눌린 칩을 다시 누르면 전체로 돌아간다 — 필터를 푸는 데
+                       "전체" 칩까지 찾아가지 않아도 된다. */
+                    activeCategory = activeCategory === item.value ? "" : item.value;
+                    syncChips();
+                    render();
+                });
+
+                chipHost.appendChild(chip);
+            });
+        }
+
+        function syncChips() {
+            if (!chipHost) return;
+            Array.prototype.forEach.call(chipHost.children, function (chip) {
+                chip.setAttribute("aria-pressed",
+                    chip.getAttribute("data-value") === activeCategory ? "true" : "false");
             });
         }
 
@@ -76,7 +165,7 @@
         function render() {
             if (!grid) return;
             var keyword = (searchInput && searchInput.value || "").trim().toLowerCase();
-            var category = categorySelect ? categorySelect.value : "";
+            var category = activeCategory;
             var difficulty = difficultySelect ? difficultySelect.value : "";
             var statusFilter = statusSelect ? statusSelect.value : "";
             var progressState = window.AllProgress ? window.AllProgress.getState() : { lessons: {} };
@@ -116,12 +205,26 @@
                     });
                 }
 
+                /* 카드 전체가 자기 학습 영역 색을 연다 — 띠, 아이콘 타일,
+                   회차 숫자, 분류 칩, hover 테두리가 모두 이 한 줄을 따라간다.
+                   표에 없는 분류면 붙이지 않고 중립색으로 남긴다. */
+                var catKey = categoryKey(lesson.category);
+                if (catKey) card.setAttribute("data-cat", catKey);
+
                 var top = el("div", "course-card__top");
+
+                var icon = el("span", "course-card__icon");
+                icon.setAttribute("aria-hidden", "true");
+                /* innerHTML의 내용은 위 CATEGORY_ICONS의 하드코딩된 리터럴뿐이다
+                   (강의 데이터가 섞여 들어가는 자리가 없다). */
+                icon.innerHTML = CATEGORY_ICONS[catKey] || CATEGORY_ICONS.fallback;
+                top.appendChild(icon);
+
                 top.appendChild(el("span", "course-card__no", String(lesson.order).padStart(2, "0")));
-                top.appendChild(el("span", "badge badge--category", lesson.category));
-                top.appendChild(el("span",
-                    "badge " + (lesson.difficulty === "초급" ? "badge--beginner" : "badge--intermediate"),
-                    lesson.difficulty));
+
+                var categoryBadge = el("span", "badge badge--category", lesson.category);
+                if (catKey) categoryBadge.setAttribute("data-cat", catKey);
+                top.appendChild(categoryBadge);
 
                 var statusLabel = { done: "완료 ✓", started: "학습 중 …", new: "미시작" }[status];
                 top.appendChild(el("span", "course-card__status is-" + status, statusLabel));
@@ -136,7 +239,12 @@
                 card.appendChild(el("p", "course-card__english", lesson.englishTitle));
                 card.appendChild(el("p", "course-card__desc", lesson.description));
 
+                /* 난이도와 언어는 아랫줄로 내린다. 윗줄은 "이 강의가 어느
+                   영역인가" 하나만 말하게 두어야 색이 흩어지지 않는다. */
                 var meta = el("div", "course-card__meta");
+                meta.appendChild(el("span",
+                    "badge " + (lesson.difficulty === "초급" ? "badge--beginner" : "badge--intermediate"),
+                    lesson.difficulty));
                 meta.appendChild(el("span", "badge", lesson.language));
                 if (entry && entry.quizBest) {
                     var quiz = el("span", "course-card__quiz");
@@ -151,7 +259,7 @@
             });
 
             if (countLabel) {
-                countLabel.textContent = shown + " / " + lessons.length + "개 강좌";
+                countLabel.textContent = shown + " / " + lessons.length + "강";
             }
             if (emptyMsg) {
                 emptyMsg.classList.toggle("is-shown", shown === 0);
@@ -170,12 +278,13 @@
             }
         }
 
-        [searchInput, categorySelect, difficultySelect, statusSelect].forEach(function (control) {
+        [searchInput, difficultySelect, statusSelect].forEach(function (control) {
             if (!control) return;
             control.addEventListener("input", render);
             control.addEventListener("change", render);
         });
 
+        buildChips();
         render();
 
         /* ---------- 전체 진행률 ---------- */
