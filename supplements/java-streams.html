@@ -285,7 +285,8 @@ List&lt;Product&gt; fast = products.stream()
                             <tr><td><code>toList()</code></td><td><code>List&lt;T&gt;</code> (수정 불가)</td><td>결과 목록이 필요할 때</td></tr>
                             <tr><td><code>collect(...)</code></td><td>지정한 자료구조</td><td><code>Set</code>·<code>Map</code>·그룹으로 모을 때</td></tr>
                             <tr><td><code>count()</code></td><td><code>long</code></td><td>2강 조건 개수 세기</td></tr>
-                            <tr><td><code>sum()</code> · <code>average()</code> · <code>max()</code></td><td>숫자 / <code>Optional</code></td><td>2강 합계·평균·최댓값</td></tr>
+                            <tr><td><code>sum()</code> · <code>average()</code> · <code>max()</code> · <code>min()</code></td><td>숫자 / <code>Optional</code></td><td>2강 합계·평균·최댓값·최솟값</td></tr>
+                            <tr><td><code>max(Comparator)</code> · <code>min(Comparator)</code></td><td><code>Optional&lt;T&gt;</code></td><td>객체 스트림에서 기준을 주고 하나 고를 때 (3강 최빈 단어)</td></tr>
                             <tr><td><code>anyMatch</code> · <code>allMatch</code> · <code>noneMatch</code></td><td><code>boolean</code></td><td>"하나라도 있나?" 판정 (조기 중단)</td></tr>
                             <tr><td><code>findFirst()</code></td><td><code>Optional&lt;T&gt;</code></td><td>5강 순차 탐색의 첫 결과</td></tr>
                             <tr><td><code>reduce(...)</code></td><td>누적 결과</td><td>직접 정의한 누적 규칙</td></tr>
