@@ -1687,15 +1687,193 @@ public class GradeAnalyzerSolution {
                 </details>
             </section>
 
-            <!-- 18. 확인 퀴즈 -->
+            <!-- 18. 람다·스트림 수정 문제 -->
+            <section class="lesson-section" id="sec-modernize" aria-labelledby="h-modernize">
+                <h2 id="h-modernize" data-toc-label="람다·스트림 수정 문제"><span class="section-no">18</span>람다·스트림 수정 문제</h2>
+                <p>
+                    지금까지 쓴 코드를 <strong>같은 결과를 내는 다른 문법</strong>으로 고쳐 보는 문제입니다.
+                    필요한 문법은 추가 정보의
+                    <a href="../supplements/java-streams.html">자바 스트림</a> 문서에 모두 있습니다.
+                    먼저 스스로 고쳐 본 뒤 정답을 펼치세요.
+                </p>
+                <div class="note-box note-box--warn">
+                    <span class="note-box__title">문법을 바꿔도 복잡도는 그대로다</span>
+                    <p>
+                        아래 문제의 정답은 전부 <strong>O(n)</strong>입니다. 반복문 버전도 O(n)입니다.
+                        스트림으로 바꿨다고 빨라지지 않습니다. 바뀌는 것은
+                        <strong>"무엇을 하는 코드인지가 얼마나 잘 읽히는가"</strong>뿐입니다.
+                        이 강의의 주제인 <strong>순회 O(n)</strong>은 문법과 무관하다는 점을 잊지 마세요.
+                    </p>
+                </div>
+
+                <h3>수정 문제 ① — 배열을 네 번 훑는 집계를 한 번으로</h3>
+                <p>
+                    <code>ScoreStatsComplete.java</code>의 통계 메서드들은 각자 배열을 처음부터 끝까지 훑습니다.
+                    합계·평균·최고점·최저점을 모두 구하면 <strong>배열을 네 번</strong> 지나갑니다.
+                </p>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">ScoreStatsComplete.java — 지금 코드</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-mod-q1" aria-label="수정 문제 1 원본 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-mod-q1" class="language-java">static int sum(int[] data) {
+    int total = 0;
+    for (int i = 0; i &lt; data.length; i++) {
+        total = total + data[i];
+    }
+    return total;
+}
+
+static int max(int[] data) {
+    int candidate = data[0];
+    for (int i = 1; i &lt; data.length; i++) {
+        if (data[i] &gt; candidate) {
+            candidate = data[i];
+        }
+    }
+    return candidate;
+}
+
+// min은 부등호 방향만 다른 같은 구조, average는 sum을 한 번 더 부른다</code></pre>
+                </article>
+                <p><strong>요구사항</strong></p>
+                <ul>
+                    <li>합계·평균·최고점·최저점을 <strong>배열을 한 번만 훑어</strong> 모두 구할 것</li>
+                    <li>결과는 반복문 버전과 정확히 같아야 함 (합계 620, 평균 77.5, 최고 93, 최저 55)</li>
+                    <li>힌트 — <a href="../supplements/java-streams.html#sec-collect">모으기와 그룹핑</a> 절의 <code>summaryStatistics()</code></li>
+                </ul>
+
+                <details class="answer-box">
+                    <summary>정답과 해설 보기 — 수정 문제 ①</summary>
+                    <article class="code-card">
+                        <header class="code-card__header">
+                            <div class="code-card__info">
+                                <span class="code-card__language">Java</span>
+                                <strong class="code-card__filename">ModernizeSolution.java — 정답</strong>
+                            </div>
+                            <button type="button" class="copy-code-button" data-copy-target="code-mod-a1" aria-label="수정 문제 1 정답 코드 복사">코드 복사</button>
+                        </header>
+                        <pre><code id="code-mod-a1" class="language-java">IntSummaryStatistics stat = Arrays.stream(scores).summaryStatistics();
+
+stat.getSum();       // 620  — 합계
+stat.getAverage();   // 77.5 — 평균
+stat.getMax();       // 93   — 최고점
+stat.getMin();       // 55   — 최저점
+stat.getCount();     // 8    — 개수
+
+// 하나만 필요하다면 여기까지 갈 것 없다
+int lowest = Arrays.stream(scores).min().orElse(0);</code></pre>
+                    </article>
+                    <p>
+                        네 번의 순회가 한 번이 됩니다. 다만 <strong>복잡도는 그대로 O(n)</strong>입니다 —
+                        4 × O(n)도 O(n)이기 때문입니다. 1강에서 "상수 배는 Big-O에서 버린다"고 배운 그대로입니다.
+                        실제로 걸리는 시간은 줄지만 <strong>증가하는 모양은 같습니다.</strong>
+                    </p>
+                    <p>
+                        <code>min()</code>이 <code>OptionalInt</code>를 돌려주는 데에도 이유가 있습니다.
+                        반복문 버전의 <code>data[0]</code>은 <strong>빈 배열이면 예외</strong>가 났습니다.
+                        <code>orElse(0)</code>은 "없을 때 어떻게 할지"를 반드시 적게 만듭니다.
+                    </p>
+                </details>
+
+                <h3>수정 문제 ② — 두 번 훑던 조건 수집을 한 줄로</h3>
+                <p>
+                    <code>collectBelow</code>는 배열 크기를 미리 알아야 해서
+                    <strong>개수를 세는 순회</strong>와 <strong>값을 채우는 순회</strong>를 따로 돕니다.
+                    이것은 자바 배열의 제약이지 알고리즘의 요구가 아닙니다.
+                </p>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">ScoreStatsComplete.java — 지금 코드</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-mod-q2" aria-label="수정 문제 2 원본 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-mod-q2" class="language-java">static int countAtLeast(int[] data, int threshold) {
+    int count = 0;
+    for (int i = 0; i &lt; data.length; i++) {
+        if (data[i] &gt;= threshold) {
+            count++;
+        }
+    }
+    return count;
+}
+
+static int[] collectBelow(int[] data, double limit) {
+    int count = 0;
+    for (int i = 0; i &lt; data.length; i++) {
+        if (data[i] &lt; limit) count++;            // 1차 순회: 개수 세기
+    }
+    int[] result = new int[count];               // 정확한 크기의 새 배열
+    int pos = 0;
+    for (int i = 0; i &lt; data.length; i++) {
+        if (data[i] &lt; limit) {
+            result[pos] = data[i];               // 2차 순회: 값 채우기
+            pos++;
+        }
+    }
+    return result;
+}</code></pre>
+                </article>
+                <p><strong>요구사항</strong></p>
+                <ul>
+                    <li>"80점 이상인 학생 수"를 한 줄로 구할 것</li>
+                    <li>"평균 미만인 점수만 담은 새 배열"을 <strong>크기 계산 없이</strong> 만들 것</li>
+                    <li>원본 배열 <code>scores</code>는 바뀌지 않아야 함</li>
+                    <li>힌트 — <a href="../supplements/java-streams.html#sec-intermediate">중간 연산</a>의 <code>filter</code>,
+                        <a href="../supplements/java-streams.html#sec-terminal">최종 연산</a>의 <code>count()</code>·<code>toArray()</code></li>
+                </ul>
+
+                <details class="answer-box">
+                    <summary>정답과 해설 보기 — 수정 문제 ②</summary>
+                    <article class="code-card">
+                        <header class="code-card__header">
+                            <div class="code-card__info">
+                                <span class="code-card__language">Java</span>
+                                <strong class="code-card__filename">ModernizeSolution.java — 정답</strong>
+                            </div>
+                            <button type="button" class="copy-code-button" data-copy-target="code-mod-a2" aria-label="수정 문제 2 정답 코드 복사">코드 복사</button>
+                        </header>
+                        <pre><code id="code-mod-a2" class="language-java">long count = Arrays.stream(scores).filter(s -&gt; s &gt;= 80).count();
+
+double average = Arrays.stream(scores).average().orElse(0);
+int[] below = Arrays.stream(scores).filter(s -&gt; s &lt; average).toArray();
+
+// 주의: average를 람다 안에서 쓰려면 한 번 대입한 뒤 바꾸지 않아야 한다.
+//       (람다식 문서의 "자주 하는 실수 ①" — effectively final)</code></pre>
+                    </article>
+                    <p>
+                        <code>count</code>가 <code>long</code>인 것에 주의하세요.
+                        원소 수가 <code>int</code> 범위를 넘을 수 있는 스트림도 있기 때문입니다.
+                    </p>
+                    <p>
+                        "개수를 먼저 세고 크기를 정해 채운다"는 절차가 통째로 사라졌습니다.
+                        하지만 <code>toArray()</code>도 내부에서는 결국 크기를 맞추는 일을 합니다 —
+                        <strong>일이 없어진 것이 아니라 우리가 적지 않게 된 것</strong>입니다.
+                        복잡도는 여전히 O(n)입니다.
+                    </p>
+                </details>
+
+                <p>
+                    정답 전체와 "반복문 결과와 같은지" 확인하는 코드는
+                    <code>examples/java/02-arrays-and-lists/ModernizeSolution.java</code>에 있습니다.
+                    직접 실행해 모든 비교가 <code>true</code>로 나오는지 확인하세요.
+                </p>
+            </section>
+
+            <!-- 19. 확인 퀴즈 -->
             <section class="lesson-section" id="sec-quiz" aria-labelledby="h-quiz">
-                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">18</span>확인 퀴즈</h2>
+                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">19</span>확인 퀴즈</h2>
                 <div id="quiz-root"></div>
             </section>
 
-            <!-- 19. 오늘의 핵심 정리 -->
+            <!-- 20. 오늘의 핵심 정리 -->
             <section class="lesson-section" id="sec-summary" aria-labelledby="h-summary">
-                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">19</span>오늘의 핵심 정리</h2>
+                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">20</span>오늘의 핵심 정리</h2>
                 <ul class="summary-list">
                     <li><strong>배열</strong>은 같은 자료형을 연속으로 담는 고정 크기 그릇이다. 인덱스는 0부터,
                         마지막은 <code>length - 1</code>, 접근은 O(1)이다.</li>
@@ -1712,9 +1890,9 @@ public class GradeAnalyzerSolution {
                 <div id="lesson-complete-slot"></div>
             </section>
 
-            <!-- 20. 다음 강의 연결 -->
+            <!-- 21. 다음 강의 연결 -->
             <section class="lesson-section" id="sec-next" aria-labelledby="h-next">
-                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">20</span>다음 강의 연결</h2>
+                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">21</span>다음 강의 연결</h2>
                 <p>
                     다음 강의는 <strong>3강. 완전 탐색과 문자열·해시 처리</strong>입니다.
                     오늘 익힌 순회 패턴이 그대로 무기가 됩니다.
