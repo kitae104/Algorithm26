@@ -148,12 +148,42 @@
     margin: 0 0 14px;
 }
 
+/* 무대 — 3D 캔버스와 2D 막대가 같은 상자를 공유한다.
+   three.js가 뜨면 .is-3d가 붙어 2D 막대가 빠지고 canvas만 남는다.
+   높이를 여기서 한 번 잡아 두면 둘 중 무엇이 들어가든 카드 높이가 흔들리지
+   않는다 — 3D가 늦게 붙어도 레이아웃이 밀리지 않는다. */
+.hero-viz__stage {
+    position: relative;
+    height: clamp(220px, 21vw, 300px);
+    border-radius: var(--radius-m);
+    overflow: hidden;
+    /* 캔버스는 배경이 투명하다. 이 그라디언트가 무대의 하늘 역할을 한다 —
+       학습 영역 고리의 두 색을 아주 옅게 써서 히어로 배경과 같은 계열로 묶는다. */
+    background:
+        radial-gradient(120% 88% at 50% 108%, color-mix(in srgb, var(--cat-search) 12%, transparent), transparent 68%),
+        radial-gradient(90% 70% at 82% 6%, color-mix(in srgb, var(--cat-graph) 9%, transparent), transparent 70%),
+        var(--surface);
+}
+
+.hero-viz__canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    /* 포인터 시차는 캔버스가 아니라 무대(.hero-viz__stage)가 듣는다 */
+    touch-action: pan-y;
+}
+
+.hero-viz__stage.is-3d .hero-viz__bars {
+    display: none;
+}
+
 .hero-viz__bars {
     display: flex;
     align-items: flex-end;
     gap: 8px;
-    height: 170px;
-    padding-top: 22px;      /* 막대 위 값 라벨 자리 */
+    height: 100%;
+    padding: 22px 12px 12px;   /* 막대 위 값 라벨 자리 */
+    box-sizing: border-box;
 }
 
 .hero-viz__bar {
@@ -489,55 +519,11 @@
     color: var(--ink-soft);
 }
 
-/* ---------- 전체 진행률 ---------- */
-.overall-progress {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px 30px;
-}
-
-.overall-progress__card {
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: var(--radius-m);
-    padding: 16px 22px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    flex-wrap: wrap;
-}
-
-.overall-progress__icon {
-    display: inline-flex;
-    color: var(--brand);
-}
-
-.overall-progress__icon svg {
-    width: 22px;
-    height: 22px;
-}
-
-.overall-progress__text {
-    font-weight: 700;
-    font-size: 0.94rem;
-}
-
-.overall-progress__text b {
-    color: var(--brand);
-    font-family: var(--font-mono);
-    font-size: 1.1rem;
-}
-
-.overall-progress .progress-track {
-    flex: 1;
-    min-width: 180px;
-}
-
 /* ---------- 강좌 섹션 ---------- */
 .courses {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 8px 20px 60px;
+    padding: 24px 20px 60px;
 }
 
 .courses__count {
@@ -686,9 +672,14 @@
     margin: 0;
 }
 
+/* 카드는 3D로 기울어진다(landing.js의 bindCardTilt).
+   preserve-3d를 쓰려면 overflow: hidden을 걸 수 없다 — overflow가 hidden이면
+   브라우저가 transform-style을 flat으로 강제해 안쪽 translateZ가 전부 죽는다.
+   그래서 클리핑에 기대던 두 겹(색 띠, 광택)에 각각 border-radius를 직접
+   준다. 이 카드에서 잘려야 할 것은 그 둘뿐이다. */
 .course-card {
     position: relative;
-    overflow: hidden;
+    transform-style: preserve-3d;
     background: var(--surface);
     border: 1px solid var(--line);
     border-radius: var(--radius-l);
@@ -697,9 +688,9 @@
     display: flex;
     flex-direction: column;
     gap: 9px;
-    transition: transform var(--dur-fast) var(--ease-out),
+    transition: transform var(--dur-base) var(--ease-settle),
                 border-color var(--dur-fast) var(--ease-out),
-                box-shadow var(--dur-fast) var(--ease-out);
+                box-shadow var(--dur-base) var(--ease-out);
 }
 
 /* 카드 윗변의 영역 색 띠 — 목록을 훑을 때 가장 먼저 눈에 걸리는 층 */
@@ -708,14 +699,50 @@
     position: absolute;
     inset: 0 0 auto 0;
     height: 3px;
+    border-radius: var(--radius-l) var(--radius-l) 0 0;
     background: linear-gradient(90deg, var(--cat-ink), color-mix(in srgb, var(--cat-ink) 15%, transparent));
 }
 
+/* 표면 광택 — 포인터가 있는 쪽에서 빛이 들어오는 것처럼 보이게 한다.
+   기울임만 있으면 "회전하는 평면"이지만, 광택이 함께 움직이면 표면이 생긴다.
+   --tilt-x/--tilt-y는 landing.js가 포인터 위치(-1..1)로 채운다. */
+.course-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-l);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--dur-base) var(--ease-out);
+    background: radial-gradient(
+        58% 58% at calc(50% + var(--tilt-x, 0) * 42%) calc(50% + var(--tilt-y, 0) * 42%),
+        color-mix(in srgb, var(--cat-ink) 16%, transparent),
+        transparent 72%);
+}
+
+.course-card.is-tilting::after {
+    opacity: 1;
+}
+
+/* 기울임이 걸리는 환경에서는 인라인 transform이 이 규칙을 덮어쓴다.
+   터치·reduced-motion·JS 실패 시에는 이 들어올림만 남는다. */
 .course-card:hover {
     transform: translateY(-3px);
     border-color: var(--cat-ink);
     box-shadow: var(--shadow-pop);
 }
+
+.course-card.is-tilting {
+    /* 기울인 카드가 옆 카드 밑으로 들어가지 않게 */
+    z-index: 1;
+    border-color: var(--cat-ink);
+    box-shadow: 0 18px 40px -12px color-mix(in srgb, var(--cat-ink) 42%, transparent),
+                var(--shadow-pop);
+    /* 포인터를 따라가는 동안은 즉각 반응해야 한다 — 트윈을 걸면 손보다 늦다 */
+    transition: border-color var(--dur-fast) var(--ease-out),
+                box-shadow var(--dur-base) var(--ease-out);
+}
+
 
 /* 제목 링크가 카드 전체를 덮으므로 초점 표시도 카드에 걸어야 보인다 */
 .course-card:has(a:focus-visible) {
@@ -761,24 +788,40 @@
     letter-spacing: -0.02em;
 }
 
+/* 카드 면보다 앞으로 나오는 층 — 기울일 때 시차가 생겨 카드가 두께를 갖는다.
+   위의 :hover 규칙과 같은 특이도라서 반드시 그 뒤에 와야 이긴다.
+   제목(h3)은 올리지 않는다: 카드 전체를 덮는 클릭 영역(h3 a::after)이 딸려
+   있어 z를 건드리면 히트 영역이 보이는 면과 어긋난다. */
+.course-card__no,
+.course-card .badge,
+.course-card__desc {
+    transition: transform var(--dur-base) var(--ease-settle);
+}
+
+.course-card.is-tilting .course-card__icon { transform: translateZ(38px) scale(1.1) rotate(-4deg); }
+.course-card.is-tilting .course-card__no { transform: translateZ(30px); }
+.course-card.is-tilting .badge { transform: translateZ(18px); }
+.course-card.is-tilting .course-card__desc { transform: translateZ(8px); }
+
+/* 앞으로 나온 층은 클릭을 받지 않는다.
+   카드 전면 클릭 영역은 h3 a::after 하나이고 그것은 z=0 평면에 있다.
+   translateZ로 그보다 앞에 나온 요소는 히트 테스트에서 그 위를 덮어,
+   덮인 만큼 링크가 죽는다 — 설명문(translateZ 8px)이 카드 한가운데를
+   통째로 먹어 클릭이 안 되던 회귀가 실제로 여기서 났다.
+   모두 비대화형 장식/텍스트라 잃는 것은 없다. */
+.course-card.is-tilting .course-card__icon,
+.course-card.is-tilting .course-card__no,
+.course-card.is-tilting .badge,
+.course-card.is-tilting .course-card__desc {
+    pointer-events: none;
+}
+
 /* 카드 안에서는 분류 칩을 테두리형으로 낮춘다 — 같은 색 덩어리가
    아이콘 타일과 둘이 되면 어느 쪽을 봐야 할지 흩어진다. */
 .course-card .badge--category[data-cat] {
     background: transparent;
     border-color: color-mix(in srgb, var(--cat-ink) 38%, transparent);
 }
-
-.course-card__status {
-    margin-left: auto;
-    font-size: 0.75rem;
-    font-weight: 700;
-    white-space: nowrap;
-}
-
-/* 카드 표면(흰색) 위 상태 글자 — 상태색 그대로면 2.7~2.9:1 */
-.course-card__status.is-done { color: var(--glyph-ink-done); }
-.course-card__status.is-started { color: var(--glyph-ink-warn); }
-.course-card__status.is-new { color: var(--ink-faint); }
 
 .course-card h3 {
     font-size: 1.1rem;
@@ -844,6 +887,222 @@
 
 .course-card__quiz b {
     color: var(--glyph-ink-done);
+}
+
+/* ---------- 추가 정보 ----------
+   13강 카드와 같은 색 배선(data-cat)과 같은 기울임을 쓰지만, 형태로 먼저
+   구별되어야 한다. 강의 카드가 "윗변 띠 + 작은 아이콘 + 3열"이라면
+   이쪽은 "왼쪽 세로 띠 + 큰 아이콘 + 2열"이다. 같은 목록의 연장이 아니라
+   다른 성격의 자료라는 것이 색을 읽기 전에 배치로 드러난다. */
+.extras {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 8px 20px 64px;
+}
+
+.extras__eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--cat-lang);
+    margin: 0 0 8px;
+}
+
+.extras .section-head__sub strong {
+    color: var(--ink);
+    font-weight: 700;
+}
+
+.extra-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr));
+    gap: 18px;
+    list-style: none;
+    padding: 0;
+    margin: 22px 0 0;
+}
+
+.extra-card {
+    position: relative;
+    transform-style: preserve-3d;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-l);
+    box-shadow: var(--shadow-card);
+    padding: 24px 24px 20px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    transition: transform var(--dur-base) var(--ease-settle),
+                border-color var(--dur-fast) var(--ease-out),
+                box-shadow var(--dur-base) var(--ease-out);
+}
+
+/* 왼쪽 세로 띠 — 강의 카드의 윗변 띠와 짝을 이루되 방향이 다르다 */
+.extra-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 4px;
+    border-radius: var(--radius-l) 0 0 var(--radius-l);
+    background: linear-gradient(180deg, var(--cat-ink), color-mix(in srgb, var(--cat-ink) 18%, transparent));
+}
+
+.extra-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-l);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--dur-base) var(--ease-out);
+    background: radial-gradient(
+        58% 58% at calc(50% + var(--tilt-x, 0) * 42%) calc(50% + var(--tilt-y, 0) * 42%),
+        color-mix(in srgb, var(--cat-ink) 15%, transparent),
+        transparent 72%);
+}
+
+.extra-card.is-tilting::after {
+    opacity: 1;
+}
+
+.extra-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--cat-ink);
+    box-shadow: var(--shadow-pop);
+}
+
+.extra-card.is-tilting {
+    z-index: 1;
+    border-color: var(--cat-ink);
+    box-shadow: 0 18px 40px -12px color-mix(in srgb, var(--cat-ink) 42%, transparent),
+                var(--shadow-pop);
+    transition: border-color var(--dur-fast) var(--ease-out),
+                box-shadow var(--dur-base) var(--ease-out);
+}
+
+.extra-card:has(a:focus-visible) {
+    outline: 3px solid var(--state-compare);
+    outline-offset: 2px;
+}
+
+.extra-card__top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.extra-card__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 13px;
+    background: var(--cat-bg);
+    color: var(--cat-ink);
+    flex: none;
+    transition: transform var(--dur-base) var(--ease-settle);
+}
+
+.extra-card__icon svg {
+    width: 26px;
+    height: 26px;
+}
+
+/* 한 줄 요약 — 제목보다 먼저 읽혀서 "왜 읽어야 하는지"를 말한다 */
+.extra-card__kicker {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--cat-ink);
+    letter-spacing: -0.01em;
+}
+
+.extra-card h3 {
+    font-size: 1.24rem;
+    margin: 4px 0 0;
+    line-height: 1.4;
+    letter-spacing: -0.02em;
+}
+
+.extra-card h3 a {
+    color: var(--ink);
+    text-decoration: none;
+}
+
+.extra-card h3 a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-l);
+}
+
+.extra-card h3 a:hover {
+    color: var(--cat-ink);
+}
+
+.extra-card__english {
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    color: var(--ink-faint);
+    margin: 0;
+}
+
+.extra-card__desc {
+    font-size: 0.93rem;
+    line-height: 1.72;
+    color: var(--ink-soft);
+    margin: 6px 0 0;
+    flex: 1;
+}
+
+.extra-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    align-items: center;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+}
+
+.badge--supplement[data-cat] {
+    background: var(--cat-bg);
+    border-color: color-mix(in srgb, var(--cat-ink) 40%, transparent);
+    color: var(--cat-ink);
+}
+
+.extra-card__applies {
+    font-size: 0.79rem;
+    color: var(--ink-faint);
+    margin-left: auto;
+    font-family: var(--font-mono);
+}
+
+.extra-card__applies b {
+    color: var(--cat-ink);
+}
+
+.extra-card.is-tilting .extra-card__icon { transform: translateZ(40px) scale(1.08) rotate(-4deg); }
+.extra-card.is-tilting .extra-card__kicker { transform: translateZ(28px); }
+.extra-card.is-tilting .badge { transform: translateZ(18px); }
+.extra-card.is-tilting .extra-card__desc { transform: translateZ(8px); }
+
+/* 강의 카드와 같은 이유로 앞 층은 클릭을 받지 않는다 — 전면 클릭 영역이
+   z=0에 있어서, 앞에 나온 층이 그 부분의 링크를 먹는다. */
+.extra-card.is-tilting .extra-card__icon,
+.extra-card.is-tilting .extra-card__kicker,
+.extra-card.is-tilting .badge,
+.extra-card.is-tilting .extra-card__desc {
+    pointer-events: none;
+}
+
+.extra-card__kicker,
+.extra-card .badge,
+.extra-card__desc {
+    transition: transform var(--dur-base) var(--ease-settle);
 }
 
 /* ---------- 푸터 ---------- */

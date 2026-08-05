@@ -1,9 +1,10 @@
 /*
  * 랜딩 페이지
  * - window.ALGORITHMS 기반 강의 카드 렌더링
- * - 제목 검색 / 학습 영역 칩 / 난이도 · 학습 상태 필터
- * - 전체 통계, 학습 진행률, 강의별 학습 상태
- * - 히어로 라이브 선택 정렬 스트립
+ * - 제목 검색 / 학습 영역 칩 / 난이도 필터
+ * - 전체 통계
+ * - 히어로 라이브 선택 정렬 무대 (three.js 3D, 실패 시 2D 막대)
+ * - 강의 카드 3D 기울임
  */
 (function () {
     "use strict";
@@ -145,7 +146,6 @@
         var countLabel = document.getElementById("courses-count");
         var searchInput = document.getElementById("course-search");
         var difficultySelect = document.getElementById("filter-difficulty");
-        var statusSelect = document.getElementById("filter-status");
 
         /* render()는 검색어/필터가 바뀔 때마다 그리드를 통째로 새로 그린다.
            스크롤 진입 애니메이션은 "스크롤해서 처음 만나는 콘텐츠"를 위한
@@ -156,18 +156,13 @@
            최대 1회만 재생된다. */
         var revealedLessonIds = {};
 
-        function lessonStatus(entry) {
-            if (entry && entry.completed) return "done";
-            if (entry && entry.started) return "started";
-            return "new";
-        }
-
         function render() {
             if (!grid) return;
             var keyword = (searchInput && searchInput.value || "").trim().toLowerCase();
             var category = activeCategory;
             var difficulty = difficultySelect ? difficultySelect.value : "";
-            var statusFilter = statusSelect ? statusSelect.value : "";
+            /* 진도는 화면에 표시하지도, 거르지도 않는다. 카드에 남은 유일한
+               진도 흔적은 퀴즈 최고 점수뿐이라 여기서만 읽는다. */
             var progressState = window.AllProgress ? window.AllProgress.getState() : { lessons: {} };
 
             grid.textContent = "";
@@ -175,7 +170,6 @@
 
             lessons.forEach(function (lesson) {
                 var entry = progressState.lessons[lesson.id];
-                var status = lessonStatus(entry);
 
                 if (keyword &&
                     lesson.title.toLowerCase().indexOf(keyword) === -1 &&
@@ -183,7 +177,6 @@
                     lesson.description.toLowerCase().indexOf(keyword) === -1) return;
                 if (category && lesson.category !== category) return;
                 if (difficulty && lesson.difficulty !== difficulty) return;
-                if (statusFilter && status !== statusFilter) return;
 
                 shown += 1;
 
@@ -225,9 +218,6 @@
                 var categoryBadge = el("span", "badge badge--category", lesson.category);
                 if (catKey) categoryBadge.setAttribute("data-cat", catKey);
                 top.appendChild(categoryBadge);
-
-                var statusLabel = { done: "완료 ✓", started: "학습 중 …", new: "미시작" }[status];
-                top.appendChild(el("span", "course-card__status is-" + status, statusLabel));
                 card.appendChild(top);
 
                 var h3 = el("h3");
@@ -276,9 +266,76 @@
                 window.AllReveal.observeCourseCards(
                     Array.prototype.slice.call(grid.querySelectorAll(".course-card.reveal-on-scroll")));
             }
+
+            /* 카드를 새로 그렸으니 기울임도 새로 건다 — 이전 카드는 이미 DOM에서
+               사라졌으므로 리스너를 따로 걷어 낼 필요가 없다. */
+            bindCardTilt(Array.prototype.slice.call(grid.querySelectorAll(".course-card")));
         }
 
-        [searchInput, difficultySelect, statusSelect].forEach(function (control) {
+        /* ---------- 카드 3D 기울임 ----------
+           카드를 평면 위의 종이가 아니라 손에 든 판으로 만든다. 포인터 위치를
+           카드 로컬 좌표(-1..1)로 바꿔 rotateX/rotateY로 기울이고, 같은 좌표를
+           --tilt-x/--tilt-y로 흘려 보내 표면 광택(::after)이 포인터를 따라온다.
+           아이콘·회차 숫자는 preserve-3d 안에서 translateZ로 한 겹 띄워 두었기
+           때문에(landing.css) 기울일 때 카드 면보다 크게 움직여 깊이가 생긴다.
+
+           거친 포인터(터치)에서는 걸지 않는다 — hover 상태가 없어 기울인 채로
+           굳어 버리고, 스크롤 중에 카드가 흔들리기만 한다.
+           reduced-motion에서도 걸지 않는다. */
+        var tiltEnabled = !(window.matchMedia &&
+                window.matchMedia("(prefers-reduced-motion: reduce)").matches) &&
+            Boolean(window.matchMedia && window.matchMedia("(hover: hover) and (pointer: fine)").matches);
+
+        var MAX_TILT = 7;      /* deg — 이보다 크면 글자가 눈에 띄게 일그러진다 */
+
+        function bindCardTilt(cards) {
+            if (!tiltEnabled) return;
+            cards.forEach(function (card) {
+                var raf = 0;
+                var pending = null;
+
+                function apply() {
+                    raf = 0;
+                    if (!pending) return;
+                    card.style.setProperty("--tilt-x", pending.px.toFixed(3));
+                    card.style.setProperty("--tilt-y", pending.py.toFixed(3));
+                    card.style.transform =
+                        "perspective(900px) rotateX(" + (-pending.py * MAX_TILT).toFixed(2) + "deg)" +
+                        " rotateY(" + (pending.px * MAX_TILT).toFixed(2) + "deg)" +
+                        " translateY(-6px) scale(1.015)";
+                }
+
+                card.addEventListener("pointermove", function (event) {
+                    if (event.pointerType === "touch") return;
+                    var rect = card.getBoundingClientRect();
+                    if (!rect.width || !rect.height) return;
+                    pending = {
+                        px: ((event.clientX - rect.left) / rect.width) * 2 - 1,
+                        py: ((event.clientY - rect.top) / rect.height) * 2 - 1
+                    };
+                    /* 포인터 이벤트는 프레임당 여러 번 온다 — 실제 반영은
+                       한 프레임에 한 번으로 묶는다. */
+                    if (!raf) raf = window.requestAnimationFrame(apply);
+                    card.classList.add("is-tilting");
+                });
+
+                card.addEventListener("pointerleave", function () {
+                    if (raf) {
+                        window.cancelAnimationFrame(raf);
+                        raf = 0;
+                    }
+                    pending = null;
+                    card.classList.remove("is-tilting");
+                    /* 인라인 transform을 비워 CSS의 원래 상태로 되돌린다 —
+                       :hover 규칙이나 reveal-on-scroll의 transform과 싸우지 않는다. */
+                    card.style.transform = "";
+                    card.style.removeProperty("--tilt-x");
+                    card.style.removeProperty("--tilt-y");
+                });
+            });
+        }
+
+        [searchInput, difficultySelect].forEach(function (control) {
             if (!control) return;
             control.addEventListener("input", render);
             control.addEventListener("change", render);
@@ -287,34 +344,86 @@
         buildChips();
         render();
 
-        /* ---------- 전체 진행률 ---------- */
-        function renderProgress() {
-            if (!window.AllProgress) return;
-            var overall = window.AllProgress.overall();
-            var fill = document.getElementById("overall-progress-fill");
-            var label = document.getElementById("overall-progress-text");
-            if (fill) fill.style.width = overall.percent + "%";
-            if (label) {
-                label.textContent = "";
-                label.appendChild(document.createTextNode("전체 진행률 "));
-                label.appendChild(el("b", null, overall.percent + "%"));
-                label.appendChild(document.createTextNode(
-                    " · 완료 " + overall.completed + "개 / 학습 중 " + overall.started + "개 / 전체 " + overall.total + "개"));
-            }
+        /* 다른 탭/강의 페이지에서 퀴즈를 풀면 카드의 최고 점수가 따라가야 한다. */
+        document.addEventListener("all:progresschange", render);
+
+        /* ---------- 추가 정보 카드 ----------
+           강의 카드와 같은 기울임·색 배선을 쓰되 마크업은 따로다. 진도도,
+           난이도 배지도, 검색·필터도 없다 — 두 장뿐이고 커리큘럼 밖이라
+           고를 것이 없기 때문이다. 대신 "이 문서를 읽고 나면 몇 강 코드를
+           바꿔 볼 수 있는가"를 카드에 적는다. */
+        var SUPPLEMENT_ICONS = {
+            /* 람다 — 여러 줄짜리 블록이 화살표 하나로 넘어간다 */
+            "lambda-expressions": svgIcon('<rect x="2.5" y="6.5" width="7.5" height="11" rx="2.4"/>' +
+                '<path d="M12.6 12h8"/><path d="m17.2 8 4 4-4 4"/>'),
+            /* 스트림 — 위에서 아래로 좁아지며 걸러진다 */
+            "java-streams": svgIcon('<path d="M3.2 5.4h17.6"/><path d="M6.6 11.2h10.8"/>' +
+                '<path d="M9.8 17h4.4"/>' +
+                '<circle cx="12" cy="21" r="1.4" fill="currentColor" stroke="none"/>')
+        };
+
+        function renderExtras() {
+            var host = document.getElementById("extra-grid");
+            var items = window.SUPPLEMENTS || [];
+            if (!host || !items.length) return;
+
+            host.textContent = "";
+            items.forEach(function (item) {
+                var card = el("li", "extra-card");
+                var catKey = categoryKey(item.category);
+                if (catKey) card.setAttribute("data-cat", catKey);
+
+                var top = el("div", "extra-card__top");
+                var icon = el("span", "extra-card__icon");
+                icon.setAttribute("aria-hidden", "true");
+                /* innerHTML의 내용은 위 SUPPLEMENT_ICONS의 하드코딩된 리터럴뿐이다. */
+                icon.innerHTML = SUPPLEMENT_ICONS[item.id] || CATEGORY_ICONS.fallback;
+                top.appendChild(icon);
+                top.appendChild(el("span", "extra-card__kicker", item.summary));
+                card.appendChild(top);
+
+                var h3 = el("h3");
+                var link = el("a", null, item.title);
+                link.href = item.path;
+                h3.appendChild(link);
+                card.appendChild(h3);
+
+                card.appendChild(el("p", "extra-card__english", item.englishTitle));
+                card.appendChild(el("p", "extra-card__desc", item.description));
+
+                var meta = el("div", "extra-card__meta");
+                var badge = el("span", "badge badge--supplement", "보충 자료");
+                if (catKey) badge.setAttribute("data-cat", catKey);
+                meta.appendChild(badge);
+                meta.appendChild(el("span", "badge", item.language));
+
+                var related = (item.relatedLessons || []).map(function (order) {
+                    return order + "강";
+                }).join(" · ");
+                if (related) {
+                    var applies = el("span", "extra-card__applies");
+                    applies.appendChild(document.createTextNode("바꿔 볼 코드 "));
+                    applies.appendChild(el("b", null, related));
+                    meta.appendChild(applies);
+                }
+                card.appendChild(meta);
+
+                host.appendChild(card);
+            });
+
+            bindCardTilt(Array.prototype.slice.call(host.querySelectorAll(".extra-card")));
         }
 
-        renderProgress();
-        document.addEventListener("all:progresschange", function () {
-            renderProgress();
-            render();
-        });
+        renderExtras();
 
         /* ---------- 히어로 라이브 선택 정렬 ---------- */
+        var stageHost = document.getElementById("hero-viz-stage");
         var barsHost = document.getElementById("hero-viz-bars");
         var captionHost = document.getElementById("hero-viz-caption");
         var timelineHost = document.getElementById("hero-viz-timeline");
         var toggleBtn = document.getElementById("hero-viz-toggle");
         var shuffleBtn = document.getElementById("hero-viz-shuffle");
+        var vizLabel = document.getElementById("hero-viz-label");
         if (!barsHost) return;
 
         var reducedMotion = window.matchMedia &&
@@ -372,6 +481,23 @@
         var bars = [];
         var timer = null;
 
+        /* ---------- 무대 선택 ----------
+           three.js 모듈이 실행됐고 WebGL이 있으면 3D 무대를 쓴다. 그렇지
+           않으면(CDN 차단·오프라인·WebGL 없음) 아래 2D 막대가 그대로 남는다.
+           어느 쪽이든 아래 buildFrames()가 만든 같은 프레임 배열을 받으므로
+           화면에 보이는 알고리즘 동작은 동일하다. */
+        var stage = null;
+        if (stageHost && window.AllHero3D) {
+            stage = window.AllHero3D.create(stageHost, {
+                reducedMotion: reducedMotion,
+                maxValue: MAX_VALUE
+            });
+        }
+        if (stage) {
+            stageHost.classList.add("is-3d");
+            if (vizLabel) vizLabel.textContent = "LIVE 3D — SELECTION SORT · 4강에서 직접 구현합니다";
+        }
+
         var REDUCED_NOTICE =
             "선택 정렬의 한 장면입니다. 애니메이션 축소 설정이 감지되어 자동 재생을 멈췄습니다. ▶ 버튼으로 직접 넘겨볼 수 있습니다.";
 
@@ -391,6 +517,10 @@
         }
 
         function buildBars() {
+            if (stage) {
+                stage.setValues(values);
+                return;
+            }
             barsHost.textContent = "";
             bars = values.map(function (value) {
                 var bar = el("div", "hero-viz__bar");
@@ -409,14 +539,18 @@
         }
 
         function renderFrame(frame) {
-            frame.arr.forEach(function (value, i) {
-                var bar = bars[i];
-                bar.style.height = Math.round((value / MAX_VALUE) * 100) + "%";
-                bar.querySelector(".hero-viz__bar-value").textContent = value;
-                bar.classList.toggle("is-done", i <= frame.sortedUpto);
-                bar.classList.toggle("is-min", i === frame.min);
-                bar.classList.toggle("is-compare", i === frame.compare);
-            });
+            if (stage) {
+                stage.setFrame(frame);
+            } else {
+                frame.arr.forEach(function (value, i) {
+                    var bar = bars[i];
+                    bar.style.height = Math.round((value / MAX_VALUE) * 100) + "%";
+                    bar.querySelector(".hero-viz__bar-value").textContent = value;
+                    bar.classList.toggle("is-done", i <= frame.sortedUpto);
+                    bar.classList.toggle("is-min", i === frame.min);
+                    bar.classList.toggle("is-compare", i === frame.compare);
+                });
+            }
             updateCaption();
             if (timelineHost) {
                 Array.prototype.forEach.call(timelineHost.children, function (tick, i) {

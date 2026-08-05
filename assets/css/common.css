@@ -67,6 +67,12 @@
     --cat-project: #b8323d;         /* 프로젝트 */
     --cat-project-bg: #fde8ea;
 
+    /* 보충 자료(자바 문법) — 위 7개 학습 영역 고리 바깥의 색.
+       13강 커리큘럼이 아니라는 뜻을 색으로 먼저 말한다. 강의 카드와
+       나란히 놓이는 일이 없어 탐색 블루와 헷갈릴 자리도 없다. */
+    --cat-lang: #3d5a80;
+    --cat-lang-bg: #e3ebf4;
+
     /* 코드 */
     --code-bg: #10161f;
     --code-ink: #dbe4f0;
@@ -147,6 +153,8 @@
         --cat-design-bg: #10352a;
         --cat-project: #ff7b85;
         --cat-project-bg: #431f24;
+        --cat-lang: #8fb3d9;
+        --cat-lang-bg: #1c2b3d;
         --code-bg: #0b1017;
         --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.35);
         --shadow-pop: 0 6px 24px rgba(0, 0, 0, 0.5);
@@ -192,6 +200,8 @@ html[data-theme="light"] {
     --cat-design-bg: #dcf5ec;
     --cat-project: #b8323d;
     --cat-project-bg: #fde8ea;
+    --cat-lang: #3d5a80;
+    --cat-lang-bg: #e3ebf4;
     --code-bg: #10161f;
     --shadow-card: 0 1px 2px rgba(20, 30, 50, 0.05), 0 4px 16px rgba(20, 30, 50, 0.06);
     --shadow-pop: 0 6px 24px rgba(20, 30, 50, 0.14);
@@ -236,6 +246,8 @@ html[data-theme="dark"] {
     --cat-design-bg: #10352a;
     --cat-project: #ff7b85;
     --cat-project-bg: #431f24;
+    --cat-lang: #8fb3d9;
+    --cat-lang-bg: #1c2b3d;
     --code-bg: #0b1017;
     --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.35);
     --shadow-pop: 0 6px 24px rgba(0, 0, 0, 0.5);
@@ -253,6 +265,7 @@ html[data-theme="dark"] {
 [data-cat="graph"] { --cat-ink: var(--cat-graph); --cat-bg: var(--cat-graph-bg); }
 [data-cat="design"] { --cat-ink: var(--cat-design); --cat-bg: var(--cat-design-bg); }
 [data-cat="project"] { --cat-ink: var(--cat-project); --cat-bg: var(--cat-project-bg); }
+[data-cat="lang"] { --cat-ink: var(--cat-lang); --cat-bg: var(--cat-lang-bg); }
 
 /* ---------- 리셋 ---------- */
 *,
@@ -590,6 +603,19 @@ summary code {
     color: var(--state-done);
     font-weight: 700;
     white-space: nowrap;
+}
+
+/* 13강과 보충 자료 사이의 구분 머리. 목록 항목이 아니라 이름표라서
+   링크가 아니고 초점도 받지 않는다. */
+.lesson-menu__sep {
+    margin: 8px 0 2px;
+    padding: 8px 10px 0;
+    border-top: 1px solid var(--line);
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--cat-lang);
 }
 
 /* 모바일 메뉴 버튼 */

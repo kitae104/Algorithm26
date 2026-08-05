@@ -240,20 +240,31 @@
                 (function () { var b = el("b", null, score + " / " + scorable); return b; })(),
                 " (정답률 " + percent + "%)"
             );
+            /* 보충 자료(추가 정보) 페이지에는 완료라는 상태가 없다 — 13강
+               진도에 세지 않기로 한 자료이므로 "완료로 기록됩니다"라고
+               말해서도, 실제로 기록해서도 안 된다. 강의 페이지인지는
+               data-lesson-id의 유무로 갈린다(common.js와 같은 기준). */
+            var isLesson = Boolean(document.body.dataset.lessonId);
+
             var sub = el("p", "score-sub");
-            if (passed) {
-                var pass = el("span", "pass", "✅ 통과! ");
-                sub.appendChild(pass);
+            if (passed && isLesson) {
+                sub.appendChild(el("span", "pass", "✅ 통과! "));
                 sub.appendChild(document.createTextNode("이 강의가 완료로 기록되었습니다. 다음 강의로 이동해 보세요."));
-            } else {
+            } else if (passed) {
+                sub.appendChild(el("span", "pass", "✅ 통과! "));
+                sub.appendChild(document.createTextNode("이 문서의 내용을 충분히 이해했습니다. 강의 코드를 직접 바꿔 보세요."));
+            } else if (isLesson) {
                 sub.appendChild(document.createTextNode(
                     "정답률 70% 이상이면 강의가 완료로 기록됩니다. 해설을 읽고 \"다시 풀기\"로 재도전해 보세요."));
+            } else {
+                sub.appendChild(document.createTextNode(
+                    "해설을 읽고 \"다시 풀기\"로 재도전해 보세요."));
             }
             scoreBox.appendChild(sub);
 
             if (window.AllProgress) {
                 window.AllProgress.setQuizScore(lessonId, score, scorable);
-                if (passed) {
+                if (passed && isLesson) {
                     window.AllProgress.markCompleted(lessonId);
                 }
             }

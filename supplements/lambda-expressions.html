@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>추가 정보 — 람다식 · 고급알고리즘</title>
+    <meta name="description" content="자바 람다식과 함수형 인터페이스, 메서드 참조를 익혀 4강 Comparator와 5강 검색 조건을 익명 클래스 없이 다시 작성하는 방법을 배웁니다.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect x='8' y='55' width='20' height='38' rx='5' fill='%23e28800'/><rect x='40' y='25' width='20' height='68' rx='5' fill='%232b50e0'/><rect x='72' y='40' width='20' height='53' rx='5' fill='%230e9f6e'/></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@500;600;700&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+    <link rel="stylesheet" href="../assets/css/common.css">
+    <link rel="stylesheet" href="../assets/css/lesson.css">
+    <link rel="stylesheet" href="../assets/css/code.css">
+    <link rel="stylesheet" href="../assets/css/quiz.css">
+    <link rel="stylesheet" href="../assets/css/print.css">
+    <script src="../assets/js/theme.js"></script>
+</head>
+<body data-supplement-id="lambda-expressions">
+    <a class="skip-link" href="#sec-why">본문으로 건너뛰기</a>
+
+    <header class="site-header" data-site-header></header>
+
+    <div class="lesson-layout">
+        <!-- 문서 헤더 -->
+        <section class="lesson-hero" aria-labelledby="doc-title">
+            <p class="lesson-hero__eyebrow">추가 정보 · SUPPLEMENTARY</p>
+            <h1 id="doc-title">람다식</h1>
+            <p class="lesson-hero__english">Lambda Expressions</p>
+            <div class="lesson-hero__meta">
+                <span class="badge badge--category">자바 문법</span>
+                <span class="badge">보충 자료</span>
+                <span class="badge">Java 17+</span>
+            </div>
+            <p class="lesson-hero__desc">
+                람다식은 <strong>"메서드 하나를 값처럼 넘기는 문법"</strong>입니다.
+                13강의 코드는 알고리즘의 동작이 눈에 보이도록 반복문과 조건문으로 짜여 있습니다.
+                그 코드가 손에 익은 다음, 같은 로직을 훨씬 짧게 쓰는 방법이 자바에 있습니다.
+                이 문서는 그 첫 단계입니다. 여기서 배운 문법이 곧바로
+                <strong>4강의 Comparator</strong>와 <strong>5강의 검색 조건</strong>에 쓰입니다.
+            </p>
+        </section>
+
+        <!-- 내부 목차 (common.js가 자동 생성) -->
+        <nav class="lesson-toc" aria-label="이 문서의 목차">
+            <p class="lesson-toc__title">이 문서의 목차</p>
+            <ol id="lesson-toc-list"></ol>
+        </nav>
+
+        <div class="lesson-body">
+
+            <!-- 1 -->
+            <section class="lesson-section" id="sec-why" aria-labelledby="h-why">
+                <h2 id="h-why" data-toc-label="왜 필요한가"><span class="section-no">01</span>왜 필요한가</h2>
+                <p>
+                    4강에서 상품 목록을 <strong>평점 내림차순</strong>으로 정렬했습니다.
+                    정렬 알고리즘 자체는 <code>insertionSort</code> 하나로 충분했고,
+                    바꾼 것은 <strong>"둘 중 누가 앞에 오는가"를 판단하는 규칙</strong>뿐이었습니다.
+                    자바에서 이 규칙은 <code>Comparator</code>라는 인터페이스로 전달합니다.
+                </p>
+                <p>
+                    문제는 그 규칙을 넘기는 방법입니다. 람다식이 없던 시절에는
+                    <strong>인터페이스를 구현한 이름 없는 클래스</strong>를 그 자리에서 만들어야 했습니다.
+                    아래 두 코드는 하는 일이 완전히 같습니다.
+                </p>
+
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">이전 — 익명 클래스 (6줄)</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-why-before" aria-label="익명 클래스 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-why-before">Comparator&lt;Product&gt; byPrice = new Comparator&lt;Product&gt;() {
+    @Override
+    public int compare(Product a, Product b) {
+        return Integer.compare(a.price, b.price);
+    }
+};</code></pre>
+                </article>
+
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">이후 — 람다식 (1줄)</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-why-after" aria-label="람다식 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-why-after">Comparator&lt;Product&gt; byPrice = (a, b) -&gt; Integer.compare(a.price, b.price);</code></pre>
+                </article>
+
+                <p>
+                    사라진 것을 하나씩 세어 봅시다. <code>new Comparator&lt;Product&gt;()</code>,
+                    <code>@Override</code>, <code>public int compare</code>, 매개변수 타입 <code>Product</code> 두 개,
+                    중괄호, <code>return</code>. <strong>전부 컴파일러가 이미 알고 있는 정보</strong>입니다.
+                    <code>byPrice</code>의 타입이 <code>Comparator&lt;Product&gt;</code>라고 선언된 순간,
+                    구현해야 할 메서드가 <code>compare</code>라는 것도, 매개변수가 <code>Product</code> 둘이라는 것도
+                    정해집니다. 람다식은 그 아는 것들을 다시 적지 않겠다는 문법입니다.
+                </p>
+                <div class="note-box note-box--tip">
+                    <span class="note-box__title">람다식은 "새 기능"이 아니다</span>
+                    <p>
+                        람다식으로 할 수 있는 일은 익명 클래스로도 전부 할 수 있습니다.
+                        바뀌는 것은 <strong>표현</strong>이지 <strong>능력</strong>이 아닙니다.
+                        그래서 13강을 람다 없이 배워도 아무것도 잃지 않고,
+                        나중에 람다로 바꿔도 알고리즘은 그대로입니다.
+                    </p>
+                </div>
+            </section>
+
+            <!-- 2 -->
+            <section class="lesson-section" id="sec-goal" aria-labelledby="h-goal">
+                <h2 id="h-goal" data-toc-label="학습 목표"><span class="section-no">02</span>학습 목표</h2>
+                <p>이 문서를 읽고 나면 다음을 할 수 있습니다.</p>
+                <ul class="objective-list">
+                    <li>학생은 람다식의 세 부분(매개변수, <code>-&gt;</code>, 몸통)을 구분하여 읽을 수 있다.</li>
+                    <li>학생은 함수형 인터페이스가 무엇인지, 왜 추상 메서드가 하나여야 하는지 설명할 수 있다.</li>
+                    <li>학생은 <code>Predicate</code>, <code>Function</code>, <code>Consumer</code>, <code>Supplier</code>, <code>Comparator</code>를 상황에 맞게 고를 수 있다.</li>
+                    <li>학생은 익명 클래스로 작성된 코드를 람다식으로 바꿔 쓸 수 있다.</li>
+                    <li>학생은 람다식을 메서드 참조(<code>::</code>)로 더 줄일 수 있는 경우를 판단할 수 있다.</li>
+                    <li>학생은 지역 변수 캡처 규칙(effectively final)을 어겼을 때의 오류를 읽고 고칠 수 있다.</li>
+                </ul>
+            </section>
+
+            <!-- 3 -->
+            <section class="lesson-section" id="sec-prereq" aria-labelledby="h-prereq">
+                <h2 id="h-prereq" data-toc-label="선수 지식"><span class="section-no">03</span>선수 지식</h2>
+                <p>이 문서는 다음을 이미 알고 있다고 가정합니다. 모두 13강 안에서 이미 쓰고 있는 것들입니다.</p>
+                <div class="table-scroll">
+                    <table class="data-table">
+                        <thead>
+                            <tr><th scope="col">항목</th><th scope="col">필요한 수준</th><th scope="col">처음 만난 곳</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>메서드</td><td>매개변수와 반환값을 읽고 쓸 수 있음</td><td>1강</td></tr>
+                            <tr><td>인터페이스</td><td>"메서드 목록만 정해 둔 약속"이라는 개념</td><td>4강 <code>Comparable</code></td></tr>
+                            <tr><td>제네릭</td><td><code>List&lt;String&gt;</code>처럼 타입을 꺾쇠에 적는 형태</td><td>2강</td></tr>
+                            <tr><td><code>Comparator</code></td><td><code>compare(a, b)</code>의 반환값 의미(음수·0·양수)</td><td>4강</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="note-box">
+                    <span class="note-box__title">인터페이스가 아직 낯설다면</span>
+                    <p>
+                        인터페이스는 <strong>"이런 메서드를 가진 무언가"</strong>라는 약속입니다.
+                        <code>Comparator</code>는 "두 값을 받아 순서를 정하는 <code>compare</code> 메서드를 가진 무언가"라는 뜻이고,
+                        정렬 메서드는 그 약속만 믿고 <code>comp.compare(a, b)</code>를 호출합니다.
+                        누가 그 약속을 지키는지는 정렬 메서드의 관심사가 아닙니다 — 그래서 규칙을 갈아 끼울 수 있습니다.
+                    </p>
+                </div>
+            </section>
+
+            <!-- 4 -->
+            <section class="lesson-section" id="sec-syntax" aria-labelledby="h-syntax">
+                <h2 id="h-syntax" data-toc-label="문법 한눈에"><span class="section-no">04</span>문법 한눈에</h2>
+                <p>람다식은 언제나 세 부분입니다. <strong>매개변수 목록</strong>, 화살표 <code>-&gt;</code>, <strong>몸통</strong>.</p>
+
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">형태 다섯 가지</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-syntax" aria-label="람다 문법 예시 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-syntax">// 1) 매개변수 없음 — 괄호는 비워 두고 반드시 쓴다
+Runnable hello = () -&gt; System.out.println("안녕하세요");
+
+// 2) 매개변수 하나 — 괄호를 생략할 수 있다
+Predicate&lt;String&gt; isEmpty = s -&gt; s.isEmpty();
+
+// 3) 매개변수 둘 — 괄호가 필요하다
+Comparator&lt;Integer&gt; asc = (a, b) -&gt; Integer.compare(a, b);
+
+// 4) 몸통이 식 하나 — 중괄호와 return을 함께 생략한다 (식의 값이 곧 반환값)
+Function&lt;Integer, Integer&gt; square = n -&gt; n * n;
+
+// 5) 몸통이 여러 줄 — 중괄호를 쓰면 return을 직접 써야 한다
+Function&lt;int[], Integer&gt; sum = arr -&gt; {
+    int total = 0;
+    for (int v : arr) {
+        total += v;
+    }
+    return total;          // 중괄호를 쓴 순간 return은 생략할 수 없다
+};</code></pre>
+                </article>
+
+                <div class="note-box note-box--warn">
+                    <span class="note-box__title">가장 흔한 실수 — 중괄호와 return은 한 몸</span>
+                    <p>
+                        <code>n -&gt; { n * n }</code>은 컴파일되지 않습니다.
+                        중괄호를 열었으면 <code>return n * n;</code>이라고 써야 합니다.
+                        반대로 <code>n -&gt; return n * n;</code>도 틀립니다 —
+                        중괄호 없이 <code>return</code>을 쓸 수는 없습니다.
+                        <strong>"중괄호 없으면 return 없음, 중괄호 있으면 return 필수"</strong>로 외우면 편합니다.
+                    </p>
+                </div>
+
+                <p>
+                    매개변수 타입은 대부분 생략합니다. 컴파일러가 대입되는 변수의 타입에서 추론하기 때문입니다.
+                    다만 <strong>추론할 근거가 없을 때</strong>는 직접 적어야 합니다.
+                    4강 코드에 <code>(Product p) -&gt; p.rating</code>처럼 타입이 붙어 있는 이유가 이것입니다 —
+                    <code>Comparator.comparingDouble(...)</code>만 보고는 <code>p</code>가 무엇인지 알 수 없기 때문입니다.
+                </p>
+            </section>
+
+            <!-- 5 -->
+            <section class="lesson-section" id="sec-functional" aria-labelledby="h-functional">
+                <h2 id="h-functional" data-toc-label="함수형 인터페이스"><span class="section-no">05</span>함수형 인터페이스</h2>
+                <p>
+                    자바에는 "함수 타입"이라는 것이 따로 없습니다. 람다식도 결국은 <strong>객체</strong>입니다.
+                    그렇다면 <code>(a, b) -&gt; Integer.compare(a.price, b.price)</code>는
+                    어떤 클래스의 어떤 메서드가 되는 걸까요?
+                </p>
+                <p>
+                    답은 <strong>대입하는 쪽의 타입이 정한다</strong>입니다.
+                    그리고 그 타입은 <strong>추상 메서드가 정확히 하나</strong>인 인터페이스여야 합니다.
+                    이런 인터페이스를 <strong>함수형 인터페이스</strong>라고 부릅니다.
+                    메서드가 둘이면 람다식이 그중 무엇을 구현하는지 알 방법이 없으니 당연한 규칙입니다.
+                </p>
+
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">직접 만들어 보는 함수형 인터페이스</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-fi" aria-label="함수형 인터페이스 예시 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-fi">@FunctionalInterface          // 추상 메서드가 둘 이상이면 컴파일 오류로 알려 준다
+interface ScoreRule {
+    boolean test(int score);  // 추상 메서드는 이것 하나뿐
+}
+
+public class RuleDemo {
+    // 규칙을 "값"으로 받는다 — 세는 방법은 하나, 세는 기준은 호출자가 정한다
+    static int countBy(int[] scores, ScoreRule rule) {
+        int count = 0;
+        for (int s : scores) {
+            if (rule.test(s)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public static void main(String[] args) {
+        int[] scores = {88, 72, 95, 64, 79, 91};
+
+        System.out.println("80점 이상: " + countBy(scores, s -&gt; s &gt;= 80));
+        System.out.println("60점 미만: " + countBy(scores, s -&gt; s &lt; 60));
+        System.out.println("짝수 점수: " + countBy(scores, s -&gt; s % 2 == 0));
+        // countBy는 한 번도 고치지 않았다. 바뀐 것은 넘긴 규칙뿐이다.
+    }
+}</code></pre>
+                </article>
+
+                <p>
+                    2강의 <code>countAtLeast(data, threshold)</code>를 떠올려 보세요.
+                    그 메서드는 <strong>"~점 이상"이라는 기준이 코드에 박혀 있어서</strong>
+                    "짝수만 세기"가 필요해지면 메서드를 하나 더 만들어야 했습니다.
+                    위 <code>countBy</code>는 기준 자체를 인자로 받으므로 한 번만 만들면 됩니다.
+                    <strong>이것이 람다식이 실제로 바꾸는 것</strong>입니다 — 문법이 짧아지는 것은 부수 효과입니다.
+                </p>
+
+                <div class="note-box">
+                    <span class="note-box__title">@FunctionalInterface는 안전벨트다</span>
+                    <p>
+                        이 애너테이션이 없어도 추상 메서드가 하나면 함수형 인터페이스로 동작합니다.
+                        붙이는 이유는 <strong>나중에 누가 메서드를 하나 더 추가했을 때 그 자리에서 컴파일 오류를 내기 위해서</strong>입니다.
+                        그것이 없으면 이 인터페이스를 람다로 쓰던 코드 전부가 대신 깨집니다.
+                    </p>
+                </div>
+            </section>
+
+            <!-- 6 -->
+            <section class="lesson-section" id="sec-standard" aria-labelledby="h-standard">
+                <h2 id="h-standard" data-toc-label="표준 인터페이스"><span class="section-no">06</span>표준 인터페이스</h2>
+                <p>
+                    위처럼 매번 인터페이스를 만들 필요는 없습니다.
+                    자주 쓰는 형태는 자바가 <code>java.util.function</code> 패키지에 미리 만들어 두었습니다.
+                    <strong>"입력이 몇 개이고 출력이 있는가"</strong>만 보고 고르면 됩니다.
+                </p>
+                <div class="table-scroll">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th scope="col">인터페이스</th>
+                                <th scope="col">메서드</th>
+                                <th scope="col">입력 → 출력</th>
+                                <th scope="col">쓰는 자리</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>Predicate&lt;T&gt;</code></td><td><code>test(T)</code></td><td>1개 → <code>boolean</code></td><td>거르기 조건 (5강 검색)</td></tr>
+                            <tr><td><code>Function&lt;T, R&gt;</code></td><td><code>apply(T)</code></td><td>1개 → 값</td><td>값 변환 (점수 → 등급)</td></tr>
+                            <tr><td><code>Consumer&lt;T&gt;</code></td><td><code>accept(T)</code></td><td>1개 → 없음</td><td>출력·저장 등 소비</td></tr>
+                            <tr><td><code>Supplier&lt;T&gt;</code></td><td><code>get()</code></td><td>없음 → 값</td><td>기본값·지연 생성</td></tr>
+                            <tr><td><code>Comparator&lt;T&gt;</code></td><td><code>compare(T, T)</code></td><td>2개 → <code>int</code></td><td>정렬 기준 (4강)</td></tr>
+                            <tr><td><code>BinaryOperator&lt;T&gt;</code></td><td><code>apply(T, T)</code></td><td>2개(같은 타입) → 같은 타입</td><td>누적·합치기</td></tr>
+                            <tr><td><code>Runnable</code></td><td><code>run()</code></td><td>없음 → 없음</td><td>실행할 동작 자체</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">다섯 가지를 한 화면에서</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-standard" aria-label="표준 함수형 인터페이스 예시 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-standard">import java.util.function.*;
+
+Predicate&lt;Integer&gt;        pass    = s -&gt; s &gt;= 60;
+Function&lt;Integer, String&gt; toGrade = s -&gt; s &gt;= 90 ? "A" : s &gt;= 80 ? "B" : "C";
+Consumer&lt;String&gt;          print   = msg -&gt; System.out.println("&gt; " + msg);
+Supplier&lt;String&gt;          empty   = () -&gt; "(값 없음)";
+BinaryOperator&lt;Integer&gt;   add     = (a, b) -&gt; a + b;
+
+System.out.println(pass.test(72));       // true
+System.out.println(toGrade.apply(85));   // B
+print.accept("처리 완료");                // &gt; 처리 완료
+System.out.println(empty.get());         // (값 없음)
+System.out.println(add.apply(3, 4));     // 7</code></pre>
+                </article>
+
+                <div class="note-box note-box--warn">
+                    <span class="note-box__title">기본형에는 전용 인터페이스를 쓴다</span>
+                    <p>
+                        <code>Predicate&lt;Integer&gt;</code>는 <code>int</code>를 쓸 때마다 <code>Integer</code>로 포장했다가 다시 꺼냅니다(박싱·언박싱).
+                        원소가 수십만 개인 배열에서는 이 비용이 눈에 띕니다.
+                        그래서 <code>IntPredicate</code>, <code>IntFunction</code>, <code>ToIntFunction</code>처럼
+                        기본형 전용 인터페이스가 따로 준비되어 있습니다.
+                        1강에서 배운 "같은 결과라도 일의 양은 다를 수 있다"가 여기에도 그대로 적용됩니다.
+                    </p>
+                </div>
+            </section>
+
+            <!-- 7 -->
+            <section class="lesson-section" id="sec-rewrite" aria-labelledby="h-rewrite">
+                <h2 id="h-rewrite" data-toc-label="강의 코드 바꿔 보기"><span class="section-no">07</span>강의 코드 바꿔 보기</h2>
+                <p>
+                    이제 실제 강의 코드를 바꿔 봅니다. 세 쌍 모두
+                    <strong>왼쪽과 오른쪽의 동작이 완전히 같습니다</strong>. 결과가 달라지는 곳은 한 군데도 없습니다.
+                </p>
+
+                <h3>① 4강 — 정렬 기준</h3>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">ProductSortApplication — 이전 · 이후</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-rw-sort" aria-label="정렬 기준 변환 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-rw-sort">// ── 이전: 익명 클래스로 기준을 만든다
+Comparator&lt;Product&gt; byRatingDesc = new Comparator&lt;Product&gt;() {
+    @Override
+    public int compare(Product a, Product b) {
+        int byRating = Double.compare(b.rating, a.rating);   // 내림차순이라 b가 앞
+        if (byRating != 0) {
+            return byRating;
+        }
+        return a.name.compareTo(b.name);                     // 동점이면 이름순
+    }
+};
+
+// ── 이후: 람다 + Comparator의 조립 메서드
+Comparator&lt;Product&gt; byRatingDesc =
+        Comparator.comparingDouble((Product p) -&gt; p.rating)
+                  .reversed()
+                  .thenComparing(p -&gt; p.name);
+
+// 정렬 호출은 양쪽 모두 그대로다
+insertionSort(products, byRatingDesc);</code></pre>
+                </article>
+                <p>
+                    <code>reversed()</code>와 <code>thenComparing()</code>에 주목하세요.
+                    익명 클래스 버전에서는 "내림차순"과 "동점 처리"가 <code>compare</code> 안에 뒤섞여 있어
+                    <strong>읽으면서 부호를 따져 봐야</strong> 했습니다.
+                    람다 버전은 <strong>"평점으로 비교 → 뒤집기 → 동점이면 이름으로"</strong>가 순서대로 읽힙니다.
+                    코드가 짧아진 것보다 이쪽이 중요합니다.
+                </p>
+
+                <h3>② 5강 — 검색 조건</h3>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">BookSearch — 조건마다 메서드를 만들던 코드</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-rw-search" aria-label="검색 조건 변환 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-rw-search">// ── 이전: 조건이 늘 때마다 메서드가 하나씩 늘어난다
+static int findByTitle(Book[] books, String title) {
+    for (int i = 0; i &lt; books.length; i++) {
+        if (books[i].title.equals(title)) return i;
+    }
+    return -1;
+}
+static int findByAuthor(Book[] books, String author) { /* 거의 같은 코드 */ }
+static int findCheaperThan(Book[] books, int price)  { /* 거의 같은 코드 */ }
+
+// ── 이후: 순회는 한 번만 쓰고, 조건은 Predicate로 받는다
+static int findFirst(Book[] books, Predicate&lt;Book&gt; match) {
+    for (int i = 0; i &lt; books.length; i++) {
+        if (match.test(books[i])) return i;   // 5강 순차 탐색 그대로 — O(n)
+    }
+    return -1;
+}
+
+int a = findFirst(books, b -&gt; b.title.equals("자료구조"));
+int b2 = findFirst(books, b -&gt; b.author.equals("김인하"));
+int c = findFirst(books, b -&gt; b.price &lt; 20000);</code></pre>
+                </article>
+                <div class="note-box note-box--warn">
+                    <span class="note-box__title">알고리즘은 바뀌지 않았다</span>
+                    <p>
+                        <code>findFirst</code>는 여전히 <strong>순차 탐색 O(n)</strong>입니다.
+                        람다를 썼다고 이진 탐색이 되지는 않습니다.
+                        5강의 핵심인 <strong>"정렬해 두면 O(log n)으로 줄일 수 있다"</strong>는
+                        문법과 아무 상관이 없는 별개의 이야기입니다.
+                        이 구분을 놓치지 마세요.
+                    </p>
+                </div>
+
+                <h3>③ 10강 — 그리디의 선택 기준</h3>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">회의실 배정 — 정렬 기준만 갈아 끼우기</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-rw-greedy" aria-label="그리디 기준 변환 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-rw-greedy">// 그리디의 성패는 "무엇을 기준으로 먼저 고르는가"에 달려 있다.
+// 기준을 값으로 만들어 두면 세 전략을 나란히 비교하기 쉬워진다.
+Comparator&lt;Meeting&gt; byEndTime   = Comparator.comparingInt(m -&gt; m.end);        // 정답 전략
+Comparator&lt;Meeting&gt; byStartTime = Comparator.comparingInt(m -&gt; m.start);      // 실패 전략
+Comparator&lt;Meeting&gt; byDuration  = Comparator.comparingInt(m -&gt; m.end - m.start);
+
+for (Comparator&lt;Meeting&gt; rule : List.of(byEndTime, byStartTime, byDuration)) {
+    Meeting[] copy = Arrays.copyOf(meetings, meetings.length);
+    Arrays.sort(copy, rule);
+    System.out.println("선택된 회의 수: " + selectGreedy(copy));
+}
+// 10강에서 "그리디가 실패하는 사례"를 직접 만들어 볼 때 유용한 형태다.</code></pre>
+                </article>
+            </section>
+
+            <!-- 8 -->
+            <section class="lesson-section" id="sec-methodref" aria-labelledby="h-methodref">
+                <h2 id="h-methodref" data-toc-label="메서드 참조"><span class="section-no">08</span>메서드 참조</h2>
+                <p>
+                    람다식의 몸통이 <strong>"이미 있는 메서드를 그대로 한 번 호출하는 것"</strong>뿐이라면
+                    <code>::</code>로 더 줄일 수 있습니다. 이것을 메서드 참조라고 합니다.
+                </p>
+                <div class="table-scroll">
+                    <table class="data-table">
+                        <thead>
+                            <tr><th scope="col">종류</th><th scope="col">람다식</th><th scope="col">메서드 참조</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>정적 메서드</td><td><code>s -&gt; Integer.parseInt(s)</code></td><td><code>Integer::parseInt</code></td></tr>
+                            <tr><td>특정 객체의 메서드</td><td><code>s -&gt; out.println(s)</code></td><td><code>out::println</code></td></tr>
+                            <tr><td>임의 객체의 메서드</td><td><code>s -&gt; s.toUpperCase()</code></td><td><code>String::toUpperCase</code></td></tr>
+                            <tr><td>생성자</td><td><code>() -&gt; new ArrayList&lt;&gt;()</code></td><td><code>ArrayList::new</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">줄여도 되는 경우와 안 되는 경우</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-mref" aria-label="메서드 참조 예시 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-mref">// 줄일 수 있다 — 받은 값을 그대로 한 번 넘길 뿐이다
+list.forEach(s -&gt; System.out.println(s));
+list.forEach(System.out::println);
+
+// 줄일 수 있다 — Comparator.comparing에 넘길 "키를 뽑는 방법"이 곧 메서드다
+Comparator&lt;Product&gt; byName = Comparator.comparing(p -&gt; p.getName());
+Comparator&lt;Product&gt; byName2 = Comparator.comparing(Product::getName);
+
+// 줄일 수 없다 — 받은 값에 무언가를 더 하고 있다
+list.forEach(s -&gt; System.out.println("[" + s + "]"));
+
+// 줄일 수 없다 — 인자의 순서나 개수가 다르다
+Comparator&lt;Product&gt; desc = (a, b) -&gt; Integer.compare(b.price, a.price);</code></pre>
+                </article>
+                <div class="note-box note-box--tip">
+                    <span class="note-box__title">판단 기준 하나</span>
+                    <p>
+                        <strong>"람다의 매개변수가 메서드 호출에 그대로, 순서대로, 전부 들어가는가?"</strong>
+                        그렇다면 메서드 참조로 줄일 수 있습니다. 하나라도 아니면 람다로 두세요.
+                        억지로 줄인 메서드 참조는 오히려 읽기 어렵습니다.
+                    </p>
+                </div>
+            </section>
+
+            <!-- 9 -->
+            <section class="lesson-section" id="sec-pitfall" aria-labelledby="h-pitfall">
+                <h2 id="h-pitfall" data-toc-label="자주 하는 실수"><span class="section-no">09</span>자주 하는 실수</h2>
+
+                <article class="bug-card">
+                    <p class="bug-card__title">① 람다 안에서 지역 변수를 바꾸려 한다</p>
+                    <div class="bug-card__body">
+                        <article class="code-card">
+                            <header class="code-card__header">
+                                <div class="code-card__info">
+                                    <span class="code-card__language">Java</span>
+                                    <strong class="code-card__filename">컴파일 오류가 나는 코드</strong>
+                                </div>
+                                <button type="button" class="copy-code-button" data-copy-target="code-bug-final" aria-label="캡처 오류 코드 복사">코드 복사</button>
+                            </header>
+                            <pre><code id="code-bug-final">int count = 0;
+list.forEach(s -&gt; count++);   // 오류: local variables referenced from a lambda
+                              //       expression must be final or effectively final</code></pre>
+                        </article>
+                        <p>
+                            람다는 지역 변수를 <strong>복사해서</strong> 가져갑니다.
+                            원본이 나중에 바뀌면 복사본과 어긋나므로, 자바는 아예 <strong>"바뀌지 않는 변수만 가져갈 수 있다"</strong>고 정했습니다.
+                            <code>final</code>이라고 적지 않았어도 한 번 대입한 뒤 바꾸지 않으면 조건을 만족합니다(effectively final).
+                            세는 것이 목적이라면 <strong>배열 한 칸이나 카운터 객체를 쓰거나</strong>,
+                            애초에 <code>count()</code>·<code>filter()</code> 같은 방법을 쓰는 것이 낫습니다
+                            (<a href="java-streams.html">자바 스트림</a> 문서에서 다룹니다).
+                        </p>
+                    </div>
+                </article>
+
+                <article class="bug-card">
+                    <p class="bug-card__title">② 익명 클래스와 <code>this</code>가 같다고 생각한다</p>
+                    <div class="bug-card__body">
+                        <p>
+                            익명 클래스 안의 <code>this</code>는 <strong>그 익명 클래스 자신</strong>을 가리킵니다.
+                            람다 안의 <code>this</code>는 <strong>람다를 감싼 바깥 객체</strong>를 가리킵니다.
+                            익명 클래스를 람다로 바꾸다가 <code>this</code>가 섞여 있으면 의미가 조용히 달라집니다.
+                            람다에는 자기 자신이라는 것이 없기 때문입니다 — 그래서 재귀 호출도 못 합니다.
+                        </p>
+                    </div>
+                </article>
+
+                <article class="bug-card">
+                    <p class="bug-card__title">③ 검사 예외를 그대로 던진다</p>
+                    <div class="bug-card__body">
+                        <p>
+                            <code>Predicate.test</code>의 선언에는 <code>throws</code>가 없습니다.
+                            그래서 람다 몸통에서 <code>IOException</code> 같은 검사 예외를 던지면 컴파일되지 않습니다.
+                            람다 안에서 <code>try-catch</code>로 잡아 처리하거나,
+                            예외를 던지지 않는 형태로 로직을 나눠야 합니다.
+                        </p>
+                    </div>
+                </article>
+
+                <article class="bug-card">
+                    <p class="bug-card__title">④ 짧다는 이유로 모든 것을 람다로 만든다</p>
+                    <div class="bug-card__body">
+                        <p>
+                            람다는 <strong>이름이 없습니다.</strong> 이름이 없다는 것은 설명이 없다는 뜻이고,
+                            스택 트레이스에도 <code>lambda$main$0</code>처럼 찍힙니다.
+                            세 줄이 넘어가거나 로직에 이름을 붙일 수 있다면
+                            <strong>이름 있는 메서드로 빼고 메서드 참조로 넘기는 편</strong>이 읽기에도 디버깅에도 낫습니다.
+                        </p>
+                    </div>
+                </article>
+
+                <details class="answer-box">
+                    <summary>연습 — 다음 익명 클래스를 람다식으로, 가능하면 메서드 참조로 바꿔 보세요</summary>
+                    <article class="code-card">
+                        <header class="code-card__header">
+                            <div class="code-card__info">
+                                <span class="code-card__language">Java</span>
+                                <strong class="code-card__filename">문제</strong>
+                            </div>
+                            <button type="button" class="copy-code-button" data-copy-target="code-ex-q" aria-label="연습 문제 코드 복사">코드 복사</button>
+                        </header>
+                        <pre><code id="code-ex-q">Comparator&lt;String&gt; byLength = new Comparator&lt;String&gt;() {
+    @Override
+    public int compare(String a, String b) {
+        return Integer.compare(a.length(), b.length());
+    }
+};</code></pre>
+                    </article>
+                    <p><strong>답</strong> — 세 단계로 줄어듭니다.</p>
+                    <article class="code-card">
+                        <header class="code-card__header">
+                            <div class="code-card__info">
+                                <span class="code-card__language">Java</span>
+                                <strong class="code-card__filename">답</strong>
+                            </div>
+                            <button type="button" class="copy-code-button" data-copy-target="code-ex-a" aria-label="연습 정답 코드 복사">코드 복사</button>
+                        </header>
+                        <pre><code id="code-ex-a">// 1) 람다식으로
+Comparator&lt;String&gt; byLength = (a, b) -&gt; Integer.compare(a.length(), b.length());
+
+// 2) "키를 뽑는 방법"만 주는 형태로
+Comparator&lt;String&gt; byLength = Comparator.comparingInt(s -&gt; s.length());
+
+// 3) 그 방법이 이미 메서드이므로 메서드 참조로
+Comparator&lt;String&gt; byLength = Comparator.comparingInt(String::length);</code></pre>
+                    </article>
+                </details>
+            </section>
+
+            <!-- 10 -->
+            <section class="lesson-section" id="sec-quiz" aria-labelledby="h-quiz">
+                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">10</span>확인 퀴즈</h2>
+                <p>문법보다 <strong>"언제 쓰는가"</strong>를 확인하는 문제들입니다.</p>
+                <div id="quiz-root"></div>
+            </section>
+
+            <!-- 11 -->
+            <section class="lesson-section" id="sec-summary" aria-labelledby="h-summary">
+                <h2 id="h-summary" data-toc-label="핵심 정리"><span class="section-no">11</span>핵심 정리</h2>
+                <ul class="summary-list">
+                    <li>람다식은 <strong>매개변수 · <code>-&gt;</code> · 몸통</strong> 세 부분이다. 중괄호를 쓰면 <code>return</code>이 필수, 안 쓰면 식의 값이 곧 반환값이다.</li>
+                    <li>람다식이 대입될 수 있는 타입은 <strong>추상 메서드가 하나뿐인 인터페이스</strong>(함수형 인터페이스)다. 무엇을 구현하는지 정해지려면 하나여야 한다.</li>
+                    <li>자주 쓰는 형태는 <code>Predicate</code>(거르기), <code>Function</code>(변환), <code>Consumer</code>(소비), <code>Supplier</code>(공급), <code>Comparator</code>(정렬)로 이미 준비되어 있다.</li>
+                    <li>람다가 실제로 바꾸는 것은 길이가 아니라 <strong>"기준을 값으로 넘길 수 있다"</strong>는 점이다. 순회 코드 하나로 여러 조건을 처리할 수 있게 된다.</li>
+                    <li>몸통이 기존 메서드 호출 하나뿐이면 <strong>메서드 참조 <code>::</code></strong>로 더 줄인다. 인자를 그대로·순서대로·전부 넘길 때만이다.</li>
+                    <li>람다가 가져가는 지역 변수는 <strong>바뀌지 않아야 한다</strong>(effectively final). 값을 누적하려면 다른 방법을 써야 한다.</li>
+                    <li><strong>문법이 알고리즘을 바꾸지는 않는다.</strong> 순차 탐색은 람다로 써도 O(n)이다. 복잡도는 13강에서 배운 그대로다.</li>
+                </ul>
+            </section>
+
+            <!-- 12 -->
+            <section class="lesson-section" id="sec-next" aria-labelledby="h-next">
+                <h2 id="h-next" data-toc-label="다음 단계"><span class="section-no">12</span>다음 단계</h2>
+                <p>
+                    람다식은 <strong>"동작 하나를 값으로 만드는 법"</strong>입니다.
+                    그 값들을 여러 개 이어 붙여 <strong>데이터 처리의 한 줄기</strong>로 만드는 도구가 스트림입니다.
+                    <code>filter</code>에 넘기는 것이 <code>Predicate</code>, <code>map</code>에 넘기는 것이 <code>Function</code>,
+                    <code>sorted</code>에 넘기는 것이 <code>Comparator</code> — 방금 배운 것들이 그대로 재료가 됩니다.
+                </p>
+                <p>
+                    2강의 성적 집계와 3강의 단어 빈도 계산을 <code>for</code> 반복문 없이 다시 쓰는 방법은
+                    <a href="java-streams.html"><strong>자바 스트림</strong></a> 문서에서 이어집니다.
+                </p>
+                <div class="note-box note-box--tip">
+                    <span class="note-box__title">순서 권장</span>
+                    <p>
+                        스트림 문서는 이 문서의 내용을 알고 있다고 가정합니다.
+                        <strong>람다식 → 스트림</strong> 순서로 읽으세요.
+                        반대로 읽으면 <code>filter(s -&gt; s &gt;= 60)</code>의 괄호 안이 무엇인지부터 막힙니다.
+                    </p>
+                </div>
+            </section>
+
+            <!-- 이전/다음 (common.js가 채움) -->
+            <nav id="lesson-pager" aria-label="문서 이동"></nav>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <p class="site-footer__org">인하공업전문대학 컴퓨터시스템공학과 · 전공심화과정 「고급알고리즘」 강의 자료</p>
+        <p>Java 17+ · 학습 기록은 이 브라우저에만 저장됩니다.</p>
+    </footer>
+
+    <script src="../assets/js/algorithms-data.js"></script>
+    <script src="../assets/js/progress.js"></script>
+    <script src="../assets/js/common.js"></script>
+    <script src="../assets/js/code-copy.js"></script>
+    <script src="../assets/js/quiz.js"></script>
+    <script>
+        AlgoQuiz.init("#quiz-root", "lambda-expressions", [
+            {
+                type: "mc",
+                q: "람다식을 대입할 수 있는 인터페이스의 조건은 무엇인가요?",
+                choices: [
+                    "메서드가 하나도 없어야 한다",
+                    "추상 메서드가 정확히 하나여야 한다",
+                    "@FunctionalInterface가 반드시 붙어 있어야 한다",
+                    "제네릭 타입을 가져야 한다"
+                ],
+                answer: 1,
+                explain: "추상 메서드가 하나여야 람다식이 '그 메서드의 구현'으로 확정됩니다. @FunctionalInterface는 실수를 잡아 주는 표시일 뿐 필수는 아닙니다."
+            },
+            {
+                type: "mc",
+                q: "'점수가 60점 이상인가?'를 판단하는 규칙을 값으로 넘기려 합니다. 어떤 표준 인터페이스가 알맞나요?",
+                choices: ["Function<Integer, Integer>", "Consumer<Integer>", "Predicate<Integer>", "Supplier<Integer>"],
+                answer: 2,
+                explain: "입력 1개를 받아 boolean을 돌려주는 판단은 Predicate입니다. Function은 값 변환, Consumer는 반환 없는 소비, Supplier는 입력 없는 공급입니다."
+            },
+            {
+                type: "tf",
+                q: "익명 클래스로 짠 코드를 람다식으로 바꾸면 실행 결과가 더 정확해지거나 알고리즘의 시간 복잡도가 좋아진다.",
+                answer: false,
+                explain: "람다식은 표현을 바꿀 뿐 능력을 바꾸지 않습니다. 순차 탐색은 람다로 써도 O(n) 그대로입니다."
+            },
+            {
+                type: "predict",
+                q: "다음 코드의 출력은 무엇인가요?",
+                code: "Function<Integer, Integer> f = n -> n * n;\nPredicate<Integer> big = n -> n > 20;\nSystem.out.println(big.test(f.apply(5)));",
+                choices: ["true", "false", "25", "컴파일 오류"],
+                answer: 0,
+                explain: "f.apply(5)는 25이고, big.test(25)는 25 > 20이므로 true입니다."
+            },
+            {
+                type: "debug",
+                q: "다음 코드는 컴파일되지 않습니다. 원인은 무엇인가요?",
+                code: "Function<Integer, Integer> square = n -> { n * n };",
+                choices: [
+                    "매개변수에 타입을 적지 않아서",
+                    "중괄호를 열었으면 return을 써야 하는데 빠져서",
+                    "Function 대신 Predicate를 써야 해서",
+                    "매개변수 n을 괄호로 감싸지 않아서"
+                ],
+                answer: 1,
+                explain: "중괄호를 쓴 몸통은 일반 메서드와 같아서 return이 필요합니다. return을 생략하려면 중괄호도 함께 빼고 n -> n * n으로 써야 합니다."
+            },
+            {
+                type: "debug",
+                q: "다음 코드가 'local variables referenced from a lambda expression must be final or effectively final' 오류를 내는 이유는?",
+                code: "int count = 0;\nnames.forEach(name -> count++);\nSystem.out.println(count);",
+                choices: [
+                    "forEach는 값을 반환하지 않기 때문",
+                    "람다는 지역 변수를 복사해 가므로 원본이 바뀌면 안 되기 때문",
+                    "count를 long으로 선언해야 하기 때문",
+                    "names가 배열이 아니라 List이기 때문"
+                ],
+                answer: 1,
+                explain: "람다는 지역 변수를 값으로 복사해 갑니다. 원본이 바뀌면 복사본과 어긋나므로 자바는 '바뀌지 않는 변수만 캡처'하도록 제한합니다."
+            },
+            {
+                type: "fill",
+                q: "다음 람다식을 메서드 참조로 바꾸세요. Comparator.comparingInt(s -> s.length())  →  Comparator.comparingInt(____)",
+                accept: ["String::length", "String :: length"],
+                explain: "매개변수 s가 s.length() 호출의 수신자로 그대로 쓰이므로 '임의 객체의 메서드' 형태인 String::length로 줄일 수 있습니다."
+            },
+            {
+                type: "think",
+                q: "2강의 countAtLeast(data, threshold)는 '~점 이상'만 셀 수 있었습니다. 이 메서드를 Predicate를 받는 countBy(data, rule) 형태로 바꾸면 무엇이 좋아지고, 반대로 무엇을 잃을 수 있을까요? 두 가지 모두 생각해 보세요.",
+                modelAnswer: "좋아지는 점: 조건이 늘어도 순회 코드를 다시 쓰지 않습니다. '짝수만', '90점 이상이면서 홀수' 같은 새 기준이 필요할 때 호출부에서 람다만 바꾸면 되므로 중복 코드가 사라지고, 순회 로직의 버그를 한 곳에서만 고치면 됩니다. 잃을 수 있는 점: 첫째, Predicate<Integer>는 int를 Integer로 박싱하므로 큰 배열에서는 비용이 붙습니다(IntPredicate로 피할 수 있습니다). 둘째, 조건에 이름이 없어져서 countBy(data, s -> s >= 60)만 보고는 '이게 합격 기준인지 응시 기준인지' 알 수 없습니다. 자주 쓰는 규칙은 static final Predicate에 이름을 붙여 두는 편이 낫습니다."
+            }
+        ]);
+    </script>
+</body>
+</html>

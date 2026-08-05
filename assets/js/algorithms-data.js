@@ -15,7 +15,12 @@ window.CATEGORY_KEYS = {
     "탐색": "search",
     "그래프": "graph",
     "설계 기법": "design",
-    "프로젝트": "project"
+    "프로젝트": "project",
+    /* 보충 자료 전용. 13강 커리큘럼의 7개 학습 영역이 아니라서 랜딩의
+       영역 칩에는 나타나지 않는다(칩은 ALGORITHMS에서만 만들어진다).
+       색을 따로 준 이유는 그 반대다 — "이건 강의가 아니다"를 색으로 먼저
+       읽히게 하려는 것. */
+    "자바 문법": "lang"
 };
 
 window.ALGORITHMS = [
@@ -187,5 +192,50 @@ window.ALGORITHMS = [
         description:
             "요구사항 분석부터 자료구조 선택, 알고리즘 결합, 테스트까지 배운 내용 전체를 사용해 실전 프로그램을 설계하고 완성합니다.",
         path: "algorithms/13-algorithm-project.html"
+    }
+];
+
+/*
+ * 보충 자료 — 13강 커리큘럼 바깥의 "추가 정보".
+ *
+ * 강의가 아니라 사전 공부용 참고 문서다. 그래서 ALGORITHMS와 섞지 않는다.
+ *  - 진행률·완료 표시를 만들지 않는다(13강 진도를 흐리지 않는다).
+ *  - 20개 섹션 규격을 따르지 않는다. 필요한 만큼만 쓴다.
+ *  - 랜딩에서도 "강의 계획"이 아니라 별도의 "추가 정보" 섹션에 놓인다.
+ * 강의와 공유하는 것은 페이지 골격(lesson.css)과 코드 카드·퀴즈뿐이다.
+ *
+ * relatedLessons는 "이 문서를 읽고 나면 어느 강의 코드를 바꿔 볼 수 있는가"다.
+ * 카드에 그대로 찍히므로 강의 order를 쓴다.
+ */
+window.SUPPLEMENTS = [
+    {
+        order: 1,
+        id: "lambda-expressions",
+        title: "람다식",
+        englishTitle: "Lambda Expressions",
+        category: "자바 문법",
+        difficulty: "보충",
+        examples: 5,
+        language: "Java 17+",
+        summary: "익명 클래스 6줄을 한 줄로",
+        description:
+            "메서드 하나를 값처럼 넘기는 문법입니다. 함수형 인터페이스와 메서드 참조까지 익혀 4강의 Comparator, 5강의 검색 조건을 익명 클래스 없이 다시 씁니다.",
+        relatedLessons: [4, 5, 10],
+        path: "supplements/lambda-expressions.html"
+    },
+    {
+        order: 2,
+        id: "java-streams",
+        title: "자바 스트림",
+        englishTitle: "Java Streams",
+        category: "자바 문법",
+        difficulty: "보충",
+        examples: 6,
+        language: "Java 17+",
+        summary: "반복문 대신 파이프라인",
+        description:
+            "데이터를 거르고 바꾸고 모으는 과정을 한 줄기로 잇는 API입니다. 2강의 성적 집계, 3강의 단어 빈도 계산을 for 반복문 없이 다시 씁니다.",
+        relatedLessons: [2, 3, 4],
+        path: "supplements/java-streams.html"
     }
 ];

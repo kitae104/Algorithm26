@@ -403,14 +403,80 @@
             });
             out += '<text class="m-caption" x="160" y="150">배운 것을 하나로</text>';
             return svgScene(out);
+        },
+
+        /* ---------- 보충 자료 ----------
+           강의가 아니므로 알고리즘의 동작이 아니라 "코드가 줄어드는 일"
+           자체를 그린다. 클래스와 애니메이션은 위 13개와 같은 것을 쓴다. */
+
+        /* 람다식: 여섯 줄짜리 익명 클래스가 화살표 하나로 접힌다 */
+        "lambda-expressions": function () {
+            var out = "";
+            /* 왼쪽 — 접히기 전의 여러 줄 */
+            var lines = [148, 116, 132, 96, 120, 74];
+            for (var i = 0; i < lines.length; i += 1) {
+                out += '<rect class="m-cell m-anim-fade-in" x="26" y="' + (34 + i * 20) +
+                    '" width="' + lines[i] + '" height="12" rx="6"' +
+                    ' style="animation-delay: ' + (i * 0.12).toFixed(2) + 's"/>';
+            }
+            /* 화살표 — 접는 방향 */
+            out += '<path class="m-arrow m-anim-draw" pathLength="100" d="M186 90 H236"/>' +
+                '<path class="m-arrow-head" d="m230 84 6 6-6 6"/>';
+            /* 오른쪽 — 접힌 뒤의 한 줄. 화살표 기호를 글자로 남긴다 */
+            out += '<rect class="m-cell is-done" x="248" y="78" width="48" height="26" rx="8"/>' +
+                '<text class="m-caption" x="272" y="96" fill="var(--state-done)">-&gt;</text>' +
+                '<text class="m-caption" x="76" y="168">익명 클래스 6줄</text>' +
+                '<text class="m-caption" x="264" y="132" fill="var(--state-done)">한 줄</text>';
+            return svgScene(out);
+        },
+
+        /* 자바 스트림: 다섯 개가 파이프를 지나며 셋은 통과하고 둘은 걸러진다.
+           도착 지점을 원소마다 다르게 둔 것이 중요하다 — .m-moved의 정지
+           프레임이 곧 도착 상태라서, 목적지가 같으면 애니메이션이 꺼진
+           환경(reduced-motion)에서 원이 한 점에 겹쳐 쌓인다. */
+        "java-streams": function () {
+            var out = "";
+            /* 파이프 — 세 구간(filter → map → collect) */
+            out += '<line class="m-axis" x1="20" y1="70" x2="300" y2="70"/>' +
+                '<line class="m-axis" x1="20" y1="118" x2="300" y2="118"/>';
+            [112, 204].forEach(function (x) {
+                out += '<line class="m-edge" x1="' + x + '" y1="70" x2="' + x + '" y2="118"/>';
+            });
+
+            var flow = [
+                { dx: 216, dy: -20, drop: false },   /* collect 구간에 모인다 */
+                { dx: 44, dy: 40, drop: true },      /* filter에서 아래로 떨어진다 */
+                { dx: 244, dy: 0, drop: false },
+                { dx: 72, dy: 44, drop: true },
+                { dx: 216, dy: 20, drop: false }
+            ];
+            for (var i = 0; i < flow.length; i += 1) {
+                out += '<g class="m-moved m-anim-move' + (flow[i].drop ? " m-dropped" : "") + '"' +
+                    ' style="--dx: ' + flow[i].dx + "px; --dy: " + flow[i].dy +
+                    'px; animation-delay: ' + (i * 0.22).toFixed(2) + 's">' +
+                    '<circle class="m-node' + (flow[i].drop ? "" : " is-done") +
+                    '" cx="34" cy="94" r="10"/></g>';
+            }
+            out += '<text class="m-caption" x="66" y="56">filter</text>' +
+                '<text class="m-caption" x="158" y="56">map</text>' +
+                '<text class="m-caption" x="252" y="56">collect</text>' +
+                '<text class="m-caption" x="160" y="172">for 반복문 없이 한 줄기로</text>';
+            return svgScene(out);
         }
     };
 
     ready(function () {
         var lessons = window.ALGORITHMS || [];
+        var supplements = window.SUPPLEMENTS || [];
         var lessonId = document.body.dataset.lessonId || null;
+        var supplementId = document.body.dataset.supplementId || null;
         var isLessonPage = Boolean(lessonId);
-        var rootPrefix = isLessonPage ? "../" : "";
+        /* 보충 자료 페이지는 강의가 아니다 — 진도도 이전/다음 강의도 없다.
+           하지만 강의와 같은 폴더 깊이에 있고 같은 골격(헤더·목차·코드 카드·
+           퀴즈)을 쓴다. 그래서 "강의인가"와 "하위 폴더인가"를 따로 둔다. */
+        var pageId = lessonId || supplementId;
+        var isSubPage = Boolean(pageId);
+        var rootPrefix = isSubPage ? "../" : "";
 
         /* ---------- 상단 내비게이션 ---------- */
         var headerHost = document.querySelector("[data-site-header]");
@@ -473,6 +539,26 @@
                 li.appendChild(a);
                 menuList.appendChild(li);
             });
+
+            /* 보충 자료 — 13강 뒤에 구분선을 두고 따로 묶는다. 번호를 이어
+               붙이면 14·15강으로 읽혀 커리큘럼이 늘어난 것처럼 보인다. */
+            if (supplements.length) {
+                var sepLi = el("li", "lesson-menu__sep", "추가 정보");
+                menuList.appendChild(sepLi);
+
+                supplements.forEach(function (item) {
+                    var li = el("li", "lesson-menu__item");
+                    var a = el("a");
+                    a.href = rootPrefix + item.path;
+                    a.appendChild(el("span", "lesson-menu__num", "＋"));
+                    a.appendChild(document.createTextNode(item.title));
+                    if (item.id === supplementId) {
+                        a.setAttribute("aria-current", "page");
+                    }
+                    li.appendChild(a);
+                    menuList.appendChild(li);
+                });
+            }
 
             menuToggle.addEventListener("click", function () {
                 var open = menuWrap.classList.toggle("is-open");
@@ -648,15 +734,20 @@
             update();
         })();
 
-        if (!isLessonPage) {
+        if (!isSubPage) {
             return;
         }
 
-        /* ================= 이하 강의 페이지 전용 ================= */
+        /* ================= 이하 강의 · 보충 자료 페이지 ================= */
 
         var current = lessons.find(function (lesson) { return lesson.id === lessonId; }) || null;
+        var currentSupplement = supplements.find(function (item) {
+            return item.id === supplementId;
+        }) || null;
 
-        if (window.AllProgress) {
+        /* 진도는 13강만 센다. 보충 자료를 열었다고 커리큘럼 진도가
+           움직이면 "13강 중 몇 강"이라는 수가 뜻을 잃는다. */
+        if (isLessonPage && window.AllProgress) {
             window.AllProgress.markStarted(lessonId);
         }
 
@@ -666,14 +757,15 @@
            글자로 적혀 있으므로 색은 그 이름을 되짚어 주는 층일 뿐이다. */
         (function () {
             var chip = document.querySelector(".lesson-hero .badge--category");
-            var key = current && window.CATEGORY_KEYS ? window.CATEGORY_KEYS[current.category] : "";
+            var entry = current || currentSupplement;
+            var key = entry && window.CATEGORY_KEYS ? window.CATEGORY_KEYS[entry.category] : "";
             if (chip && key) chip.setAttribute("data-cat", key);
         })();
 
         /* ---------- 히어로 개념 모티프 ---------- */
         (function () {
             var hero = document.querySelector(".lesson-hero");
-            var build = MOTIFS[lessonId];
+            var build = MOTIFS[pageId];
             if (!hero || !build) return;
 
             /* 기존 히어로 내용을 한 덩어리로 묶는다. 묶지 않고 그리드를 걸면
@@ -739,7 +831,7 @@
                         Object.keys(linkById).forEach(function (id) {
                             linkById[id].classList.toggle("is-active", id === activeId);
                         });
-                        if (window.AllProgress) {
+                        if (isLessonPage && window.AllProgress) {
                             window.AllProgress.setLastSection(lessonId, activeId);
                         }
                     }
@@ -776,6 +868,32 @@
             } else {
                 pager.appendChild(el("div", "lesson-pager__empty",
                     "마지막 강의입니다. 13강까지 완주를 축하합니다! 🎉"));
+            }
+        }
+
+        /* ---------- 보충 자료 사이 이동 ----------
+           보충 자료는 순서가 있는 커리큘럼이 아니라서 "이전/다음 강의"가
+           아니다. 나머지 보충 자료 한 장과 강의 목록으로 돌아가는 길만
+           놓는다. */
+        if (pager && currentSupplement) {
+            pager.classList.add("lesson-pager");
+
+            var other = supplements.find(function (item) {
+                return item.id !== supplementId;
+            });
+
+            var homeLinkOut = el("a", "is-prev");
+            homeLinkOut.href = rootPrefix + "index.html#courses";
+            homeLinkOut.appendChild(el("span", "lesson-pager__dir", "← 강의 계획"));
+            homeLinkOut.appendChild(el("span", "lesson-pager__title", "13강 목록으로 돌아가기"));
+            pager.appendChild(homeLinkOut);
+
+            if (other) {
+                var otherLink = el("a", "is-next");
+                otherLink.href = rootPrefix + other.path;
+                otherLink.appendChild(el("span", "lesson-pager__dir", "다른 추가 정보 →"));
+                otherLink.appendChild(el("span", "lesson-pager__title", other.title));
+                pager.appendChild(otherLink);
             }
         }
 

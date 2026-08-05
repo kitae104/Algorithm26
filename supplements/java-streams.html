@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>추가 정보 — 자바 스트림 · 고급알고리즘</title>
+    <meta name="description" content="자바 스트림의 파이프라인 구조와 filter·map·collect를 익혀 2강 성적 집계와 3강 단어 빈도 계산을 for 반복문 없이 다시 작성하는 방법을 배웁니다.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect x='8' y='55' width='20' height='38' rx='5' fill='%23e28800'/><rect x='40' y='25' width='20' height='68' rx='5' fill='%232b50e0'/><rect x='72' y='40' width='20' height='53' rx='5' fill='%230e9f6e'/></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@500;600;700&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+    <link rel="stylesheet" href="../assets/css/common.css">
+    <link rel="stylesheet" href="../assets/css/lesson.css">
+    <link rel="stylesheet" href="../assets/css/code.css">
+    <link rel="stylesheet" href="../assets/css/quiz.css">
+    <link rel="stylesheet" href="../assets/css/print.css">
+    <script src="../assets/js/theme.js"></script>
+</head>
+<body data-supplement-id="java-streams">
+    <a class="skip-link" href="#sec-why">본문으로 건너뛰기</a>
+
+    <header class="site-header" data-site-header></header>
+
+    <div class="lesson-layout">
+        <!-- 문서 헤더 -->
+        <section class="lesson-hero" aria-labelledby="doc-title">
+            <p class="lesson-hero__eyebrow">추가 정보 · SUPPLEMENTARY</p>
+            <h1 id="doc-title">자바 스트림</h1>
+            <p class="lesson-hero__english">Java Streams</p>
+            <div class="lesson-hero__meta">
+                <span class="badge badge--category">자바 문법</span>
+                <span class="badge">보충 자료</span>
+                <span class="badge">Java 17+</span>
+            </div>
+            <p class="lesson-hero__desc">
+                스트림은 <strong>"데이터를 거르고 · 바꾸고 · 모으는 과정을 한 줄기로 잇는"</strong> API입니다.
+                2강에서 세 번 순회하며 구한 합계·평균·최댓값,
+                3강에서 <code>HashMap</code>으로 센 단어 빈도를 <code>for</code> 반복문 없이 다시 씁니다.
+                <strong><a href="lambda-expressions.html">람다식</a> 문서를 먼저 읽어 주세요</strong> —
+                스트림에 넘기는 것이 전부 람다입니다.
+            </p>
+        </section>
+
+        <!-- 내부 목차 (common.js가 자동 생성) -->
+        <nav class="lesson-toc" aria-label="이 문서의 목차">
+            <p class="lesson-toc__title">이 문서의 목차</p>
+            <ol id="lesson-toc-list"></ol>
+        </nav>
+
+        <div class="lesson-body">
+
+            <!-- 1 -->
+            <section class="lesson-section" id="sec-why" aria-labelledby="h-why">
+                <h2 id="h-why" data-toc-label="왜 필요한가"><span class="section-no">01</span>왜 필요한가</h2>
+                <p>
+                    2강에서 성적 통계를 만들 때, 이런 요구를 처리했습니다.
+                    <strong>"60점 이상인 점수만 골라, 5점씩 가산한 뒤, 평균을 구한다."</strong>
+                    반복문으로 쓰면 이렇습니다.
+                </p>
+
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">이전 — 반복문 (12줄)</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-why-before" aria-label="반복문 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-why-before">int total = 0;
+int count = 0;
+for (int i = 0; i &lt; scores.length; i++) {
+    if (scores[i] &gt;= 60) {          // 거르기
+        int adjusted = scores[i] + 5; // 바꾸기
+        total += adjusted;            // 모으기
+        count++;
+    }
+}
+double average = count == 0 ? 0 : (double) total / count;</code></pre>
+                </article>
+
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">이후 — 스트림 (4줄)</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-why-after" aria-label="스트림 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-why-after">double average = Arrays.stream(scores)   // 흘려보낼 원본
+        .filter(s -&gt; s &gt;= 60)            // 거르기
+        .map(s -&gt; s + 5)                 // 바꾸기
+        .average().orElse(0);            // 모으기</code></pre>
+                </article>
+
+                <p>
+                    줄 수보다 중요한 차이가 있습니다. 반복문 버전에서 <strong>"무엇을 하는가"</strong>는
+                    <code>total</code>, <code>count</code>, <code>i</code>, <code>adjusted</code> 네 변수의 움직임을
+                    머릿속에서 따라가야 드러납니다. 스트림 버전은
+                    <strong>거르기 → 바꾸기 → 모으기</strong>가 그대로 세 줄로 적혀 있습니다.
+                    변수를 하나도 만들지 않았기 때문에 <strong>순서를 잘못 세거나 초기화를 빠뜨릴 자리</strong>도 없습니다.
+                </p>
+
+                <div class="note-box note-box--warn">
+                    <span class="note-box__title">스트림은 알고리즘을 대신해 주지 않는다</span>
+                    <p>
+                        위 코드는 여전히 배열을 한 번 훑습니다 — <strong>O(n)</strong>입니다.
+                        스트림으로 썼다고 더 빨라지지 않고, 오히려 작은 배열에서는 조금 느립니다.
+                        스트림이 주는 것은 <strong>표현</strong>이지 <strong>복잡도</strong>가 아닙니다.
+                        정렬을 O(n log n)으로 만드는 것은 8·11강에서 배운 알고리즘 지식이지 문법이 아닙니다.
+                    </p>
+                </div>
+            </section>
+
+            <!-- 2 -->
+            <section class="lesson-section" id="sec-goal" aria-labelledby="h-goal">
+                <h2 id="h-goal" data-toc-label="학습 목표"><span class="section-no">02</span>학습 목표</h2>
+                <p>이 문서를 읽고 나면 다음을 할 수 있습니다.</p>
+                <ul class="objective-list">
+                    <li>학생은 스트림 파이프라인의 세 단계(생성 · 중간 연산 · 최종 연산)를 구분할 수 있다.</li>
+                    <li>학생은 <code>filter</code>, <code>map</code>, <code>sorted</code>, <code>distinct</code>, <code>limit</code>의 역할을 설명할 수 있다.</li>
+                    <li>학생은 <code>collect</code>, <code>count</code>, <code>average</code>, <code>anyMatch</code>, <code>reduce</code> 중 상황에 맞는 최종 연산을 고를 수 있다.</li>
+                    <li>학생은 <code>Collectors.groupingBy</code>와 <code>counting</code>으로 빈도표를 만들 수 있다.</li>
+                    <li>학생은 반복문으로 쓰인 집계·검색 코드를 스트림으로 바꿔 쓸 수 있다.</li>
+                    <li>학생은 스트림이 한 번만 소비된다는 점, 지연 평가된다는 점을 실행 결과로 설명할 수 있다.</li>
+                    <li>학생은 스트림을 쓰지 말아야 할 상황을 판단할 수 있다.</li>
+                </ul>
+            </section>
+
+            <!-- 3 -->
+            <section class="lesson-section" id="sec-pipeline" aria-labelledby="h-pipeline">
+                <h2 id="h-pipeline" data-toc-label="파이프라인 구조"><span class="section-no">03</span>파이프라인 구조</h2>
+                <p>모든 스트림 코드는 예외 없이 세 부분입니다.</p>
+                <div class="table-scroll">
+                    <table class="data-table">
+                        <thead>
+                            <tr><th scope="col">단계</th><th scope="col">하는 일</th><th scope="col">개수</th><th scope="col">예</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>① 생성</td><td>원본을 스트림으로 만든다</td><td>정확히 1개</td><td><code>Arrays.stream(arr)</code>, <code>list.stream()</code></td></tr>
+                            <tr><td>② 중간 연산</td><td>스트림을 받아 스트림을 돌려준다</td><td>0개 이상</td><td><code>filter</code>, <code>map</code>, <code>sorted</code></td></tr>
+                            <tr><td>③ 최종 연산</td><td>결과를 꺼낸다. 여기서 실제로 실행된다</td><td>정확히 1개</td><td><code>collect</code>, <code>count</code>, <code>forEach</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="note-box note-box--tip">
+                    <span class="note-box__title">중간 연산은 예약표를 쌓을 뿐이다</span>
+                    <p>
+                        <code>filter</code>와 <code>map</code>을 부르는 순간에는 <strong>아무 일도 일어나지 않습니다.</strong>
+                        "이렇게 처리하겠다"는 계획만 붙습니다. 실제 계산은 최종 연산이 호출될 때
+                        원소 하나씩 파이프라인 전체를 통과하며 일어납니다. 이것을 <strong>지연 평가</strong>라고 합니다.
+                        아래 코드로 직접 확인할 수 있습니다.
+                    </p>
+                </div>
+
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">LazyEvaluationDemo.java — 지연 평가를 눈으로 보기</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-lazy" aria-label="지연 평가 예제 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-lazy">import java.util.stream.Stream;
+
+public class LazyEvaluationDemo {
+    public static void main(String[] args) {
+        System.out.println("=== 최종 연산이 없을 때 ===");
+        Stream.of(1, 2, 3, 4, 5)
+              .filter(n -&gt; { System.out.println("  filter " + n); return n % 2 == 0; })
+              .map(n -&gt; { System.out.println("  map " + n); return n * 10; });
+        System.out.println("(아무것도 출력되지 않았습니다)");
+
+        System.out.println("\n=== 최종 연산을 붙였을 때 ===");
+        int first = Stream.of(1, 2, 3, 4, 5)
+              .filter(n -&gt; { System.out.println("  filter " + n); return n % 2 == 0; })
+              .map(n -&gt; { System.out.println("  map " + n); return n * 10; })
+              .findFirst().orElse(-1);
+        System.out.println("결과: " + first);
+        // filter 1, filter 2, map 2 까지만 실행되고 멈춥니다.
+        // 3, 4, 5는 아예 검사되지 않습니다 — 5강의 '조기 중단'과 같은 원리입니다.
+    }
+}</code></pre>
+                </article>
+                <p>
+                    두 번째 실행 결과를 잘 보세요. 원소 1부터 5까지 <code>filter</code>를 <strong>모두</strong> 돌린 뒤
+                    <code>map</code>으로 넘어가는 것이 아닙니다. <strong>원소 하나가 파이프라인 끝까지 갔다가 다음 원소가 출발</strong>합니다.
+                    그래서 <code>findFirst</code>는 답을 찾는 즉시 나머지를 아예 건드리지 않습니다.
+                    5강에서 순차 탐색에 <code>return</code>을 넣어 조기 중단했던 것과 정확히 같은 절약입니다.
+                </p>
+            </section>
+
+            <!-- 4 -->
+            <section class="lesson-section" id="sec-create" aria-labelledby="h-create">
+                <h2 id="h-create" data-toc-label="스트림 만들기"><span class="section-no">04</span>스트림 만들기</h2>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">원본에 따라 만드는 방법이 다르다</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-create" aria-label="스트림 생성 예시 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-create">int[] scores = {88, 72, 95, 64, 79};
+List&lt;String&gt; names = List.of("김인하", "이공전", "박알고");
+Map&lt;String, Integer&gt; stock = Map.of("사과", 12, "배", 5);
+
+IntStream  a = Arrays.stream(scores);        // 기본형 배열 → IntStream
+Stream&lt;String&gt; b = names.stream();           // 컬렉션 → Stream&lt;T&gt;
+Stream&lt;String&gt; c = Stream.of("가", "나");     // 값을 직접 나열
+IntStream  d = IntStream.range(0, 5);        // 0,1,2,3,4  (끝 미포함)
+IntStream  e = IntStream.rangeClosed(1, 5);  // 1,2,3,4,5  (끝 포함)
+Stream&lt;Map.Entry&lt;String, Integer&gt;&gt; f = stock.entrySet().stream();   // 맵은 entrySet부터</code></pre>
+                </article>
+                <div class="note-box note-box--warn">
+                    <span class="note-box__title"><code>IntStream</code>과 <code>Stream&lt;Integer&gt;</code>는 다르다</span>
+                    <p>
+                        <code>Arrays.stream(int[])</code>은 <code>IntStream</code>을 돌려줍니다.
+                        <code>IntStream</code>에는 <code>sum()</code>, <code>average()</code>, <code>max()</code>가 <strong>바로</strong> 있습니다 —
+                        정수라는 것을 알기 때문입니다. 반면 <code>Stream&lt;Integer&gt;</code>에는 <code>sum()</code>이 없습니다.
+                        객체 스트림에서 숫자 연산이 필요하면 <code>mapToInt(...)</code>로 넘어가야 합니다.
+                        박싱 비용도 여기서 갈립니다.
+                    </p>
+                </div>
+            </section>
+
+            <!-- 5 -->
+            <section class="lesson-section" id="sec-intermediate" aria-labelledby="h-intermediate">
+                <h2 id="h-intermediate" data-toc-label="중간 연산"><span class="section-no">05</span>중간 연산</h2>
+                <div class="table-scroll">
+                    <table class="data-table">
+                        <thead>
+                            <tr><th scope="col">연산</th><th scope="col">받는 것</th><th scope="col">하는 일</th><th scope="col">13강의 무엇에 해당하나</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>filter</code></td><td><code>Predicate</code></td><td>조건에 맞는 것만 통과</td><td>2강 조건 검색, 5강 순차 탐색</td></tr>
+                            <tr><td><code>map</code></td><td><code>Function</code></td><td>원소를 다른 값으로 바꿈</td><td>2강 가산점 적용</td></tr>
+                            <tr><td><code>mapToInt</code></td><td><code>ToIntFunction</code></td><td>객체 → <code>IntStream</code></td><td>객체에서 숫자 뽑기</td></tr>
+                            <tr><td><code>sorted</code></td><td><code>Comparator</code>(생략 가능)</td><td>정렬</td><td>4강 정렬 (내부는 O(n log n))</td></tr>
+                            <tr><td><code>distinct</code></td><td>—</td><td>중복 제거</td><td>3강 <code>HashSet</code> 중복 판정</td></tr>
+                            <tr><td><code>limit</code> / <code>skip</code></td><td><code>long</code></td><td>앞에서 n개만 / n개 건너뜀</td><td>상위 3개 뽑기</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">순서가 결과와 비용을 바꾼다</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-order" aria-label="연산 순서 예시 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-order">// ⚠ 1000개를 전부 정렬한 뒤 3개만 남긴다 — 정렬 비용 O(n log n)
+List&lt;Product&gt; slow = products.stream()
+        .sorted(Comparator.comparingInt(p -&gt; p.price))
+        .filter(p -&gt; p.rating &gt;= 4.5)
+        .limit(3)
+        .toList();
+
+// ✓ 먼저 걸러서 정렬 대상 자체를 줄인다
+List&lt;Product&gt; fast = products.stream()
+        .filter(p -&gt; p.rating &gt;= 4.5)     // 남는 게 20개라면
+        .sorted(Comparator.comparingInt(p -&gt; p.price))   // 20개만 정렬한다
+        .limit(3)
+        .toList();</code></pre>
+                </article>
+                <p>
+                    <strong>거르기를 먼저, 정렬을 나중에.</strong>
+                    1강에서 "같은 결과라도 일의 양은 다를 수 있다"고 배운 것이 그대로 적용됩니다.
+                    스트림은 이런 순서를 알아서 바꿔 주지 않습니다 — 적은 대로 실행합니다.
+                </p>
+            </section>
+
+            <!-- 6 -->
+            <section class="lesson-section" id="sec-terminal" aria-labelledby="h-terminal">
+                <h2 id="h-terminal" data-toc-label="최종 연산"><span class="section-no">06</span>최종 연산</h2>
+                <div class="table-scroll">
+                    <table class="data-table">
+                        <thead>
+                            <tr><th scope="col">연산</th><th scope="col">돌려주는 것</th><th scope="col">쓰는 자리</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>toList()</code></td><td><code>List&lt;T&gt;</code> (수정 불가)</td><td>결과 목록이 필요할 때</td></tr>
+                            <tr><td><code>collect(...)</code></td><td>지정한 자료구조</td><td><code>Set</code>·<code>Map</code>·그룹으로 모을 때</td></tr>
+                            <tr><td><code>count()</code></td><td><code>long</code></td><td>2강 조건 개수 세기</td></tr>
+                            <tr><td><code>sum()</code> · <code>average()</code> · <code>max()</code></td><td>숫자 / <code>Optional</code></td><td>2강 합계·평균·최댓값</td></tr>
+                            <tr><td><code>anyMatch</code> · <code>allMatch</code> · <code>noneMatch</code></td><td><code>boolean</code></td><td>"하나라도 있나?" 판정 (조기 중단)</td></tr>
+                            <tr><td><code>findFirst()</code></td><td><code>Optional&lt;T&gt;</code></td><td>5강 순차 탐색의 첫 결과</td></tr>
+                            <tr><td><code>reduce(...)</code></td><td>누적 결과</td><td>직접 정의한 누적 규칙</td></tr>
+                            <tr><td><code>forEach(...)</code></td><td>없음</td><td>출력 등 소비만 할 때</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="note-box">
+                    <span class="note-box__title"><code>Optional</code>이 나오는 이유</span>
+                    <p>
+                        빈 배열의 최댓값은 존재하지 않습니다. 2강에서는 <code>data[0]</code>을 후보로 삼았기 때문에
+                        <strong>빈 배열이면 예외가 났습니다.</strong>
+                        <code>max()</code>가 <code>Optional</code>을 돌려주는 것은 "없을 수도 있다"를 타입으로 강제하는 것입니다.
+                        <code>.orElse(0)</code>이나 <code>.orElseThrow()</code>로 없을 때의 처리를 <strong>반드시</strong> 적게 만듭니다.
+                    </p>
+                </div>
+
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">reduce — 누적의 일반형</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-reduce" aria-label="reduce 예시 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-reduce">// 1강의 누적 패턴: total = total + v 를 그대로 옮긴 것이 reduce다
+int sum = Arrays.stream(scores).reduce(0, (acc, v) -&gt; acc + v);
+//                                     ↑초깃값  ↑누적 규칙
+
+// 곱셈으로 바꾸면 팩토리얼 (7강 재귀와 같은 결과)
+long fact = IntStream.rangeClosed(1, 10).asLongStream().reduce(1L, (a, b) -&gt; a * b);
+
+// 문자열 잇기 — 다만 문자열은 joining을 쓰는 편이 훨씬 낫다
+String joined = names.stream().collect(Collectors.joining(", "));</code></pre>
+                </article>
+            </section>
+
+            <!-- 7 -->
+            <section class="lesson-section" id="sec-collect" aria-labelledby="h-collect">
+                <h2 id="h-collect" data-toc-label="모으기와 그룹핑"><span class="section-no">07</span>모으기와 그룹핑</h2>
+                <p>
+                    <code>Collectors</code>는 <strong>"어떻게 모을 것인가"</strong>를 정하는 도구 모음입니다.
+                    3강에서 <code>HashMap</code>으로 손수 만들던 빈도표가 한 줄이 됩니다.
+                </p>
+
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">자주 쓰는 다섯 가지</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-collectors" aria-label="Collectors 예시 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-collectors">import static java.util.stream.Collectors.*;
+
+// 1) Set으로 — 3강의 HashSet 중복 제거
+Set&lt;String&gt; unique = words.stream().collect(toSet());
+
+// 2) Map으로 — 키와 값을 각각 어떻게 뽑을지 지정
+Map&lt;String, Integer&gt; priceByName =
+        products.stream().collect(toMap(p -&gt; p.name, p -&gt; p.price));
+
+// 3) 그룹핑 — 등급별로 학생을 묶는다
+Map&lt;String, List&lt;Student&gt;&gt; byGrade =
+        students.stream().collect(groupingBy(s -&gt; grade(s.score)));
+
+// 4) 그룹핑 + 세기 — 3강 단어 빈도표가 이 한 줄이다
+Map&lt;String, Long&gt; freq =
+        Arrays.stream(words).collect(groupingBy(w -&gt; w, counting()));
+
+// 5) 참/거짓 두 덩어리로 — 합격자와 불합격자를 한 번에
+Map&lt;Boolean, List&lt;Integer&gt;&gt; passFail =
+        Arrays.stream(scores).boxed().collect(partitioningBy(s -&gt; s &gt;= 60));</code></pre>
+                </article>
+
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">한 번 순회로 통계 다섯 개 — summaryStatistics</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-stats" aria-label="통계 요약 예시 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-stats">IntSummaryStatistics st = Arrays.stream(scores).summaryStatistics();
+
+System.out.println("개수: "   + st.getCount());
+System.out.println("합계: "   + st.getSum());
+System.out.println("평균: "   + st.getAverage());
+System.out.println("최댓값: " + st.getMax());
+System.out.println("최솟값: " + st.getMin());
+// 2강의 ScoreStatsComplete는 sum, average, max, min을 각각 순회했다 —
+// 배열을 네 번 훑은 셈이다. 위는 한 번만 훑는다.</code></pre>
+                </article>
+                <div class="note-box note-box--tip">
+                    <span class="note-box__title">2강과 이어 보기</span>
+                    <p>
+                        <code>summaryStatistics()</code>가 네 번의 O(n) 순회를 한 번으로 줄이지만,
+                        <strong>복잡도는 여전히 O(n)</strong>입니다. 4 × O(n)도 O(n)이기 때문입니다.
+                        1강에서 "상수 배는 Big-O에서 버린다"고 배운 그 이야기입니다.
+                        실측 시간은 줄지만 <strong>증가 모양은 같습니다.</strong>
+                    </p>
+                </div>
+            </section>
+
+            <!-- 8 -->
+            <section class="lesson-section" id="sec-rewrite" aria-labelledby="h-rewrite">
+                <h2 id="h-rewrite" data-toc-label="강의 코드 바꿔 보기"><span class="section-no">08</span>강의 코드 바꿔 보기</h2>
+
+                <h3>① 2강 — 성적 통계</h3>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">ScoreStatsComplete — 이전 · 이후</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-rw-stats" aria-label="성적 통계 변환 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-rw-stats">// ── 이전: 목적마다 메서드 하나, 순회 하나
+static int sum(int[] d)  { int t = 0; for (int v : d) t += v; return t; }
+static int max(int[] d)  { int c = d[0]; for (int v : d) if (v &gt; c) c = v; return c; }
+static int countAtLeast(int[] d, int th) {
+    int n = 0; for (int v : d) if (v &gt;= th) n++; return n;
+}
+static int[] collectBelow(int[] d, double lim) {   // 개수를 먼저 세고 배열을 다시 채웠다
+    int n = 0; for (int v : d) if (v &lt; lim) n++;
+    int[] r = new int[n]; int p = 0;
+    for (int v : d) if (v &lt; lim) r[p++] = v;
+    return r;
+}
+
+// ── 이후
+int sum   = Arrays.stream(scores).sum();
+int max   = Arrays.stream(scores).max().orElse(0);
+long pass = Arrays.stream(scores).filter(s -&gt; s &gt;= 60).count();
+int[] low = Arrays.stream(scores).filter(s -&gt; s &lt; average).toArray();
+// collectBelow의 "두 번 순회 + 크기 계산"이 통째로 사라진다.
+// 배열 크기를 미리 알아야 했던 것은 자바 배열의 제약이지 알고리즘의 요구가 아니었다.</code></pre>
+                </article>
+
+                <h3>② 3강 — 단어 빈도와 중복</h3>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">WordFrequencySolution — 이전 · 이후</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-rw-word" aria-label="단어 빈도 변환 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-rw-word">// ── 이전
+static Map&lt;String, Integer&gt; countFrequencies(String[] words) {
+    Map&lt;String, Integer&gt; freq = new HashMap&lt;&gt;();
+    for (String w : words) {
+        freq.put(w, freq.getOrDefault(w, 0) + 1);
+    }
+    return freq;
+}
+static String findMostFrequent(String[] words, Map&lt;String, Integer&gt; freq) {
+    String best = null;
+    for (String w : words) {
+        if (best == null || freq.get(w) &gt; freq.get(best)) best = w;
+    }
+    return best;
+}
+
+// ── 이후
+Map&lt;String, Long&gt; freq = Arrays.stream(words)
+        .collect(Collectors.groupingBy(w -&gt; w, Collectors.counting()));
+
+String best = freq.entrySet().stream()
+        .max(Map.Entry.comparingByValue())     // 4강 Comparator가 여기서 쓰인다
+        .map(Map.Entry::getKey)
+        .orElse(null);
+
+List&lt;String&gt; duplicates = freq.entrySet().stream()
+        .filter(e -&gt; e.getValue() &gt;= 2)
+        .map(Map.Entry::getKey)
+        .sorted()
+        .toList();</code></pre>
+                </article>
+                <div class="note-box note-box--warn">
+                    <span class="note-box__title">바뀐 것이 하나 있다 — 순서</span>
+                    <p>
+                        이전 코드의 <code>findDuplicates</code>는 <strong>첫 등장 순서</strong>로 목록을 만들었습니다.
+                        위 스트림 버전은 <code>HashMap</code>을 거치므로 그 순서가 사라져 <code>sorted()</code>로 사전순을 붙였습니다.
+                        <strong>순서가 요구사항이라면 <code>LinkedHashMap</code>을 쓰도록 지정해야 합니다.</strong>
+                        3강에서 "HashMap의 출력 순서에 주의"라고 배운 그 함정이 스트림에서도 그대로 있습니다.
+                    </p>
+                </div>
+
+                <h3>③ 4강 — 상품 정렬</h3>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">정렬 · 거르기 · 뽑기를 한 줄기로</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-rw-sort" aria-label="상품 정렬 변환 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-rw-sort">// 평점 4.5 이상인 상품을 가격이 싼 순으로 3개, 이름만
+List&lt;String&gt; top3 = Arrays.stream(products)
+        .filter(p -&gt; p.rating &gt;= 4.5)
+        .sorted(Comparator.comparingInt(p -&gt; p.price))
+        .limit(3)
+        .map(p -&gt; p.name)
+        .toList();
+
+// 원본 배열은 그대로다 — 4강에서 Arrays.copyOf로 복사본을 만들던 이유가 사라진다.
+// 스트림은 원본을 건드리지 않는다.</code></pre>
+                </article>
+            </section>
+
+            <!-- 9 -->
+            <section class="lesson-section" id="sec-pitfall" aria-labelledby="h-pitfall">
+                <h2 id="h-pitfall" data-toc-label="자주 하는 실수"><span class="section-no">09</span>자주 하는 실수</h2>
+
+                <article class="bug-card">
+                    <p class="bug-card__title">① 스트림을 두 번 쓴다</p>
+                    <div class="bug-card__body">
+                        <article class="code-card">
+                            <header class="code-card__header">
+                                <div class="code-card__info">
+                                    <span class="code-card__language">Java</span>
+                                    <strong class="code-card__filename">실행 중 예외가 나는 코드</strong>
+                                </div>
+                                <button type="button" class="copy-code-button" data-copy-target="code-bug-reuse" aria-label="스트림 재사용 오류 코드 복사">코드 복사</button>
+                            </header>
+                            <pre><code id="code-bug-reuse">Stream&lt;Integer&gt; s = list.stream();
+long a = s.count();
+long b = s.filter(n -&gt; n &gt; 10).count();
+// IllegalStateException: stream has already been operated upon or closed</code></pre>
+                        </article>
+                        <p>
+                            스트림은 컬렉션이 아니라 <strong>한 번 흘려보내는 통로</strong>입니다.
+                            최종 연산이 끝나면 닫힙니다. 두 번 써야 한다면
+                            <code>list.stream()</code>을 <strong>두 번 부르세요.</strong>
+                            스트림을 변수에 담아 두는 습관 자체를 피하는 편이 안전합니다.
+                        </p>
+                    </div>
+                </article>
+
+                <article class="bug-card">
+                    <p class="bug-card__title">② 최종 연산을 빼먹는다</p>
+                    <div class="bug-card__body">
+                        <p>
+                            <code>list.stream().filter(...).map(...);</code>은 <strong>오류 없이 아무 일도 하지 않습니다.</strong>
+                            컴파일도 되고 실행도 되는데 결과만 없으므로 찾기 어려운 종류의 버그입니다.
+                            스트림을 썼는데 아무 변화가 없다면 <strong>가장 먼저 최종 연산을 확인</strong>하세요.
+                        </p>
+                    </div>
+                </article>
+
+                <article class="bug-card">
+                    <p class="bug-card__title">③ 람다 안에서 바깥 상태를 바꾼다</p>
+                    <div class="bug-card__body">
+                        <article class="code-card">
+                            <header class="code-card__header">
+                                <div class="code-card__info">
+                                    <span class="code-card__language">Java</span>
+                                    <strong class="code-card__filename">되긴 하지만 쓰면 안 되는 코드</strong>
+                                </div>
+                                <button type="button" class="copy-code-button" data-copy-target="code-bug-side" aria-label="부작용 코드 복사">코드 복사</button>
+                            </header>
+                            <pre><code id="code-bug-side">// ✗ 리스트에 밀어 넣는 방식 — 병렬로 바꾸는 순간 깨진다
+List&lt;Integer&gt; result = new ArrayList&lt;&gt;();
+scores.stream().filter(s -&gt; s &gt;= 60).forEach(result::add);
+
+// ✓ 모으는 일은 collect에 맡긴다
+List&lt;Integer&gt; result = scores.stream().filter(s -&gt; s &gt;= 60).toList();</code></pre>
+                        </article>
+                        <p>
+                            <code>forEach</code>로 밖의 리스트를 채우는 것은 <strong>반복문을 어렵게 쓴 것</strong>일 뿐입니다.
+                            스트림의 값어치인 "무엇을 하는지가 그대로 읽힌다"도 잃습니다.
+                        </p>
+                    </div>
+                </article>
+
+                <article class="bug-card">
+                    <p class="bug-card__title">④ <code>parallelStream()</code>을 습관적으로 쓴다</p>
+                    <div class="bug-card__body">
+                        <p>
+                            병렬 스트림은 스레드를 나눠 쓰므로 <strong>준비 비용</strong>이 붙습니다.
+                            원소가 수만 개 미만이거나 각 원소의 처리가 가벼우면 <strong>대개 더 느립니다.</strong>
+                            게다가 위 ③처럼 공유 상태를 건드리는 코드가 있으면 결과가 매번 달라집니다.
+                            <strong>측정해 보기 전에는 쓰지 마세요.</strong>
+                        </p>
+                    </div>
+                </article>
+
+                <article class="bug-card">
+                    <p class="bug-card__title">⑤ 모든 반복문을 스트림으로 바꾼다</p>
+                    <div class="bug-card__body">
+                        <p>
+                            인덱스가 필요한 경우(4강 삽입 정렬의 <code>arr[j + 1] = arr[j]</code>),
+                            중간에 <code>break</code>로 빠져나가며 여러 변수를 함께 갱신하는 경우,
+                            이중 반복문에서 두 인덱스를 동시에 다루는 경우 —
+                            <strong>이런 곳은 반복문이 더 명확합니다.</strong>
+                            13강의 알고리즘 구현부는 대부분 여기에 해당합니다.
+                            스트림이 잘 맞는 곳은 <strong>집계·변환·필터링</strong>입니다.
+                        </p>
+                    </div>
+                </article>
+
+                <details class="answer-box">
+                    <summary>연습 — 다음 반복문을 스트림 한 줄기로 바꿔 보세요</summary>
+                    <article class="code-card">
+                        <header class="code-card__header">
+                            <div class="code-card__info">
+                                <span class="code-card__language">Java</span>
+                                <strong class="code-card__filename">문제 — 90점 이상인 학생 이름을 사전순으로</strong>
+                            </div>
+                            <button type="button" class="copy-code-button" data-copy-target="code-ex-q" aria-label="연습 문제 코드 복사">코드 복사</button>
+                        </header>
+                        <pre><code id="code-ex-q">List&lt;String&gt; names = new ArrayList&lt;&gt;();
+for (Student s : students) {
+    if (s.score &gt;= 90) {
+        names.add(s.name);
+    }
+}
+Collections.sort(names);</code></pre>
+                    </article>
+                    <p><strong>답</strong> — 세 연산이 그대로 세 줄이 됩니다.</p>
+                    <article class="code-card">
+                        <header class="code-card__header">
+                            <div class="code-card__info">
+                                <span class="code-card__language">Java</span>
+                                <strong class="code-card__filename">답</strong>
+                            </div>
+                            <button type="button" class="copy-code-button" data-copy-target="code-ex-a" aria-label="연습 정답 코드 복사">코드 복사</button>
+                        </header>
+                        <pre><code id="code-ex-a">List&lt;String&gt; names = students.stream()
+        .filter(s -&gt; s.score &gt;= 90)   // if
+        .map(s -&gt; s.name)             // add에 넣던 값
+        .sorted()                     // Collections.sort
+        .toList();
+
+// 주의: toList()가 돌려주는 리스트는 수정할 수 없습니다.
+// 나중에 add해야 한다면 .collect(Collectors.toCollection(ArrayList::new)) 를 쓰세요.</code></pre>
+                    </article>
+                </details>
+            </section>
+
+            <!-- 10 -->
+            <section class="lesson-section" id="sec-quiz" aria-labelledby="h-quiz">
+                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">10</span>확인 퀴즈</h2>
+                <p>실행 순서와 <strong>"언제 쓰지 말아야 하는가"</strong>를 확인하는 문제들입니다.</p>
+                <div id="quiz-root"></div>
+            </section>
+
+            <!-- 11 -->
+            <section class="lesson-section" id="sec-summary" aria-labelledby="h-summary">
+                <h2 id="h-summary" data-toc-label="핵심 정리"><span class="section-no">11</span>핵심 정리</h2>
+                <ul class="summary-list">
+                    <li>스트림 코드는 언제나 <strong>생성 → 중간 연산 → 최종 연산</strong> 세 부분이다. 최종 연산이 없으면 아무 일도 일어나지 않는다.</li>
+                    <li>중간 연산은 계획만 쌓고, 실행은 최종 연산 때 <strong>원소 하나씩 파이프라인 전체를 통과</strong>하며 일어난다(지연 평가).</li>
+                    <li><code>filter</code>는 <code>Predicate</code>, <code>map</code>은 <code>Function</code>, <code>sorted</code>는 <code>Comparator</code>를 받는다 — 전부 <a href="lambda-expressions.html">람다식</a> 문서에서 배운 것들이다.</li>
+                    <li><strong>거르기를 먼저, 정렬을 나중에.</strong> 스트림은 순서를 알아서 바꿔 주지 않는다.</li>
+                    <li><code>groupingBy</code> + <code>counting</code>이 3강의 빈도표를, <code>summaryStatistics()</code>가 2강의 네 번 순회를 한 줄로 대신한다.</li>
+                    <li>스트림은 <strong>한 번만 소비</strong>된다. 두 번 필요하면 <code>stream()</code>을 두 번 부른다.</li>
+                    <li><strong>표현이 바뀔 뿐 복잡도는 그대로다.</strong> O(n) 순회는 스트림으로 써도 O(n)이고, 작은 데이터에서는 오히려 조금 느리다.</li>
+                    <li>인덱스 조작·조기 <code>break</code>·다중 변수 갱신이 필요한 <strong>알고리즘 구현부는 반복문이 더 명확하다.</strong> 스트림은 집계·변환·필터링에 쓴다.</li>
+                </ul>
+            </section>
+
+            <!-- 12 -->
+            <section class="lesson-section" id="sec-next" aria-labelledby="h-next">
+                <h2 id="h-next" data-toc-label="다음 단계"><span class="section-no">12</span>다음 단계</h2>
+                <p>
+                    두 문서를 다 읽었다면, 13강 중 아무 강의나 골라
+                    <strong>"집계·변환·필터링을 하는 부분만"</strong> 스트림으로 바꿔 보세요.
+                    알고리즘의 핵심 구현부(정렬의 교환, 탐색의 범위 축소, DP의 테이블 채우기)는
+                    <strong>그대로 두는 것이 좋습니다.</strong> 그 부분은 원래 반복문이 가장 잘 맞습니다.
+                </p>
+                <p>
+                    바꾼 뒤에는 반드시 <strong>실행해서 결과가 같은지 확인</strong>하세요.
+                    1강에서 두 알고리즘의 결과가 같은지 코드로 검증했던 것과 같은 습관입니다.
+                    특히 <code>HashMap</code>을 거치며 순서가 달라지는 경우를 조심하세요.
+                </p>
+                <div class="note-box note-box--tip">
+                    <span class="note-box__title">시험·과제에서는</span>
+                    <p>
+                        수업 과제에 별도 지시가 없다면 <strong>13강에서 배운 반복문 형태로 제출</strong>하세요.
+                        이 문서들은 알고리즘의 동작을 이미 이해한 뒤,
+                        같은 로직을 다르게 쓰는 법을 미리 익혀 두기 위한 자료입니다.
+                        <strong>동작을 이해하는 것이 먼저입니다.</strong>
+                    </p>
+                </div>
+            </section>
+
+            <!-- 이전/다음 (common.js가 채움) -->
+            <nav id="lesson-pager" aria-label="문서 이동"></nav>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <p class="site-footer__org">인하공업전문대학 컴퓨터시스템공학과 · 전공심화과정 「고급알고리즘」 강의 자료</p>
+        <p>Java 17+ · 학습 기록은 이 브라우저에만 저장됩니다.</p>
+    </footer>
+
+    <script src="../assets/js/algorithms-data.js"></script>
+    <script src="../assets/js/progress.js"></script>
+    <script src="../assets/js/common.js"></script>
+    <script src="../assets/js/code-copy.js"></script>
+    <script src="../assets/js/quiz.js"></script>
+    <script>
+        AlgoQuiz.init("#quiz-root", "java-streams", [
+            {
+                type: "mc",
+                q: "스트림 파이프라인에서 실제 계산이 시작되는 시점은 언제인가요?",
+                choices: [
+                    "stream()을 호출한 순간",
+                    "filter()를 호출한 순간",
+                    "최종 연산(collect, count 등)을 호출한 순간",
+                    "람다식을 작성한 순간"
+                ],
+                answer: 2,
+                explain: "중간 연산은 계획만 쌓습니다. 최종 연산이 호출되어야 원소가 파이프라인을 통과하기 시작합니다(지연 평가)."
+            },
+            {
+                type: "predict",
+                q: "다음 코드는 무엇을 출력하나요?",
+                code: "List<Integer> list = List.of(1, 2, 3);\nlist.stream()\n    .filter(n -> n > 1)\n    .map(n -> n * 10);\nSystem.out.println(\"끝\");",
+                choices: ["20 30 끝", "끝만 출력된다", "컴파일 오류", "IllegalStateException"],
+                answer: 1,
+                explain: "최종 연산이 없어 파이프라인이 실행되지 않습니다. 오류도 나지 않고 조용히 아무 일도 하지 않는 것이 이 실수의 위험한 점입니다."
+            },
+            {
+                type: "predict",
+                q: "다음 코드의 결과는?",
+                code: "int[] scores = {88, 72, 95, 64, 79};\nlong n = Arrays.stream(scores)\n               .filter(s -> s >= 80)\n               .count();\nSystem.out.println(n);",
+                choices: ["2", "3", "5", "183"],
+                answer: 0,
+                explain: "80 이상인 값은 88과 95, 두 개입니다."
+            },
+            {
+                type: "mc",
+                q: "3강의 단어 빈도표 Map<String, Long>을 스트림으로 만들려면 어떤 조합을 쓰나요?",
+                choices: [
+                    "collect(toList())",
+                    "collect(groupingBy(w -> w, counting()))",
+                    "map(w -> w.length()).sum()",
+                    "distinct().count()"
+                ],
+                answer: 1,
+                explain: "groupingBy가 같은 단어끼리 묶고, counting()이 각 묶음의 개수를 셉니다. 3강의 getOrDefault 반복문과 같은 결과입니다."
+            },
+            {
+                type: "tf",
+                q: "한 번 만든 Stream 변수는 최종 연산을 여러 번 호출해 재사용할 수 있다.",
+                answer: false,
+                explain: "스트림은 한 번 흘려보내는 통로입니다. 최종 연산 뒤에 다시 쓰면 IllegalStateException이 납니다. 필요하면 stream()을 다시 호출하세요."
+            },
+            {
+                type: "debug",
+                q: "상품 1000개 중 평점 4.5 이상인 것을 가격순 3개만 뽑습니다. 다음 코드에서 불필요하게 큰 비용이 드는 이유는?",
+                code: "products.stream()\n        .sorted(Comparator.comparingInt(p -> p.price))\n        .filter(p -> p.rating >= 4.5)\n        .limit(3)\n        .toList();",
+                choices: [
+                    "limit(3)이 sorted보다 뒤에 있어서",
+                    "필요 없는 것까지 포함해 1000개 전부를 먼저 정렬하기 때문",
+                    "Comparator.comparingInt 대신 comparing을 써야 해서",
+                    "toList() 대신 collect(toList())를 써야 해서"
+                ],
+                answer: 1,
+                explain: "filter를 sorted보다 먼저 두면 정렬 대상 자체가 줄어듭니다. 스트림은 순서를 알아서 최적화해 주지 않습니다."
+            },
+            {
+                type: "fill",
+                q: "합계·평균·최댓값·최솟값·개수를 배열을 한 번만 순회해서 모두 얻는 IntStream의 최종 연산 이름은? Arrays.stream(scores).____()",
+                accept: ["summaryStatistics", "summarystatistics"],
+                explain: "summaryStatistics()는 IntSummaryStatistics를 돌려주며 getSum, getAverage, getMax, getMin, getCount를 모두 제공합니다."
+            },
+            {
+                type: "think",
+                q: "4강의 삽입 정렬 구현부(while문 안에서 arr[j + 1] = arr[j]로 원소를 미는 부분)를 스트림으로 바꾸는 것이 좋은 생각일까요? 그렇게 판단한 이유를 스트림이 잘하는 일과 못하는 일로 나누어 설명해 보세요.",
+                modelAnswer: "좋지 않습니다. 스트림이 잘하는 일은 '각 원소를 독립적으로 거르고 바꾸고 모으는 것'입니다. 반면 삽입 정렬의 핵심은 인덱스 j를 뒤로 옮겨 가며 배열의 같은 자리를 덮어쓰는 것으로, (1) 원소의 위치(인덱스)를 직접 다뤄야 하고, (2) 이전 단계의 결과가 다음 단계에 영향을 주며, (3) 원본 배열을 제자리에서 수정합니다. 스트림에는 인덱스 개념이 없고 원본을 건드리지 않는 것을 전제로 하므로, 억지로 바꾸면 IntStream.range로 인덱스를 만들고 그 안에서 배열을 수정하는 형태가 되어 반복문보다 길고 읽기 어려워집니다. 정렬 '결과를 사용하는 쪽'(예: sorted()로 정렬된 목록을 얻어 상위 3개를 뽑기)은 스트림이 적합하지만, 정렬 알고리즘 자체의 구현은 반복문으로 두는 것이 맞습니다."
+            }
+        ]);
+    </script>
+</body>
+</html>

@@ -3,6 +3,8 @@
 이 문서는 고급알고리즘 강의 사이트에 새 강의를 추가할 때 반드시 따라야 하는 규칙이다.
 **모범 예시는 `algorithms/01-algorithm-basics.html`** — 새 강의는 이 파일의 구조를 그대로 따른다.
 
+커리큘럼 밖의 참고 문서(추가 정보)를 넣는 경우에는 규칙이 다르다 — **5장**을 볼 것.
+
 ## 1. 추가 절차 요약
 
 1. `assets/js/algorithms-data.js`의 `window.ALGORITHMS` 배열에 강의 메타데이터 추가
@@ -107,7 +109,36 @@ fill의 `accept`는 허용 표기를 2~3개 넣어 관대하게.
 `assets/js/algorithms-data.js`의 항목 필드: `order, id, title, englishTitle, category, difficulty(초급|중급), examples(예제 .java 파일 수), language, description, path`.
 `path`는 `algorithms/NN-id.html` (앞에 `/` 없음). 같은 내용을 `data/algorithms.json`에도 반영.
 
-## 5. 접근성·금지 사항 체크리스트
+## 5. 보충 자료(추가 정보) 추가
+
+13강 커리큘럼 **밖의** 참고 문서입니다. 강의가 아니므로 규칙이 다릅니다.
+
+| 항목 | 강의 | 보충 자료 |
+|---|---|---|
+| 데이터 | `window.ALGORITHMS` (+ `data/algorithms.json`) | `window.SUPPLEMENTS` (JSON 미러 없음) |
+| 위치 | `algorithms/NN-id.html` | `supplements/id.html` |
+| Java 예제 | `examples/java/NN-id/` | `examples/java/sN-id/` |
+| body 속성 | `data-lesson-id` | `data-supplement-id` |
+| 섹션 규격 | 20개 고정 | 자유 (필요한 만큼) |
+| 시각화 | `AlgoViz.create` 필수 | 없음 |
+| 완료 버튼 | `lesson-complete-slot` 필수 | **금지** |
+| 진도 기록 | 13강 진도에 포함 | 포함하지 않음 |
+
+추가 절차:
+
+1. `assets/js/algorithms-data.js`의 `window.SUPPLEMENTS`에 항목 추가.
+   강의 필드 + `summary`(카드 한 줄 요약), `relatedLessons`(바꿔 볼 강의 번호 배열).
+   `category`는 `window.CATEGORY_KEYS`에 있어야 합니다(현재는 `"자바 문법"` → `lang`).
+2. `examples/java/sN-id/`에 예제를 작성하고 컴파일·실행 검증.
+   **파일 수가 데이터의 `examples` 값과 정확히 일치**해야 검증을 통과합니다.
+3. `supplements/id.html` 작성 — 기존 보충 자료를 본보기로.
+   `data-lesson-id`를 달면 안 됩니다(13강 진도에 섞입니다).
+4. `assets/js/common.js`의 `MOTIFS`에 히어로 모티프 추가.
+   `.m-moved`를 쓴다면 **원소마다 도착 지점을 다르게** 두세요 —
+   정지 프레임(reduced-motion)이 곧 도착 상태라서 목적지가 같으면 한 점에 겹칩니다.
+5. `npm test`로 검증.
+
+## 6. 접근성·금지 사항 체크리스트
 
 - 색상만으로 상태 구분 금지 (텍스트·아이콘 병행)
 - 버튼에 `aria-label`, 표에 `scope`, 접기에는 요약 텍스트

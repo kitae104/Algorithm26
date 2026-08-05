@@ -40,13 +40,15 @@
 
 ```text
 algorithm-learning-lab/
-├─ index.html                  # 랜딩 페이지 (강의 카드, 검색·필터, 진행률)
+├─ index.html                  # 랜딩 페이지 (3D 히어로, 강의 카드, 검색·필터, 추가 정보)
 ├─ algorithms/                 # 13개 강의 페이지 (01-…13-)
+├─ supplements/                # 추가 정보 (커리큘럼 밖 보충 자료: 람다식, 자바 스트림)
 ├─ assets/
 │  ├─ css/                     # common/landing/lesson/code/visualization/quiz/print
 │  └─ js/                      # theme/common/algorithms-data/landing/code-copy/
-│                              # visualization/quiz/progress
+│                              # visualization/quiz/progress/hero-3d
 ├─ examples/java/              # 강의별 Java 예제 (단계·완성·추적·응용·시작·정답)
+│                              # + s1-/s2- 보충 자료 예제
 ├─ data/algorithms.json        # 강의 메타데이터(JS와 동기화)
 ├─ docs/
 │  ├─ curriculum.md            # 교육과정 연결 구조

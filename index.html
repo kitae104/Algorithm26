@@ -14,6 +14,22 @@
     <link rel="stylesheet" href="assets/css/landing.css">
     <link rel="stylesheet" href="assets/css/print.css">
     <script src="assets/js/theme.js"></script>
+
+    <!-- 히어로 3D 무대. three.js는 ES 모듈로만 배포되므로 import map으로 이름을
+         해석하고, hero-3d.js는 defer 성격의 module 스크립트라 파싱과 병렬로
+         내려받힌 뒤 DOMContentLoaded 직전에 실행된다 — landing.js의 초기화가
+         돌 때는 window.AllHero3D가 이미 준비돼 있다.
+         CDN이 막히거나 WebGL이 없으면 이 스크립트가 조용히 실행되지 않고,
+         landing.js는 기존 2D 막대 시각화로 그대로 그린다. -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.min.js",
+            "three/": "https://cdn.jsdelivr.net/npm/three@0.180.0/"
+        }
+    }
+    </script>
+    <script type="module" src="assets/js/hero-3d.js"></script>
 </head>
 <body>
     <a class="skip-link" href="#main">본문으로 건너뛰기</a>
@@ -45,10 +61,14 @@
                 <p class="hero__meta">Java 17+ · 강의당 20개 섹션 · 시각화 · 실습 · 확인 퀴즈</p>
             </div>
 
-            <div class="hero-viz">
-                <p class="hero-viz__label">LIVE — SELECTION SORT · 4강에서 직접 구현합니다</p>
-                <div class="hero-viz__bars" id="hero-viz-bars" role="img"
-                     aria-label="선택 정렬이 배열을 단계별로 정렬하는 라이브 시각화"></div>
+            <div class="hero-viz" id="hero-viz">
+                <p class="hero-viz__label" id="hero-viz-label">LIVE — SELECTION SORT · 4강에서 직접 구현합니다</p>
+                <!-- 무대 하나에 렌더러 둘. three.js가 뜨면 stage에 canvas가 붙고
+                     2D 막대는 숨는다(.is-3d). 안 뜨면 2D 막대가 그대로 보인다. -->
+                <div class="hero-viz__stage" id="hero-viz-stage" role="img"
+                     aria-label="선택 정렬이 배열을 단계별로 정렬하는 라이브 시각화">
+                    <div class="hero-viz__bars" id="hero-viz-bars"></div>
+                </div>
                 <p class="hero-viz__caption" id="hero-viz-caption"></p>
                 <div class="hero-viz__foot">
                     <ol class="hero-viz__timeline" id="hero-viz-timeline" aria-label="회차 진행"></ol>
@@ -179,24 +199,6 @@
             </ol>
         </section>
 
-        <!-- 전체 진행률 -->
-        <section class="overall-progress" aria-labelledby="progress-title">
-            <h2 id="progress-title" class="visually-hidden">학습 진행률</h2>
-            <div class="overall-progress__card">
-                <span class="overall-progress__icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-                         stroke-linecap="round" stroke-linejoin="round" focusable="false">
-                        <path d="M12 3.5a8.5 8.5 0 1 1-8.5 8.5"/>
-                        <path d="M12 3.5v8.5l6 4"/>
-                    </svg>
-                </span>
-                <span class="overall-progress__text" id="overall-progress-text">전체 진행률 0%</span>
-                <div class="progress-track" role="progressbar" aria-labelledby="overall-progress-text">
-                    <div class="progress-track__fill" id="overall-progress-fill"></div>
-                </div>
-            </div>
-        </section>
-
         <!-- 강좌 목차 -->
         <section class="courses" id="courses" aria-labelledby="courses-title">
             <div class="section-head section-head--row">
@@ -229,12 +231,6 @@
                     <option value="초급">초급</option>
                     <option value="중급">중급</option>
                 </select>
-                <select id="filter-status" class="courses__select" aria-label="학습 상태 필터">
-                    <option value="">전체 상태</option>
-                    <option value="new">미시작</option>
-                    <option value="started">학습 중</option>
-                    <option value="done">완료</option>
-                </select>
             </div>
 
             <!-- 학습 영역 칩 — 색과 필터를 겸한다. landing.js가 강의 수와 함께 그린다. -->
@@ -244,6 +240,21 @@
             <p class="courses__empty" id="courses-empty">
                 조건에 맞는 강의가 없습니다. 검색어나 필터를 바꿔 보세요.
             </p>
+        </section>
+
+        <!-- 추가 정보 — 13강 커리큘럼 바깥의 사전 공부용 자료.
+             landing.js가 window.SUPPLEMENTS로 카드를 그린다. -->
+        <section class="extras" id="extras" aria-labelledby="extras-title">
+            <div class="section-head">
+                <p class="extras__eyebrow">추가 정보 · SUPPLEMENTARY</p>
+                <h2 id="extras-title">강의 코드를 더 짧게 쓰고 싶다면</h2>
+                <p class="section-head__sub">
+                    13강은 반복문과 조건문으로 알고리즘의 동작을 먼저 눈에 익히도록 짜여 있습니다.
+                    그 코드가 익숙해진 뒤 <strong>같은 로직을 절반 길이로 다시 쓰는 방법</strong>이 자바에 있습니다.
+                    강의 진도와 무관하게 언제든 미리 읽어 두어도 좋습니다.
+                </p>
+            </div>
+            <ul class="extra-grid" id="extra-grid"></ul>
         </section>
     </main>
 

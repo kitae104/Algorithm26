@@ -44,6 +44,36 @@ for (const lesson of lessons) {
     }
 }
 
+/* ---------- 1-b. 보충 자료(추가 정보) 데이터 ----------
+   커리큘럼 밖의 자료지만 데이터 구조는 강의와 같은 규율을 지킨다.
+   특히 relatedLessons가 실제 강의 번호를 가리키는지 확인한다 —
+   랜딩 카드에 "바꿔 볼 코드 4강 · 5강"으로 그대로 찍히기 때문에
+   없는 번호가 들어가면 학생을 헛걸음시킨다. */
+const supplements = sandbox.SUPPLEMENTS || [];
+if (supplements.length === 0) fail("보충 자료(SUPPLEMENTS)가 비어 있음");
+
+const SUPPLEMENT_FIELDS = REQUIRED_FIELDS.concat(["summary", "relatedLessons"]);
+const lessonOrders = new Set(lessons.map(l => l.order));
+for (const item of supplements) {
+    for (const field of SUPPLEMENT_FIELDS) {
+        if (item[field] === undefined || item[field] === "") {
+            fail(`보충 자료 ${item.id || "?"}: 필드 누락 — ${field}`);
+        }
+    }
+    /* 강의와 id가 겹치면 진도 저장소(all-progress-v1)에서 같은 칸을 쓴다 */
+    if (lessons.some(l => l.id === item.id)) {
+        fail(`보충 자료 ${item.id}: 강의와 id가 겹침 — 진도 저장이 섞인다`);
+    }
+    for (const order of item.relatedLessons || []) {
+        if (!lessonOrders.has(order)) {
+            fail(`보충 자료 ${item.id}: relatedLessons에 없는 강의 번호 — ${order}강`);
+        }
+    }
+    if (!(sandbox.CATEGORY_KEYS || {})[item.category]) {
+        fail(`보충 자료 ${item.id}: CATEGORY_KEYS에 없는 분류 — ${item.category}`);
+    }
+}
+
 /* ---------- 2. 강의 HTML 구조 ---------- */
 const REQUIRED_SECTIONS = [
     "sec-intro", "sec-objectives", "sec-prereq", "sec-problem",
@@ -131,6 +161,63 @@ for (const lesson of lessons) {
     }
 }
 
+/* ---------- 2-b. 보충 자료 HTML 구조 ----------
+   강의의 20개 섹션 규격은 적용하지 않는다(커리큘럼이 아니다).
+   대신 "강의가 아니라는 것"이 마크업에서도 지켜지는지를 본다:
+   data-lesson-id를 달면 common.js가 진도를 기록하고 이전/다음 강의를
+   붙여 13강 목록에 끼어든 것처럼 보인다. */
+const SUPPLEMENT_MARKERS = [
+    ["data-site-header", "상단 내비게이션 자리"],
+    ["lesson-toc-list", "내부 목차"],
+    ["lesson-pager", "문서 이동"],
+    ["quiz-root", "퀴즈 루트"],
+    ["assets/js/common.js", "common.js 로드"],
+    ["assets/js/code-copy.js", "코드 복사 로드"],
+    ["assets/js/quiz.js", "quiz.js 로드"],
+    ["assets/css/print.css", "인쇄 CSS"],
+    ["AlgoQuiz.init", "퀴즈 초기화"]
+];
+
+for (const item of supplements) {
+    const filePath = join(ROOT, item.path);
+    if (!existsSync(filePath)) {
+        fail(`보충 자료 파일 없음: ${item.path}`);
+        continue;
+    }
+    const html = readFileSync(filePath, "utf8");
+
+    if (!html.includes(`data-supplement-id="${item.id}"`)) {
+        fail(`${item.path}: body data-supplement-id가 "${item.id}"가 아님`);
+    }
+    if (html.includes("data-lesson-id=")) {
+        fail(`${item.path}: data-lesson-id가 있음 — 보충 자료가 13강 진도에 섞인다`);
+    }
+    if (html.includes("lesson-complete-slot")) {
+        fail(`${item.path}: 완료 버튼 자리가 있음 — 보충 자료에는 완료 표시를 두지 않는다`);
+    }
+    for (const [marker, label] of SUPPLEMENT_MARKERS) {
+        if (!html.includes(marker)) fail(`${item.path}: ${label}(${marker}) 누락`);
+    }
+
+    const copyTargets = [...html.matchAll(/data-copy-target="([^"]+)"/g)].map(m => m[1]);
+    const ids = [...html.matchAll(/\sid="([^"]+)"/g)].map(m => m[1]);
+    const idSet = new Set();
+    for (const id of ids) {
+        if (idSet.has(id)) fail(`${item.path}: id 중복 — ${id}`);
+        idSet.add(id);
+    }
+    for (const target of copyTargets) {
+        if (!idSet.has(target)) fail(`${item.path}: 복사 대상 id 없음 — ${target}`);
+    }
+
+    const refs = [...html.matchAll(/(?:href|src)="([^"#]+?)"/g)].map(m => m[1])
+        .filter(u => !/^(https?:|data:|mailto:|javascript:)/.test(u));
+    for (const ref of refs) {
+        const target = resolve(dirname(filePath), ref.split("?")[0]);
+        if (!existsSync(target)) fail(`${item.path}: 깨진 링크 — ${ref}`);
+    }
+}
+
 /* ---------- CSS 정적 불변식 ---------- */
 const commonCss = readFileSync(join(ROOT, "assets/css/common.css"), "utf8");
 
@@ -157,7 +244,11 @@ if (!reducedBlock) {
 }
 
 /* 사용하지 않는 규칙이 다시 들어오지 않게 (assets/css 전체를 스캔) */
-const DEAD_SELECTORS = [".inline-array", ".lesson-hero__actions", ".print-button"];
+const DEAD_SELECTORS = [
+    ".inline-array", ".lesson-hero__actions", ".print-button",
+    /* 랜딩에서 걷어낸 진도 UI — 전체 진행률 배너와 카드의 학습 상태 글자 */
+    ".overall-progress", ".course-card__status"
+];
 const cssDir = join(ROOT, "assets/css");
 for (const file of readdirSync(cssDir)) {
     if (!file.endsWith(".css")) continue;
@@ -193,10 +284,17 @@ if (!rootBlock) {
 /* 브라우저 JS는 ES5 문법만 쓴다 (scripts/는 Node ESM이라 제외).
    주석을 걷어낸 뒤 검사한다 — "async/await를 쓰지 않는다" 같은 설명문에
    걸리면 안 된다. 문자열 리터럴 안의 우연한 일치를 피하려고 문법으로만
-   등장하는 형태(async function / async ( / await <식>)로 좁힌다. */
+   등장하는 형태(async function / async ( / await <식>)로 좁힌다.
+
+   예외는 하나뿐이다: hero-3d.js. three.js가 ES 모듈로만 배포되어 이 파일은
+   import를 써야 하고, 따라서 <script type="module">로 실려야 한다.
+   예외가 조용히 늘지 않도록 목록으로 못박고, index.html이 실제로 module로
+   싣고 있는지도 함께 확인한다. */
+const ES_MODULE_FILES = new Set(["hero-3d.js"]);
 const jsDir = join(ROOT, "assets/js");
 for (const file of readdirSync(jsDir)) {
     if (!file.endsWith(".js")) continue;
+    if (ES_MODULE_FILES.has(file)) continue;
     const src = readFileSync(join(jsDir, file), "utf8")
         .replace(/\/\*[\s\S]*?\*\//g, "")
         .replace(/(^|[^:])\/\/[^\n]*/g, "$1");
@@ -217,11 +315,18 @@ const motifBlock = commonJs.match(/var MOTIFS = \{[\s\S]*?\n {4}\};/);
 if (!motifBlock) {
     fail("common.js: MOTIFS 정의를 찾을 수 없음");
 } else {
-    for (const lesson of lessons) {
-        if (!motifBlock[0].includes(`"${lesson.id}":`)) {
-            fail(`common.js: 강의 ${lesson.id}의 히어로 모티프가 없음`);
+    for (const page of [...lessons, ...supplements]) {
+        if (!motifBlock[0].includes(`"${page.id}":`)) {
+            fail(`common.js: ${page.id}의 히어로 모티프가 없음`);
         }
     }
+}
+
+/* 보충 자료 페이지가 강의 페이지와 같은 골격을 쓰려면 common.js가
+   data-supplement-id를 알아야 한다. 이 분기가 사라지면 보충 자료의
+   헤더 링크가 ../ 없이 깨지고 목차도 생성되지 않는다. */
+if (!commonJs.includes("dataset.supplementId")) {
+    fail("common.js: data-supplement-id 처리가 없음 — 보충 자료 페이지 골격이 깨진다");
 }
 if (/window\.print\s*\(/.test(commonJs)) {
     fail("common.js: 인쇄 진입점(window.print)이 남아 있음 — 인쇄 기능은 현재 제공하지 않음");
@@ -239,9 +344,42 @@ if (!existsSync(indexPath)) {
         const target = resolve(ROOT, ref.split("?")[0]);
         if (!existsSync(target)) fail(`index.html: 깨진 링크 — ${ref}`);
     }
-    for (const marker of ["hero-viz-bars", "course-grid", "filter-category", "filter-difficulty", "course-search", "overall-progress-fill"]) {
+    for (const marker of [
+        "hero-viz-stage",       /* 3D 무대 자리 */
+        "hero-viz-bars",        /* 3D가 못 뜰 때의 2D 막대 대체물 */
+        "course-grid", "filter-category", "filter-difficulty", "course-search",
+        "extra-grid"            /* 추가 정보 카드 자리 */
+    ]) {
         if (!html.includes(marker)) fail(`index.html: 필수 요소 누락 — ${marker}`);
     }
+
+    /* 화면에서 걷어낸 진도 UI가 다시 들어오지 않게 */
+    for (const [marker, label] of [
+        ["overall-progress", "전체 진행률 배너(랜딩에서 제거됨)"],
+        ["course-card__status", "카드의 학습 상태 글자(랜딩에서 제거됨)"],
+        ["filter-status", "학습 상태 필터(랜딩에서 제거됨)"]
+    ]) {
+        if (html.includes(marker)) fail(`index.html: 제거된 마크업이 남아 있음 — ${label}`);
+    }
+
+    /* three.js는 ES 모듈로만 배포된다 — import map과 module 로드가 짝이다.
+       둘 중 하나만 남으면 3D 무대는 조용히 뜨지 않고 2D로만 떨어진다. */
+    if (!/<script type="importmap">/.test(html)) {
+        fail("index.html: three.js import map이 없음 — 3D 히어로가 로드되지 않는다");
+    }
+    if (!/<script type="module" src="assets\/js\/hero-3d\.js"><\/script>/.test(html)) {
+        fail("index.html: hero-3d.js를 type=\"module\"로 싣지 않음");
+    }
+}
+
+/* 랜딩 JS에 3D 실패 시의 2D 경로가 남아 있는지 — CDN이 막힌 환경에서
+   히어로가 빈 상자로 남지 않게 하는 유일한 안전망이다. */
+const landingJs = readFileSync(join(ROOT, "assets/js/landing.js"), "utf8");
+if (!landingJs.includes("window.AllHero3D")) {
+    fail("landing.js: 3D 무대 진입점(window.AllHero3D)을 찾을 수 없음");
+}
+if (!/if\s*\(stage\)/.test(landingJs)) {
+    fail("landing.js: 3D 실패 시 2D 막대로 떨어지는 분기가 없음");
 }
 
 /* ---------- 5. Java 예제 폴더 ---------- */
@@ -256,8 +394,23 @@ for (const lesson of lessons) {
     if (javaFiles.length < 4) warn(`examples/java/${num}-${lesson.id}: Java 파일이 ${javaFiles.length}개뿐`);
 }
 
+/* 보충 자료 예제 — 강의 폴더와 섞이지 않게 s1/s2 접두사를 쓴다.
+   examples 필드에 적은 수와 실제 파일 수가 어긋나면 카드가 거짓말을 한다. */
+for (const item of supplements) {
+    const dir = join(ROOT, "examples", "java", `s${item.order}-${item.id}`);
+    if (!existsSync(dir)) {
+        fail(`보충 자료 Java 예제 폴더 없음: examples/java/s${item.order}-${item.id}`);
+        continue;
+    }
+    const javaFiles = readdirSync(dir).filter(f => f.endsWith(".java"));
+    if (javaFiles.length !== item.examples) {
+        fail(`examples/java/s${item.order}-${item.id}: .java 파일이 ${javaFiles.length}개인데 ` +
+            `데이터에는 examples: ${item.examples}로 적혀 있음`);
+    }
+}
+
 /* ---------- 결과 ---------- */
-console.log(`검사한 강의: ${lessons.length}개`);
+console.log(`검사한 강의: ${lessons.length}개, 보충 자료: ${supplements.length}개`);
 if (warnings.length) {
     console.log(`\n경고 ${warnings.length}건:`);
     for (const w of warnings) console.log("  [warn] " + w);
