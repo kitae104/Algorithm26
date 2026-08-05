@@ -1792,15 +1792,178 @@ Arrays.sort 결과와 일치(검증): true</code></pre>
                 </details>
             </section>
 
-            <!-- 18. 확인 퀴즈 -->
+            <!-- 18. 람다·스트림 수정 문제 -->
+            <section class="lesson-section" id="sec-modernize" aria-labelledby="h-modernize">
+                <h2 id="h-modernize" data-toc-label="람다·스트림 수정 문제"><span class="section-no">18</span>람다·스트림 수정 문제</h2>
+                <p>
+                    지금까지 쓴 코드를 <strong>같은 결과를 내는 다른 문법</strong>으로 고쳐 보는 문제입니다.
+                    필요한 문법은 추가 정보의
+                    <a href="../supplements/lambda-expressions.html">람다식</a> 문서에 모두 있습니다.
+                    먼저 스스로 고쳐 본 뒤 정답을 펼치세요.
+                </p>
+                <div class="note-box note-box--warn">
+                    <span class="note-box__title">기준을 바꿔도 정렬 알고리즘은 그대로다</span>
+                    <p>
+                        <code>Comparator</code>를 어떻게 쓰든 <strong>삽입 정렬은 최악 O(n²)</strong> 그대로입니다.
+                        비교 횟수도 한 번 줄지 않습니다.
+                        4강의 성과는 <strong>정렬 알고리즘 자체</strong>이고, 람다는 그 알고리즘에
+                        <strong>기준을 갈아 끼우기 쉽게</strong> 만들 뿐입니다.
+                    </p>
+                </div>
+
+                <h3>수정 문제 ① — 부호를 따지는 비교를 "무엇으로 비교할지"로</h3>
+                <p>
+                    <code>ProductSorterSolution.java</code>의 기준 두 개입니다.
+                    둘 다 중괄호와 <code>return</code>을 쓰고 있고, 내림차순은
+                    <strong><code>a</code>와 <code>b</code>의 순서를 뒤집어</strong> 표현했습니다.
+                    이 방식은 읽는 사람이 <strong>부호를 머릿속에서 따져 봐야</strong> 의미가 드러납니다.
+                </p>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">ProductSorterSolution.java — 지금 코드</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-mod-q1" aria-label="수정 문제 1 원본 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-mod-q1" class="language-java">/** 기준 1: 가격 오름차순 */
+static final Comparator&lt;Product&gt; PRICE_ASC = (a, b) -&gt; {
+    return Integer.compare(a.price, b.price);
+};
+
+/** 기준 2: 평점 내림차순 — 인자 순서를 바꾸면 방향이 뒤집힌다 */
+static final Comparator&lt;Product&gt; RATING_DESC = (a, b) -&gt; {
+    return Double.compare(b.rating, a.rating);
+};</code></pre>
+                </article>
+                <p><strong>요구사항</strong></p>
+                <ul>
+                    <li>중괄호와 <code>return</code>을 없앨 것</li>
+                    <li>내림차순을 <strong><code>b</code>, <code>a</code> 순서 뒤집기가 아닌 방법</strong>으로 표현할 것</li>
+                    <li>줄일 수 있는 곳은 메서드 참조까지 줄여 볼 것</li>
+                    <li>정렬 결과는 지금과 완전히 같아야 함</li>
+                    <li>힌트 — <a href="../supplements/lambda-expressions.html#sec-standard">표준 인터페이스</a>와
+                        <a href="../supplements/lambda-expressions.html#sec-methodref">메서드 참조</a></li>
+                </ul>
+
+                <details class="answer-box">
+                    <summary>정답과 해설 보기 — 수정 문제 ①</summary>
+                    <article class="code-card">
+                        <header class="code-card__header">
+                            <div class="code-card__info">
+                                <span class="code-card__language">Java</span>
+                                <strong class="code-card__filename">ModernizeSolution.java — 정답 (3단계로 줄이기)</strong>
+                            </div>
+                            <button type="button" class="copy-code-button" data-copy-target="code-mod-a1" aria-label="수정 문제 1 정답 코드 복사">코드 복사</button>
+                        </header>
+                        <pre><code id="code-mod-a1" class="language-java">// 1단계: 중괄호와 return을 걷어낸다 (몸통이 식 하나면 함께 생략된다)
+Comparator&lt;Product&gt; priceAsc = (a, b) -&gt; Integer.compare(a.price, b.price);
+
+// 2단계: "무엇으로 비교할지"만 주는 형태로
+Comparator&lt;Product&gt; priceAsc2 = Comparator.comparingInt(p -&gt; p.price);
+
+// 3단계: 내림차순은 뒤집어 말한다 — 부호를 따질 일이 없어진다
+Comparator&lt;Product&gt; ratingDesc =
+        Comparator.comparingDouble((Product p) -&gt; p.rating).reversed();</code></pre>
+                    </article>
+                    <p>
+                        <code>(Product p)</code>처럼 <strong>타입을 직접 적은 이유</strong>가 있습니다.
+                        <code>Comparator.comparingDouble(...)</code>만 보고는 컴파일러가
+                        <code>p</code>가 무엇인지 알 수 없기 때문입니다.
+                        대입받는 변수에 <code>Comparator&lt;Product&gt;</code>라고 적혀 있어도
+                        <strong><code>.reversed()</code>를 이어 붙이는 순간 추론 근거가 끊깁니다.</strong>
+                    </p>
+                    <p>
+                        여기서 얻은 것은 줄 수가 아닙니다. <code>RATING_DESC</code>는
+                        <strong>"왜 <code>b</code>가 앞에 있지?"</strong>를 생각해야 뜻이 보이지만,
+                        <code>comparingDouble(...).reversed()</code>는
+                        <strong>"평점으로 비교하고 뒤집는다"</strong>가 그대로 읽힙니다.
+                    </p>
+                </details>
+
+                <h3>수정 문제 ② — if 분기로 쓴 다중 기준을 thenComparing으로</h3>
+                <p>
+                    기준 3은 "평점 내림차순, 동점이면 이름 오름차순"입니다.
+                    지금은 <strong>두 규칙이 <code>compare</code> 안에 뒤섞여</strong> 있어
+                    <code>if</code>를 읽고 나서야 구조가 보입니다.
+                </p>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">ProductSorterSolution.java — 지금 코드</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-mod-q2" aria-label="수정 문제 2 원본 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-mod-q2" class="language-java">/** 기준 3: 평점 내림차순, 동점이면 이름 오름차순 (다중 기준) */
+static final Comparator&lt;Product&gt; RATING_DESC_THEN_NAME = (a, b) -&gt; {
+    int byRating = Double.compare(b.rating, a.rating);
+    if (byRating != 0) {
+        return byRating;      // 평점이 다르면 평점으로 결정
+    }
+    return a.name.compareTo(b.name); // 동점일 때만 이름으로 결정
+};</code></pre>
+                </article>
+                <p><strong>요구사항</strong></p>
+                <ul>
+                    <li><code>if</code> 없이 표현할 것</li>
+                    <li><strong>안정 정렬이 깨지지 않아야 함</strong> — 가격이 같은 23000원 두 상품이
+                        입력 순서(무선 마우스 → 모니터 받침대)를 유지하는지 확인할 것</li>
+                    <li>힌트 — <code>reversed()</code>와 <code>thenComparing()</code></li>
+                </ul>
+
+                <details class="answer-box">
+                    <summary>정답과 해설 보기 — 수정 문제 ②</summary>
+                    <article class="code-card">
+                        <header class="code-card__header">
+                            <div class="code-card__info">
+                                <span class="code-card__language">Java</span>
+                                <strong class="code-card__filename">ModernizeSolution.java — 정답</strong>
+                            </div>
+                            <button type="button" class="copy-code-button" data-copy-target="code-mod-a2" aria-label="수정 문제 2 정답 코드 복사">코드 복사</button>
+                        </header>
+                        <pre><code id="code-mod-a2" class="language-java">Comparator&lt;Product&gt; ratingDescThenName =
+        Comparator.comparingDouble((Product p) -&gt; p.rating)
+                  .reversed()
+                  .thenComparing(Product::getName);
+
+// 정렬 호출은 그대로다
+insertionSort(products, ratingDescThenName);</code></pre>
+                    </article>
+                    <p>
+                        <strong>"평점으로 비교 → 뒤집기 → 동점이면 이름으로"</strong>가
+                        위에서 아래로 순서대로 읽힙니다. 이것이 이 문제의 요점입니다.
+                        코드가 짧아진 것은 부수 효과일 뿐입니다.
+                    </p>
+                    <p>
+                        안정성은 <code>Comparator</code>가 아니라 <strong>정렬 알고리즘</strong>이 정합니다.
+                        <code>insertionSort</code>의 <code>while (j &gt;= 0 &amp;&amp; comp.compare(...) &gt; 0)</code>에서
+                        <code>&gt; 0</code>을 <code>&gt;= 0</code>으로 바꾸면 어떤 <code>Comparator</code>를 써도
+                        안정성이 깨집니다. <strong>문법을 바꾼다고 이 성질이 달라지지 않습니다.</strong>
+                    </p>
+                    <p>
+                        <code>Product::getName</code>으로 줄일 수 있었던 것은
+                        "받은 값을 그대로, 순서대로, 전부 넘기는" 경우이기 때문입니다.
+                        <code>p -&gt; p.name.trim()</code>처럼 무언가를 더 한다면 줄일 수 없습니다.
+                    </p>
+                </details>
+
+                <p>
+                    정답 전체와 "이전 기준과 결과가 같은지" 확인하는 코드는
+                    <code>examples/java/04-sorting-algorithms/ModernizeSolution.java</code>에 있습니다.
+                    직접 실행해 모든 비교가 <code>true</code>로 나오는지 확인하세요.
+                </p>
+            </section>
+
+            <!-- 19. 확인 퀴즈 -->
             <section class="lesson-section" id="sec-quiz" aria-labelledby="h-quiz">
-                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">18</span>확인 퀴즈</h2>
+                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">19</span>확인 퀴즈</h2>
                 <div id="quiz-root"></div>
             </section>
 
-            <!-- 19. 오늘의 핵심 정리 -->
+            <!-- 20. 오늘의 핵심 정리 -->
             <section class="lesson-section" id="sec-summary" aria-labelledby="h-summary">
-                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">19</span>오늘의 핵심 정리</h2>
+                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">20</span>오늘의 핵심 정리</h2>
                 <ul class="summary-list">
                     <li><strong>선택 정렬</strong> = 2강의 최솟값 찾기(값 대신 <strong>위치</strong> 기억) + 3강의 중첩 반복문.
                         한 회전마다 앞쪽에 한 자리가 확정된다.</li>
@@ -1817,9 +1980,9 @@ Arrays.sort 결과와 일치(검증): true</code></pre>
                 <div id="lesson-complete-slot"></div>
             </section>
 
-            <!-- 20. 다음 강의 연결 -->
+            <!-- 21. 다음 강의 연결 -->
             <section class="lesson-section" id="sec-next" aria-labelledby="h-next">
-                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">20</span>다음 강의 연결</h2>
+                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">21</span>다음 강의 연결</h2>
                 <p>
                     다음 강의는 <strong>5강. 순차 탐색과 이진 탐색</strong>입니다.
                     오늘 만든 "정렬된 배열"이 그대로 다음 강의의 출발점이 됩니다.
