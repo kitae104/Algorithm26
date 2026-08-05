@@ -2315,15 +2315,217 @@ public class StockMasterSolution {
                 </details>
             </section>
 
-            <!-- 18. 확인 퀴즈 -->
+            <!-- 18. 람다·스트림 수정 문제 -->
+            <section class="lesson-section" id="sec-modernize" aria-labelledby="h-modernize">
+                <h2 id="h-modernize" data-toc-label="람다·스트림 수정 문제"><span class="section-no">18</span>람다·스트림 수정 문제</h2>
+                <p>
+                    지금까지 쓴 코드를 <strong>같은 결과를 내는 다른 문법</strong>으로 고쳐 보는 문제입니다.
+                    필요한 문법은 추가 정보의
+                    <a href="../supplements/lambda-expressions.html">람다식</a>과
+                    <a href="../supplements/java-streams.html">자바 스트림</a> 문서에 모두 있습니다.
+                    먼저 스스로 고쳐 본 뒤 정답을 펼치세요.
+                </p>
+                <div class="note-box note-box--warn">
+                    <span class="note-box__title">문법을 바꿔도 이 강의의 결정은 그대로다</span>
+                    <p>
+                        13강은 지금까지 배운 것을 조합하는 강의입니다. 문법을 바꿔도
+                        <strong>정렬은 O(n log n), 탐색은 O(log n), 집계는 O(n)</strong> 그대로입니다.
+                        <strong>자료구조 선택이 성능을 정하고, 문법은 읽기 쉬움을 정합니다.</strong>
+                    </p>
+                </div>
+
+                <h3>수정 문제 ① — containsKey · put · get 3단 누적을 한 줄로</h3>
+                <p>
+                    <code>Step4CategoryStats.java</code>는 카테고리별 상품 수를 세려고
+                    <strong><code>containsKey</code>로 확인 → 없으면 <code>put(0)</code> → 다시 <code>put(get + 1)</code></strong>
+                    3단계를 거칩니다. 게다가 <code>HashMap</code>이 순서를 보장하지 않아
+                    <code>categoryOrder</code> 보조 리스트로 등장 순서를 따로 기억합니다.
+                </p>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">Step4CategoryStats.java — 지금 코드</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-mod-q1" aria-label="수정 문제 1 원본 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-mod-q1" class="language-java">Map&lt;String, Integer&gt; countByCategory = new HashMap&lt;&gt;();
+List&lt;String&gt; categoryOrder = new ArrayList&lt;&gt;();   // 등장 순서를 따로 기억
+
+for (Product p : products) {
+    if (!countByCategory.containsKey(p.category)) {
+        categoryOrder.add(p.category);              // 처음 보는 카테고리 등록
+        countByCategory.put(p.category, 0);
+    }
+    countByCategory.put(p.category, countByCategory.get(p.category) + 1);
+}</code></pre>
+                </article>
+                <p><strong>요구사항</strong></p>
+                <ul>
+                    <li>카테고리별 상품 수를 <strong>한 줄</strong>로 구할 것</li>
+                    <li><code>categoryOrder</code> 보조 리스트 없이 만들 것</li>
+                    <li>힌트 — <a href="../supplements/java-streams.html#sec-collect">모으기와 그룹핑</a>의
+                        <code>groupingBy</code> + <code>counting()</code></li>
+                </ul>
+
+                <details class="answer-box">
+                    <summary>정답과 해설 보기 — 수정 문제 ①</summary>
+                    <article class="code-card">
+                        <header class="code-card__header">
+                            <div class="code-card__info">
+                                <span class="code-card__language">Java</span>
+                                <strong class="code-card__filename">ModernizeSolution.java — 정답</strong>
+                            </div>
+                            <button type="button" class="copy-code-button" data-copy-target="code-mod-a1" aria-label="수정 문제 1 정답 코드 복사">코드 복사</button>
+                        </header>
+                        <pre><code id="code-mod-a1" class="language-java">Map&lt;String, Long&gt; countByCategory = products.stream()
+        .collect(Collectors.groupingBy(p -&gt; p.category, Collectors.counting()));</code></pre>
+                    </article>
+                    <p>
+                        값 타입이 <code>Integer</code>가 아니라 <code>Long</code>인 것에 주의하세요.
+                        <code>counting()</code>은 원소 수를 <code>long</code>으로 세기 때문입니다.
+                    </p>
+                    <p>
+                        <code>categoryOrder</code>가 풀던 문제(등장 순서 고정)는 사라지지 않았습니다.
+                        <strong><code>HashMap</code> 기반인 <code>groupingBy</code>의 결과도 순서를 보장하지 않으므로</strong>,
+                        출력 순서가 필요하면 <code>TreeMap</code>으로 감싸거나 정렬을 따로 명시해야 합니다.
+                    </p>
+                </details>
+
+                <h3>수정 문제 ② — 카테고리별 평균 가격 (스트림 안의 스트림)</h3>
+                <p>
+                    카테고리별 평균 가격을 구하려면 합계와 개수를 <strong>각각 다른 <code>HashMap</code>에</strong>
+                    누적한 뒤 마지막에 나눠야 합니다.
+                </p>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">ModernizeSolution.java — 지금 코드(반복문)</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-mod-q2" aria-label="수정 문제 2 원본 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-mod-q2" class="language-java">Map&lt;String, Integer&gt; sum = new HashMap&lt;&gt;();
+Map&lt;String, Integer&gt; count = new HashMap&lt;&gt;();
+for (Product p : products) {
+    sum.put(p.category, sum.getOrDefault(p.category, 0) + p.price);
+    count.put(p.category, count.getOrDefault(p.category, 0) + 1);
+}
+Map&lt;String, Double&gt; average = new HashMap&lt;&gt;();
+for (String category : sum.keySet()) {
+    average.put(category, (double) sum.get(category) / count.get(category));
+}</code></pre>
+                </article>
+                <p><strong>요구사항</strong></p>
+                <ul>
+                    <li><code>groupingBy</code>로 묶은 뒤 <strong>각 묶음에서 다시 평균을 낼 것</strong></li>
+                    <li>합계용·개수용 <code>HashMap</code>을 따로 두지 말 것</li>
+                    <li>힌트 — <code>mapToInt</code> + <code>average()</code> + <code>orElse</code></li>
+                </ul>
+
+                <details class="answer-box">
+                    <summary>정답과 해설 보기 — 수정 문제 ②</summary>
+                    <article class="code-card">
+                        <header class="code-card__header">
+                            <div class="code-card__info">
+                                <span class="code-card__language">Java</span>
+                                <strong class="code-card__filename">ModernizeSolution.java — 정답</strong>
+                            </div>
+                            <button type="button" class="copy-code-button" data-copy-target="code-mod-a2" aria-label="수정 문제 2 정답 코드 복사">코드 복사</button>
+                        </header>
+                        <pre><code id="code-mod-a2" class="language-java">Map&lt;String, List&lt;Product&gt;&gt; grouped = products.stream()
+        .collect(Collectors.groupingBy(p -&gt; p.category));
+
+Map&lt;String, Double&gt; average = new HashMap&lt;&gt;();
+for (Map.Entry&lt;String, List&lt;Product&gt;&gt; entry : grouped.entrySet()) {
+    double avg = entry.getValue().stream()
+            .mapToInt(p -&gt; p.price)
+            .average()
+            .orElse(0);
+    average.put(entry.getKey(), avg);
+}</code></pre>
+                    </article>
+                    <p>
+                        <code>Collectors</code>에는 평균을 바로 내주는 도구도 있지만, 여기서는
+                        <strong>이미 배운 <code>mapToInt().average()</code>를 그룹마다 한 번 더 쓰는 방식</strong>으로
+                        풉니다 — 스트림을 겹쳐 쓰는 감각을 익히는 것이 목적입니다.
+                    </p>
+                </details>
+
+                <h3>수정 문제 ③ — 재고 부족 목록</h3>
+                <p>
+                    재고 5개 미만인 상품을 <strong>목록으로도, 개수로도</strong> 알아야 합니다.
+                </p>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">Step4CategoryStats.java — 지금 코드</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-mod-q3" aria-label="수정 문제 3 원본 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-mod-q3" class="language-java">int warningCount = 0;
+for (Product p : products) {
+    if (p.stock &lt; 5) {
+        warningCount++;
+        System.out.println("  " + p.summary());
+    }
+}</code></pre>
+                </article>
+                <p><strong>요구사항</strong></p>
+                <ul>
+                    <li>재고 5개 미만 상품의 <strong>목록</strong>과 <strong>개수</strong>를 각각 구할 것</li>
+                    <li>힌트 — <code>filter</code> + <code>toList()</code> + <code>count()</code></li>
+                </ul>
+
+                <details class="answer-box">
+                    <summary>정답과 해설 보기 — 수정 문제 ③</summary>
+                    <article class="code-card">
+                        <header class="code-card__header">
+                            <div class="code-card__info">
+                                <span class="code-card__language">Java</span>
+                                <strong class="code-card__filename">ModernizeSolution.java — 정답</strong>
+                            </div>
+                            <button type="button" class="copy-code-button" data-copy-target="code-mod-a3" aria-label="수정 문제 3 정답 코드 복사">코드 복사</button>
+                        </header>
+                        <pre><code id="code-mod-a3" class="language-java">List&lt;Product&gt; low = products.stream()
+        .filter(p -&gt; p.stock &lt; 5)
+        .toList();
+
+long lowCount = products.stream().filter(p -&gt; p.stock &lt; 5).count();</code></pre>
+                    </article>
+                    <p>
+                        <strong>스트림은 한 번만 소비</strong>됩니다. 목록과 개수를 모두 원하면
+                        <code>filter</code>부터 다시 시작하는 스트림을 두 번 만들거나,
+                        목록을 먼저 만든 뒤 <code>list.size()</code>를 읽어야 합니다.
+                    </p>
+                </details>
+
+                <div class="note-box note-box--tip">
+                    <span class="note-box__title">바꾸지 않은 것</span>
+                    <p>
+                        원본의 "재고 자산"(가격 × 재고의 <code>long</code> 합) 집계는 스트림으로 바꾸지 않았습니다.
+                        <code>long</code> 전용 변환 연산이 필요한데, 이는 추가 정보 문서가 다루지 않는 문법이기 때문입니다.
+                        배우지 않은 문법을 끌어오느니 <strong>반복문을 그대로 두는 편</strong>이 낫습니다.
+                    </p>
+                </div>
+
+                <p>
+                    정답 전체와 "반복문 결과와 같은지" 확인 코드는
+                    <code>examples/java/13-algorithm-project/ModernizeSolution.java</code>에 있습니다.
+                    직접 실행해 모든 비교가 <code>true</code>로 나오는지 확인하세요.
+                </p>
+            </section>
+
+            <!-- 19. 확인 퀴즈 -->
             <section class="lesson-section" id="sec-quiz" aria-labelledby="h-quiz">
-                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">18</span>확인 퀴즈</h2>
+                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">19</span>확인 퀴즈</h2>
                 <div id="quiz-root"></div>
             </section>
 
-            <!-- 19. 오늘의 핵심 정리 -->
+            <!-- 20. 오늘의 핵심 정리 -->
             <section class="lesson-section" id="sec-summary" aria-labelledby="h-summary">
-                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">19</span>오늘의 핵심 정리</h2>
+                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">20</span>오늘의 핵심 정리</h2>
                 <ul class="summary-list">
                     <li>실전 문제는 도구 이름 없이 <strong>요구사항 문장</strong>으로 온다.
                         명사에서 데이터 모델을, 동사에서 기능을, 신호 문장에서 자료구조·알고리즘을 찾는다.</li>
@@ -2338,9 +2540,9 @@ public class StockMasterSolution {
                 <div id="lesson-complete-slot"></div>
             </section>
 
-            <!-- 20. 다음 강의 연결 -->
+            <!-- 21. 다음 강의 연결 -->
             <section class="lesson-section" id="sec-next" aria-labelledby="h-next">
-                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">20</span>다음 강의 연결</h2>
+                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">21</span>다음 강의 연결</h2>
                 <p>
                     <strong>축하합니다! 13개 강의를 모두 마쳤습니다.</strong>
                     1강에서 "코드는 맞는데 알고리즘이 느리다"는 말의 뜻을 배웠던 여러분이,

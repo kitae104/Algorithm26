@@ -187,7 +187,7 @@ window.ALGORITHMS = [
         englishTitle: "Algorithm Integration Project",
         category: "프로젝트",
         difficulty: "중급",
-        examples: 9,
+        examples: 10,
         language: "Java",
         description:
             "요구사항 분석부터 자료구조 선택, 알고리즘 결합, 테스트까지 배운 내용 전체를 사용해 실전 프로그램을 설계하고 완성합니다.",
