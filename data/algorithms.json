@@ -54,7 +54,7 @@
         "englishTitle": "Linear Search and Binary Search",
         "category": "탐색",
         "difficulty": "초급",
-        "examples": 11,
+        "examples": 12,
         "language": "Java",
         "description": "순차 탐색과 이진 탐색의 범위 축소 과정을 비교하고 도서·재고 검색 프로그램으로 정렬된 데이터의 힘을 확인합니다.",
         "path": "algorithms/05-search-algorithms.html"

@@ -392,6 +392,80 @@ for (const lesson of lessons) {
     }
     const javaFiles = readdirSync(dir).filter(f => f.endsWith(".java"));
     if (javaFiles.length < 4) warn(`examples/java/${num}-${lesson.id}: Java 파일이 ${javaFiles.length}개뿐`);
+
+    /* 강의 카드에 찍히는 예제 수는 실제 파일 수와 같아야 한다.
+       수정 문제로 ModernizeSolution.java가 늘면서 어긋나기 쉬워졌다. */
+    if (javaFiles.length !== lesson.examples) {
+        fail(`examples/java/${num}-${lesson.id}: .java 파일이 ${javaFiles.length}개인데 ` +
+            `데이터에는 examples: ${lesson.examples}로 적혀 있음`);
+    }
+}
+
+/* ---------- 6. 람다·스트림 수정 문제 ----------
+   커리큘럼 밖 문법(람다·스트림)을 끌어오는 자리이므로 규칙이 셋 있다.
+   (1) 정해진 6개 강의에만 있어야 한다 — 재귀·DP 강의로 번지면
+       "람다를 쓰면 무조건 좋다"는 오해를 준다.
+   (2) 정답을 실제로 돌려 볼 수 있어야 한다(ModernizeSolution.java).
+   (3) 정답에 쓰는 API는 추가 정보 문서가 가르친 것뿐이어야 한다.
+       가르치지 않은 API가 정답에 나오면 학생은 풀 수가 없다. */
+const MODERNIZE_LESSONS = new Set([
+    "arrays-and-lists",
+    "brute-force-string-hash",
+    "sorting-algorithms",
+    "search-algorithms",
+    "greedy-algorithms",
+    "algorithm-project"
+]);
+
+/* 추가 정보(람다식·자바 스트림) 문서가 다루지 않는 API */
+const UNTAUGHT_APIS = [
+    ".merge(", "computeIfAbsent", "averagingInt", "averagingDouble",
+    "summingInt", "summingLong", "summarizingInt",
+    "IntStream.of", "flatMap", "takeWhile", "dropWhile",
+    "parallelStream", "naturalOrder", "mapToLong"
+];
+
+for (const lesson of lessons) {
+    const num = String(lesson.order).padStart(2, "0");
+    const html = existsSync(join(ROOT, lesson.path))
+        ? readFileSync(join(ROOT, lesson.path), "utf8")
+        : "";
+    const solutionPath = join(ROOT, "examples", "java", `${num}-${lesson.id}`,
+        "ModernizeSolution.java");
+    const hasSection = html.includes('id="sec-modernize"');
+    const hasSolution = existsSync(solutionPath);
+
+    if (MODERNIZE_LESSONS.has(lesson.id)) {
+        if (!hasSection) {
+            fail(`${lesson.path}: 수정 문제 섹션(sec-modernize) 누락`);
+        }
+        if (!hasSolution) {
+            fail(`examples/java/${num}-${lesson.id}: ModernizeSolution.java 없음`);
+        }
+
+        /* 어휘 잠금 — 섹션 안의 코드와 정답 파일 양쪽을 본다 */
+        const sectionMatch = html.match(/id="sec-modernize"[\s\S]*?\n {12}<\/section>/);
+        const sources = [];
+        if (sectionMatch) sources.push([`${lesson.path} (sec-modernize)`, sectionMatch[0]]);
+        if (hasSolution) {
+            sources.push([`examples/java/${num}-${lesson.id}/ModernizeSolution.java`,
+                readFileSync(solutionPath, "utf8")]);
+        }
+        for (const [label, source] of sources) {
+            for (const api of UNTAUGHT_APIS) {
+                if (source.includes(api)) {
+                    fail(`${label}: 추가 정보 문서가 가르치지 않는 API — ${api}`);
+                }
+            }
+        }
+    } else {
+        if (hasSection) {
+            fail(`${lesson.path}: 수정 문제 대상 강의가 아닌데 sec-modernize가 있음`);
+        }
+        if (hasSolution) {
+            fail(`examples/java/${num}-${lesson.id}: 대상 강의가 아닌데 ModernizeSolution.java가 있음`);
+        }
+    }
 }
 
 /* 보충 자료 예제 — 강의 폴더와 섞이지 않게 s1/s2 접두사를 쓴다.
