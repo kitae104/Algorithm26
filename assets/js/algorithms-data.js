@@ -44,7 +44,7 @@ window.ALGORITHMS = [
         englishTitle: "Data Processing with Arrays and Lists",
         category: "자료구조",
         difficulty: "초급",
-        examples: 9,
+        examples: 10,
         language: "Java",
         description:
             "배열과 ArrayList를 순회하며 합계, 평균, 최댓값, 조건 검색, 빈도 계산을 구현하고 성적 분석 프로그램을 완성합니다.",
@@ -57,7 +57,7 @@ window.ALGORITHMS = [
         englishTitle: "Brute Force, Strings, and Hashing",
         category: "알고리즘 기초",
         difficulty: "초급",
-        examples: 9,
+        examples: 10,
         language: "Java",
         description:
             "모든 경우를 확인하는 완전 탐색과 문자열 처리, HashMap과 HashSet을 이용한 빈도 분석을 학습하고 단어 분석 프로그램을 만듭니다.",
@@ -70,7 +70,7 @@ window.ALGORITHMS = [
         englishTitle: "Sorting Algorithms and Object Sorting",
         category: "정렬",
         difficulty: "초급",
-        examples: 10,
+        examples: 11,
         language: "Java",
         description:
             "선택·버블·삽입 정렬의 동작 원리를 단계별로 구현하고 Comparable과 Comparator로 상품 목록을 다중 기준 정렬합니다.",
@@ -148,7 +148,7 @@ window.ALGORITHMS = [
         englishTitle: "Greedy Algorithms",
         category: "설계 기법",
         difficulty: "중급",
-        examples: 11,
+        examples: 12,
         language: "Java",
         description:
             "매 순간 최선을 선택하는 그리디 전략으로 동전 교환과 회의실 배정을 해결하고 그리디가 실패하는 사례도 분석합니다.",

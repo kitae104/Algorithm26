@@ -1977,15 +1977,150 @@ public class MeetingSchedulerSolution {
                 </details>
             </section>
 
-            <!-- 18. 확인 퀴즈 -->
+            <!-- 18. 람다·스트림 수정 문제 -->
+            <section class="lesson-section" id="sec-modernize" aria-labelledby="h-modernize">
+                <h2 id="h-modernize" data-toc-label="람다·스트림 수정 문제"><span class="section-no">18</span>람다·스트림 수정 문제</h2>
+                <p>
+                    지금까지 쓴 코드를 <strong>같은 결과를 내는 다른 문법</strong>으로 고쳐 보는 문제입니다.
+                    필요한 문법은 추가 정보의
+                    <a href="../supplements/lambda-expressions.html">람다식</a> 문서에 모두 있습니다.
+                    먼저 스스로 고쳐 본 뒤 정답을 펼치세요.
+                </p>
+                <div class="note-box note-box--warn">
+                    <span class="note-box__title">기준을 바꿔도 정렬·선택은 그대로다</span>
+                    <p>
+                        기준을 <code>Comparator</code>로 뽑아내도 <strong>정렬은 그대로 O(n²), 선택은 O(n)</strong>입니다.
+                        10강의 주제는 <strong>"어떤 기준이 최적해를 주는가"</strong>이고, 람다는 그 기준을
+                        <strong>바꿔 끼워 실험하기 쉽게</strong> 만들 뿐입니다.
+                    </p>
+                </div>
+
+                <h3>수정 문제 ① — 선택 기준을 코드에서 빼내기</h3>
+                <p>
+                    <code>MeetingRoomComplete.java</code>의 <code>sortByEndTime</code>은
+                    <strong>"종료 시각으로 비교한다"는 기준이 코드에 박혀</strong> 있습니다.
+                    시작 시각이나 소요 시간 기준을 시험해 보려면 메서드를 통째로 복사해야 합니다.
+                </p>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">MeetingRoomComplete.java — 지금 코드</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-mod-q1" aria-label="수정 문제 1 원본 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-mod-q1" class="language-java">static void sortByEndTime(Meeting[] meetings) {
+    for (int i = 1; i &lt; meetings.length; i++) {
+        Meeting key = meetings[i];
+        int j = i - 1;
+        while (j &gt;= 0 &amp;&amp; meetings[j].end &gt; key.end) {
+            meetings[j + 1] = meetings[j];
+            j--;
+        }
+        meetings[j + 1] = key;
+    }
+}</code></pre>
+                </article>
+                <p><strong>요구사항</strong></p>
+                <ul>
+                    <li>정렬 로직(삽입 정렬)은 그대로 두고 <strong>비교 기준만 인자로</strong> 받을 것</li>
+                    <li>종료 시각 기준으로 부르면 지금 코드와 결과가 같아야 함</li>
+                    <li><strong>같은 메서드</strong>로 시작 시각·소요 시간 기준도 시험해 볼 것</li>
+                    <li>힌트 — <a href="../supplements/lambda-expressions.html#sec-standard">표준 인터페이스</a>의
+                        <code>Comparator</code>와 <code>comparingInt</code></li>
+                </ul>
+
+                <details class="answer-box">
+                    <summary>정답과 해설 보기 — 수정 문제 ①</summary>
+                    <article class="code-card">
+                        <header class="code-card__header">
+                            <div class="code-card__info">
+                                <span class="code-card__language">Java</span>
+                                <strong class="code-card__filename">ModernizeSolution.java — 정답</strong>
+                            </div>
+                            <button type="button" class="copy-code-button" data-copy-target="code-mod-a1" aria-label="수정 문제 1 정답 코드 복사">코드 복사</button>
+                        </header>
+                        <pre><code id="code-mod-a1" class="language-java">static void sortBy(Meeting[] meetings, Comparator&lt;Meeting&gt; rule) {
+    for (int i = 1; i &lt; meetings.length; i++) {
+        Meeting key = meetings[i];
+        int j = i - 1;
+        while (j &gt;= 0 &amp;&amp; rule.compare(meetings[j], key) &gt; 0) {
+            meetings[j + 1] = meetings[j];
+            j--;
+        }
+        meetings[j + 1] = key;
+    }
+}
+
+// 기준만 바꿔 세 전략을 같은 메서드로 비교한다
+sortBy(meetings, Comparator.comparingInt(m -&gt; m.end));      // 정답 전략
+sortBy(meetings, Comparator.comparingInt(m -&gt; m.start));    // 오답 전략
+sortBy(meetings, Comparator.comparingInt(m -&gt; m.end - m.start));</code></pre>
+                    </article>
+                    <p>
+                        정렬 로직은 <strong>한 줄도 바뀌지 않았습니다.</strong> 바뀐 것은 "무엇으로
+                        비교하는가"를 메서드 안에 적어 두느냐, 밖에서 받느냐입니다.
+                    </p>
+                    <p>
+                        이 형태는 <strong>그리디가 실패하는 사례를 직접 만들어 볼 때</strong> 특히 쓸모 있습니다.
+                        기준 하나만 바꿔 끼우면 되므로, "이 기준이 왜 정답이고 저 기준은 왜 오답인가"를
+                        메서드를 복사하지 않고도 바로 비교할 수 있습니다.
+                    </p>
+                </details>
+
+                <h3>수정 문제 ② — 종료 시각이 같은 회의는 누가 먼저인가</h3>
+                <p>
+                    <code>while (j &gt;= 0 &amp;&amp; meetings[j].end &gt; key.end)</code>는
+                    <strong>종료 시각이 같으면</strong> 아무 말도 하지 않습니다. 이때 두 회의의 순서는
+                    <strong>입력 순서에 그대로 맡겨집니다</strong> — 삽입 정렬이 안정 정렬이기 때문입니다.
+                </p>
+                <p><strong>요구사항</strong></p>
+                <ul>
+                    <li>종료 시각이 같으면 <strong>늦게 시작한(= 더 짧은) 회의를 앞</strong>에 두는 기준을 만들 것</li>
+                    <li><code>if</code> 없이 조립으로 표현할 것</li>
+                    <li>힌트 — <code>reversed()</code>와 <code>thenComparing()</code></li>
+                </ul>
+
+                <details class="answer-box">
+                    <summary>정답과 해설 보기 — 수정 문제 ②</summary>
+                    <article class="code-card">
+                        <header class="code-card__header">
+                            <div class="code-card__info">
+                                <span class="code-card__language">Java</span>
+                                <strong class="code-card__filename">ModernizeSolution.java — 정답</strong>
+                            </div>
+                            <button type="button" class="copy-code-button" data-copy-target="code-mod-a2" aria-label="수정 문제 2 정답 코드 복사">코드 복사</button>
+                        </header>
+                        <pre><code id="code-mod-a2" class="language-java">// 종료 시각으로 비교하고, 같으면 시작 시각을 뒤집어 비교한다
+Comparator&lt;Meeting&gt; byEndThenLateStart =
+        Comparator.comparingInt((Meeting m) -&gt; m.end)
+                  .thenComparing(Comparator.comparingInt((Meeting m) -&gt; m.start).reversed());
+
+sortBy(meetings, byEndThenLateStart);</code></pre>
+                    </article>
+                    <p>
+                        동점 규칙을 적지 않으면 <strong>결과가 입력 순서에 좌우</strong>됩니다.
+                        <code>thenComparing</code>은 그 "암묵적으로 입력 순서에 맡기던 규칙"을
+                        코드에 명시적으로 드러냅니다.
+                    </p>
+                </details>
+
+                <p>
+                    정답 전체와 "이전 기준과 결과가 같은지" 확인하는 코드는
+                    <code>examples/java/10-greedy-algorithms/ModernizeSolution.java</code>에 있습니다.
+                    직접 실행해 모든 비교가 <code>true</code>로 나오는지 확인하세요.
+                </p>
+            </section>
+
+            <!-- 19. 확인 퀴즈 -->
             <section class="lesson-section" id="sec-quiz" aria-labelledby="h-quiz">
-                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">18</span>확인 퀴즈</h2>
+                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">19</span>확인 퀴즈</h2>
                 <div id="quiz-root"></div>
             </section>
 
-            <!-- 19. 오늘의 핵심 정리 -->
+            <!-- 20. 오늘의 핵심 정리 -->
             <section class="lesson-section" id="sec-summary" aria-labelledby="h-summary">
-                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">19</span>오늘의 핵심 정리</h2>
+                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">20</span>오늘의 핵심 정리</h2>
                 <ul class="summary-list">
                     <li><strong>그리디</strong>는 매 순간 최선을 선택하고 번복하지 않는 설계 기법이다. 대개 정렬 한 번 + 순회 한 번으로 끝나 빠르다.</li>
                     <li>그리디 설계 3단계: <strong>최선의 기준 정의 → 정렬(4강)이나 우선순위 큐(6강)로 최선을 빠르게 찾기 → 순서대로 선택</strong>.</li>
@@ -1998,9 +2133,9 @@ public class MeetingSchedulerSolution {
                 <div id="lesson-complete-slot"></div>
             </section>
 
-            <!-- 20. 다음 강의 연결 -->
+            <!-- 21. 다음 강의 연결 -->
             <section class="lesson-section" id="sec-next" aria-labelledby="h-next">
-                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">20</span>다음 강의 연결</h2>
+                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">21</span>다음 강의 연결</h2>
                 <p>
                     다음 강의는 <strong>11강. 동적 계획법(DP)</strong>입니다.
                     오늘 그리디가 풀지 못한 문제를 DP가 이어받습니다.
