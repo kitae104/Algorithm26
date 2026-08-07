@@ -978,6 +978,21 @@ details[open].reveal-box > summary::before {
     margin-top: 0;
 }
 
+/* 완료 전까지 잠기는 정답 — 이 강의를 완료로 표시해야 열린다 */
+details.answer-box[data-locked] {
+    background: var(--surface-2);
+}
+
+details.answer-box[data-locked] > summary {
+    cursor: not-allowed;
+    color: var(--ink-faint);
+    background: var(--surface-2);
+}
+
+details.answer-box[data-locked] > summary::before {
+    content: "🔒 ";
+}
+
 /* ---------- 푸터 ---------- */
 .site-footer {
     border-top: 1px solid var(--line);

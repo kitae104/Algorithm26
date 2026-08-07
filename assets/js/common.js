@@ -928,5 +928,53 @@
             renderCompleteSlot();
             document.addEventListener("all:progresschange", renderCompleteSlot);
         }
+
+        /* ---------- 정답 잠금 (완료 전까지 최종 문제 정답 비공개) ----------
+           스스로 풀어 보기 전에 정답을 먼저 열어 보는 것을 막는다.
+           [data-locked-until-complete]가 붙은 details.answer-box만 대상으로
+           하므로, 실습 중간의 힌트성 답 상자에는 영향을 주지 않는다. */
+        var lockedAnswers = Array.prototype.slice.call(
+            document.querySelectorAll("details.answer-box[data-locked-until-complete]")
+        );
+        if (lockedAnswers.length && window.AllProgress) {
+            lockedAnswers.forEach(function (box) {
+                var summary = box.querySelector("summary");
+                if (summary && !box.dataset.unlockedLabel) {
+                    box.dataset.unlockedLabel = summary.textContent;
+                }
+            });
+
+            function renderLockedAnswers() {
+                var entry = window.AllProgress.get(lessonId);
+                var unlocked = !!(entry && entry.completed);
+                lockedAnswers.forEach(function (box) {
+                    var summary = box.querySelector("summary");
+                    if (unlocked) {
+                        box.removeAttribute("data-locked");
+                        if (summary) summary.textContent = box.dataset.unlockedLabel;
+                    } else {
+                        box.open = false;
+                        box.setAttribute("data-locked", "true");
+                        if (summary) summary.textContent = "이 강의를 완료로 표시하면 정답을 확인할 수 있습니다";
+                    }
+                });
+            }
+
+            lockedAnswers.forEach(function (box) {
+                var summary = box.querySelector("summary");
+                if (summary) {
+                    summary.addEventListener("click", function (e) {
+                        if (box.hasAttribute("data-locked")) e.preventDefault();
+                    });
+                }
+                /* 키보드 등 다른 경로로 열리는 경우를 막는 안전망 */
+                box.addEventListener("toggle", function () {
+                    if (box.hasAttribute("data-locked") && box.open) box.open = false;
+                });
+            });
+
+            renderLockedAnswers();
+            document.addEventListener("all:progresschange", renderLockedAnswers);
+        }
     });
 })();

@@ -77,6 +77,7 @@
                     <li>학생은 주어진 문제를 입력, 처리, 출력의 세 부분으로 나누어 설명할 수 있다.</li>
                     <li>학생은 "1부터 n까지의 합" 문제의 풀이 과정을 의사코드로 작성할 수 있다.</li>
                     <li>학생은 반복문 방식과 공식 방식의 핵심 연산 실행 횟수를 각각 세어 표로 비교할 수 있다.</li>
+                    <li>학생은 반복문 코드를 줄 단위로 세어, 실행 횟수가 2n+1과 같은 식으로 나타나는 이유를 설명할 수 있다.</li>
                     <li>학생은 O(1), O(n), O(n²), O(log n)의 의미를 입력 크기와 연결하여 설명할 수 있다.</li>
                     <li>학생은 연산 횟수를 세는 카운터 변수를 Java 코드에 추가할 수 있다.</li>
                     <li>학생은 두 알고리즘의 결과가 같은지(정확성) 코드로 검증할 수 있다.</li>
@@ -121,63 +122,86 @@
                 </div>
             </section>
 
-            <!-- 5. 사람이 직접 해결해 보기 -->
+            <!-- 5. 실행 빈도수 세어보기 -->
             <section class="lesson-section" id="sec-hand" aria-labelledby="h-hand">
-                <h2 id="h-hand" data-toc-label="사람이 직접 해결해 보기"><span class="section-no">05</span>사람이 직접 해결해 보기</h2>
+                <h2 id="h-hand" data-toc-label="실행 빈도수 세어보기"><span class="section-no">05</span>실행 빈도수 세어보기</h2>
                 <p>
-                    코드를 쓰기 전에, 작은 데이터로 문제를 손으로 풀어 봅니다.
-                    문제를 단순하게 줄여 봅시다: <strong>"1부터 8까지의 합은 얼마인가?"</strong>
+                    04번 섹션에서 선배 개발자는 <strong>"코드는 맞게 짰는데, 알고리즘이 느린 거야"</strong>라고 말했습니다.
+                    이 말을 감이 아니라 숫자로 확인하는 방법은 뜻밖에 단순합니다.
+                    <strong>코드의 각 줄이 입력 크기 n에 따라 몇 번 실행되는지 손으로 세어 보는 것</strong>입니다.
+                    이렇게 얻은 "실행 빈도수"를 모두 더하면 시간 복잡도 식이 되고,
+                    왜 그 식이 <code>2n + 1</code>이나 <code>3n + 4</code>처럼 딱 떨어지지 않는 모양으로 나오는지도 알 수 있습니다.
                 </p>
 
-                <h3>방법 A — 하나씩 더하기</h3>
-                <div class="hand-step">
-                    <span class="hand-step__label">STEP 1</span>
-                    <p>빈 종이에 0을 적습니다. 그리고 1을 더합니다. → <strong>1</strong></p>
-                    <details class="reveal-box">
-                        <summary>질문: 지금 우리가 "기억"하고 있는 값은 무엇인가요?</summary>
-                        <div class="reveal-box__content">
-                            <p>지금까지의 <strong>누적 합(1)</strong>과, 다음에 더할 숫자가 <strong>2</strong>라는 사실입니다.
-                            프로그램으로 옮기면 각각 변수 <code>sum</code>과 반복 변수 <code>i</code>가 됩니다.</p>
-                        </div>
-                    </details>
-                </div>
-                <div class="hand-step">
-                    <span class="hand-step__label">STEP 2</span>
-                    <p>2를 더합니다 → 3. 3을 더합니다 → 6. 4를 더합니다 → 10. … 8까지 반복합니다.</p>
-                    <details class="reveal-box">
-                        <summary>질문: 덧셈을 총 몇 번 했나요? 숫자가 1부터 100까지라면 몇 번일까요?</summary>
-                        <div class="reveal-box__content">
-                            <p>8번입니다. 1부터 100까지라면 100번입니다.
-                            <strong>데이터 개수가 n이면 덧셈도 n번</strong> — 일의 양이 데이터 크기에 비례합니다.</p>
-                        </div>
-                    </details>
-                </div>
+                <h3>실행 빈도수 — 초 대신 "몇 번"을 센다</h3>
+                <p>
+                    같은 프로그램도 컴퓨터 성능에 따라 실행 시간(초)이 달라집니다. 그래서 시간 복잡도는 초 대신
+                    <strong>각 문장이 몇 번 실행되는가(실행 빈도수)</strong>를 셉니다.
+                    대입문(<code>sum ← 0</code>), 조건 검사(<code>i ≤ n</code>), 반환문(<code>return</code>)처럼
+                    한 번 실행하는 데 걸리는 시간이 서로 비슷한 문장은 모두 <strong>단위 시간 1</strong>로 취급합니다.
+                </p>
 
-                <h3>방법 B — 수학자 가우스의 방법</h3>
-                <div class="hand-step">
-                    <span class="hand-step__label">STEP 3</span>
-                    <p>
-                        숫자를 앞뒤로 짝지어 봅니다: (1+8), (2+7), (3+6), (4+5).
-                        모든 짝의 합이 9로 같습니다! 짝이 4개이므로 답은 9 × 4 = <strong>36</strong>.
-                    </p>
-                    <details class="reveal-box">
-                        <summary>질문: 이 방법을 일반화하면 어떤 공식이 될까요?</summary>
-                        <div class="reveal-box__content">
-                            <p>(첫 수 + 끝 수) × 개수 ÷ 2, 즉 <code>n × (n + 1) / 2</code>입니다.
-                            1부터 100까지라면 100 × 101 / 2 = 5050. <strong>계산 한 번</strong>으로 끝납니다.</p>
-                        </div>
-                    </details>
+                <h3>예제 1 — 반복문 하나로 "2n + 1" 만들기</h3>
+                <p>가장 단순한 반복문부터 세어 봅니다.</p>
+                <pre class="quiz-code">i ← 1
+i가 n 이하인 동안 반복:     // ① 조건 검사
+    (할 일 한 가지)          // ② 반복문 몸체
+    i ← i + 1</pre>
+                <details class="reveal-box">
+                    <summary>질문: ① 조건 검사(i ≤ n)는 총 몇 번 실행될까요?</summary>
+                    <div class="reveal-box__content">
+                        <p>
+                            <strong>n + 1번</strong>입니다. i가 1, 2, …, n일 때는 조건이 <strong>참</strong>이라 몸체로 들어가고(n번),
+                            i가 n+1이 되는 순간 조건이 <strong>거짓</strong>으로 판정되어 반복을 빠져나갑니다(1번).
+                            반복을 끝내기 위한 이 마지막 한 번의 "실패한 검사"가 실행 횟수 식에 붙는
+                            <strong>"+1"의 정체</strong>입니다.
+                        </p>
+                    </div>
+                </details>
+                <details class="reveal-box">
+                    <summary>질문: ② 반복문 몸체는 총 몇 번 실행될까요? 그리고 전체 실행 횟수는?</summary>
+                    <div class="reveal-box__content">
+                        <p>
+                            몸체는 조건이 <strong>참</strong>일 때만 실행되므로 <strong>n번</strong>입니다.
+                            전체 실행 횟수 = 조건 검사(n+1) + 몸체(n) = <strong>2n + 1</strong>입니다.
+                            2장 「소프트웨어와 자료구조」에서 <code>f(n) = 2n + 1</code>이 Big-O 예시로 자주 등장하는 이유가
+                            바로 "조건 검사가 몸체보다 한 번 더 실행된다"는, 반복문이라면 어디서나 나타나는 구조 때문입니다.
+                        </p>
+                    </div>
+                </details>
+
+                <h3>예제 2 — SumByLoop으로 "3n + 4" 만들기</h3>
+                <p>이번에는 이 강의에서 계속 쓸 "1부터 n까지의 합" 알고리즘 자체를 줄 단위로 세어 봅니다.</p>
+                <div class="table-scroll">
+                    <table class="data-table">
+                        <thead>
+                            <tr><th scope="col">줄</th><th scope="col">문장</th><th scope="col">실행 조건</th><th scope="col">실행 횟수</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>①</td><td><code>sum ← 0</code></td><td>딱 한 번, 시작할 때만</td><td>1</td></tr>
+                            <tr><td>②</td><td><code>i ← 1</code></td><td>딱 한 번, 시작할 때만</td><td>1</td></tr>
+                            <tr><td>③</td><td><code>i ≤ n</code> (조건 검사)</td><td>참 n번 + 거짓 1번</td><td>n + 1</td></tr>
+                            <tr><td>④</td><td><code>sum ← sum + i</code></td><td>조건이 참일 때만</td><td>n</td></tr>
+                            <tr><td>⑤</td><td><code>i ← i + 1</code></td><td>조건이 참일 때만</td><td>n</td></tr>
+                            <tr><td>⑥</td><td><code>sum</code> 반환</td><td>딱 한 번, 끝날 때만</td><td>1</td></tr>
+                        </tbody>
+                    </table>
                 </div>
-                <div class="hand-step">
-                    <span class="hand-step__label">STEP 4</span>
-                    <p>두 방법을 비교해 봅시다. 결과는 둘 다 36으로 같습니다. 하지만 일의 양이 다릅니다.</p>
-                    <details class="reveal-box">
-                        <summary>질문: n이 500,000이라면 두 방법의 일의 양은 각각 얼마일까요?</summary>
-                        <div class="reveal-box__content">
-                            <p>방법 A는 덧셈 <strong>500,000번</strong>, 방법 B는 계산 <strong>1번</strong>입니다.
-                            결과가 같아도(정확성 동일) 일의 양은 50만 배 차이 — 이것이 <strong>효율성</strong>의 차이입니다.</p>
-                        </div>
-                    </details>
+                <p>
+                    총 실행 횟수 = 1 + 1 + (n+1) + n + n + 1 = <strong>3n + 4</strong>.
+                    예제 1과 세는 방식은 완전히 같지만, 초기화문 두 줄(①②)과 반환문 한 줄(⑥)이
+                    "n과 무관하게 1번씩" 더 실행되면서 계수와 상수항이 달라졌습니다.
+                    <strong>알고리즘마다 정확한 식이 2n+1, 3n+4, 4n+2처럼 서로 다르게 나오는 것은,
+                    서로 다른 종류의 문장이 각각 다른 횟수만큼 실행되고 그 횟수들을 전부 더하기 때문</strong>입니다.
+                    (교재의 피보나치 수열 알고리즘도 같은 방식으로 13개 줄을 세어 <code>4n + 2</code>를 얻습니다.)
+                </p>
+                <div class="note-box note-box--tip">
+                    <span class="note-box__title">그래서 다음 섹션에서는?</span>
+                    <p>
+                        2n+1과 3n+4는 생김새는 달라도 둘 다 "n이 커지면 실행 횟수도 거의 같은 속도로 늘어난다"는
+                        같은 이야기를 하고 있습니다. 이 <strong>증가하는 모양</strong>만 남기고 계수와 상수항을 정리하는 규칙이
+                        다음 섹션의 <strong>Big-O 표기법</strong>입니다.
+                    </p>
                 </div>
             </section>
 
@@ -189,7 +213,9 @@
                 <p>
                     알고리즘은 <strong>문제를 해결하는, 순서가 있는 명확한 절차</strong>입니다.
                     "명확한"이 중요합니다 — 누가 따라 해도(사람이든 컴퓨터든) 같은 결과가 나와야 합니다.
-                    방금 손으로 풀었던 "하나씩 더하기"와 "가우스 공식"은 같은 문제를 푸는 서로 다른 두 알고리즘입니다.
+                    예를 들어 "1부터 n까지의 합을 구하라"는 같은 문제도, 하나씩 더하는 절차와
+                    가우스의 공식을 쓰는 절차처럼 서로 다른 알고리즘으로 풀 수 있습니다.
+                    두 절차는 이 강의 전체에서 계속 비교합니다.
                 </p>
 
                 <h3>문제를 입력 · 처리 · 출력으로 나누기</h3>
@@ -217,7 +243,7 @@
                     <strong>의사코드(pseudocode)</strong>는 특정 언어 문법에 매이지 않고 절차를 적는 방법이고,
                     <strong>순서도(flowchart)</strong>는 절차를 도형(시작/끝, 처리, 판단)으로 그리는 방법입니다.
                     코드보다 먼저 절차를 적어 보면 논리 오류를 훨씬 일찍 발견할 수 있습니다.
-                    구체적인 예는 아래 9번 의사코드 섹션에서 다룹니다.
+                    구체적인 예는 아래 8번 의사코드 섹션에서 다룹니다.
                 </p>
 
                 <h3>정확성과 효율성</h3>
@@ -230,9 +256,54 @@
                 <h3>시간 복잡도와 Big-O 표기법</h3>
                 <p>
                     <strong>시간 복잡도</strong>는 입력 크기 n이 커질 때 핵심 연산의 실행 횟수가 어떻게 늘어나는지를 나타냅니다.
-                    정확한 횟수 대신 <strong>증가하는 모양</strong>만 남긴 것이 <strong>Big-O 표기법</strong>입니다.
-                    예를 들어 연산 횟수가 3n + 5번이라면, n이 커질수록 중요한 것은 "n에 비례한다"는 사실뿐이므로 O(n)이라고 씁니다.
+                    05번 섹션에서 직접 세어 얻은 <code>2n + 1</code>, <code>3n + 4</code> 같은 식이 바로 이 시간 복잡도 함수입니다.
+                    정확한 식 대신 <strong>증가하는 모양</strong>만 남긴 것이 <strong>Big-O 표기법</strong>입니다.
                 </p>
+
+                <h4>계수와 낮은 차수 항을 버리는 이유</h4>
+                <p>
+                    <code>2n + 1</code>을 예로 들어 봅시다. n이 100,000이면 2n은 200,000이고 +1은 그 옆에 붙어도 눈에 띄지 않습니다.
+                    n이 커질수록 식 전체의 크기를 사실상 결정하는 것은 <strong>차수가 가장 높은 항 하나뿐</strong>이고,
+                    계수(2)와 낮은 차수의 항(+1)은 상대적으로 무시할 수 있을 만큼 작아집니다.
+                </p>
+                <div class="note-box">
+                    <span class="note-box__title">숫자로 확인하기 — T(n) = n² + n + 1, n=1,000일 때</span>
+                    <p>
+                        T(1,000) = 1,000,000 + 1,000 + 1 = 1,001,001입니다.
+                        이 중 <code>n²</code> 항(1,000,000)이 전체의 <strong>약 99.9%</strong>를 차지하고,
+                        <code>n</code> 항(1,000)은 <strong>0.1%</strong>, 상수항(1)은 사실상 0%입니다.
+                        가장 큰 항 하나만 남겨도 전체 값을 거의 그대로 설명할 수 있으므로,
+                        Big-O는 그 항만 남기고 계수마저 지워 <strong>O(n²)</strong>이라고 씁니다.
+                    </p>
+                </div>
+
+                <h4>Big-O의 정확한 뜻 — 함수의 상한</h4>
+                <p>
+                    Big-O는 "대충 이 정도로 늘어난다"는 감이 아니라 <strong>정확히 정의된 상한선</strong>입니다.
+                    <code>f(n) = O(g(n))</code>이라는 말은, 어떤 기준값 n₀와 상수 c가 있어서
+                    <strong>n ≥ n₀인 모든 n에 대해 f(n) ≤ c × g(n)이 항상 성립한다</strong>는 뜻입니다.
+                    즉 "입력이 충분히 커지면, 실행 횟수는 많아야 g(n)에 상수를 곱한 만큼까지만 늘어난다"는 약속입니다.
+                </p>
+                <div class="table-scroll">
+                    <table class="data-table">
+                        <thead>
+                            <tr><th scope="col">실행 횟수 함수 f(n)</th><th scope="col">Big-O</th><th scope="col">성립 근거</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>5</code></td><td><code>O(1)</code></td><td>n₀=1, c=10일 때 n≥1이면 5 ≤ 10 × 1</td></tr>
+                            <tr><td><code>2n + 1</code></td><td><code>O(n)</code></td><td>n₀=2, c=3일 때 n≥2이면 2n+1 ≤ 3n</td></tr>
+                            <tr><td><code>3n² + 100</code></td><td><code>O(n²)</code></td><td>n₀=100, c=5일 때 n≥100이면 3n²+100 ≤ 5n²</td></tr>
+                            <tr><td><code>5·2ⁿ + 10n² + 100</code></td><td><code>O(2ⁿ)</code></td><td>n₀=1,000, c=10일 때 n≥1,000이면 성립</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p>
+                    두 번째 줄이 바로 05번 섹션에서 얻은 <code>2n + 1</code>입니다.
+                    n≥2일 때 2n+1 ≤ 3n이 항상 성립하므로 <code>2n + 1 = O(n)</code>이고,
+                    같은 이유로 <code>3n + 4</code>도 O(n)입니다.
+                </p>
+
+                <h4>자주 쓰는 Big-O 종류</h4>
                 <div class="table-scroll">
                     <table class="data-table">
                         <thead>
@@ -246,9 +317,66 @@
                         </tbody>
                     </table>
                 </div>
+
+                <h4>증가율 한눈에 비교하기</h4>
+                <p>
+                    입력 크기 n이 두 배씩 늘어날 때 네 가지 Big-O가 얼마나 다르게 늘어나는지 표와 그래프로 비교해 봅니다.
+                </p>
+                <div class="table-scroll">
+                    <table class="data-table">
+                        <thead>
+                            <tr><th scope="col">n</th><th scope="col">O(1)</th><th scope="col">O(log₂n)</th><th scope="col">O(n)</th><th scope="col">O(n²)</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>2</td><td>1</td><td>1</td><td>2</td><td>4</td></tr>
+                            <tr><td>4</td><td>1</td><td>2</td><td>4</td><td>16</td></tr>
+                            <tr><td>8</td><td>1</td><td>3</td><td>8</td><td>64</td></tr>
+                            <tr><td>16</td><td>1</td><td>4</td><td>16</td><td>256</td></tr>
+                            <tr><td>32</td><td>1</td><td>5</td><td>32</td><td>1,024</td></tr>
+                            <tr><td>64</td><td>1</td><td>6</td><td>64</td><td>4,096</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="growth-chart" role="img" aria-label="입력 크기 n이 2, 4, 8, 16, 32, 64로 두 배씩 늘어날 때 O(1), O(log n), O(n), O(n²)의 실행 횟수를 세로축 로그 눈금으로 비교한 꺾은선 그래프. O(n²)이 가장 가파르게 치솟고, O(log n)은 가장 완만하게 늘어난다.">
+                    <svg viewBox="0 0 600 320" preserveAspectRatio="xMidYMid meet" focusable="false">
+                        <line x1="55" y1="257.5" x2="560" y2="257.5" stroke="var(--line)" stroke-dasharray="3 4"></line>
+                        <line x1="55" y1="195" x2="560" y2="195" stroke="var(--line)" stroke-dasharray="3 4"></line>
+                        <line x1="55" y1="132.5" x2="560" y2="132.5" stroke="var(--line)" stroke-dasharray="3 4"></line>
+                        <line x1="55" y1="70" x2="560" y2="70" stroke="var(--line)" stroke-dasharray="3 4"></line>
+                        <line x1="55" y1="15" x2="55" y2="280" stroke="var(--ink-faint)"></line>
+                        <line x1="55" y1="280" x2="560" y2="280" stroke="var(--ink-faint)"></line>
+                        <text x="48" y="261" text-anchor="end" font-size="12" fill="var(--ink-faint)">1</text>
+                        <text x="48" y="199" text-anchor="end" font-size="12" fill="var(--ink-faint)">10</text>
+                        <text x="48" y="136" text-anchor="end" font-size="12" fill="var(--ink-faint)">100</text>
+                        <text x="48" y="74" text-anchor="end" font-size="12" fill="var(--ink-faint)">1,000</text>
+                        <text x="70" y="300" text-anchor="middle" font-size="12" fill="var(--ink-faint)">n=2</text>
+                        <text x="160" y="300" text-anchor="middle" font-size="12" fill="var(--ink-faint)">n=4</text>
+                        <text x="250" y="300" text-anchor="middle" font-size="12" fill="var(--ink-faint)">n=8</text>
+                        <text x="340" y="300" text-anchor="middle" font-size="12" fill="var(--ink-faint)">n=16</text>
+                        <text x="430" y="300" text-anchor="middle" font-size="12" fill="var(--ink-faint)">n=32</text>
+                        <text x="520" y="300" text-anchor="middle" font-size="12" fill="var(--ink-faint)">n=64</text>
+                        <polyline points="70,257.5 160,257.5 250,257.5 340,257.5 430,257.5 520,257.5" fill="none" stroke="var(--ink-faint)" stroke-width="2.5"></polyline>
+                        <polyline points="70,257.5 160,238.7 250,227.7 340,219.9 430,213.8 520,208.9" fill="none" stroke="var(--state-done)" stroke-width="2.5"></polyline>
+                        <polyline points="70,238.7 160,219.9 250,201.1 340,182.3 430,163.4 520,144.6" fill="none" stroke="var(--brand)" stroke-width="2.5"></polyline>
+                        <polyline points="70,219.9 160,182.3 250,144.6 340,107.0 430,69.4 520,31.8" fill="none" stroke="var(--state-error)" stroke-width="2.5"></polyline>
+                    </svg>
+                    <ul class="growth-chart__legend">
+                        <li><span class="growth-chart__swatch" style="background:var(--ink-faint)"></span>O(1)</li>
+                        <li><span class="growth-chart__swatch" style="background:var(--state-done)"></span>O(log n)</li>
+                        <li><span class="growth-chart__swatch" style="background:var(--brand)"></span>O(n)</li>
+                        <li><span class="growth-chart__swatch" style="background:var(--state-error)"></span>O(n²)</li>
+                    </ul>
+                </div>
+                <p>
+                    세로축은 값이 10배씩 늘어날 때마다 같은 높이만큼 올라가는 <strong>로그 눈금</strong>입니다.
+                    그래야 1부터 4,096까지처럼 차이가 큰 값들을 한 그래프에 함께 그릴 수 있습니다.
+                    n이 64로 늘어나는 동안 O(log n)은 겨우 6까지, O(n)은 64까지 늘어나지만
+                    O(n²)은 4,096까지 치솟습니다 — 실제 실행 시간으로 옮기면 이 차이가 훨씬 더 크게 벌어집니다.
+                </p>
+
                 <p>
                     <strong>공간 복잡도</strong>는 같은 질문을 메모리에 대해 묻는 것입니다.
-                    방법 A와 B는 모두 변수 몇 개만 쓰므로 공간 복잡도 O(1)입니다.
+                    반복문 방식과 공식 방식은 모두 변수 몇 개만 쓰므로 공간 복잡도 O(1)입니다.
                 </p>
             </section>
 
@@ -576,7 +704,7 @@ n이 10배 커질 때: 반복문의 일은 10배 늘고, 공식의 일은 그대
                 <h2 id="h-trace" data-toc-label="실행 과정 추적"><span class="section-no">11</span>실행 과정 추적</h2>
                 <p>
                     완성 코드가 정말 시각화(7번 섹션)와 똑같이 동작하는지, 매 회차의 내부 상태를 출력해 확인합니다.
-                    n=8로 실행하면 손으로 풀었던 값과 정확히 일치해야 합니다.
+                    n=8로 실행하면 시각화에서 봤던 값과 정확히 일치해야 합니다.
                 </p>
                 <article class="code-card">
                     <header class="code-card__header">
@@ -632,8 +760,8 @@ n이 10배 커질 때: 반복문의 일은 10배 늘고, 공식의 일은 그대
                 </article>
                 <p>
                     회차별 누적 합 1 → 3 → 6 → 10 → 15 → 21 → 28 → 36이
-                    5번 섹션에서 손으로 계산한 값, 7번 섹션의 시각화와 모두 일치합니다.
-                    <strong>손 풀이 = 시각화 = 코드</strong>가 같은 절차임을 확인했습니다.
+                    7번 섹션의 시각화와 정확히 일치합니다.
+                    <strong>시각화 = 코드</strong>가 같은 절차임을 확인했습니다.
                 </p>
             </section>
 
@@ -667,7 +795,7 @@ n이 10배 커질 때: 반복문의 일은 10배 늘고, 공식의 일은 그대
     }
 }</code></pre>
                         </article>
-                        <details class="answer-box">
+                        <details class="answer-box" data-locked-until-complete>
                             <summary>발생하는 문제와 수정 방법 확인</summary>
                             <div class="answer-box__content">
                                 <p><strong>발생하는 문제:</strong> 출력이 <code>28</code>로, 정답 36보다 작습니다.</p>
@@ -707,7 +835,7 @@ n이 10배 커질 때: 반복문의 일은 10배 늘고, 공식의 일은 그대
     }
 }</code></pre>
                         </article>
-                        <details class="answer-box">
+                        <details class="answer-box" data-locked-until-complete>
                             <summary>발생하는 문제와 수정 방법 확인</summary>
                             <div class="answer-box__content">
                                 <p><strong>발생하는 문제:</strong> 출력이 <code>563050</code>처럼 완전히 틀린 값이 나옵니다.
@@ -827,7 +955,7 @@ n이 10배 커질 때: 반복문의 일은 10배 늘고, 공식의 일은 그대
     }
 }</code></pre>
                 </article>
-                <details class="answer-box">
+                <details class="answer-box" data-locked-until-complete>
                     <summary>실습 3 정답 확인</summary>
                     <div class="answer-box__content">
                         <pre class="quiz-code">static long oddSumByLoop(int n) {
@@ -1155,9 +1283,10 @@ n      | 반복문 결과 | 공식 결과   | 반복 연산 | 공식 연산
             <!-- 17. 최종 문제 정답과 해설 -->
             <section class="lesson-section" id="sec-answer" aria-labelledby="h-answer">
                 <h2 id="h-answer" data-toc-label="최종 문제 정답과 해설"><span class="section-no">17</span>최종 문제 정답과 해설</h2>
-                <p>스스로 충분히 시도한 뒤에 여세요. 막혔다면 "구현 단계 안내"를 다시 읽고 한 단계씩 진행해 보세요.</p>
+                <p>스스로 충분히 시도한 뒤에 여세요. 막혔다면 "구현 단계 안내"를 다시 읽고 한 단계씩 진행해 보세요.
+                이 강의를 완료로 표시해야 정답이 열립니다.</p>
 
-                <details class="answer-box">
+                <details class="answer-box" data-locked-until-complete>
                     <summary>정답 코드와 해설 확인</summary>
                     <div class="answer-box__content">
                         <article class="code-card">
@@ -1324,7 +1453,9 @@ n      | 반복문 결과 | 공식 결과   | 반복 연산 | 공식 연산
                     <li><strong>알고리즘</strong>은 문제를 해결하는 명확한 절차이며, 같은 문제에 여러 알고리즘이 존재할 수 있다.</li>
                     <li>문제는 <strong>입력 → 처리 → 출력</strong>으로 나누고, 큰 문제는 작은 문제로 <strong>분해</strong>한다.</li>
                     <li>좋은 알고리즘의 기준은 <strong>정확성 먼저, 효율성 다음</strong>. 정확성은 경계 입력(n=1, 없는 값, 큰 값)까지 확인해야 한다.</li>
-                    <li><strong>시간 복잡도</strong>는 입력 크기 n에 따른 핵심 연산 횟수의 증가 모양이며, <strong>Big-O</strong>로 표기한다:
+                    <li>문장별 <strong>실행 빈도수</strong>를 세어 더하면 2n+1, 3n+4 같은 시간 복잡도 식을 얻는다.
+                        문장의 종류마다 실행 횟수가 다르기 때문에 식의 계수와 상수항이 알고리즘마다 달라진다.</li>
+                    <li>시간 복잡도 식에서 계수와 낮은 차수 항을 지우고 증가 모양만 남긴 것이 <strong>Big-O</strong>다:
                         O(1) → O(log n) → O(n) → O(n²) 순으로 느려진다.</li>
                     <li>연산 횟수는 <strong>카운터 변수</strong>로 직접 셀 수 있다 — 이 기법은 이후 모든 강의에서 사용된다.</li>
                     <li>데이터의 <strong>규칙</strong>(연속된 수, 번호=인덱스 등)을 알면 훨씬 빠른 알고리즘을 선택할 수 있다.</li>

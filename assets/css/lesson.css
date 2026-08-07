@@ -646,6 +646,46 @@
     flex-shrink: 0;
 }
 
+/* 증가율 비교 차트 (1강 — Big-O 표기법) */
+.growth-chart {
+    margin: 16px 0;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-m);
+    background: var(--surface-2);
+    padding: 14px 16px 16px;
+}
+
+.growth-chart svg {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.growth-chart__legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    margin: 10px 0 0;
+    padding: 0;
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+}
+
+.growth-chart__legend li {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    list-style: none;
+}
+
+.growth-chart__swatch {
+    display: inline-block;
+    width: 16px;
+    height: 3px;
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+
 /* 이전/다음 강의 내비게이션 (common.js가 렌더링) */
 .lesson-pager {
     display: grid;
