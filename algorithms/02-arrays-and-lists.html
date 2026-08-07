@@ -115,8 +115,8 @@
                     합계 한 줄에 변수 이름을 8번 쓰다 보니 벌써 손이 아픕니다.
                     그런데 다음 주에 교수님이 다시 말합니다. "수강 정정 기간이라 학생이 3명 더 들어왔어요.
                     아, 그리고 다른 분반 200명 것도 부탁해요."
-                    변수 200개를 만들 수는 없습니다. <strong>값이 몇 개든 하나의 이름으로 묶고,
-                    반복문 하나로 전부 처리하는 방법</strong>이 필요합니다. 그것이 오늘 배우는 배열과 리스트입니다.
+                    변수 200개를 만들 수는 없습니다. <em><strong>값이 몇 개든 하나의 이름으로 묶고,
+                    반복문 하나로 전부 처리하는 방법</strong>이 필요합니다.</em> 그것이 오늘 배우는 배열과 리스트입니다.
                 </p>
                 <div class="note-box">
                     <span class="note-box__title">오늘의 핵심 질문</span>
@@ -171,7 +171,7 @@
                 </div>
                 <div class="hand-step">
                     <span class="hand-step__label">STEP 3</span>
-                    <p>이번에는 조건 검색입니다. 같은 점수를 다시 앞에서부터 보며 "80점 이상인가?"만 묻고, 맞으면 따로 적습니다.</p>
+                    <p>이번에는 <strong>조건 검색</strong>입니다. 같은 점수를 다시 앞에서부터 보며 "80점 이상인가?"만 묻고, 맞으면 따로 적습니다.</p>
                     <details class="reveal-box">
                         <summary>질문: 80점 이상은 몇 개이고, "몇 개가 나올지"를 보기 전에 미리 알 수 있었나요?</summary>
                         <div class="reveal-box__content">
@@ -184,7 +184,7 @@
                 <div class="hand-step">
                     <span class="hand-step__label">STEP 4</span>
                     <p>
-                        마지막으로 빈도 계산입니다. "점수대별로 몇 명인가?"를 세기 위해
+                        마지막으로 <strong>빈도 계산</strong>입니다. "점수대별로 몇 명인가?"를 세기 위해
                         종이에 50점대~90점대 칸을 미리 그려 두고, 점수를 하나 볼 때마다 해당 칸에 바를 정(正)자를 긋습니다.
                         72 → 70점대 칸, 85 → 80점대 칸, 90 → 90점대 칸, 66 → 60점대 칸, 78 → 70점대 칸.
                     </p>
@@ -230,8 +230,8 @@
                         <strong>"시작 지점에서 몇 칸 떨어져 있는가"</strong>입니다. 첫 칸은 0칸 떨어져 있으므로 0입니다.</li>
                     <li>첫 원소는 <code>scores[0]</code>, 마지막 원소는 <code>scores[scores.length - 1]</code>입니다.
                         길이가 8이면 유효한 인덱스는 <strong>0부터 7까지</strong> — 8은 없습니다!</li>
-                    <li>인덱스 접근(<code>scores[i]</code>)은 위치 계산 한 번으로 끝나는 <strong>O(1)</strong> 연산입니다.
-                        1강 응용 예제의 "직접 접근"이 빨랐던 이유가 바로 이것입니다.</li>
+                    <li><em>인덱스 접근(<code>scores[i]</code>)은 위치 계산 한 번으로 끝나는 <strong>O(1)</strong> 연산입니다.
+                        1강 응용 예제의 "직접 접근"이 빨랐던 이유가 바로 이것입니다.</em></li>
                     <li>한 번 만든 배열의 <strong>크기는 바꿀 수 없습니다</strong>. 9번째 값을 넣으려면
                         더 큰 배열을 새로 만들어 값을 옮겨야 합니다.</li>
                 </ul>
@@ -246,7 +246,7 @@
 }</pre>
                 <p>
                     조건이 <code>i &lt;= scores.length</code>가 아니라 <code>i &lt; scores.length</code>인 것에 주의하세요.
-                    마지막 유효 인덱스가 length - 1이기 때문입니다. 순회 뼈대 안의 "할 일"만 바꾸면
+                    <strong>마지막 유효 인덱스가 length - 1</strong>이기 때문입니다. 순회 뼈대 안의 "할 일"만 바꾸면
                     합계, 최댓값, 검색, 빈도가 전부 만들어집니다.
                 </p>
                 <div class="table-scroll">
@@ -324,7 +324,8 @@ c[0] = 7;                          // a에는 아무 영향이 없다</pre>
                 <div class="note-box note-box--tip">
                     <span class="note-box__title">라이브러리 한 줄 메모</span>
                     <p>실무에서는 <code>java.util.Arrays.copyOf(a, a.length)</code> 한 줄로 복사할 수 있습니다.
-                    다만 그 한 줄의 안에서도 결국 위와 같은 O(n) 순회가 일어납니다 — 원리를 알고 쓰는 것과 모르고 쓰는 것은 다릅니다.</p>
+                    다만 그 한 줄의 안에서도 결국 위와 같은 <strong>O(n) 순회</strong>가 일어납니다 —
+                    <em>원리를 알고 쓰는 것과 모르고 쓰는 것은 다릅니다.</em></p>
                 </div>
             </section>
 
@@ -340,8 +341,8 @@ c[0] = 7;                          // a에는 아무 영향이 없다</pre>
                 <div id="viz-stats" aria-label="배열 순회로 누적 합과 최댓값을 동시에 갱신하는 시각화"></div>
                 <p>
                     카운터를 보세요. 원소를 하나 지날 때마다 누적 연산 1번 + 최댓값 비교 1번이 정확히 일어납니다.
-                    원소가 n개면 비교도 n번 — 순회의 시간 복잡도가 <strong>O(n)</strong>이라는 사실을
-                    1강의 연산 카운터 기법으로 다시 확인한 것입니다.
+                    <em>원소가 n개면 비교도 n번 — 순회의 시간 복잡도가 <strong>O(n)</strong>이라는 사실을
+                    1강의 연산 카운터 기법으로 다시 확인한 것입니다.</em>
                 </p>
             </section>
 
@@ -409,7 +410,7 @@ c[0] = 7;                          // a에는 아무 영향이 없다</pre>
                 <h3>구현 1단계 — 점수 배열 준비와 출력</h3>
                 <p>
                     먼저 처리할 데이터를 배열에 담고, 순회의 뼈대만으로 전체를 출력해 봅니다.
-                    1강에서 5명이던 학생이 8명이 되었지만, 순회 코드는 한 글자도 바뀌지 않는다는 것이 배열의 힘입니다.
+                    1강에서 5명이던 학생이 8명이 되었지만, <strong>순회 코드는 한 글자도 바뀌지 않는다</strong>는 것이 배열의 힘입니다.
                 </p>
                 <article class="code-card">
                     <header class="code-card__header">
@@ -507,7 +508,7 @@ scores[0]과 scores[1] 중 큰 값 = 85</code></pre>
                 </article>
                 <div class="note-box">
                     <span class="note-box__title">확인</span>
-                    <p>"네 번째 학생"이 <code>scores[3]</code>인 이유 — 인덱스는 시작에서 떨어진 칸 수이므로
+                    <p>"네 번째 학생"이 <code>scores[3]</code>인 이유 — <strong>인덱스는 시작에서 떨어진 칸 수</strong>이므로
                     네 번째 원소는 3칸 떨어져 있습니다. 이 감각이 오류 카드 1번(범위 초과)을 예방합니다.</p>
                 </div>
 
@@ -515,7 +516,7 @@ scores[0]과 scores[1] 중 큰 값 = 85</code></pre>
                 <p>
                     핵심 연산을 순회 뼈대로 감쌉니다. 1강의 누적 패턴 <code>sum = sum + ...</code>과
                     연산 카운터가 그대로 다시 등장하는 것을 확인하세요.
-                    달라진 것은 더하는 대상이 <code>i</code>(연속된 수)에서 <code>scores[i]</code>(임의의 데이터)로 바뀐 것뿐입니다.
+                    <strong>달라진 것은 더하는 대상이 <code>i</code>(연속된 수)에서 <code>scores[i]</code>(임의의 데이터)로 바뀐 것뿐</strong>입니다.
                 </p>
                 <article class="code-card">
                     <header class="code-card__header">
@@ -635,8 +636,8 @@ scores[0]과 scores[1] 중 큰 값 = 85</code></pre>
                 <div class="note-box note-box--tip">
                     <span class="note-box__title">관찰</span>
                     <p>세 가지 통계를 각각 따로 순회하면 3n번, 한 번에 처리하면 n번의 순회로 끝납니다.
-                    Big-O로는 둘 다 O(n)이지만 실제 일의 양은 3배 차이 — 1강에서 배운
-                    "Big-O가 전부는 아니다"를 다시 확인할 수 있습니다.
+                    <em>Big-O로는 둘 다 O(n)이지만 실제 일의 양은 <strong>3배 차이</strong> — 1강에서 배운
+                    "Big-O가 전부는 아니다"를 다시 확인할 수 있습니다.</em>
                     또한 빈도 계산의 <code>bandCount[5]</code>~<code>bandCount[9]</code>만 출력한 것은
                     이 데이터의 점수가 55~93 사이이기 때문입니다. 0~40점대 칸은 0명으로 남아 있습니다.</p>
                 </div>
@@ -790,8 +791,8 @@ scores[0]과 scores[1] 중 큰 값 = 85</code></pre>
                 <div class="note-box">
                     <span class="note-box__title">평균 미만이 왜 3명일까?</span>
                     <p>평균은 77.5점입니다. 78점(정다은 학생의 점수)은 77.5보다 크므로 평균 미만이 아닙니다.
-                    평균 미만은 72, 66, 55의 3명 — "평균 미만"과 "평균 이하"는 경계에서 다를 수 있으므로
-                    조건의 부등호(<code>&lt;</code>와 <code>&lt;=</code>)를 항상 명확히 하세요.</p>
+                    평균 미만은 72, 66, 55의 3명 — <em>"평균 미만"과 "평균 이하"는 경계에서 다를 수 있으므로
+                    조건의 부등호(<code>&lt;</code>와 <code>&lt;=</code>)를 항상 명확히 하세요.</em></p>
                 </div>
             </section>
 
@@ -863,8 +864,8 @@ scores[0]과 scores[1] 중 큰 값 = 85</code></pre>
                 <p>
                     3회차까지의 값(sum 247, max 90)이 손 풀이 STEP 2와 정확히 일치하고,
                     max가 72 → 85 → 90 → 93으로, min이 72 → 66 → 55로 갱신되는 순간이
-                    시각화의 앰버색 칸과 같은 위치입니다. <strong>손 풀이 = 시각화 = 코드</strong>가
-                    같은 절차임을 확인했습니다.
+                    시각화의 앰버색 칸과 같은 위치입니다. <em><strong>손 풀이 = 시각화 = 코드</strong>가
+                    같은 절차임을 확인했습니다.</em>
                 </p>
             </section>
 
@@ -919,8 +920,8 @@ scores[0]과 scores[1] 중 큰 값 = 85</code></pre>
     sum = sum + scores[i];
 }</pre>
                                 <p>수정 후 출력: <code>합계 = 620</code>.
-                                "0부터 시작하면 <code>&lt;</code>, 1부터 시작하면 <code>&lt;=</code>"를 기계적으로 외우기보다,
-                                <strong>마지막 유효 인덱스가 length - 1</strong>이라는 사실에서 조건을 끌어내는 습관을 들이세요.</p>
+                                <em>"0부터 시작하면 <code>&lt;</code>, 1부터 시작하면 <code>&lt;=</code>"를 기계적으로 외우기보다,
+                                <strong>마지막 유효 인덱스가 length - 1</strong>이라는 사실에서 조건을 끌어내는 습관을 들이세요.</em></p>
                             </div>
                         </details>
                     </div>
@@ -988,7 +989,7 @@ public class BuggyRemoveWhileLoop {
     }
 }</pre>
                                 <p>수정 후 출력: <code>남은 점수: [90]</code>.
-                                "순회하면서 그 대상을 삭제"하는 코드는 항상 인덱스 밀림을 의심하세요.
+                                <em>"순회하면서 그 대상을 삭제"하는 코드는 항상 <strong>인덱스 밀림</strong>을 의심하세요.</em>
                                 같은 이유로 for-each 순회 중의 <code>remove</code>는 아예 예외(ConcurrentModificationException)를 던집니다.</p>
                             </div>
                         </details>
@@ -1037,7 +1038,7 @@ public class BuggyRemoveWhileLoop {
 
                 <h3>알고리즘 특성</h3>
                 <ul>
-                    <li><strong>순회는 정확히 n번:</strong> 통계 순회는 입력이 무엇이든 항상 n번 일합니다 — 최선과 최악이 같습니다.
+                    <li><strong>순회는 정확히 n번:</strong> <em>통계 순회는 입력이 무엇이든 항상 n번 일합니다 — 최선과 최악이 같습니다.</em>
                         반면 조건 검색에 1강의 조기 중단을 결합하면("첫 번째로 80점 이상인 학생 찾기") 최선 1번, 최악 n번이 됩니다.</li>
                     <li><strong>한 순회에 여러 일:</strong> 합계·최대·최소를 한 바퀴에 처리하면 순회 3번이 1번이 됩니다.
                         Big-O는 같아도 상수 배가 줄어드는 실전 최적화입니다.</li>
@@ -1143,8 +1144,7 @@ public class BuggyRemoveWhileLoop {
                     학과 도서관의 대출 기록을 관리하는 프로그램을 만듭니다.
                     대출과 반납이 수시로 일어나므로 기록의 <strong>개수가 계속 변합니다</strong> —
                     이 지점에서 배열과 리스트의 차이가 실감 나게 드러납니다.
-                    배열이라면 다섯 칸이 가득 찬 순간 여섯 번째 대출을 받을 수 없어서
-                    더 큰 배열을 만들어 복사하는 코드를 직접 짜야 하지만,
+                    배열이라면 다섯 칸이 차는 순간 더 큰 배열을 만들어 복사해야 하지만,
                     ArrayList는 <code>add</code> 한 줄로 끝납니다.
                     요구 기능은 세 가지입니다: 신규 대출 추가, 특정 회원의 대출 기록 검색, 반납 처리(삭제).
                 </p>
@@ -1272,7 +1272,7 @@ public class BookLoanApplication {
                     <li><code>printLoansOf</code>는 전체 순회 조건 검색이므로 항상 n번 검사 — O(n).
                         <code>returnBook</code>은 조기 중단이 있으므로 최선 1번, 최악 n번 — 역시 O(n)이지만 평균은 절반입니다.</li>
                     <li>배열이었다면 <code>add</code> 자리마다 "가득 찼는지 확인 → 더 큰 배열 생성 → O(n) 복사" 코드가 필요했습니다.
-                        ArrayList가 그 일을 대신해 줄 뿐, <strong>공짜가 아니라 감춰져 있는 것</strong>임을 기억하세요.</li>
+                        <em>ArrayList가 그 일을 대신해 줄 뿐, <strong>공짜가 아니라 감춰져 있는 것</strong>임을 기억하세요.</em></li>
                 </ul>
             </section>
 
@@ -1287,7 +1287,7 @@ public class BookLoanApplication {
                     4번 섹션의 조교 이야기가 현실이 되었습니다. 교수님이 학생 8명의 이름과 점수를 넘기며
                     분석 리포트를 요청했습니다. 필요한 것은 합계, 평균, 최고점 학생, 최저점 학생,
                     그리고 조건별 명단 두 가지 — 80점 이상(우수)과 평균 미만(면담 대상) — 입니다.
-                    점수만 다루면 되던 지금까지와 달리, 이번에는 <strong>이름과 점수가 한 몸</strong>이어야 합니다.
+                    <em>점수만 다루면 되던 지금까지와 달리, 이번에는 <strong>이름과 점수가 한 몸</strong>이어야 합니다.</em>
                     "최고점은 93점"이 아니라 "최고점은 강지훈 93점"이라고 말해야 하니까요.
                     그래서 이름과 점수를 묶는 <code>Student</code> 클래스를 사용하고,
                     몇 명이 될지 모르는 조건별 명단은 ArrayList에 모읍니다.
@@ -1662,7 +1662,7 @@ public class GradeAnalyzerSolution {
                             <li>여섯 메서드 모두 순회 1번씩 — 각각 O(n), 전체도 O(n)입니다. (상수 배만 다릅니다)</li>
                             <li>공간: 통계 계산은 O(1), 조건별 명단은 최악(전원 해당)일 때 O(n)입니다.</li>
                             <li><code>average</code>가 내부에서 <code>totalScore</code>를 다시 부르므로 합계 순회가 2번 일어납니다.
-                                main에서 합계를 한 번만 구해 재사용하면 순회 1번을 아낄 수 있습니다 — Big-O는 같지만 좋은 습관입니다.</li>
+                                <em>main에서 합계를 한 번만 구해 재사용하면 순회 1번을 아낄 수 있습니다 — <strong>Big-O는 같지만 좋은 습관</strong>입니다.</em></li>
                         </ul>
 
                         <h4>자주 발생하는 오류</h4>
@@ -1771,7 +1771,7 @@ int lowest = Arrays.stream(scores).min().orElse(0);</code></pre>
                     <p>
                         네 번의 순회가 한 번이 됩니다. 다만 <strong>복잡도는 그대로 O(n)</strong>입니다 —
                         4 × O(n)도 O(n)이기 때문입니다. 1강에서 "상수 배는 Big-O에서 버린다"고 배운 그대로입니다.
-                        실제로 걸리는 시간은 줄지만 <strong>증가하는 모양은 같습니다.</strong>
+                        <em>실제로 걸리는 시간은 줄지만 <strong>증가하는 모양은 같습니다.</strong></em>
                     </p>
                     <p>
                         <code>min()</code>이 <code>OptionalInt</code>를 돌려주는 데에도 이유가 있습니다.
@@ -1854,7 +1854,7 @@ int[] below = Arrays.stream(scores).filter(s -&gt; s &lt; average).toArray();
                     <p>
                         "개수를 먼저 세고 크기를 정해 채운다"는 절차가 통째로 사라졌습니다.
                         하지만 <code>toArray()</code>도 내부에서는 결국 크기를 맞추는 일을 합니다 —
-                        <strong>일이 없어진 것이 아니라 우리가 적지 않게 된 것</strong>입니다.
+                        <em><strong>일이 없어진 것이 아니라 우리가 적지 않게 된 것</strong>입니다.</em>
                         복잡도는 여전히 O(n)입니다.
                     </p>
                 </details>

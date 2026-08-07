@@ -507,6 +507,15 @@
     background: none;
 }
 
+/* 문단의 결론·핵심 문장 전체를 강조할 때 쓰는 두 번째 마킹.
+   <strong>(형광펜 배경)은 핵심 "단어"용, <em>(색상+이탤릭)은 핵심 "문장"용으로 구분한다. */
+.lesson-section p em,
+.lesson-section li em {
+    font-style: italic;
+    font-weight: 600;
+    color: var(--brand);
+}
+
 /* 학습 목표 목록 */
 /* minmax(0, 1fr) — 트랙 기본값 auto는 항목의 min-content로 부풀어서,
    ArrayIndexOutOfBoundsException 같은 긴 토큰 하나가 목록을 컨테이너보다

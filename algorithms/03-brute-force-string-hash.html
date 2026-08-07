@@ -117,7 +117,7 @@
                     처음에는 단어 수가 수십 개라 "모든 단어 쌍을 비교"하는 프로그램으로 충분했습니다.
                     그런데 인기 게시글은 댓글까지 합치면 단어가 수만 개나 되고, 분석 시간이 눈에 띄게 길어졌습니다.
                     선배가 힌트를 줍니다. <strong>"모든 쌍을 비교하면 n²이야. 해시를 쓰면 n에 끝나."</strong>
-                    n²과 n의 차이가 무엇인지는 1강에서 배웠습니다 — 이제 그 차이를 만들어 내는 방법을 배울 차례입니다.
+                    <em>n²과 n의 차이가 무엇인지는 1강에서 배웠습니다 — 이제 그 차이를 만들어 내는 방법을 배울 차례입니다.</em>
                 </p>
                 <div class="note-box">
                     <span class="note-box__title">오늘의 핵심 질문</span>
@@ -238,7 +238,7 @@
                 </div>
                 <p>
                     n=10이면 45번, n=1,000이면 499,500번, n=100,000이면 약 50억 번 —
-                    중첩 반복문은 n이 커질수록 빠르게 무거워집니다.
+                    <em>중첩 반복문은 n이 커질수록 빠르게 무거워집니다.</em>
                     참고로 이 "i를 고정하고 j를 훑는" 구조는 다음 강의(4강)에서 배울 선택 정렬·버블 정렬의 뼈대이기도 합니다.
                 </p>
 
@@ -266,7 +266,7 @@
                     하지만 문자열(<code>String</code>)은 <strong>객체</strong>라서,
                     <code>==</code>는 "내용이 같은가"가 아니라 <strong>"같은 객체인가(같은 메모리를 가리키는가)"</strong>를 묻습니다.
                     내용 비교는 반드시 <code>a.equals(b)</code>를 사용해야 합니다.
-                    <code>split</code>으로 만들어진 단어들은 전부 새 객체이므로, <code>==</code> 비교는 내용이 같아도 false가 됩니다 —
+                    <em><code>split</code>으로 만들어진 단어들은 전부 새 객체이므로, <code>==</code> 비교는 내용이 같아도 false가 됩니다</em> —
                     오늘 오류 카드(12번 섹션)에서 실제로 이 사고를 재현해 봅니다.
                 </p>
 
@@ -276,7 +276,7 @@
                     판별 알고리즘은 <strong>양 끝에서 가운데로 좁혀 가는 두 포인터</strong>를 사용합니다.
                     왼쪽 포인터 <code>left</code>와 오른쪽 포인터 <code>right</code>가 가리키는 문자를 비교하고,
                     같으면 한 칸씩 안쪽으로 이동, 다르면 그 즉시 "회문 아님"으로 끝냅니다.
-                    문자열 길이가 L이면 비교는 최대 L/2번 — 이것도 "확인해야 할 모든 쌍을 확인하는" 작은 완전 탐색입니다.
+                    문자열 길이가 L이면 비교는 최대 <strong>L/2번</strong> — 이것도 "확인해야 할 모든 쌍을 확인하는" 작은 완전 탐색입니다.
                 </p>
 
                 <h3>빈도 계산과 HashMap</h3>
@@ -312,7 +312,7 @@
                     덕분에 "apple이 있나?"라는 질문에 <strong>전체를 뒤지지 않고 계산된 위치만 확인</strong>하면 됩니다 —
                     1강 응용 예제에서 "번호 = 인덱스 + 1" 규칙으로 O(1) 접근을 했던 것과 같은 원리를,
                     해시 함수가 <strong>어떤 값에 대해서도</strong> 만들어 주는 셈입니다.
-                    그래서 추가·확인이 평균 O(1)이고, n개를 순회하며 확인해도 전체가 평균 O(n)입니다.
+                    <em>그래서 추가·확인이 평균 O(1)이고, n개를 순회하며 확인해도 전체가 평균 O(n)입니다.</em>
                 </p>
                 <div class="table-scroll">
                     <table class="data-table">
@@ -344,7 +344,7 @@
                 <p>
                     마지막 단계에서 확인할 수 있듯, 단어 5개에 대해 이중 반복문은 <strong>10번</strong>,
                     HashSet은 <strong>5번</strong>의 확인으로 같은 중복 [사과, 포도]를 찾아냅니다.
-                    같은 답, 다른 일의 양 — 1강의 "반복문 vs 공식"에서 본 구도가 자료구조의 힘으로 다시 나타납니다.
+                    <em>같은 답, 다른 일의 양 — 1강의 "반복문 vs 공식"에서 본 구도가 자료구조의 힘으로 다시 나타납니다.</em>
                 </p>
             </section>
 
@@ -483,7 +483,7 @@ words[5] = apple</code></pre>
                 <p>
                     이번에는 문자열 <strong>안</strong>으로 들어갑니다. <code>charAt(i)</code>로 문자를 하나 꺼내 보고,
                     문자는 <code>==</code>로, 문자열은 <code>equals</code>로 비교한다는 규칙을 확인합니다.
-                    마지막 줄의 <code>a == c</code>가 false인 것이 오늘 가장 중요한 함정 예방 주사입니다.
+                    마지막 줄의 <code>a == c</code>가 false인 것이 <strong>오늘 가장 중요한 함정 예방 주사</strong>입니다.
                 </p>
                 <article class="code-card">
                     <header class="code-card__header">
@@ -647,7 +647,7 @@ a.equals(c) = true
                 <div class="note-box note-box--tip">
                     <span class="note-box__title">관찰</span>
                     <p>단어 6개에 비교 15번 — 정확히 6 × 5 ÷ 2입니다. 단어가 2배(12개)가 되면 비교는 66번으로 약 4배가 됩니다.
-                    <strong>n이 k배가 되면 일은 약 k²배</strong> — 이것이 O(n²)의 실감입니다.</p>
+                    <em><strong>n이 k배가 되면 일은 약 k²배</strong> — 이것이 O(n²)의 실감입니다.</em></p>
                 </div>
             </section>
 
@@ -788,7 +788,7 @@ n = 10일 때: 완전 탐색은 45번, 해시는 10번. n이 커질수록 차이
                     <p>HashMap과 HashSet은 <strong>넣은 순서를 기억하지 않습니다</strong>.
                     <code>freq</code>를 그대로 출력하면 순서가 뒤죽박죽으로 보일 수 있습니다.
                     그래서 위 코드는 원본 배열을 다시 순회하며 <strong>첫 등장 순서</strong>로 출력했습니다.
-                    "해시는 빠른 대신 순서가 없다" — 자료구조를 고를 때 기억해야 할 특성입니다.</p>
+                    <em>"해시는 빠른 대신 순서가 없다" — 자료구조를 고를 때 기억해야 할 특성입니다.</em></p>
                 </div>
             </section>
 
@@ -884,7 +884,7 @@ left | right | charAt(left) | charAt(right) | 일치
                 <p>
                     "level"(길이 5)은 비교 2번, "noon"(길이 4)도 비교 2번 — 길이 L에 대해 최대 <strong>L/2번</strong>입니다.
                     "banana"는 첫 비교(b vs a)에서 바로 실패해 <strong>1번 만에 조기 중단</strong>됩니다.
-                    1강의 "조기 중단" 아이디어가 여기서도 비교 횟수를 아껴 주고 있습니다.
+                    <em>1강의 "조기 중단" 아이디어가 여기서도 비교 횟수를 아껴 주고 있습니다.</em>
                     또한 홀수 길이("level", "기러기")는 가운데 문자를 비교하지 않는다는 것도 표에서 확인할 수 있습니다 —
                     가운데 글자는 뒤집어도 자기 자신이므로 확인할 필요가 없기 때문입니다.
                 </p>
@@ -939,7 +939,7 @@ left | right | charAt(left) | charAt(right) | 일치
     count++;
 }</pre>
                                 <p>수정 후 출력: <code>단어 "apple"의 등장 횟수 = 3</code>.
-                                문자열 비교 코드를 쓸 때마다 "<strong>String이면 equals</strong>"를 소리 내어 확인하는 습관을 들이세요.</p>
+                                <em>문자열 비교 코드를 쓸 때마다 "<strong>String이면 equals</strong>"를 소리 내어 확인하는 습관을 들이세요.</em></p>
                             </div>
                         </details>
                     </div>
@@ -986,7 +986,7 @@ public class BuggyNullCounter {
                                 <p><strong>수정 방법:</strong> "없으면 0"을 돌려주는 <code>getOrDefault</code>를 사용합니다.</p>
                                 <pre class="quiz-code">freq.put(word, freq.getOrDefault(word, 0) + 1);</pre>
                                 <p>수정 후 출력: <code>apple = 2회</code>.
-                                맵에서 값을 꺼내 계산에 쓸 때는 항상 <strong>"이 키가 없을 수도 있다"</strong>를 먼저 생각하세요.
+                                <em>맵에서 값을 꺼내 계산에 쓸 때는 항상 <strong>"이 키가 없을 수도 있다"</strong>를 먼저 생각하세요.</em>
                                 <code>containsKey</code>로 확인한 뒤 꺼내는 방법도 있지만, 빈도 계산에는 <code>getOrDefault</code> 한 줄이 가장 깔끔합니다.</p>
                             </div>
                         </details>
@@ -1048,7 +1048,7 @@ public class BuggyNullCounter {
                     <li><strong>완전 탐색은 정확성의 기준점:</strong> 새 알고리즘(해시)을 도입할 때
                         느리지만 확실한 완전 탐색과 결과를 비교하면(<code>dupA.equals(dupB)</code>) 버그를 빨리 잡을 수 있습니다.</li>
                     <li><strong>작은 n에는 완전 탐색도 충분:</strong> n이 수십~수백이면 O(n²)도 순식간입니다.
-                        코드가 단순한 완전 탐색이 오히려 좋은 선택일 수 있습니다.</li>
+                        <em>코드가 단순한 완전 탐색이 오히려 좋은 선택일 수 있습니다.</em></li>
                     <li><strong>해시는 순서가 없다:</strong> HashMap·HashSet은 넣은 순서를 잃어버립니다.
                         순서가 필요하면 원본 배열을 다시 순회하거나 별도 목록으로 순서를 기억해야 합니다.</li>
                     <li><strong>중첩 반복문 패턴은 재등장한다:</strong> "i를 고정하고 j를 훑는" 구조는
@@ -1303,7 +1303,7 @@ public class NoticeAnalysisApplication {
                     <li><strong>상위 3개:</strong> "남은 것 중 최댓값 찾기"를 3번 반복 — 단어 종류가 m개면 O(3m)입니다.
                         상위 k개가 크게 필요하면 4강에서 배울 정렬이 더 적합해집니다.</li>
                     <li><strong>전체 복잡도:</strong> 빈도 O(n) + 상위 3개 O(m) + 회문 검사 O(아이디 수 × 길이) —
-                        모든 단계가 선형이라 공지가 아무리 길어져도 여유롭게 처리합니다.</li>
+                        <em>모든 단계가 선형이라 공지가 아무리 길어져도 여유롭게 처리합니다.</em></li>
                 </ul>
             </section>
 
@@ -1320,8 +1320,8 @@ public class NoticeAnalysisApplication {
                     구체적으로는 게시글에 <strong>어떤 단어가 몇 번씩</strong> 나오는지,
                     <strong>두 번 이상 반복된 단어</strong>는 무엇인지,
                     그리고 <strong>가장 많이 등장한 단어</strong>가 무엇인지를 한 번에 보여 주는 도구가 필요합니다.
-                    단어 수만 개짜리 게시글도 분석해야 하므로, 모든 계산은 오늘 배운
-                    <strong>HashMap·HashSet 기반의 O(n) 방식</strong>으로 구현하기로 했습니다.
+                    <em>단어 수만 개짜리 게시글도 분석해야 하므로, 모든 계산은 오늘 배운
+                    <strong>HashMap·HashSet 기반의 O(n) 방식</strong>으로 구현하기로 했습니다.</em>
                     이 도구의 이름은 WordLens — 게시글을 단어 단위로 들여다보는 돋보기입니다.
                 </p>
 
@@ -1672,8 +1672,8 @@ public class WordFrequencySolution {
                             <li>빈도 계산 O(n), 중복 목록 O(n), 최다 단어 O(n), 출력 O(n) — 전체 <strong>평균 O(n)</strong>.</li>
                             <li>공간은 맵·집합에 서로 다른 단어를 저장하므로 O(n) —
                                 이중 반복문 버전(시간 O(n²), 공간 O(1))과 정확히 반대의 교환입니다.</li>
-                            <li>같은 작업을 이중 반복문으로 하면 n=100,000일 때 약 50억 번의 비교가 필요합니다 —
-                                제한 조건이 "이중 반복문 금지"인 이유입니다.</li>
+                            <li><em>같은 작업을 이중 반복문으로 하면 n=100,000일 때 약 50억 번의 비교가 필요합니다 —
+                                제한 조건이 "이중 반복문 금지"인 이유입니다.</em></li>
                         </ul>
 
                         <h4>자주 발생하는 오류</h4>
@@ -1764,8 +1764,8 @@ public class WordFrequencySolution {
 // groupingBy(무엇으로 묶을까, 묶은 것을 어떻게 셀까)</code></pre>
                     </article>
                     <p>
-                        <strong>값의 타입이 <code>Integer</code>가 아니라 <code>Long</code>으로 바뀌는 것</strong>에
-                        주의하세요. <code>counting()</code>은 원소 수를 <code>long</code>으로 셉니다.
+                        <em><strong>값의 타입이 <code>Integer</code>가 아니라 <code>Long</code>으로 바뀌는 것</strong>에
+                        주의하세요.</em> <code>counting()</code>은 원소 수를 <code>long</code>으로 셉니다.
                         기존 코드와 이어 붙일 때 <code>freq.get(w) == 2</code> 같은 비교가
                         조용히 어긋날 수 있는 자리입니다.
                     </p>
@@ -1867,7 +1867,7 @@ List&lt;String&gt; repeated = freq.entrySet().stream()
                         반복문 버전은 <strong>문장에서 먼저 나온 단어</strong>를, 스트림 버전은
                         <strong>맵을 훑다가 먼저 만난 단어</strong>를 고릅니다. 이번 예문은 apple(3회)이
                         유일한 최빈이라 결과가 같지만, 동점이 생기면 갈릴 수 있습니다.
-                        <strong>"같은 결과"를 원한다면 동점 규칙까지 적어야 합니다.</strong>
+                        <em><strong>"같은 결과"를 원한다면 동점 규칙까지 적어야 합니다.</strong></em>
                     </p>
                 </details>
 

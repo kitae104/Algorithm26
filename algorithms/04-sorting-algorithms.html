@@ -57,7 +57,7 @@
                     쇼핑몰의 "낮은 가격순" 버튼, 성적표의 석차, 파일 탐색기의 이름순 목록 —
                     전부 <strong>정렬(sorting)</strong>의 결과물입니다.
                     정렬은 그 자체로도 쓸모 있지만, 더 중요한 이유가 있습니다.
-                    <strong>데이터가 정렬되어 있어야만 쓸 수 있는 더 빠른 알고리즘들이 있기 때문입니다.</strong>
+                    <em>데이터가 정렬되어 있어야만 쓸 수 있는 <strong>더 빠른 알고리즘들</strong>이 있기 때문입니다.</em>
                     당장 다음 강의의 이진 탐색이 그렇습니다.
                 </p>
                 <p>
@@ -110,14 +110,14 @@
             <section class="lesson-section" id="sec-problem" aria-labelledby="h-problem">
                 <h2 id="h-problem" data-toc-label="실제 문제 상황"><span class="section-no">04</span>실제 문제 상황</h2>
                 <p>
-                    여러분은 작은 온라인 쇼핑몰의 개발을 맡게 되었습니다.
-                    상품 목록 페이지에는 상품이 등록된 순서대로만 표시되는데,
+                    여러분은 작은 온라인 쇼핑몰의 개발을 맡았습니다.
+                    상품 목록은 등록 순서대로만 표시되는데,
                     사용자 설문에서 가장 많이 나온 요청이 <strong>"낮은 가격순으로 보고 싶어요"</strong>였습니다.
                     상품 가격 데이터는 등록 순서대로 <code>[26, 15, 38, 12, 21]</code>(단위: 천 원)처럼 뒤죽박죽입니다.
-                    게다가 기획자는 한 술 더 떠서 "가격순 말고도 <strong>평점 높은 순</strong>,
-                    평점이 같으면 <strong>이름 가나다순</strong>도 필요해요"라고 말합니다.
-                    숫자 정렬 하나 만들면 끝인 줄 알았는데, 기준이 계속 늘어납니다.
-                    오늘 우리는 정렬 알고리즘을 직접 만들고, 기준을 갈아 끼울 수 있는 구조까지 완성합니다.
+                    게다가 기획자는 "가격순 말고도 <strong>평점 높은 순</strong>,
+                    평점이 같으면 <strong>이름 가나다순</strong>도 필요해요"라고 요구합니다.
+                    <em>숫자 정렬 하나 만들면 끝인 줄 알았는데, 기준이 계속 늘어납니다.</em>
+                    오늘은 정렬 알고리즘을 직접 만들고, 기준을 갈아 끼울 수 있는 구조까지 완성합니다.
                 </p>
                 <div class="note-box">
                     <span class="note-box__title">오늘의 핵심 질문</span>
@@ -197,7 +197,7 @@
                             <p>4 + 3 + 2 + 1 = <strong>10번</strong>입니다.
                             카드가 n장이면 (n-1) + (n-2) + … + 1 = <strong>n(n-1)/2번</strong> —
                             3강의 "모든 쌍 비교"와 같은 개수입니다.
-                            n이 10배가 되면 비교는 약 100배가 되는 <strong>O(n²)</strong>의 정체가 여기 있습니다.</p>
+                            <em>n이 10배가 되면 비교는 약 100배가 되는 <strong>O(n²)</strong>의 정체가 여기 있습니다.</em></p>
                         </div>
                     </details>
                 </div>
@@ -212,7 +212,7 @@
                     정렬은 <strong>데이터를 정해진 기준에 따라 순서대로 재배치하는 것</strong>입니다.
                     기준은 "작은 것부터"(오름차순)일 수도, "큰 것부터"(내림차순)일 수도,
                     "평점 높은 순, 동점이면 이름순"처럼 복합적일 수도 있습니다.
-                    정렬이 중요한 진짜 이유는 <strong>정렬된 데이터에서만 가능한 빠른 알고리즘</strong>이 많기 때문입니다 —
+                    <em>정렬이 중요한 진짜 이유는 <strong>정렬된 데이터에서만 가능한 빠른 알고리즘</strong>이 많기 때문입니다</em> —
                     5강의 이진 탐색, 10강의 그리디가 대표적입니다.
                 </p>
 
@@ -270,7 +270,7 @@ arr[j] = temp;       // 3) 보관해 둔 값을 넣기</pre>
                     <strong>음수면 a가 앞, 0이면 같음, 양수면 a가 뒤</strong>입니다.
                     정렬 코드 안에서 <code>comp.compare(a, b) &gt; 0</code>은
                     "a가 b보다 뒤에 와야 한다 = 지금 순서가 어긋났다"로 읽으면 됩니다.
-                    이 규약 덕분에 <strong>정렬 알고리즘 코드는 그대로 두고 기준만 교체</strong>할 수 있습니다.
+                    <em>이 규약 덕분에 <strong>정렬 알고리즘 코드는 그대로 두고 기준만 교체</strong>할 수 있습니다.</em>
                 </p>
                 <div class="note-box note-box--warn">
                     <span class="note-box__title">Arrays.sort()는 오늘 어디에 쓰나?</span>
@@ -293,7 +293,7 @@ arr[j] = temp;       // 3) 보관해 둔 값을 넣기</pre>
                 <div id="viz-selection-sort" aria-label="선택 정렬 단계별 실행 시각화"></div>
                 <p>
                     마지막 단계의 카운터를 보세요 — 원소 5개에 비교 10번(= 4+3+2+1), 교환은 2번입니다.
-                    비교 횟수는 데이터 내용과 무관하게 항상 n(n-1)/2번이라는 점이 선택 정렬의 특징입니다.
+                    <em>비교 횟수는 데이터 내용과 무관하게 항상 n(n-1)/2번이라는 점이 선택 정렬의 특징입니다.</em>
                 </p>
 
                 <h3>같은 데이터, 다른 전략 — 삽입 정렬</h3>
@@ -305,7 +305,7 @@ arr[j] = temp;       // 3) 보관해 둔 값을 넣기</pre>
                 <div id="viz-insertion-sort" aria-label="삽입 정렬 단계별 실행 시각화"></div>
                 <p>
                     삽입 정렬은 key보다 작은 값을 만나는 순간 비교를 멈춥니다.
-                    그래서 <strong>거의 정렬된 데이터에서는 비교가 확 줄어듭니다</strong> —
+                    <em>그래서 <strong>거의 정렬된 데이터에서는 비교가 확 줄어듭니다</strong></em> —
                     11번 완성 코드의 실험에서 숫자로 확인합니다.
                 </p>
             </section>
@@ -356,8 +356,8 @@ arr[j] = temp;       // 3) 보관해 둔 값을 넣기</pre>
 
                 <p>
                     선택 정렬은 "찾아서 교환", 삽입 정렬은 "밀어서 끼워 넣기"입니다.
-                    두 의사코드 모두 반복문 안에 반복문이 있는 <strong>중첩 구조</strong>라는 점 —
-                    O(n²)의 근원 — 은 같습니다.
+                    <em>두 의사코드 모두 반복문 안에 반복문이 있는 <strong>중첩 구조</strong>라는 점 —
+                    O(n²)의 근원 — 은 같습니다.</em>
                 </p>
             </section>
 
@@ -371,7 +371,7 @@ arr[j] = temp;       // 3) 보관해 둔 값을 넣기</pre>
                 </p>
 
                 <h3>구현 1단계 — 입력 데이터 준비</h3>
-                <p>정렬할 상품 가격 5개를 준비하고, 정렬 전 상태를 눈으로 확인합니다.</p>
+                <p>정렬할 상품 <strong>가격 5개</strong>를 준비하고, 정렬 전 상태를 눈으로 확인합니다.</p>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -540,7 +540,7 @@ prices[0] &gt; prices[1] 이므로 두 값을 교환합니다.
                     <span class="note-box__title">왜 값이 아니라 위치인가?</span>
                     <p>최솟값이 12라는 사실만 알면 교환할 수 없습니다.
                     <strong>12가 3번 칸에 있다</strong>는 것을 알아야 <code>swap(prices, 0, 3)</code>이 가능합니다.
-                    "값 찾기"를 "위치 찾기"로 바꾸는 것 — 이것이 2강 코드와 오늘 코드의 유일한 차이입니다.</p>
+                    <em>"값 찾기"를 "위치 찾기"로 바꾸는 것 — 이것이 2강 코드와 오늘 코드의 유일한 차이입니다.</em></p>
                 </div>
 
                 <h3>구현 4단계 — 반복으로 전체 정렬 + 연산 카운터</h3>
@@ -622,7 +622,7 @@ prices[0] &gt; prices[1] 이므로 두 값을 교환합니다.
                 <div class="note-box note-box--tip">
                     <span class="note-box__title">관찰</span>
                     <p>비교 10번 = 4 + 3 + 2 + 1 = n(n-1)/2 — 손 풀이(STEP 4)와 시각화의 카운터와 정확히 일치합니다.
-                    교환은 2번뿐입니다(12↔26, 21↔38). 선택 정렬은 <strong>비교는 많지만 교환은 회전당 최대 1번</strong>입니다.</p>
+                    교환은 2번뿐입니다(12↔26, 21↔38). <em>선택 정렬은 <strong>비교는 많지만 교환은 회전당 최대 1번</strong>입니다.</em></p>
                 </div>
             </section>
 
@@ -798,7 +798,7 @@ public class SortingThreeComplete {
                     <span class="note-box__title">표에서 읽어야 할 것</span>
                     <p>선택 정렬의 비교는 입력이 무엇이든 <strong>항상 28번</strong>(= 8×7/2)입니다.
                     반면 버블(조기 종료)과 삽입은 <strong>이미 정렬된 입력에서 7번</strong>(= n-1)으로 끝납니다.
-                    같은 O(n²) 가족이라도 "최선의 경우"는 이렇게 다릅니다 — 복잡도 표는 13번 섹션에서 정리합니다.</p>
+                    <em>같은 O(n²) 가족이라도 "최선의 경우"는 이렇게 다릅니다</em> — 복잡도 표는 13번 섹션에서 정리합니다.</p>
                 </div>
             </section>
 
@@ -807,7 +807,7 @@ public class SortingThreeComplete {
                 <h2 id="h-trace" data-toc-label="실행 과정 추적"><span class="section-no">11</span>실행 과정 추적</h2>
                 <p>
                     완성한 선택 정렬이 정말 시각화(7번 섹션)·손 풀이(5번 섹션)와 똑같이 움직이는지,
-                    매 회차의 배열 상태와 누적 카운터를 출력해 확인합니다.
+                    매 회차의 <strong>배열 상태와 누적 카운터</strong>를 출력해 확인합니다.
                 </p>
                 <article class="code-card">
                     <header class="code-card__header">
@@ -901,7 +901,7 @@ i=3 회차: 최솟값이 이미 3번 칸에 있음 — 교환 없음
                     회차별 상태 [12, 15, 38, 26, 21] → [12, 15, 21, 26, 38]과
                     비교 누적 4 → 7 → 9 → 10, 교환 2번이
                     손 풀이의 STEP 1~4, 시각화의 카운터와 모두 일치합니다.
-                    <strong>손 풀이 = 시각화 = 코드</strong>가 같은 절차임을 확인했습니다.
+                    <em><strong>손 풀이 = 시각화 = 코드</strong>가 같은 절차임을 확인했습니다.</em>
                 </p>
             </section>
 
@@ -979,7 +979,7 @@ i=3 회차: 최솟값이 이미 3번 칸에 있음 — 교환 없음
 }</pre>
                                 <p>수정 후 출력: <code>정렬 후: [12, 15, 21, 26, 38]</code>.
                                 정렬 결과가 이상할 때는 먼저 <strong>"교환 후에도 원소의 종류와 개수가 그대로인가"</strong>를 확인하세요.
-                                정렬은 원소를 재배치할 뿐, 없애거나 만들지 않습니다.</p>
+                                <em>정렬은 원소를 재배치할 뿐, 없애거나 만들지 않습니다.</em></p>
                             </div>
                         </details>
                     </div>
@@ -1029,7 +1029,7 @@ i=3 회차: 최솟값이 이미 3번 칸에 있음 — 교환 없음
                                 j는 마지막 칸의 <strong>한 칸 앞</strong>까지만 가야 합니다.</p>
                                 <p><strong>수정 방법:</strong> 범위에서 1을 더 뺍니다.</p>
                                 <pre class="quiz-code">for (int j = 0; j &lt; prices.length - 1 - i; j++) {</pre>
-                                <p>1강의 off-by-one 오류가 정렬에서는 <strong>예외(크래시)</strong>로 나타났습니다.
+                                <p><em>1강의 off-by-one 오류가 정렬에서는 <strong>예외(크래시)</strong>로 나타났습니다.</em>
                                 <code>arr[j + 1]</code>, <code>arr[j - 1]</code>처럼 <strong>인덱스에 덧셈·뺄셈이 붙어 있으면
                                 반드시 경계에서 범위를 벗어나지 않는지</strong> 손으로 대입해 확인하세요.</p>
                             </div>
@@ -1064,9 +1064,9 @@ i=3 회차: 최솟값이 이미 3번 칸에 있음 — 교환 없음
                 </div>
                 <p>
                     실험값과 맞춰 봅시다. n=8일 때 n(n-1)/2 = 28 —
-                    선택 정렬의 비교가 세 입력 모두에서 28번이었고,
-                    이미 정렬된 입력에서 버블·삽입의 비교가 n-1 = 7번이었습니다.
-                    역순 입력에서는 세 정렬 모두 28번 비교했습니다. 표와 실험이 일치합니다.
+                    선택 정렬의 비교는 세 입력 모두에서 28번, 역순 입력에서는 세 정렬 모두 28번이었고,
+                    이미 정렬된 입력에서 버블·삽입의 비교는 n-1 = 7번이었습니다.
+                    <em>표와 실험이 정확히 일치합니다.</em>
                 </p>
 
                 <h3>공간 복잡도</h3>
@@ -1082,7 +1082,7 @@ i=3 회차: 최솟값이 이미 3번 칸에 있음 — 교환 없음
                         교환 비용이 아주 클 때 유리합니다.</li>
                     <li><strong>버블 정렬:</strong> 가장 단순하지만 교환이 많습니다(역순 n=8에서 28번).
                         <code>swapped</code> 플래그 덕분에 정렬된 입력을 O(n)에 감지합니다.</li>
-                    <li><strong>삽입 정렬:</strong> <strong>거의 정렬된 데이터에 가장 강합니다.</strong>
+                    <li><strong>삽입 정렬:</strong> <em><strong>거의 정렬된 데이터에 가장 강합니다.</strong></em>
                         실제로 Java의 라이브러리 정렬도 작은 구간에는 삽입 정렬을 씁니다.</li>
                     <li><strong>공통 한계:</strong> 평균 O(n²)이므로 n이 수십만이 되면 감당하기 어렵습니다.
                         더 빠른 O(n log n) 정렬(병합·퀵)은 7강의 재귀를 배운 뒤에 만날 수 있습니다.</li>
@@ -1097,7 +1097,7 @@ i=3 회차: 최솟값이 이미 3번 칸에 있음 — 교환 없음
                 <p>
                     <code>SelectionSortTrace.java</code>의 데이터를 <code>{45, 8, 31, 17, 24}</code>로 바꾸고 실행하세요.
                     마지막 줄이 <code>정렬 완료: [8, 17, 24, 31, 45] (비교 10번, 교환 4번)</code>이 나와야 합니다.
-                    비교는 여전히 10번(데이터와 무관)이지만 교환은 4번으로 늘었습니다 — 왜 그런지 회차별 출력에서 확인하세요.
+<em>비교는 여전히 10번(데이터와 무관)이지만 교환은 4번으로 늘었습니다</em> — 왜 그런지 회차별 출력에서 확인하세요.
                 </p>
 
                 <h3>실습 2 — 방향 뒤집기 (내림차순 선택 정렬)</h3>
@@ -1106,7 +1106,7 @@ i=3 회차: 최솟값이 이미 3번 칸에 있음 — 교환 없음
                     <code>prices[j] &gt; prices[minIndex]</code>로 바꾸면(변수 이름은 <code>maxIndex</code>가 어울립니다)
                     "최솟값 선택"이 "최댓값 선택"이 되어 내림차순 정렬이 됩니다.
                     실행 결과가 <code>정렬 후: [38, 26, 21, 15, 12]</code>, 비교 10번, 교환 4번이 되는지 확인하세요.
-                    <strong>부등호 하나가 정렬 방향을 결정합니다</strong> — 객체 정렬의 Comparator에서도 같은 원리가 나옵니다.
+                    <em><strong>부등호 하나가 정렬 방향을 결정합니다</strong></em> — 객체 정렬의 Comparator에서도 같은 원리가 나옵니다.
                 </p>
 
                 <h3>실습 3 — 코드 완성 (내림차순 버블 정렬)</h3>
@@ -1184,7 +1184,7 @@ i=3 회차: 최솟값이 이미 3번 칸에 있음 — 교환 없음
                     <strong>이름·가격·평점을 가진 객체</strong>입니다.
                     "가격 오름차순", "평점 내림차순(동점이면 이름순)", "이름순" —
                     기준이 세 가지인데, 정렬 알고리즘을 세 번 만들 수는 없습니다.
-                    <strong>정렬 코드는 하나만 두고, 비교 기준(Comparator)만 갈아 끼우는 구조</strong>를 만듭니다.
+                    <em><strong>정렬 코드는 하나만 두고, 비교 기준(Comparator)만 갈아 끼우는 구조</strong>를 만듭니다.</em>
                 </p>
 
                 <h3>데이터 모델과 알고리즘 적용 기준</h3>
@@ -1356,8 +1356,8 @@ public class ProductSortApplication {
                     데이터베이스에서 넘어온 상품 6개는 등록 순서 그대로 뒤죽박죽이고,
                     그중에는 가격이 똑같은 상품(23,000원 두 개)과 평점이 똑같은 상품(4.5 두 개, 4.2 두 개)도 섞여 있습니다.
                     팀 규칙상 정렬 알고리즘은 직접 구현해야 하고(면접 대비!),
-                    같은 값끼리는 입력 순서가 유지되어야 한다는 QA 요구사항도 있습니다.
-                    여러분은 Comparator 세 개와 삽입 정렬 하나로 이 요구를 전부 해결해야 합니다.
+                    같은 값끼리는 입력 순서가 유지되어야 한다는 <strong>QA 요구사항</strong>도 있습니다.
+                    <em>여러분은 Comparator 세 개와 삽입 정렬 하나로 이 요구를 전부 해결해야 합니다.</em>
                 </p>
 
                 <h3>프로그램 목표</h3>
@@ -1754,7 +1754,7 @@ Arrays.sort 결과와 일치(검증): true</code></pre>
                             <li><strong>삽입 정렬:</strong> 16번 응용 예제와 같은 코드에서 타입만 <code>Product</code>로 바뀌었습니다.
                                 핵심은 <code>comp.compare(arr[j], key) &gt; 0</code> — "arr[j]가 key보다 뒤에 와야 하면 민다"입니다.</li>
                             <li><strong>검증:</strong> 마지막에 <code>Arrays.sort</code>와 결과를 비교해 <code>true</code>를 확인합니다.
-                                1강의 원칙 — 빠르거나 직접 만든 방법은 <strong>확실한 방법과 결과를 대조</strong>합니다.</li>
+                                <em>1강의 원칙 — 빠르거나 직접 만든 방법은 <strong>확실한 방법과 결과를 대조</strong>합니다.</em></li>
                         </ol>
 
                         <h4>결과에서 확인할 세 가지</h4>
@@ -1786,7 +1786,7 @@ Arrays.sort 결과와 일치(검증): true</code></pre>
                             기준 3은 <code>Comparator.comparingDouble((Product p) -&gt; p.rating).reversed().thenComparing(p -&gt; p.name)</code>으로도
                             만들 수 있습니다(16번 응용 예제 참고). 또한 <code>Product</code>에 <code>Comparable</code>을 구현해
                             기본 기준(가격순)을 클래스 안에 두는 방법도 있습니다 —
-                            기본 기준이 하나 있고 나머지를 Comparator로 두는 것이 실무에서 흔한 구성입니다.
+                            <em>기본 기준이 하나 있고 나머지를 Comparator로 두는 것이 실무에서 흔한 구성입니다.</em>
                         </p>
                     </div>
                 </details>
@@ -1806,8 +1806,8 @@ Arrays.sort 결과와 일치(검증): true</code></pre>
                     <p>
                         <code>Comparator</code>를 어떻게 쓰든 <strong>삽입 정렬은 최악 O(n²)</strong> 그대로입니다.
                         비교 횟수도 한 번 줄지 않습니다.
-                        4강의 성과는 <strong>정렬 알고리즘 자체</strong>이고, 람다는 그 알고리즘에
-                        <strong>기준을 갈아 끼우기 쉽게</strong> 만들 뿐입니다.
+<em>4강의 성과는 <strong>정렬 알고리즘 자체</strong>이고, 람다는 그 알고리즘에
+                        <strong>기준을 갈아 끼우기 쉽게</strong> 만들 뿐입니다.</em>
                     </p>
                 </div>
 
@@ -1874,7 +1874,7 @@ Comparator&lt;Product&gt; ratingDesc =
                         <strong><code>.reversed()</code>를 이어 붙이는 순간 추론 근거가 끊깁니다.</strong>
                     </p>
                     <p>
-                        여기서 얻은 것은 줄 수가 아닙니다. <code>RATING_DESC</code>는
+                        <em>여기서 얻은 것은 줄 수가 아닙니다.</em> <code>RATING_DESC</code>는
                         <strong>"왜 <code>b</code>가 앞에 있지?"</strong>를 생각해야 뜻이 보이지만,
                         <code>comparingDouble(...).reversed()</code>는
                         <strong>"평점으로 비교하고 뒤집는다"</strong>가 그대로 읽힙니다.
@@ -1939,7 +1939,7 @@ insertionSort(products, ratingDescThenName);</code></pre>
                         안정성은 <code>Comparator</code>가 아니라 <strong>정렬 알고리즘</strong>이 정합니다.
                         <code>insertionSort</code>의 <code>while (j &gt;= 0 &amp;&amp; comp.compare(...) &gt; 0)</code>에서
                         <code>&gt; 0</code>을 <code>&gt;= 0</code>으로 바꾸면 어떤 <code>Comparator</code>를 써도
-                        안정성이 깨집니다. <strong>문법을 바꾼다고 이 성질이 달라지지 않습니다.</strong>
+                        안정성이 깨집니다. <em><strong>문법을 바꾼다고 이 성질이 달라지지 않습니다.</strong></em>
                     </p>
                     <p>
                         <code>Product::getName</code>으로 줄일 수 있었던 것은
@@ -1985,7 +1985,7 @@ insertionSort(products, ratingDescThenName);</code></pre>
                 <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">21</span>다음 강의 연결</h2>
                 <p>
                     다음 강의는 <strong>5강. 순차 탐색과 이진 탐색</strong>입니다.
-                    오늘 만든 "정렬된 배열"이 그대로 다음 강의의 출발점이 됩니다.
+                    <em>오늘 만든 "정렬된 배열"이 그대로 다음 강의의 출발점이 됩니다.</em>
                 </p>
                 <ul>
                     <li>오늘 정렬한 배열 <code>[12, 15, 21, 26, 38]</code>처럼 <strong>정렬된 배열이 있어야 이진 탐색이 가능</strong>합니다 —
