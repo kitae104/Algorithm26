@@ -17,22 +17,18 @@ public class NoticeAnalysisApplication {
         return freq;
     }
 
-    /** 빈도 상위 topN 단어: "최댓값 찾기"(2강 패턴)를 topN번 반복한다. */
-    static List<String> topWords(Map<String, Integer> freq, List<String> order, int topN) {
-        List<String> result = new ArrayList<>();
-        while (result.size() < topN && result.size() < order.size()) {
-            String best = null;
-            for (String word : order) {
-                if (result.contains(word)) {
-                    continue;                      // 이미 뽑은 단어는 건너뛴다
-                }
-                if (best == null || freq.get(word) > freq.get(best)) {
-                    best = word;                   // 남은 단어 중 최다 빈도를 기록
-                }
-            }
-            result.add(best);
-        }
-        return result;
+    /**
+     * 빈도 상위 topN 단어: Map.Entry 스트림을 빈도 내림차순(동점이면 사전순)으로 정렬해
+     * 앞에서 topN개를 취한다. 정렬 알고리즘의 원리는 4강에서 배우지만, 정렬된 결과 자체는
+     * 지금도 라이브러리로 바로 얻을 수 있다.
+     */
+    static List<String> topWords(Map<String, Integer> freq, int topN) {
+        return freq.entrySet().stream()
+                .sorted(Map.Entry.<String, Integer>comparingByValue().reversed()
+                        .thenComparing(Map.Entry::getKey))
+                .limit(topN)
+                .map(Map.Entry::getKey)
+                .toList();
     }
 
     /** 회문 판별 (PalindromeTrace와 같은 알고리즘, 추적 출력만 없음) */
@@ -74,7 +70,7 @@ public class NoticeAnalysisApplication {
         System.out.println();
 
         System.out.println("== 빈도 상위 3개 단어 ==");
-        List<String> top3 = topWords(freq, order, 3);
+        List<String> top3 = topWords(freq, 3);
         for (int rank = 0; rank < top3.size(); rank++) {
             String word = top3.get(rank);
             System.out.println("  " + (rank + 1) + "위: " + word + " (" + freq.get(word) + "회)");

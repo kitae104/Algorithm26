@@ -1152,7 +1152,8 @@ n = 2회</pre>
                     <li><strong>데이터:</strong> 공지 문장 <code>String notice</code> (split으로 단어 배열화),
                         회원 아이디 배열 <code>String[] memberIds</code></li>
                     <li><strong>빈도 계산:</strong> HashMap + <code>getOrDefault</code> — 단어 수 n에 대해 O(n)</li>
-                    <li><strong>상위 3개:</strong> 2강의 "최댓값 찾기"를 3번 반복 — 이미 뽑은 단어는 건너뜁니다</li>
+                    <li><strong>상위 3개:</strong> <code>entrySet().stream().sorted(...).limit(3)</code> —
+                        Map.Entry를 빈도 내림차순(동점 시 사전순)으로 정렬해 앞에서 3개를 취합니다</li>
                     <li><strong>출력 순서:</strong> HashMap은 순서가 없으므로, 첫 등장 순서를 별도 목록(<code>order</code>)에 기록해 사용</li>
                     <li><strong>회문 판별:</strong> 11번 섹션과 같은 두 포인터 알고리즘 — 아이디 길이 L에 대해 O(L)</li>
                 </ul>
@@ -1184,22 +1185,18 @@ public class NoticeAnalysisApplication {
         return freq;
     }
 
-    /** 빈도 상위 topN 단어: "최댓값 찾기"(2강 패턴)를 topN번 반복한다. */
-    static List&lt;String&gt; topWords(Map&lt;String, Integer&gt; freq, List&lt;String&gt; order, int topN) {
-        List&lt;String&gt; result = new ArrayList&lt;&gt;();
-        while (result.size() &lt; topN &amp;&amp; result.size() &lt; order.size()) {
-            String best = null;
-            for (String word : order) {
-                if (result.contains(word)) {
-                    continue;                      // 이미 뽑은 단어는 건너뛴다
-                }
-                if (best == null || freq.get(word) &gt; freq.get(best)) {
-                    best = word;                   // 남은 단어 중 최다 빈도를 기록
-                }
-            }
-            result.add(best);
-        }
-        return result;
+    /**
+     * 빈도 상위 topN 단어: Map.Entry 스트림을 빈도 내림차순(동점이면 사전순)으로 정렬해
+     * 앞에서 topN개를 취한다. 정렬 알고리즘의 원리는 4강에서 배우지만, 정렬된 결과 자체는
+     * 지금도 라이브러리로 바로 얻을 수 있다.
+     */
+    static List&lt;String&gt; topWords(Map&lt;String, Integer&gt; freq, int topN) {
+        return freq.entrySet().stream()
+                .sorted(Map.Entry.&lt;String, Integer&gt;comparingByValue().reversed()
+                        .thenComparing(Map.Entry::getKey))
+                .limit(topN)
+                .map(Map.Entry::getKey)
+                .toList();
     }
 
     /** 회문 판별 (PalindromeTrace와 같은 알고리즘, 추적 출력만 없음) */
@@ -1241,7 +1238,7 @@ public class NoticeAnalysisApplication {
         System.out.println();
 
         System.out.println("== 빈도 상위 3개 단어 ==");
-        List&lt;String&gt; top3 = topWords(freq, order, 3);
+        List&lt;String&gt; top3 = topWords(freq, 3);
         for (int rank = 0; rank &lt; top3.size(); rank++) {
             String word = top3.get(rank);
             System.out.println("  " + (rank + 1) + "위: " + word + " (" + freq.get(word) + "회)");
@@ -1300,8 +1297,10 @@ public class NoticeAnalysisApplication {
                         <code>order</code>에 기록합니다. 덕분에 HashMap의 무순서 문제를 해결하면서도 계산은 O(n)을 유지합니다.</li>
                     <li><strong>entrySet 검증:</strong> (키, 값) 쌍을 순회하며 값을 합산하면 전체 단어 수(13)와 같아야 합니다 —
                         빈도 계산이 단어를 잃어버리지 않았다는 <strong>정확성 검증</strong>입니다.</li>
-                    <li><strong>상위 3개:</strong> "남은 것 중 최댓값 찾기"를 3번 반복 — 단어 종류가 m개면 O(3m)입니다.
-                        상위 k개가 크게 필요하면 4강에서 배울 정렬이 더 적합해집니다.</li>
+                    <li><strong>상위 3개:</strong> 이제 반복 탐색 대신 <code>entrySet().stream().sorted(...).limit(3)</code>로
+                        한 번에 구합니다 — 정렬 기반이라 단어 종류가 m개면 O(m log m)입니다.
+                        3강 시점에는 정렬을 아직 배우지 않았지만, "정렬된 결과"는 라이브러리로 바로 쓸 수 있습니다.
+                        상위 k개만 필요하고 m이 아주 크면 PriorityQueue로 O(m log k)까지 줄일 수도 있습니다.</li>
                     <li><strong>전체 복잡도:</strong> 빈도 O(n) + 상위 3개 O(m) + 회문 검사 O(아이디 수 × 길이) —
                         <em>모든 단계가 선형이라 공지가 아무리 길어져도 여유롭게 처리합니다.</em></li>
                 </ul>
