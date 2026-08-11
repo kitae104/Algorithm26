@@ -1184,7 +1184,8 @@ i=3 회차: 최솟값이 이미 3번 칸에 있음 — 교환 없음
                     <strong>이름·가격·평점을 가진 객체</strong>입니다.
                     "가격 오름차순", "평점 내림차순(동점이면 이름순)", "이름순" —
                     기준이 세 가지인데, 정렬 알고리즘을 세 번 만들 수는 없습니다.
-                    <em><strong>정렬 코드는 하나만 두고, 비교 기준(Comparator)만 갈아 끼우는 구조</strong>를 만듭니다.</em>
+                    <em><strong>정렬 코드는 하나만 두고, 비교 기준(Comparator)만 갈아 끼우는 구조</strong>를 만듭니다.
+                    이번에는 그 정렬 코드조차 직접 만들지 않고, JDK가 제공하는 <code>Arrays.sort()</code>를 그대로 씁니다.</em>
                 </p>
 
                 <h3>데이터 모델과 알고리즘 적용 기준</h3>
@@ -1192,8 +1193,9 @@ i=3 회차: 최솟값이 이미 3번 칸에 있음 — 교환 없음
                     <li><strong>데이터:</strong> <code>Product</code> 클래스 (이름 <code>name</code>, 가격 <code>price</code>, 평점 <code>rating</code>)</li>
                     <li><strong>기본 기준(Comparable):</strong> 상품의 기본 정렬은 가격 오름차순 — 클래스 안 <code>compareTo</code>에 정의</li>
                     <li><strong>교체 기준(Comparator):</strong> 평점 내림차순+이름순, 이름순 — 클래스 밖에서 만들어 정렬 메서드에 전달</li>
-                    <li><strong>정렬 알고리즘:</strong> 15번 실습까지 다룬 삽입 정렬을 <strong>제네릭 + Comparator 버전</strong>으로 일반화 —
-                        <strong>안정 정렬</strong>이므로 동점 상품의 입력 순서가 유지됩니다</li>
+                    <li><strong>정렬 알고리즘:</strong> 9~11번 섹션에서 직접 구현한 삽입 정렬 대신,
+                        JDK 표준 라이브러리의 <code>Arrays.sort(T[], Comparator)</code>를 사용 —
+                        내부의 <strong>TimSort는 안정 정렬</strong>이므로 동점 상품의 입력 순서가 그대로 유지됩니다</li>
                 </ul>
 
                 <article class="code-card">
@@ -1233,22 +1235,6 @@ public class ProductSortApplication {
         }
     }
 
-    /**
-     * 제네릭 삽입 정렬: 어떤 타입이든 Comparator만 갈아 끼우면 정렬할 수 있다.
-     * comp.compare(a, b)가 양수이면 "a가 b보다 뒤에 와야 한다"는 뜻이다.
-     */
-    static &lt;T&gt; void insertionSort(T[] arr, Comparator&lt;? super T&gt; comp) {
-        for (int i = 1; i &lt; arr.length; i++) {
-            T key = arr[i];
-            int j = i - 1;
-            while (j &gt;= 0 &amp;&amp; comp.compare(arr[j], key) &gt; 0) {
-                arr[j + 1] = arr[j]; // key보다 뒤에 와야 할 값을 한 칸 민다
-                j--;
-            }
-            arr[j + 1] = key;
-        }
-    }
-
     static void printAll(String title, Product[] items) {
         System.out.println("[" + title + "]");
         for (int i = 0; i &lt; items.length; i++) {
@@ -1270,7 +1256,7 @@ public class ProductSortApplication {
 
         // 1) Comparable이 정의한 기본 기준(가격 오름차순)으로 정렬
         Product[] byPrice = Arrays.copyOf(products, products.length);
-        insertionSort(byPrice, Comparator.naturalOrder());
+        Arrays.sort(byPrice, Comparator.naturalOrder());
         printAll("가격 오름차순 — Comparable의 compareTo 사용", byPrice);
 
         // 2) Comparator로 기준 교체: 평점 내림차순, 동점이면 이름 오름차순
@@ -1279,15 +1265,15 @@ public class ProductSortApplication {
                           .reversed()
                           .thenComparing(p -&gt; p.name);
         Product[] byRating = Arrays.copyOf(products, products.length);
-        insertionSort(byRating, byRatingDesc);
+        Arrays.sort(byRating, byRatingDesc);
         printAll("평점 내림차순, 동점 시 이름순 — Comparator 사용", byRating);
 
         // 3) 같은 정렬 메서드에 또 다른 기준: 이름 오름차순
         Product[] byName = Arrays.copyOf(products, products.length);
-        insertionSort(byName, Comparator.comparing(p -&gt; p.name));
+        Arrays.sort(byName, Comparator.comparing(p -&gt; p.name));
         printAll("이름 오름차순 — Comparator 사용", byName);
 
-        System.out.println("정렬 코드는 한 줄도 바꾸지 않았습니다. 바뀐 것은 Comparator뿐입니다.");
+        System.out.println("Arrays.sort 호출은 세 번 다 똑같습니다. 바뀐 것은 Comparator뿐입니다.");
     }
 }</code></pre>
                 </article>
@@ -1327,19 +1313,22 @@ public class ProductSortApplication {
   4. 스마트폰 거치대 (12000원, 평점 4.3)
   5. 차량용 충전기 (18000원, 평점 4.1)
 
-정렬 코드는 한 줄도 바꾸지 않았습니다. 바뀐 것은 Comparator뿐입니다.</code></pre>
+Arrays.sort 호출은 세 번 다 똑같습니다. 바뀐 것은 Comparator뿐입니다.</code></pre>
                 </article>
 
                 <h3>코드 해설과 복잡도 분석</h3>
                 <ul>
-                    <li><code>insertionSort</code>는 9~11번 섹션의 삽입 정렬과 구조가 완전히 같습니다.
-                        <code>arr[j] &gt; key</code>라는 숫자 비교가 <code>comp.compare(arr[j], key) &gt; 0</code>으로 바뀌었을 뿐입니다.</li>
+                    <li>세 번의 정렬 모두 <code>Arrays.sort(배열, Comparator)</code> 호출 한 줄입니다.
+                        9~11번 섹션에서 직접 구현한 삽입 정렬과 원리(비교하며 자리 찾기)는 같지만,
+                        이번에는 그 구현 자체를 JDK가 대신합니다.</li>
                     <li>기준 2는 <code>Comparator.comparingDouble(...).reversed().thenComparing(...)</code> —
                         Java가 제공하는 <strong>기준 조립 도구</strong>입니다. "평점으로 비교 → 뒤집기 → 동점이면 이름으로"를 그대로 읽을 수 있습니다.</li>
                     <li>출력에서 평점 4.6 동점인 "무선 이어폰"과 "보조 배터리"가 <strong>이름 가나다순(무 → 보)</strong>으로,
                         4.3 동점인 "블루투스 스피커"와 "스마트폰 거치대"도 이름순으로 정렬되었습니다 — 다중 기준이 동작한 증거입니다.</li>
-                    <li>복잡도: 삽입 정렬이므로 비교 기준과 무관하게 평균·최악 O(n²), 공간 O(1)입니다.
-                        상품 수백 개 수준에서는 충분히 빠릅니다.</li>
+                    <li><strong>복잡도:</strong> 직접 구현한 삽입 정렬은 비교 기준과 무관하게 평균·최악 O(n²)였지만,
+                        <code>Arrays.sort(Object[], Comparator)</code>는 <strong>TimSort</strong>를 사용해 평균·최악 O(n log n),
+                        공간 O(n)(병합용 보조 배열)입니다. 상품이 수백 개를 넘어 수만·수십만 개가 되면 이 차이가
+                        체감됩니다 — 실전에서 정렬을 직접 구현하지 않고 라이브러리를 쓰는 이유입니다.</li>
                 </ul>
             </section>
 

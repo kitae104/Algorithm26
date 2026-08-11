@@ -27,22 +27,6 @@ public class ProductSortApplication {
         }
     }
 
-    /**
-     * 제네릭 삽입 정렬: 어떤 타입이든 Comparator만 갈아 끼우면 정렬할 수 있다.
-     * comp.compare(a, b)가 양수이면 "a가 b보다 뒤에 와야 한다"는 뜻이다.
-     */
-    static <T> void insertionSort(T[] arr, Comparator<? super T> comp) {
-        for (int i = 1; i < arr.length; i++) {
-            T key = arr[i];
-            int j = i - 1;
-            while (j >= 0 && comp.compare(arr[j], key) > 0) {
-                arr[j + 1] = arr[j]; // key보다 뒤에 와야 할 값을 한 칸 민다
-                j--;
-            }
-            arr[j + 1] = key;
-        }
-    }
-
     static void printAll(String title, Product[] items) {
         System.out.println("[" + title + "]");
         for (int i = 0; i < items.length; i++) {
@@ -64,7 +48,7 @@ public class ProductSortApplication {
 
         // 1) Comparable이 정의한 기본 기준(가격 오름차순)으로 정렬
         Product[] byPrice = Arrays.copyOf(products, products.length);
-        insertionSort(byPrice, Comparator.naturalOrder());
+        Arrays.sort(byPrice, Comparator.naturalOrder());
         printAll("가격 오름차순 — Comparable의 compareTo 사용", byPrice);
 
         // 2) Comparator로 기준 교체: 평점 내림차순, 동점이면 이름 오름차순
@@ -73,14 +57,14 @@ public class ProductSortApplication {
                           .reversed()
                           .thenComparing(p -> p.name);
         Product[] byRating = Arrays.copyOf(products, products.length);
-        insertionSort(byRating, byRatingDesc);
+        Arrays.sort(byRating, byRatingDesc);
         printAll("평점 내림차순, 동점 시 이름순 — Comparator 사용", byRating);
 
         // 3) 같은 정렬 메서드에 또 다른 기준: 이름 오름차순
         Product[] byName = Arrays.copyOf(products, products.length);
-        insertionSort(byName, Comparator.comparing(p -> p.name));
+        Arrays.sort(byName, Comparator.comparing(p -> p.name));
         printAll("이름 오름차순 — Comparator 사용", byName);
 
-        System.out.println("정렬 코드는 한 줄도 바꾸지 않았습니다. 바뀐 것은 Comparator뿐입니다.");
+        System.out.println("Arrays.sort 호출은 세 번 다 똑같습니다. 바뀐 것은 Comparator뿐입니다.");
     }
 }
