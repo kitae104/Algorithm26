@@ -1154,7 +1154,8 @@ public class BuggyRemoveWhileLoop {
                     <li><strong>데이터:</strong> 대출 기록 한 건 = <code>"회원이름:책제목"</code> 형태의 문자열,
                         전체 기록 = <code>ArrayList&lt;String&gt;</code></li>
                     <li><strong>검색:</strong> 오늘 배운 조건 검색 — <code>startsWith(회원 + ":")</code>로 원소마다 조건 검사, O(n)</li>
-                    <li><strong>삭제:</strong> 1강의 조기 중단 — 일치하는 기록을 찾는 즉시 지우고 반환.
+                    <li><strong>삭제:</strong> <code>ArrayList.remove(Object)</code> — "일치하는 기록을 찾아 즉시 삭제"라는
+                        1강의 조기 중단 알고리즘을 라이브러리가 내부에서 그대로 수행합니다.
                         삭제 후 뒤 원소들이 밀려와 인덱스가 바뀐다는 것을 출력으로 직접 확인합니다.</li>
                 </ul>
 
@@ -1186,15 +1187,12 @@ public class BookLoanApplication {
         return found;
     }
 
-    /** 반납 처리: record와 일치하는 기록 하나를 찾아 삭제한다 — O(n) */
+    /**
+     * 반납 처리: record와 일치하는 기록 하나를 찾아 삭제한다.
+     * ArrayList.remove(Object)가 내부에서 정확히 같은 일(선형탐색 + 첫 일치 삭제)을 한다 — O(n).
+     */
     static boolean returnBook(ArrayList&lt;String&gt; loans, String record) {
-        for (int i = 0; i &lt; loans.size(); i++) {
-            if (loans.get(i).equals(record)) {
-                loans.remove(i);   // 삭제하면 뒤 원소가 한 칸씩 앞으로 밀려온다
-                return true;       // 하나만 지우고 즉시 종료 (1강의 조기 중단!)
-            }
-        }
-        return false;
+        return loans.remove(record);
     }
 
     public static void main(String[] args) {
@@ -1270,7 +1268,9 @@ public class BookLoanApplication {
                         중간 삭제가 뒤 원소들을 한 칸씩 앞으로 밀었다는 증거이며, 이 밀림이 O(n) 비용과
                         오류 카드 2번(인덱스 밀림)의 원인입니다.</li>
                     <li><code>printLoansOf</code>는 전체 순회 조건 검색이므로 항상 n번 검사 — O(n).
-                        <code>returnBook</code>은 조기 중단이 있으므로 최선 1번, 최악 n번 — 역시 O(n)이지만 평균은 절반입니다.</li>
+                        <code>returnBook</code>은 이제 <code>ArrayList.remove(Object)</code> 한 줄이지만,
+                        내부 동작은 조기 중단 선형탐색으로 최선 1번, 최악 n번 — 여전히 O(n)입니다.
+                        문법이 바뀌어도 복잡도는 그대로입니다 — 바뀐 것은 그 반복문을 누가 쓰느냐(개발자 vs 라이브러리)뿐입니다.</li>
                     <li>배열이었다면 <code>add</code> 자리마다 "가득 찼는지 확인 → 더 큰 배열 생성 → O(n) 복사" 코드가 필요했습니다.
                         <em>ArrayList가 그 일을 대신해 줄 뿐, <strong>공짜가 아니라 감춰져 있는 것</strong>임을 기억하세요.</em></li>
                 </ul>

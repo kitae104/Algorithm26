@@ -18,15 +18,12 @@ public class BookLoanApplication {
         return found;
     }
 
-    /** 반납 처리: record와 일치하는 기록 하나를 찾아 삭제한다 — O(n) */
+    /**
+     * 반납 처리: record와 일치하는 기록 하나를 찾아 삭제한다.
+     * ArrayList.remove(Object)가 내부에서 정확히 같은 일(선형탐색 + 첫 일치 삭제)을 한다 — O(n).
+     */
     static boolean returnBook(ArrayList<String> loans, String record) {
-        for (int i = 0; i < loans.size(); i++) {
-            if (loans.get(i).equals(record)) {
-                loans.remove(i);   // 삭제하면 뒤 원소가 한 칸씩 앞으로 밀려온다
-                return true;       // 하나만 지우고 즉시 종료 (1강의 조기 중단!)
-            }
-        }
-        return false;
+        return loans.remove(record);
     }
 
     public static void main(String[] args) {
