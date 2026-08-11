@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.Map;
  * "고유 번호가 있는 데이터 + 검색이 잦음 + 분류별 집계"라는 요구사항 패턴이 같으므로,
  * 상품 관리에서 내린 결정(정렬 → 이진 탐색, HashMap 집계)을 그대로 다시 쓴다.
  * 바뀐 것은 데이터 클래스(Product → Book)뿐이다.
+ * 이번에는 정렬·탐색도 직접 구현 대신 JDK 표준 라이브러리(List.sort, Collections.binarySearch)를 그대로 쓴다.
  */
 public class ProductManagerApplication {
 
@@ -43,43 +45,12 @@ public class ProductManagerApplication {
         return books;
     }
 
-    /** 삽입 정렬(4강) — 상품 관리와 같은 알고리즘, 타입만 Book */
-    static void insertionSort(List<Book> list, Comparator<Book> comparator) {
-        for (int i = 1; i < list.size(); i++) {
-            Book key = list.get(i);
-            int j = i - 1;
-            while (j >= 0 && comparator.compare(list.get(j), key) > 0) {
-                list.set(j + 1, list.get(j));
-                j--;
-            }
-            list.set(j + 1, key);
-        }
-    }
-
-    /** 이진 탐색(5강) — 등록 번호 오름차순 정렬이 전제 조건 */
-    static Book binarySearchById(List<Book> sorted, int targetId) {
-        int low = 0;
-        int high = sorted.size() - 1;
-        while (low <= high) {
-            int mid = (low + high) / 2;
-            int midId = sorted.get(mid).id;
-            if (midId == targetId) {
-                return sorted.get(mid);
-            }
-            if (midId < targetId) {
-                low = mid + 1;
-            } else {
-                high = mid - 1;
-            }
-        }
-        return null;
-    }
-
     public static void main(String[] args) {
         List<Book> books = loadBooks();
+        Comparator<Book> byId = Comparator.comparingInt(b -> b.id);
 
-        // 결정 1: 검색이 잦다 → 등록 번호 순 정렬 + 이진 탐색
-        insertionSort(books, (a, b) -> a.id - b.id);
+        // 결정 1: 검색이 잦다 → 등록 번호 순 정렬 + 이진 탐색 (이번엔 라이브러리로)
+        books.sort(byId);
         System.out.println("== 등록 번호 순 정렬 ==");
         for (Book b : books) {
             System.out.println("  " + b.summary());
@@ -92,9 +63,10 @@ public class ProductManagerApplication {
             System.out.println("검색 요청 \"" + request + "\"");
             try {
                 int id = Integer.parseInt(request.trim());
-                Book found = binarySearchById(books, id);
-                if (found != null) {
-                    System.out.println("  → " + found.summary());
+                Book probe = new Book(id, "", "", 0);   // 비교에만 쓰는 탐색용 키 객체
+                int index = Collections.binarySearch(books, probe, byId);
+                if (index >= 0) {
+                    System.out.println("  → " + books.get(index).summary());
                 } else {
                     System.out.println("  → 번호 " + id + " 도서 없음");
                 }
