@@ -28,10 +28,10 @@
   - `<section class="lesson-hero">` (eyebrow `LESSON NN / 13`, h1, 영문 제목, 배지, 소개)
     - 인쇄 버튼은 두지 않는다. 화면에서 인쇄 기능을 제공하지 않으며, `print.css`는 브라우저 자체 인쇄(Ctrl+P) 대비용으로만 남아 있다.
   - `<nav class="lesson-toc"><p class="lesson-toc__title">이 강의의 목차</p><ol id="lesson-toc-list"></ol></nav>` (목차는 자동 생성)
-  - `<div class="lesson-body">` 안에 20개 섹션
+  - `<div class="lesson-body">` 안에 19개 섹션
 - body 끝 스크립트(순서대로): `algorithms-data.js`, `progress.js`, `common.js`, `code-copy.js`, `visualization.js`, `quiz.js`, 그리고 인라인 `<script>`(시각화 + 퀴즈 초기화)
 
-### 20개 섹션 (id와 순서 고정)
+### 19개 섹션 (id와 순서 고정)
 
 각 섹션은 `<section class="lesson-section" id="..."><h2 data-toc-label="..."><span class="section-no">NN</span>제목</h2>` 형태.
 
@@ -50,13 +50,17 @@
 | 11 | `sec-trace` | 실행 과정 추적 코드 + 실행 결과 |
 | 12 | `sec-bugs` | 잘못된 코드 2개 이상 (`article.bug-card`, 해설은 `details.answer-box`) |
 | 13 | `sec-complexity` | 복잡도 및 특성 (입력 크기·주요 연산·시간·공간·특성) |
-| 14 | `sec-practice` | 따라 하기 실습 2~3개 (실습3은 TODO 코드 + `details.answer-box` 정답) |
-| 15 | `sec-application` | 실제 데이터 응용 예제 (문제 상황→데이터 모델→전체 코드→출력→해설→복잡도) |
-| 16 | `sec-final` | 최종 프로그램 작성 문제 (제목·배경 4~7문장·목표·필수 요구사항·입력·예상 출력·제한·구현 단계 안내·시작 코드·테스트 3종 표·자기 점검표 `ul.checklist`·추가 도전 2~3개) |
-| 17 | `sec-answer` | 정답과 해설 — 반드시 `details.answer-box` 내부에 (정답 코드·예상 출력·구현 순서·핵심 적용부·복잡도·자주 나는 오류·다른 방법) |
-| 18 | `sec-quiz` | `<div id="quiz-root"></div>` 만 두고 인라인 스크립트에서 초기화 |
-| 19 | `sec-summary` | 오늘의 핵심 정리 + `<div id="lesson-complete-slot"></div>` |
-| 20 | `sec-next` | 다음 강의 연결 + `<div id="lesson-pager"></div>` |
+| 14 | `sec-application` | 실제 데이터 응용 예제 (문제 상황→데이터 모델→전체 코드→출력→해설→복잡도) |
+| — | `sec-modernize` | (2·3·4·5·10·13강만) 람다·스트림 수정 문제 — 있는 강의에서만 14번 다음에 끼어들어 이후 번호가 하나씩 밀린다 |
+| 15 | `sec-quiz` | `<div id="quiz-root"></div>` 만 두고 인라인 스크립트에서 초기화 |
+| 16 | `sec-practice` | **프로그램 실습 과제 ①** — 따라 하기 실습 2~3개 (실습3은 TODO 코드 + `details.answer-box` 정답). 확인 퀴즈 바로 뒤, `.assignment-banner` 안내 배너로 시작하며 `lesson-section--assignment` 클래스로 확인 퀴즈와 색상 구분 |
+| 17 | `sec-final` | **프로그램 실습 과제 ②** — 최종 프로그램 작성 문제(제목·배경 4~7문장·목표·필수 요구사항·입력·예상 출력·제한·구현 단계 안내·시작 코드·테스트 3종 표·자기 점검표 `ul.checklist`·추가 도전 2~3개) + 섹션 끝에 `<h3>정답과 해설</h3>`과 `details.answer-box`(정답 코드·예상 출력·구현 순서·핵심 적용부·복잡도·자주 나는 오류·다른 방법). `lesson-section--assignment` 클래스 |
+| 18 | `sec-summary` | 오늘의 핵심 정리 + `<div id="lesson-complete-slot"></div>` |
+| 19 | `sec-next` | 다음 강의 연결 + `<div id="lesson-pager"></div>` |
+
+`sec-practice`, `sec-final` 두 섹션은 "프로그램 실습 과제"로 묶여 확인 퀴즈 뒤에 배치된다.
+안에 있는 `details.answer-box[data-locked-until-complete]`는 강의를 완료로 표시하기
+전까지 잠긴다(동작은 `assets/js/common.js`의 정답 잠금 로직, 위치와 무관하게 동일).
 
 ### 코드 카드
 
@@ -119,7 +123,7 @@ fill의 `accept`는 허용 표기를 2~3개 넣어 관대하게.
 | 위치 | `algorithms/NN-id.html` | `supplements/id.html` |
 | Java 예제 | `examples/java/NN-id/` | `examples/java/sN-id/` |
 | body 속성 | `data-lesson-id` | `data-supplement-id` |
-| 섹션 규격 | 20개 고정 | 자유 (필요한 만큼) |
+| 섹션 규격 | 19개 고정 | 자유 (필요한 만큼) |
 | 시각화 | `AlgoViz.create` 필수 | 없음 |
 | 완료 버튼 | `lesson-complete-slot` 필수 | **금지** |
 | 진도 기록 | 13강 진도에 포함 | 포함하지 않음 |
