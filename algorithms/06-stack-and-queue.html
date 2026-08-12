@@ -1463,99 +1463,9 @@ Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: Index -1 ou
                 </ul>
             </section>
 
-            <!-- 14. 따라 하기 실습 -->
-            <section class="lesson-section" id="sec-practice" aria-labelledby="h-practice">
-                <h2 id="h-practice" data-toc-label="따라 하기 실습"><span class="section-no">14</span>따라 하기 실습</h2>
-
-                <h3>실습 1 — 데이터 변경</h3>
-                <p>
-                    <code>Step4BracketCheckLoop.java</code>의 <code>tests</code> 배열에
-                    <code>"{[}]"</code>와 <code>"[]"</code>를 추가하고 실행하세요.
-                    예상 결과: <code>{[}]</code>는 <strong>무효</strong>('['를 pop했는데 '}'와 짝이 아님),
-                    <code>[]</code>는 <strong>유효</strong>. 실행해서 예상과 일치하는지 확인하세요.
-                </p>
-
-                <h3>실습 2 — 조건 변경</h3>
-                <p>
-                    <code>Step6QueueDequeue.java</code>의 <code>main</code>에서 dequeue를 2번만 하도록 줄이고,
-                    그 뒤에 <code>enqueue("최민재")</code>를 추가한 다음
-                    <code>front</code>, <code>rear</code>, 대기 인원을 출력해 보세요.
-                    예상: front = 2, rear = 4, 대기 2명(박서연, 최민재).
-                    이때 <code>queue[0]</code>, <code>queue[1]</code> 칸이 다시 쓰이지 않는 것 —
-                    이것이 6단계 노트에서 말한 단순 배열 큐의 공간 낭비입니다.
-                </p>
-
-                <h3>실습 3 — 코드 완성: 스택으로 문자열 뒤집기</h3>
-                <p>
-                    스택의 LIFO 성질을 이용하면 문자열을 뒤집을 수 있습니다 —
-                    앞에서부터 모두 push한 뒤 pop하면 <strong>역순</strong>으로 나오기 때문입니다.
-                    아래 클래스의 TODO를 채워 완성하세요. (TODO 상태로도 컴파일과 실행이 됩니다 — 빈 문자열이 나올 뿐입니다.)
-                </p>
-                <article class="code-card">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">Java</span>
-                            <strong class="code-card__filename">StringReversePractice.java</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="code-practice3" aria-label="StringReversePractice.java 코드 복사">코드 복사</button>
-                    </header>
-                    <pre><code id="code-practice3" class="language-java">public class StringReversePractice {
-
-    /** 스택을 이용해 text를 뒤집은 문자열을 반환한다 */
-    static String reverse(String text) {
-        char[] stack = new char[text.length()];
-        int top = -1;
-
-        // TODO 1: text의 모든 문자를 앞에서부터 순서대로 스택에 push하세요.
-        //         (힌트: stack[++top] = text.charAt(i))
-
-        StringBuilder result = new StringBuilder();
-        // TODO 2: 스택이 빌 때까지(top != -1) pop한 문자를 result에 붙이세요.
-        //         (힌트: result.append(stack[top--]))
-
-        return result.toString();
-    }
-
-    public static void main(String[] args) {
-        String[] tests = {"stack", "abc", "a"};
-        for (String t : tests) {
-            System.out.println("\"" + t + "\" -&gt; \"" + reverse(t) + "\"");
-        }
-    }
-}</code></pre>
-                </article>
-                <details class="answer-box" data-locked-until-complete>
-                    <summary>실습 3 정답 확인</summary>
-                    <div class="answer-box__content">
-                        <pre class="quiz-code">static String reverse(String text) {
-    char[] stack = new char[text.length()];
-    int top = -1;
-
-    for (int i = 0; i &lt; text.length(); i++) {
-        stack[++top] = text.charAt(i);      // 앞에서부터 전부 push
-    }
-
-    StringBuilder result = new StringBuilder();
-    while (top != -1) {
-        result.append(stack[top--]);        // 빌 때까지 pop — 역순으로 나온다
-    }
-
-    return result.toString();
-}</pre>
-                        <p>완성 후 실행 결과:</p>
-                        <pre class="quiz-code">"stack" -&gt; "kcats"
-"abc" -&gt; "cba"
-"a" -&gt; "a"
-</pre>
-                        <p>push n번 + pop n번이므로 O(n)입니다.
-                        <em>"넣은 순서의 반대로 나온다"는 성질은 7강 재귀에서 호출이 풀려나오는 순서를 이해하는 열쇠가 됩니다.</em></p>
-                    </div>
-                </details>
-            </section>
-
-            <!-- 15. 실제 데이터 응용 예제 -->
+            <!-- 14. 실제 데이터 응용 예제 -->
             <section class="lesson-section" id="sec-application" aria-labelledby="h-application">
-                <h2 id="h-application" data-toc-label="실제 데이터 응용 예제"><span class="section-no">15</span>실제 데이터 응용 예제</h2>
+                <h2 id="h-application" data-toc-label="실제 데이터 응용 예제"><span class="section-no">14</span>실제 데이터 응용 예제</h2>
 
                 <h3>문제 상황</h3>
                 <p>
@@ -1691,9 +1601,110 @@ public class BankQueueApplication {
                 </ul>
             </section>
 
-            <!-- 16. 최종 프로그램 작성 문제 -->
-            <section class="lesson-section" id="sec-final" aria-labelledby="h-final">
-                <h2 id="h-final" data-toc-label="최종 프로그램 작성 문제"><span class="section-no">16</span>최종 프로그램 작성 문제</h2>
+            <!-- 15. 확인 퀴즈 -->
+            <section class="lesson-section" id="sec-quiz" aria-labelledby="h-quiz">
+                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">15</span>확인 퀴즈</h2>
+                <div id="quiz-root"></div>
+            </section>
+
+            <div class="assignment-banner">
+                <span class="assignment-banner__title">📝 프로그램 실습 과제</span>
+                <p>지금까지 배운 내용을 직접 코드로 적용해 보는 과제입니다. 두 과제로 구성되며, 각 과제의 정답은 이 강의를 완료로 표시해야 열립니다.</p>
+            </div>
+
+            <!-- 16. 따라 하기 실습 -->
+            <section class="lesson-section lesson-section--assignment" id="sec-practice" aria-labelledby="h-practice">
+                <h2 id="h-practice" data-toc-label="따라 하기 실습"><span class="section-no">16</span>따라 하기 실습</h2>
+
+                <h3>실습 1 — 데이터 변경</h3>
+                <p>
+                    <code>Step4BracketCheckLoop.java</code>의 <code>tests</code> 배열에
+                    <code>"{[}]"</code>와 <code>"[]"</code>를 추가하고 실행하세요.
+                    예상 결과: <code>{[}]</code>는 <strong>무효</strong>('['를 pop했는데 '}'와 짝이 아님),
+                    <code>[]</code>는 <strong>유효</strong>. 실행해서 예상과 일치하는지 확인하세요.
+                </p>
+
+                <h3>실습 2 — 조건 변경</h3>
+                <p>
+                    <code>Step6QueueDequeue.java</code>의 <code>main</code>에서 dequeue를 2번만 하도록 줄이고,
+                    그 뒤에 <code>enqueue("최민재")</code>를 추가한 다음
+                    <code>front</code>, <code>rear</code>, 대기 인원을 출력해 보세요.
+                    예상: front = 2, rear = 4, 대기 2명(박서연, 최민재).
+                    이때 <code>queue[0]</code>, <code>queue[1]</code> 칸이 다시 쓰이지 않는 것 —
+                    이것이 6단계 노트에서 말한 단순 배열 큐의 공간 낭비입니다.
+                </p>
+
+                <h3>실습 3 — 코드 완성: 스택으로 문자열 뒤집기</h3>
+                <p>
+                    스택의 LIFO 성질을 이용하면 문자열을 뒤집을 수 있습니다 —
+                    앞에서부터 모두 push한 뒤 pop하면 <strong>역순</strong>으로 나오기 때문입니다.
+                    아래 클래스의 TODO를 채워 완성하세요. (TODO 상태로도 컴파일과 실행이 됩니다 — 빈 문자열이 나올 뿐입니다.)
+                </p>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">StringReversePractice.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-practice3" aria-label="StringReversePractice.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-practice3" class="language-java">public class StringReversePractice {
+
+    /** 스택을 이용해 text를 뒤집은 문자열을 반환한다 */
+    static String reverse(String text) {
+        char[] stack = new char[text.length()];
+        int top = -1;
+
+        // TODO 1: text의 모든 문자를 앞에서부터 순서대로 스택에 push하세요.
+        //         (힌트: stack[++top] = text.charAt(i))
+
+        StringBuilder result = new StringBuilder();
+        // TODO 2: 스택이 빌 때까지(top != -1) pop한 문자를 result에 붙이세요.
+        //         (힌트: result.append(stack[top--]))
+
+        return result.toString();
+    }
+
+    public static void main(String[] args) {
+        String[] tests = {"stack", "abc", "a"};
+        for (String t : tests) {
+            System.out.println("\"" + t + "\" -&gt; \"" + reverse(t) + "\"");
+        }
+    }
+}</code></pre>
+                </article>
+                <details class="answer-box" data-locked-until-complete>
+                    <summary>실습 3 정답 확인</summary>
+                    <div class="answer-box__content">
+                        <pre class="quiz-code">static String reverse(String text) {
+    char[] stack = new char[text.length()];
+    int top = -1;
+
+    for (int i = 0; i &lt; text.length(); i++) {
+        stack[++top] = text.charAt(i);      // 앞에서부터 전부 push
+    }
+
+    StringBuilder result = new StringBuilder();
+    while (top != -1) {
+        result.append(stack[top--]);        // 빌 때까지 pop — 역순으로 나온다
+    }
+
+    return result.toString();
+}</pre>
+                        <p>완성 후 실행 결과:</p>
+                        <pre class="quiz-code">"stack" -&gt; "kcats"
+"abc" -&gt; "cba"
+"a" -&gt; "a"
+</pre>
+                        <p>push n번 + pop n번이므로 O(n)입니다.
+                        <em>"넣은 순서의 반대로 나온다"는 성질은 7강 재귀에서 호출이 풀려나오는 순서를 이해하는 열쇠가 됩니다.</em></p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- 17. 최종 프로그램 작성 문제 -->
+            <section class="lesson-section lesson-section--assignment" id="sec-final" aria-labelledby="h-final">
+                <h2 id="h-final" data-toc-label="최종 프로그램 작성 문제"><span class="section-no">17</span>최종 프로그램 작성 문제</h2>
 
                 <h3>문제 제목 — 미니 작업 관리기 "TaskFlow"</h3>
 
@@ -1908,12 +1919,10 @@ public class TaskManagerStarter {
                     <li><strong>용량 제한:</strong> 대기열 정원을 5명으로 제한하고, 가득 찼을 때 enqueue하면
                         "대기열이 가득 찼습니다"를 출력하며 등록을 거절해 보세요.</li>
                 </ol>
-            </section>
 
-            <!-- 17. 최종 문제 정답과 해설 -->
-            <section class="lesson-section" id="sec-answer" aria-labelledby="h-answer">
-                <h2 id="h-answer" data-toc-label="최종 문제 정답과 해설"><span class="section-no">17</span>최종 문제 정답과 해설</h2>
-                <p>스스로 충분히 시도한 뒤에 여세요. 막혔다면 "구현 단계 안내"를 다시 읽고, 구현 3단계(pop과 예외 처리)와 6단계(dequeue와 빈 큐 검사)를 복습해 보세요.</p>
+                <h3>정답과 해설</h3>
+                <p>스스로 충분히 시도한 뒤에 여세요. 막혔다면 "구현 단계 안내"를 다시 읽고, 한 단계씩 진행해 보세요.
+                이 강의를 완료로 표시해야 정답이 열립니다.</p>
 
                 <details class="answer-box" data-locked-until-complete>
                     <summary>정답 코드와 해설 확인</summary>
@@ -2081,15 +2090,9 @@ public class TaskManagerSolution {
                 </details>
             </section>
 
-            <!-- 18. 확인 퀴즈 -->
-            <section class="lesson-section" id="sec-quiz" aria-labelledby="h-quiz">
-                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">18</span>확인 퀴즈</h2>
-                <div id="quiz-root"></div>
-            </section>
-
-            <!-- 19. 오늘의 핵심 정리 -->
+            <!-- 18. 오늘의 핵심 정리 -->
             <section class="lesson-section" id="sec-summary" aria-labelledby="h-summary">
-                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">19</span>오늘의 핵심 정리</h2>
+                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">18</span>오늘의 핵심 정리</h2>
                 <ul class="summary-list">
                     <li><strong>자료구조 = 데이터 + 규칙.</strong> 스택과 큐는 배열 위에 "넣고 꺼내는 규칙"을 얹은 것이다.</li>
                     <li><strong>스택은 LIFO</strong> — 맨 위(top)에서만 push/pop. <code>top = -1</code>이 빈 스택,
@@ -2106,9 +2109,9 @@ public class TaskManagerSolution {
                 <div id="lesson-complete-slot"></div>
             </section>
 
-            <!-- 20. 다음 강의 연결 -->
+            <!-- 19. 다음 강의 연결 -->
             <section class="lesson-section" id="sec-next" aria-labelledby="h-next">
-                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">20</span>다음 강의 연결</h2>
+                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">19</span>다음 강의 연결</h2>
                 <p>
                     다음 강의는 <strong>7강. 재귀와 백트래킹</strong>입니다.
                     오늘 배운 스택이 다음 강의의 문을 여는 열쇠입니다 —

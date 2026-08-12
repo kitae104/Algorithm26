@@ -78,8 +78,9 @@ for (const item of supplements) {
 const REQUIRED_SECTIONS = [
     "sec-intro", "sec-objectives", "sec-prereq", "sec-problem",
     "sec-hand", "sec-concepts", "sec-steps", "sec-pseudo", "sec-impl",
-    "sec-complete", "sec-trace", "sec-bugs", "sec-complexity", "sec-practice",
-    "sec-application", "sec-final", "sec-answer", "sec-quiz", "sec-summary", "sec-next"
+    "sec-complete", "sec-trace", "sec-bugs", "sec-complexity",
+    "sec-application", "sec-quiz", "sec-practice", "sec-final",
+    "sec-summary", "sec-next"
 ];
 
 const REQUIRED_MARKERS = [

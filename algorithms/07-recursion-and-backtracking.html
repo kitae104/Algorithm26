@@ -1070,84 +1070,9 @@ n이 10 커질 때마다 호출 횟수가 약 120배씩 폭발한다.
                 </div>
             </section>
 
-            <!-- 14. 따라 하기 실습 -->
-            <section class="lesson-section" id="sec-practice" aria-labelledby="h-practice">
-                <h2 id="h-practice" data-toc-label="따라 하기 실습"><span class="section-no">14</span>따라 하기 실습</h2>
-
-                <h3>실습 1 — 순열 길이 바꾸기</h3>
-                <p>
-                    <code>RecursionTrace.java</code>에서 <code>static final int K = 2;</code>를
-                    <code>K = 3</code>으로 바꾸고 실행하세요. "완성!" 줄이 몇 번 나오는지 세어 보고,
-                    3 × 2 × 1 = 6과 일치하는지, 들여쓰기의 최대 깊이가 한 단계 깊어졌는지 확인하세요.
-                </p>
-
-                <h3>실습 2 — 부분집합 원소 늘리기</h3>
-                <p>
-                    <code>Step4BacktrackingSkeleton.java</code>의 배열을 <code>{1, 2, 3, 4}</code>로 바꾸고 실행하세요.
-                    부분집합이 2⁴ = 16개가 되는지, 첫 번째 출력이 <code>[1, 2, 3, 4]</code>(모두 넣는 가지)인지 확인하세요.
-                    원소 하나에 경우가 2배 — 지수 증가를 직접 체험할 수 있습니다.
-                </p>
-
-                <h3>실습 3 — 코드 완성</h3>
-                <p>아래 클래스의 TODO를 채워 <strong>재귀 합계</strong>와 <strong>재귀 문자열 뒤집기</strong>를 완성하세요. 두 메서드 모두 "종료 조건 → 더 작은 문제에 맡기기" 순서로 생각하면 됩니다.</p>
-                <article class="code-card">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">Java</span>
-                            <strong class="code-card__filename">SumRecursionPractice.java</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="code-practice3" aria-label="SumRecursionPractice.java 코드 복사">코드 복사</button>
-                    </header>
-                    <pre><code id="code-practice3" class="language-java">public class SumRecursionPractice {
-
-    /** 1부터 n까지의 합을 재귀로 구한다: sum(n) = n + sum(n - 1) */
-    static long sum(int n) {
-        // TODO 1: 종료 조건 — n이 0 이하면 0을 반환하세요.
-        // TODO 2: n + sum(n - 1) 을 반환하세요.
-        return 0;
-    }
-
-    /** 문자열을 재귀로 뒤집는다: reverse("abc") = reverse("bc") + 'a' */
-    static String reverse(String s) {
-        // TODO 3: 종료 조건 — 길이가 1 이하면 s를 그대로 반환하세요.
-        // TODO 4: reverse(s.substring(1)) + s.charAt(0) 을 반환하세요.
-        return s;
-    }
-
-    public static void main(String[] args) {
-        System.out.println("sum(10) = " + sum(10) + " (기대값 55)");
-        System.out.println("reverse(\"recursion\") = " + reverse("recursion") + " (기대값 noisrucer)");
-    }
-}</code></pre>
-                </article>
-                <details class="answer-box" data-locked-until-complete>
-                    <summary>실습 3 정답 확인</summary>
-                    <div class="answer-box__content">
-                        <pre class="quiz-code">static long sum(int n) {
-    if (n &lt;= 0) {                  // 종료 조건
-        return 0;
-    }
-    return n + sum(n - 1);         // 더 작은 문제에 맡기고 내 몫을 더한다
-}
-
-static String reverse(String s) {
-    if (s.length() &lt;= 1) {         // 종료 조건
-        return s;
-    }
-    return reverse(s.substring(1)) + s.charAt(0);
-}</pre>
-                        <p>완성 후 실행 결과:</p>
-                        <pre class="quiz-code">sum(10) = 55 (기대값 55)
-reverse("recursion") = noisrucer (기대값 noisrucer)</pre>
-                        <p><em>sum은 1강에서 반복문으로 풀었던 것과 같은 문제입니다 — 같은 문제를 재귀로도
-                        풀 수 있다는 것, 그리고 재귀 쪽이 호출 스택 O(n)을 쓴다는 차이를 기억하세요.</em></p>
-                    </div>
-                </details>
-            </section>
-
-            <!-- 15. 실제 데이터 응용 예제 -->
+            <!-- 14. 실제 데이터 응용 예제 -->
             <section class="lesson-section" id="sec-application" aria-labelledby="h-application">
-                <h2 id="h-application" data-toc-label="실제 데이터 응용 예제"><span class="section-no">15</span>실제 데이터 응용 예제</h2>
+                <h2 id="h-application" data-toc-label="실제 데이터 응용 예제"><span class="section-no">14</span>실제 데이터 응용 예제</h2>
 
                 <h3>문제 상황</h3>
                 <p>
@@ -1283,9 +1208,95 @@ reverse("recursion") = noisrucer (기대값 noisrucer)</pre>
                 </ul>
             </section>
 
-            <!-- 16. 최종 프로그램 작성 문제 -->
-            <section class="lesson-section" id="sec-final" aria-labelledby="h-final">
-                <h2 id="h-final" data-toc-label="최종 프로그램 작성 문제"><span class="section-no">16</span>최종 프로그램 작성 문제</h2>
+            <!-- 15. 확인 퀴즈 -->
+            <section class="lesson-section" id="sec-quiz" aria-labelledby="h-quiz">
+                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">15</span>확인 퀴즈</h2>
+                <div id="quiz-root"></div>
+            </section>
+
+            <div class="assignment-banner">
+                <span class="assignment-banner__title">📝 프로그램 실습 과제</span>
+                <p>지금까지 배운 내용을 직접 코드로 적용해 보는 과제입니다. 두 과제로 구성되며, 각 과제의 정답은 이 강의를 완료로 표시해야 열립니다.</p>
+            </div>
+
+            <!-- 16. 따라 하기 실습 -->
+            <section class="lesson-section lesson-section--assignment" id="sec-practice" aria-labelledby="h-practice">
+                <h2 id="h-practice" data-toc-label="따라 하기 실습"><span class="section-no">16</span>따라 하기 실습</h2>
+
+                <h3>실습 1 — 순열 길이 바꾸기</h3>
+                <p>
+                    <code>RecursionTrace.java</code>에서 <code>static final int K = 2;</code>를
+                    <code>K = 3</code>으로 바꾸고 실행하세요. "완성!" 줄이 몇 번 나오는지 세어 보고,
+                    3 × 2 × 1 = 6과 일치하는지, 들여쓰기의 최대 깊이가 한 단계 깊어졌는지 확인하세요.
+                </p>
+
+                <h3>실습 2 — 부분집합 원소 늘리기</h3>
+                <p>
+                    <code>Step4BacktrackingSkeleton.java</code>의 배열을 <code>{1, 2, 3, 4}</code>로 바꾸고 실행하세요.
+                    부분집합이 2⁴ = 16개가 되는지, 첫 번째 출력이 <code>[1, 2, 3, 4]</code>(모두 넣는 가지)인지 확인하세요.
+                    원소 하나에 경우가 2배 — 지수 증가를 직접 체험할 수 있습니다.
+                </p>
+
+                <h3>실습 3 — 코드 완성</h3>
+                <p>아래 클래스의 TODO를 채워 <strong>재귀 합계</strong>와 <strong>재귀 문자열 뒤집기</strong>를 완성하세요. 두 메서드 모두 "종료 조건 → 더 작은 문제에 맡기기" 순서로 생각하면 됩니다.</p>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">SumRecursionPractice.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-practice3" aria-label="SumRecursionPractice.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-practice3" class="language-java">public class SumRecursionPractice {
+
+    /** 1부터 n까지의 합을 재귀로 구한다: sum(n) = n + sum(n - 1) */
+    static long sum(int n) {
+        // TODO 1: 종료 조건 — n이 0 이하면 0을 반환하세요.
+        // TODO 2: n + sum(n - 1) 을 반환하세요.
+        return 0;
+    }
+
+    /** 문자열을 재귀로 뒤집는다: reverse("abc") = reverse("bc") + 'a' */
+    static String reverse(String s) {
+        // TODO 3: 종료 조건 — 길이가 1 이하면 s를 그대로 반환하세요.
+        // TODO 4: reverse(s.substring(1)) + s.charAt(0) 을 반환하세요.
+        return s;
+    }
+
+    public static void main(String[] args) {
+        System.out.println("sum(10) = " + sum(10) + " (기대값 55)");
+        System.out.println("reverse(\"recursion\") = " + reverse("recursion") + " (기대값 noisrucer)");
+    }
+}</code></pre>
+                </article>
+                <details class="answer-box" data-locked-until-complete>
+                    <summary>실습 3 정답 확인</summary>
+                    <div class="answer-box__content">
+                        <pre class="quiz-code">static long sum(int n) {
+    if (n &lt;= 0) {                  // 종료 조건
+        return 0;
+    }
+    return n + sum(n - 1);         // 더 작은 문제에 맡기고 내 몫을 더한다
+}
+
+static String reverse(String s) {
+    if (s.length() &lt;= 1) {         // 종료 조건
+        return s;
+    }
+    return reverse(s.substring(1)) + s.charAt(0);
+}</pre>
+                        <p>완성 후 실행 결과:</p>
+                        <pre class="quiz-code">sum(10) = 55 (기대값 55)
+reverse("recursion") = noisrucer (기대값 noisrucer)</pre>
+                        <p><em>sum은 1강에서 반복문으로 풀었던 것과 같은 문제입니다 — 같은 문제를 재귀로도
+                        풀 수 있다는 것, 그리고 재귀 쪽이 호출 스택 O(n)을 쓴다는 차이를 기억하세요.</em></p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- 17. 최종 프로그램 작성 문제 -->
+            <section class="lesson-section lesson-section--assignment" id="sec-final" aria-labelledby="h-final">
+                <h2 id="h-final" data-toc-label="최종 프로그램 작성 문제"><span class="section-no">17</span>최종 프로그램 작성 문제</h2>
 
                 <h3>문제 제목 — 자물쇠 비밀번호 후보 생성기</h3>
 
@@ -1493,12 +1504,10 @@ reverse("recursion") = noisrucer (기대값 noisrucer)</pre>
                     <li><strong>호출 횟수 측정:</strong> 1강의 카운터 기법으로 generateAll과 generateNoRepeat의
                         재귀 호출 횟수를 세어, 가지치기가 호출 자체를 얼마나 줄이는지 측정해 보세요.</li>
                 </ol>
-            </section>
 
-            <!-- 17. 최종 문제 정답과 해설 -->
-            <section class="lesson-section" id="sec-answer" aria-labelledby="h-answer">
-                <h2 id="h-answer" data-toc-label="최종 문제 정답과 해설"><span class="section-no">17</span>최종 문제 정답과 해설</h2>
-                <p>스스로 충분히 시도한 뒤에 여세요. 막혔다면 "구현 단계 안내"를 다시 읽고, 구현 4단계의 부분집합 코드와 비교해 보세요.</p>
+                <h3>정답과 해설</h3>
+                <p>스스로 충분히 시도한 뒤에 여세요. 막혔다면 "구현 단계 안내"를 다시 읽고, 한 단계씩 진행해 보세요.
+                이 강의를 완료로 표시해야 정답이 열립니다.</p>
 
                 <details class="answer-box" data-locked-until-complete>
                     <summary>정답 코드와 해설 확인</summary>
@@ -1681,15 +1690,9 @@ reverse("recursion") = noisrucer (기대값 noisrucer)</pre>
                 </details>
             </section>
 
-            <!-- 18. 확인 퀴즈 -->
-            <section class="lesson-section" id="sec-quiz" aria-labelledby="h-quiz">
-                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">18</span>확인 퀴즈</h2>
-                <div id="quiz-root"></div>
-            </section>
-
-            <!-- 19. 오늘의 핵심 정리 -->
+            <!-- 18. 오늘의 핵심 정리 -->
             <section class="lesson-section" id="sec-summary" aria-labelledby="h-summary">
-                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">19</span>오늘의 핵심 정리</h2>
+                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">18</span>오늘의 핵심 정리</h2>
                 <ul class="summary-list">
                     <li><strong>재귀 호출</strong>은 큰 문제를 같은 구조의 더 작은 문제에 맡기는 것 —
                         <strong>종료 조건</strong>(브레이크)과 <strong>재귀 단계</strong>(더 작아지는 자기 호출)가 둘 다 있어야 한다.</li>
@@ -1707,9 +1710,9 @@ reverse("recursion") = noisrucer (기대값 noisrucer)</pre>
                 <div id="lesson-complete-slot"></div>
             </section>
 
-            <!-- 20. 다음 강의 연결 -->
+            <!-- 19. 다음 강의 연결 -->
             <section class="lesson-section" id="sec-next" aria-labelledby="h-next">
-                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">20</span>다음 강의 연결</h2>
+                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">19</span>다음 강의 연결</h2>
                 <p>
                     다음 강의는 <strong>8강. 트리 구조</strong>입니다.
                     트리는 <strong>"재귀로 순회하는 구조"</strong> — 오늘 배운 재귀가 자료구조를 만나는 곳입니다.

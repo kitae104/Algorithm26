@@ -1215,99 +1215,9 @@ low + (high - low) / 2 = 1550000000</code></pre>
                 </ul>
             </section>
 
-            <!-- 14. 따라 하기 실습 -->
-            <section class="lesson-section" id="sec-practice" aria-labelledby="h-practice">
-                <h2 id="h-practice" data-toc-label="따라 하기 실습"><span class="section-no">14</span>따라 하기 실습</h2>
-
-                <h3>실습 1 — 데이터 변경</h3>
-                <p>
-                    <code>Step5BinarySearchLoop.java</code>에서 <code>int target = 3106;</code>을
-                    <code>int target = 5090;</code>(마지막 원소)으로 바꾸고 실행하세요.
-                    총 비교 횟수가 완성 코드 표(10번 섹션)의 값과 같은 <strong>4번</strong>이 나오는지,
-                    범위가 [0,11] → [6,11] → [9,11] → [11,11]로 줄어드는지 확인하세요.
-                </p>
-
-                <h3>실습 2 — 실패 사례 추가</h3>
-                <p>
-                    <code>BinarySearchTrace.java</code>의 main에 <code>traceSearch(bookNumbers, 999);</code>를 추가해 보세요.
-                    999는 모든 번호보다 작으므로 <strong>high만 계속 줄어들다가 실패</strong>합니다. 비교가 몇 번 만에 끝나는지,
-                    2500(4번)보다 빠른지 느린지 예측한 뒤 실행으로 확인하세요.
-                </p>
-
-                <h3>실습 3 — 코드 완성: 없으면 "끼워 넣을 위치"</h3>
-                <p>
-                    이진 탐색이 실패하면 -1 대신, <strong>정렬을 유지한 채 그 값을 끼워 넣을 위치</strong>를 반환하도록 바꿔 봅시다.
-                    새 도서를 서가의 올바른 자리에 꽂을 때 바로 쓸 수 있는 기능입니다.
-                    아래 TODO를 채우세요 — 힌트는 11번 섹션 실패 사례의 마지막 상태에 있습니다.
-                </p>
-                <article class="code-card">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">Java</span>
-                            <strong class="code-card__filename">InsertPositionPractice.java</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="code-practice3" aria-label="InsertPositionPractice.java 코드 복사">코드 복사</button>
-                    </header>
-                    <pre><code id="code-practice3" class="language-java">public class InsertPositionPractice {
-
-    /** 정렬된 배열에서 target이 있으면 그 인덱스를,
-     *  없으면 "정렬을 유지한 채 끼워 넣을 위치"를 반환한다. */
-    static int searchInsertPosition(int[] numbers, int target) {
-        int low = 0;
-        int high = numbers.length - 1;
-        while (low &lt;= high) {
-            int mid = low + (high - low) / 2;   // 오버플로 없는 안전한 mid 계산
-            if (numbers[mid] == target) {
-                return mid;
-            } else if (numbers[mid] &lt; target) {
-                low = mid + 1;
-            } else {
-                high = mid - 1;
-            }
-        }
-        // TODO: 탐색이 실패했을 때 -1 대신 무엇을 반환해야
-        //       "끼워 넣을 위치"가 될지 생각해 보세요. (힌트: 반복이 끝난 순간의 low)
-        return -1;
-    }
-
-    public static void main(String[] args) {
-        int[] bookNumbers = {1001, 1203, 1450, 2088, 2311, 2754,
-                             3106, 3502, 3860, 4213, 4771, 5090};
-        int[] tests = {3106, 2500, 900, 6000};   // 있는 값 1개 + 없는 값 3개
-
-        for (int target : tests) {
-            System.out.println("target " + target + " → 위치 "
-                    + searchInsertPosition(bookNumbers, target));
-        }
-    }
-}</code></pre>
-                </article>
-                <details class="answer-box" data-locked-until-complete>
-                    <summary>실습 3 정답 확인</summary>
-                    <div class="answer-box__content">
-                        <p>반복이 끝난 순간의 <code>low</code>가 정답입니다. 마지막 return 한 줄만 바꾸면 됩니다.</p>
-                        <pre class="quiz-code">// 반복이 끝났다 = low &gt; high = target보다 작은 값들이 low 왼쪽에 모두 모였다
-// 이때 low는 "target보다 큰 첫 번째 값의 위치" = 끼워 넣을 위치다
-return low;</pre>
-                        <p>수정 후 실행 결과:</p>
-                        <pre class="quiz-code">target 3106 → 위치 6
-target 2500 → 위치 5
-target 900 → 위치 0
-target 6000 → 위치 12</pre>
-                        <p>
-                            2500의 답 5를 확인해 보세요. 11번 섹션 실패 사례가 끝났을 때 <code>low = 5</code>였고,
-                            실제로 2311(인덱스 4)과 2754(인덱스 5) 사이인 5번 자리가 2500이 들어갈 곳입니다.
-<em>900은 맨 앞(0), 6000은 맨 뒤(12 = 배열 길이) — 경계에서도 올바릅니다.</em>
-                            이 값을 <strong>삽입 위치(insertion point)</strong>라 부르며, 표준 라이브러리
-                            <code>Arrays.binarySearch</code>도 실패 시 이 정보를 인코딩해 돌려줍니다.
-                        </p>
-                    </div>
-                </details>
-            </section>
-
-            <!-- 15. 실제 데이터 응용 예제 -->
+            <!-- 14. 실제 데이터 응용 예제 -->
             <section class="lesson-section" id="sec-application" aria-labelledby="h-application">
-                <h2 id="h-application" data-toc-label="실제 데이터 응용 예제"><span class="section-no">15</span>실제 데이터 응용 예제</h2>
+                <h2 id="h-application" data-toc-label="실제 데이터 응용 예제"><span class="section-no">14</span>실제 데이터 응용 예제</h2>
 
                 <h3>문제 상황</h3>
                 <p>
@@ -1501,9 +1411,292 @@ target 6000 → 위치 12</pre>
                 </ul>
             </section>
 
-            <!-- 16. 최종 프로그램 작성 문제 -->
-            <section class="lesson-section" id="sec-final" aria-labelledby="h-final">
-                <h2 id="h-final" data-toc-label="최종 프로그램 작성 문제"><span class="section-no">16</span>최종 프로그램 작성 문제</h2>
+            <!-- 15. 람다·스트림 수정 문제 -->
+            <section class="lesson-section" id="sec-modernize" aria-labelledby="h-modernize">
+                <h2 id="h-modernize" data-toc-label="람다·스트림 수정 문제"><span class="section-no">15</span>람다·스트림 수정 문제</h2>
+                <p>
+                    지금까지 쓴 코드를 <strong>같은 결과를 내는 다른 문법</strong>으로 고쳐 보는 문제입니다.
+                    필요한 문법은 추가 정보의
+                    <a href="../supplements/lambda-expressions.html">람다식</a> 문서에 모두 있습니다.
+                    두 번째 문제는 <strong>코드를 쓰지 않고 판단하는 문제</strong>입니다.
+                </p>
+                <div class="note-box note-box--warn">
+                    <span class="note-box__title">람다를 써도 순차 탐색은 순차 탐색이다</span>
+                    <p>
+                        아래에서 만드는 검색 메서드는 <strong>여전히 O(n)</strong>입니다.
+                        비교 횟수는 한 번도 줄지 않습니다.
+<em>5강의 성과는 <strong>"정렬해 두면 O(log n)으로 줄일 수 있다"</strong>이고,
+                        그것은 문법과 아무 상관이 없습니다.</em> 이 구분을 놓치지 마세요.
+                    </p>
+                </div>
+
+                <h3>수정 문제 ① — 찾는 조건이 바뀔 때마다 메서드를 만들지 않으려면</h3>
+                <p>
+                    도서를 번호로도, 제목으로도, 재고 유무로도 찾고 싶습니다.
+                    지금 방식대로면 <strong>조건이 늘 때마다 메서드가 하나씩</strong> 늘어납니다.
+                    세 메서드에서 실제로 다른 곳은 <code>if</code> 안 한 줄뿐입니다.
+                </p>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">조건마다 늘어나는 순차 탐색</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-mod-q1" aria-label="수정 문제 1 원본 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-mod-q1" class="language-java">static int findByNumber(Book[] books, int number) {
+    for (int i = 0; i &lt; books.length; i++) {
+        if (books[i].number == number) return i;
+    }
+    return -1;
+}
+
+static int findByTitle(Book[] books, String title) {
+    for (int i = 0; i &lt; books.length; i++) {
+        if (books[i].title.equals(title)) return i;   // 여기 한 줄만 다르다
+    }
+    return -1;
+}
+
+static int findInStock(Book[] books) {
+    for (int i = 0; i &lt; books.length; i++) {
+        if (books[i].stock &gt; 0) return i;             // 여기 한 줄만 다르다
+    }
+    return -1;
+}</code></pre>
+                </article>
+                <p><strong>요구사항</strong></p>
+                <ul>
+                    <li>순회 코드를 <strong>한 번만</strong> 쓸 것</li>
+                    <li>세 검색이 모두 같은 메서드를 부를 것</li>
+                    <li>찾는 즉시 멈추는 <strong>조기 중단</strong>을 유지할 것 (1강에서 배운 절약)</li>
+                    <li>힌트 — <a href="../supplements/lambda-expressions.html#sec-standard">표준 인터페이스</a>의
+                        <code>Predicate&lt;T&gt;</code></li>
+                </ul>
+
+                <details class="answer-box" data-locked-until-complete>
+                    <summary>정답과 해설 보기 — 수정 문제 ①</summary>
+                    <article class="code-card">
+                        <header class="code-card__header">
+                            <div class="code-card__info">
+                                <span class="code-card__language">Java</span>
+                                <strong class="code-card__filename">ModernizeSolution.java — 정답</strong>
+                            </div>
+                            <button type="button" class="copy-code-button" data-copy-target="code-mod-a1" aria-label="수정 문제 1 정답 코드 복사">코드 복사</button>
+                        </header>
+                        <pre><code id="code-mod-a1" class="language-java">/** 조건에 맞는 첫 도서의 위치. 없으면 -1 */
+static int findFirstIndex(Book[] books, Predicate&lt;Book&gt; match) {
+    for (int i = 0; i &lt; books.length; i++) {
+        if (match.test(books[i])) {
+            return i;              // 조기 중단은 그대로다
+        }
+    }
+    return -1;
+}
+
+int a = findFirstIndex(books, b -&gt; b.number == 2311);
+int c = findFirstIndex(books, b -&gt; b.title.equals("자료구조의 이해"));
+int d = findFirstIndex(books, b -&gt; b.stock &gt; 0);
+
+// 메서드를 새로 만들지 않고 새 조건을 바로 쓸 수 있다
+int e = findFirstIndex(books, b -&gt; b.stock &gt;= 3 &amp;&amp; b.number &gt; 1100);</code></pre>
+                    </article>
+                    <p>
+                        <em>메서드가 늘던 자리에 인자가 늘게 되었습니다.</em>
+                        이것이 람다식이 실제로 바꾸는 것입니다 — 문법이 짧아지는 것은 부수 효과입니다.
+                    </p>
+                    <p>
+                        중요한 것은 <strong>비교 횟수가 한 번도 줄지 않았다</strong>는 점입니다.
+                        <code>findFirstIndex</code>는 최악의 경우 배열 전체를 훑습니다.
+                        <code>Predicate</code>는 <strong>"무엇을 찾는가"만 밖으로 뺐을 뿐</strong>,
+                        "어떻게 찾는가"는 그대로입니다.
+                    </p>
+                </details>
+
+                <h3>수정 문제 ② — 판단 문제: 이진 탐색도 이렇게 바꿀 수 있을까?</h3>
+                <p>
+                    문제 ①에서 순차 탐색을 성공적으로 일반화했습니다.
+                    그렇다면 같은 방식을 이진 탐색에도 적용할 수 있을까요?
+                    <strong>이번에는 코드를 쓰지 말고 글로 답해 보세요.</strong>
+                </p>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">BookSearchSolution.java — 이진 탐색</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-mod-q2" aria-label="수정 문제 2 원본 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-mod-q2" class="language-java">static int binarySearch(int[] numbers, int target) {
+    int low = 0;
+    int high = numbers.length - 1;
+    while (low &lt;= high) {
+        int mid = (low + high) / 2;
+        if (numbers[mid] == target) {
+            return mid;
+        } else if (numbers[mid] &lt; target) {
+            low = mid + 1;               // 왼쪽 절반 버리기
+        } else {
+            high = mid - 1;              // 오른쪽 절반 버리기
+        }
+    }
+    return -1;
+}</code></pre>
+                </article>
+                <p><strong>질문</strong></p>
+                <ul>
+                    <li>이 <code>binarySearch</code>도 <code>Predicate&lt;Book&gt;</code>을 받는 형태로
+                        일반화할 수 있을까요?</li>
+                    <li>없다면, <code>Predicate</code>에 <strong>무엇이 부족한</strong> 걸까요?</li>
+                    <li>일반화하려면 대신 무엇을 받아야 할까요?</li>
+                </ul>
+
+                <details class="answer-box" data-locked-until-complete>
+                    <summary>정답과 해설 보기 — 수정 문제 ②</summary>
+                    <p>
+                        <strong>할 수 없습니다.</strong> <code>Predicate</code>가 답할 수 있는 것은
+                        <strong>"맞다 / 아니다" 두 가지</strong>뿐입니다.
+                        그런데 이진 탐색이 매 단계 필요로 하는 답은
+                        <strong>"같다 / 왼쪽으로 / 오른쪽으로" 세 가지</strong>입니다.
+                        <code>if</code>가 세 갈래인 것이 우연이 아닙니다.
+                    </p>
+                    <p>
+                        부족한 것이 하나 더 있습니다. 그 판정은
+                        <strong>배열이 정렬된 기준과 반드시 같아야</strong> 합니다.
+                        번호 오름차순으로 정렬된 배열에서 "제목이 일치하는가"를 물으면
+                        절반을 버리는 판단 자체가 성립하지 않습니다.
+                        조건이 <strong>자유롭게 바뀌어도 되는 것</strong>이 순차 탐색이고,
+                        <strong>정렬 기준에 묶여 있는 것</strong>이 이진 탐색입니다.
+                    </p>
+                    <p>
+                        그래서 이진 탐색을 일반화하려면 <code>Predicate</code>가 아니라
+                        <strong><code>Comparator</code></strong>(또는 비교할 키를 뽑는 <code>Function</code>)를
+                        받아야 합니다. 4강에서 정렬에 <code>Comparator</code>를 넘긴 것과 같은 이유입니다 —
+                        <strong>정렬과 이진 탐색은 같은 기준을 공유해야 합니다.</strong>
+                    </p>
+                    <div class="note-box note-box--tip">
+                        <span class="note-box__title">이 문제의 요점</span>
+                        <p>
+                            "조건을 값으로 넘긴다"는 아이디어가
+                            <strong>모든 알고리즘에 똑같이 적용되지는 않습니다.</strong>
+                            알고리즘이 무엇을 전제하고 있는지 알아야
+                            어디까지 일반화할 수 있는지 판단할 수 있습니다.
+                            <em>문법을 아는 것과 <strong>언제 쓸지 아는 것</strong>은 다릅니다.</em>
+                        </p>
+                    </div>
+                </details>
+
+                <p>
+                    정답 전체와 "이전 방식과 결과가 같은지" 확인하는 코드는
+                    <code>examples/java/05-search-algorithms/ModernizeSolution.java</code>에 있습니다.
+                    직접 실행해 모든 비교가 <code>true</code>로 나오는지 확인하세요.
+                </p>
+            </section>
+
+            <!-- 16. 확인 퀴즈 -->
+            <section class="lesson-section" id="sec-quiz" aria-labelledby="h-quiz">
+                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">16</span>확인 퀴즈</h2>
+                <div id="quiz-root"></div>
+            </section>
+
+            <div class="assignment-banner">
+                <span class="assignment-banner__title">📝 프로그램 실습 과제</span>
+                <p>지금까지 배운 내용을 직접 코드로 적용해 보는 과제입니다. 두 과제로 구성되며, 각 과제의 정답은 이 강의를 완료로 표시해야 열립니다.</p>
+            </div>
+
+            <!-- 17. 따라 하기 실습 -->
+            <section class="lesson-section lesson-section--assignment" id="sec-practice" aria-labelledby="h-practice">
+                <h2 id="h-practice" data-toc-label="따라 하기 실습"><span class="section-no">17</span>따라 하기 실습</h2>
+
+                <h3>실습 1 — 데이터 변경</h3>
+                <p>
+                    <code>Step5BinarySearchLoop.java</code>에서 <code>int target = 3106;</code>을
+                    <code>int target = 5090;</code>(마지막 원소)으로 바꾸고 실행하세요.
+                    총 비교 횟수가 완성 코드 표(10번 섹션)의 값과 같은 <strong>4번</strong>이 나오는지,
+                    범위가 [0,11] → [6,11] → [9,11] → [11,11]로 줄어드는지 확인하세요.
+                </p>
+
+                <h3>실습 2 — 실패 사례 추가</h3>
+                <p>
+                    <code>BinarySearchTrace.java</code>의 main에 <code>traceSearch(bookNumbers, 999);</code>를 추가해 보세요.
+                    999는 모든 번호보다 작으므로 <strong>high만 계속 줄어들다가 실패</strong>합니다. 비교가 몇 번 만에 끝나는지,
+                    2500(4번)보다 빠른지 느린지 예측한 뒤 실행으로 확인하세요.
+                </p>
+
+                <h3>실습 3 — 코드 완성: 없으면 "끼워 넣을 위치"</h3>
+                <p>
+                    이진 탐색이 실패하면 -1 대신, <strong>정렬을 유지한 채 그 값을 끼워 넣을 위치</strong>를 반환하도록 바꿔 봅시다.
+                    새 도서를 서가의 올바른 자리에 꽂을 때 바로 쓸 수 있는 기능입니다.
+                    아래 TODO를 채우세요 — 힌트는 11번 섹션 실패 사례의 마지막 상태에 있습니다.
+                </p>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">InsertPositionPractice.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-practice3" aria-label="InsertPositionPractice.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-practice3" class="language-java">public class InsertPositionPractice {
+
+    /** 정렬된 배열에서 target이 있으면 그 인덱스를,
+     *  없으면 "정렬을 유지한 채 끼워 넣을 위치"를 반환한다. */
+    static int searchInsertPosition(int[] numbers, int target) {
+        int low = 0;
+        int high = numbers.length - 1;
+        while (low &lt;= high) {
+            int mid = low + (high - low) / 2;   // 오버플로 없는 안전한 mid 계산
+            if (numbers[mid] == target) {
+                return mid;
+            } else if (numbers[mid] &lt; target) {
+                low = mid + 1;
+            } else {
+                high = mid - 1;
+            }
+        }
+        // TODO: 탐색이 실패했을 때 -1 대신 무엇을 반환해야
+        //       "끼워 넣을 위치"가 될지 생각해 보세요. (힌트: 반복이 끝난 순간의 low)
+        return -1;
+    }
+
+    public static void main(String[] args) {
+        int[] bookNumbers = {1001, 1203, 1450, 2088, 2311, 2754,
+                             3106, 3502, 3860, 4213, 4771, 5090};
+        int[] tests = {3106, 2500, 900, 6000};   // 있는 값 1개 + 없는 값 3개
+
+        for (int target : tests) {
+            System.out.println("target " + target + " → 위치 "
+                    + searchInsertPosition(bookNumbers, target));
+        }
+    }
+}</code></pre>
+                </article>
+                <details class="answer-box" data-locked-until-complete>
+                    <summary>실습 3 정답 확인</summary>
+                    <div class="answer-box__content">
+                        <p>반복이 끝난 순간의 <code>low</code>가 정답입니다. 마지막 return 한 줄만 바꾸면 됩니다.</p>
+                        <pre class="quiz-code">// 반복이 끝났다 = low &gt; high = target보다 작은 값들이 low 왼쪽에 모두 모였다
+// 이때 low는 "target보다 큰 첫 번째 값의 위치" = 끼워 넣을 위치다
+return low;</pre>
+                        <p>수정 후 실행 결과:</p>
+                        <pre class="quiz-code">target 3106 → 위치 6
+target 2500 → 위치 5
+target 900 → 위치 0
+target 6000 → 위치 12</pre>
+                        <p>
+                            2500의 답 5를 확인해 보세요. 11번 섹션 실패 사례가 끝났을 때 <code>low = 5</code>였고,
+                            실제로 2311(인덱스 4)과 2754(인덱스 5) 사이인 5번 자리가 2500이 들어갈 곳입니다.
+<em>900은 맨 앞(0), 6000은 맨 뒤(12 = 배열 길이) — 경계에서도 올바릅니다.</em>
+                            이 값을 <strong>삽입 위치(insertion point)</strong>라 부르며, 표준 라이브러리
+                            <code>Arrays.binarySearch</code>도 실패 시 이 정보를 인코딩해 돌려줍니다.
+                        </p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- 18. 최종 프로그램 작성 문제 -->
+            <section class="lesson-section lesson-section--assignment" id="sec-final" aria-labelledby="h-final">
+                <h2 id="h-final" data-toc-label="최종 프로그램 작성 문제"><span class="section-no">18</span>최종 프로그램 작성 문제</h2>
 
                 <h3>문제 제목 — 도서 검색 프로그램 "BookFinder"</h3>
 
@@ -1707,12 +1900,10 @@ stocks = {3, 5, 2, 0, 4, 1, 6, 2, 0, 3, 7, 1}
                         내 <code>binarySearch</code>의 결과를 4개 검색 모두에서 비교해 보세요 (검증 용도의 라이브러리 사용은 허용).
                         없는 값일 때 라이브러리가 반환하는 음수가 무엇을 인코딩한 것인지 관찰해 보세요.</li>
                 </ol>
-            </section>
 
-            <!-- 17. 최종 문제 정답과 해설 -->
-            <section class="lesson-section" id="sec-answer" aria-labelledby="h-answer">
-                <h2 id="h-answer" data-toc-label="최종 문제 정답과 해설"><span class="section-no">17</span>최종 문제 정답과 해설</h2>
-                <p>스스로 충분히 시도한 뒤에 여세요. 막혔다면 구현 1단계(순차)와 5단계(이진)를 다시 읽고 한 단계씩 진행해 보세요.</p>
+                <h3>정답과 해설</h3>
+                <p>스스로 충분히 시도한 뒤에 여세요. 막혔다면 "구현 단계 안내"를 다시 읽고, 한 단계씩 진행해 보세요.
+                이 강의를 완료로 표시해야 정답이 열립니다.</p>
 
                 <details class="answer-box" data-locked-until-complete>
                     <summary>정답 코드와 해설 확인</summary>
@@ -1888,197 +2079,9 @@ stocks = {3, 5, 2, 0, 4, 1, 6, 2, 0, 3, 7, 1}
                 </details>
             </section>
 
-            <!-- 18. 람다·스트림 수정 문제 -->
-            <section class="lesson-section" id="sec-modernize" aria-labelledby="h-modernize">
-                <h2 id="h-modernize" data-toc-label="람다·스트림 수정 문제"><span class="section-no">18</span>람다·스트림 수정 문제</h2>
-                <p>
-                    지금까지 쓴 코드를 <strong>같은 결과를 내는 다른 문법</strong>으로 고쳐 보는 문제입니다.
-                    필요한 문법은 추가 정보의
-                    <a href="../supplements/lambda-expressions.html">람다식</a> 문서에 모두 있습니다.
-                    두 번째 문제는 <strong>코드를 쓰지 않고 판단하는 문제</strong>입니다.
-                </p>
-                <div class="note-box note-box--warn">
-                    <span class="note-box__title">람다를 써도 순차 탐색은 순차 탐색이다</span>
-                    <p>
-                        아래에서 만드는 검색 메서드는 <strong>여전히 O(n)</strong>입니다.
-                        비교 횟수는 한 번도 줄지 않습니다.
-<em>5강의 성과는 <strong>"정렬해 두면 O(log n)으로 줄일 수 있다"</strong>이고,
-                        그것은 문법과 아무 상관이 없습니다.</em> 이 구분을 놓치지 마세요.
-                    </p>
-                </div>
-
-                <h3>수정 문제 ① — 찾는 조건이 바뀔 때마다 메서드를 만들지 않으려면</h3>
-                <p>
-                    도서를 번호로도, 제목으로도, 재고 유무로도 찾고 싶습니다.
-                    지금 방식대로면 <strong>조건이 늘 때마다 메서드가 하나씩</strong> 늘어납니다.
-                    세 메서드에서 실제로 다른 곳은 <code>if</code> 안 한 줄뿐입니다.
-                </p>
-                <article class="code-card">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">Java</span>
-                            <strong class="code-card__filename">조건마다 늘어나는 순차 탐색</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="code-mod-q1" aria-label="수정 문제 1 원본 코드 복사">코드 복사</button>
-                    </header>
-                    <pre><code id="code-mod-q1" class="language-java">static int findByNumber(Book[] books, int number) {
-    for (int i = 0; i &lt; books.length; i++) {
-        if (books[i].number == number) return i;
-    }
-    return -1;
-}
-
-static int findByTitle(Book[] books, String title) {
-    for (int i = 0; i &lt; books.length; i++) {
-        if (books[i].title.equals(title)) return i;   // 여기 한 줄만 다르다
-    }
-    return -1;
-}
-
-static int findInStock(Book[] books) {
-    for (int i = 0; i &lt; books.length; i++) {
-        if (books[i].stock &gt; 0) return i;             // 여기 한 줄만 다르다
-    }
-    return -1;
-}</code></pre>
-                </article>
-                <p><strong>요구사항</strong></p>
-                <ul>
-                    <li>순회 코드를 <strong>한 번만</strong> 쓸 것</li>
-                    <li>세 검색이 모두 같은 메서드를 부를 것</li>
-                    <li>찾는 즉시 멈추는 <strong>조기 중단</strong>을 유지할 것 (1강에서 배운 절약)</li>
-                    <li>힌트 — <a href="../supplements/lambda-expressions.html#sec-standard">표준 인터페이스</a>의
-                        <code>Predicate&lt;T&gt;</code></li>
-                </ul>
-
-                <details class="answer-box" data-locked-until-complete>
-                    <summary>정답과 해설 보기 — 수정 문제 ①</summary>
-                    <article class="code-card">
-                        <header class="code-card__header">
-                            <div class="code-card__info">
-                                <span class="code-card__language">Java</span>
-                                <strong class="code-card__filename">ModernizeSolution.java — 정답</strong>
-                            </div>
-                            <button type="button" class="copy-code-button" data-copy-target="code-mod-a1" aria-label="수정 문제 1 정답 코드 복사">코드 복사</button>
-                        </header>
-                        <pre><code id="code-mod-a1" class="language-java">/** 조건에 맞는 첫 도서의 위치. 없으면 -1 */
-static int findFirstIndex(Book[] books, Predicate&lt;Book&gt; match) {
-    for (int i = 0; i &lt; books.length; i++) {
-        if (match.test(books[i])) {
-            return i;              // 조기 중단은 그대로다
-        }
-    }
-    return -1;
-}
-
-int a = findFirstIndex(books, b -&gt; b.number == 2311);
-int c = findFirstIndex(books, b -&gt; b.title.equals("자료구조의 이해"));
-int d = findFirstIndex(books, b -&gt; b.stock &gt; 0);
-
-// 메서드를 새로 만들지 않고 새 조건을 바로 쓸 수 있다
-int e = findFirstIndex(books, b -&gt; b.stock &gt;= 3 &amp;&amp; b.number &gt; 1100);</code></pre>
-                    </article>
-                    <p>
-                        <em>메서드가 늘던 자리에 인자가 늘게 되었습니다.</em>
-                        이것이 람다식이 실제로 바꾸는 것입니다 — 문법이 짧아지는 것은 부수 효과입니다.
-                    </p>
-                    <p>
-                        중요한 것은 <strong>비교 횟수가 한 번도 줄지 않았다</strong>는 점입니다.
-                        <code>findFirstIndex</code>는 최악의 경우 배열 전체를 훑습니다.
-                        <code>Predicate</code>는 <strong>"무엇을 찾는가"만 밖으로 뺐을 뿐</strong>,
-                        "어떻게 찾는가"는 그대로입니다.
-                    </p>
-                </details>
-
-                <h3>수정 문제 ② — 판단 문제: 이진 탐색도 이렇게 바꿀 수 있을까?</h3>
-                <p>
-                    문제 ①에서 순차 탐색을 성공적으로 일반화했습니다.
-                    그렇다면 같은 방식을 이진 탐색에도 적용할 수 있을까요?
-                    <strong>이번에는 코드를 쓰지 말고 글로 답해 보세요.</strong>
-                </p>
-                <article class="code-card">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">Java</span>
-                            <strong class="code-card__filename">BookSearchSolution.java — 이진 탐색</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="code-mod-q2" aria-label="수정 문제 2 원본 코드 복사">코드 복사</button>
-                    </header>
-                    <pre><code id="code-mod-q2" class="language-java">static int binarySearch(int[] numbers, int target) {
-    int low = 0;
-    int high = numbers.length - 1;
-    while (low &lt;= high) {
-        int mid = (low + high) / 2;
-        if (numbers[mid] == target) {
-            return mid;
-        } else if (numbers[mid] &lt; target) {
-            low = mid + 1;               // 왼쪽 절반 버리기
-        } else {
-            high = mid - 1;              // 오른쪽 절반 버리기
-        }
-    }
-    return -1;
-}</code></pre>
-                </article>
-                <p><strong>질문</strong></p>
-                <ul>
-                    <li>이 <code>binarySearch</code>도 <code>Predicate&lt;Book&gt;</code>을 받는 형태로
-                        일반화할 수 있을까요?</li>
-                    <li>없다면, <code>Predicate</code>에 <strong>무엇이 부족한</strong> 걸까요?</li>
-                    <li>일반화하려면 대신 무엇을 받아야 할까요?</li>
-                </ul>
-
-                <details class="answer-box" data-locked-until-complete>
-                    <summary>정답과 해설 보기 — 수정 문제 ②</summary>
-                    <p>
-                        <strong>할 수 없습니다.</strong> <code>Predicate</code>가 답할 수 있는 것은
-                        <strong>"맞다 / 아니다" 두 가지</strong>뿐입니다.
-                        그런데 이진 탐색이 매 단계 필요로 하는 답은
-                        <strong>"같다 / 왼쪽으로 / 오른쪽으로" 세 가지</strong>입니다.
-                        <code>if</code>가 세 갈래인 것이 우연이 아닙니다.
-                    </p>
-                    <p>
-                        부족한 것이 하나 더 있습니다. 그 판정은
-                        <strong>배열이 정렬된 기준과 반드시 같아야</strong> 합니다.
-                        번호 오름차순으로 정렬된 배열에서 "제목이 일치하는가"를 물으면
-                        절반을 버리는 판단 자체가 성립하지 않습니다.
-                        조건이 <strong>자유롭게 바뀌어도 되는 것</strong>이 순차 탐색이고,
-                        <strong>정렬 기준에 묶여 있는 것</strong>이 이진 탐색입니다.
-                    </p>
-                    <p>
-                        그래서 이진 탐색을 일반화하려면 <code>Predicate</code>가 아니라
-                        <strong><code>Comparator</code></strong>(또는 비교할 키를 뽑는 <code>Function</code>)를
-                        받아야 합니다. 4강에서 정렬에 <code>Comparator</code>를 넘긴 것과 같은 이유입니다 —
-                        <strong>정렬과 이진 탐색은 같은 기준을 공유해야 합니다.</strong>
-                    </p>
-                    <div class="note-box note-box--tip">
-                        <span class="note-box__title">이 문제의 요점</span>
-                        <p>
-                            "조건을 값으로 넘긴다"는 아이디어가
-                            <strong>모든 알고리즘에 똑같이 적용되지는 않습니다.</strong>
-                            알고리즘이 무엇을 전제하고 있는지 알아야
-                            어디까지 일반화할 수 있는지 판단할 수 있습니다.
-                            <em>문법을 아는 것과 <strong>언제 쓸지 아는 것</strong>은 다릅니다.</em>
-                        </p>
-                    </div>
-                </details>
-
-                <p>
-                    정답 전체와 "이전 방식과 결과가 같은지" 확인하는 코드는
-                    <code>examples/java/05-search-algorithms/ModernizeSolution.java</code>에 있습니다.
-                    직접 실행해 모든 비교가 <code>true</code>로 나오는지 확인하세요.
-                </p>
-            </section>
-
-            <!-- 19. 확인 퀴즈 -->
-            <section class="lesson-section" id="sec-quiz" aria-labelledby="h-quiz">
-                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">19</span>확인 퀴즈</h2>
-                <div id="quiz-root"></div>
-            </section>
-
-            <!-- 20. 오늘의 핵심 정리 -->
+            <!-- 19. 오늘의 핵심 정리 -->
             <section class="lesson-section" id="sec-summary" aria-labelledby="h-summary">
-                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">20</span>오늘의 핵심 정리</h2>
+                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">19</span>오늘의 핵심 정리</h2>
                 <ul class="summary-list">
                     <li><strong>순차 탐색</strong>은 앞에서부터 하나씩 비교한다 — 정렬 불필요, 최악 n번, O(n).</li>
                     <li><strong>이진 탐색</strong>은 정렬된 배열에서 중간과 비교해 <strong>절반을 통째로 버린다</strong> — 최악 ⌊log₂n⌋+1번, O(log n). 10억 개도 30번이면 끝난다.</li>
@@ -2091,9 +2094,9 @@ int e = findFirstIndex(books, b -&gt; b.stock &gt;= 3 &amp;&amp; b.number &gt; 1
                 <div id="lesson-complete-slot"></div>
             </section>
 
-            <!-- 21. 다음 강의 연결 -->
+            <!-- 20. 다음 강의 연결 -->
             <section class="lesson-section" id="sec-next" aria-labelledby="h-next">
-                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">21</span>다음 강의 연결</h2>
+                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">20</span>다음 강의 연결</h2>
                 <p>
                     다음 강의는 <strong>6강. 스택과 큐를 활용한 작업 처리</strong>입니다.
 <em>지금까지는 "이미 담겨 있는 데이터를 어떻게 찾는가"를 다뤘다면,

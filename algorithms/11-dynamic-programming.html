@@ -1109,92 +1109,9 @@ dp[8] = dp[7] + dp[6] = 21 + 13 = 34 | [1, 2, 3, 5, 8, 13, 21, 34]
                 </ul>
             </section>
 
-            <!-- 14. 따라 하기 실습 -->
-            <section class="lesson-section" id="sec-practice" aria-labelledby="h-practice">
-                <h2 id="h-practice" data-toc-label="따라 하기 실습"><span class="section-no">14</span>따라 하기 실습</h2>
-
-                <h3>실습 1 — 데이터 변경</h3>
-                <p>
-                    <code>DpTableTrace.java</code>에서 <code>int n = 8;</code>을 <code>int n = 12;</code>로 바꾸고 실행하세요.
-                    테이블이 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233으로 채워지고
-                    최종 답이 <strong>233</strong>이 나오는지 확인하세요.
-                </p>
-
-                <h3>실습 2 — 점화식 변경</h3>
-                <p>
-                    캐릭터가 한 번에 <strong>1칸, 2칸, 3칸</strong>을 오를 수 있다면 점화식은 어떻게 될까요?
-                    마지막 걸음이 세 종류이므로 <code>dp[i] = dp[i-1] + dp[i-2] + dp[i-3]</code>입니다.
-                    <code>Step4ClimbStairs.java</code>의 <code>waysByTable</code>을 고쳐 보세요.
-                    기저 조건은 dp[1] = 1, dp[2] = 2, dp[3] = 4가 됩니다 (3칸: 1+1+1, 1+2, 2+1, 3).
-                    n=4의 답이 7인지 손으로도 검증해 보세요.
-                </p>
-
-                <h3>실습 3 — 코드 완성: 최대 연속 부분합</h3>
-                <p>
-                    일주일 매출 증감 <code>{3, -5, 4, -1, 6, -8, 2}</code>에서
-                    <strong>연속 구간의 합이 가장 큰 값</strong>(여기서는 4 + (-1) + 6 = 9)을 DP로 구합니다.
-                    점화식 3단계는 이미 세워 두었습니다 — ① dp[i] = "i번 원소에서 <strong>끝나는</strong>
-                    연속 부분합의 최댓값", ② dp[0] = data[0],
-                    ③ dp[i] = max(data[i], dp[i-1] + data[i]). TODO의 전이 한 줄만 채우세요.
-                </p>
-                <article class="code-card">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">Java</span>
-                            <strong class="code-card__filename">MaxSubarrayPractice.java</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="code-practice3" aria-label="MaxSubarrayPractice.java 코드 복사">코드 복사</button>
-                    </header>
-                    <pre><code id="code-practice3" class="language-java">public class MaxSubarrayPractice {
-
-    /** dp[i] = "i번 원소에서 끝나는" 연속 부분합의 최댓값 */
-    static int maxSubarraySum(int[] data) {
-        int n = data.length;
-        int[] dp = new int[n];
-        dp[0] = data[0];        // 기저 조건: 첫 원소에서 끝나는 부분합은 자기 자신뿐
-        int best = dp[0];
-
-        for (int i = 1; i &lt; n; i++) {
-            // TODO: 점화식으로 dp[i]를 채우세요.
-            //       dp[i] = max(data[i], dp[i - 1] + data[i])
-            //       (앞의 합을 이어받는 게 손해면 i에서 새로 시작한다)
-
-            if (dp[i] &gt; best) {
-                best = dp[i];   // 지금까지의 최댓값 갱신
-            }
-        }
-        return best;
-    }
-
-    public static void main(String[] args) {
-        int[] sales = {3, -5, 4, -1, 6, -8, 2};
-        System.out.println("최대 연속 부분합 = " + maxSubarraySum(sales) + " (기대값 9)");
-    }
-}</code></pre>
-                </article>
-                <details class="answer-box" data-locked-until-complete>
-                    <summary>실습 3 정답 확인</summary>
-                    <div class="answer-box__content">
-                        <pre class="quiz-code">for (int i = 1; i &lt; n; i++) {
-    dp[i] = Math.max(data[i], dp[i - 1] + data[i]);   // 전이: 새로 시작 vs 이어붙이기
-
-    if (dp[i] &gt; best) {
-        best = dp[i];
-    }
-}</pre>
-                        <p>TODO 상태의 출력은 <code>최대 연속 부분합 = 3 (기대값 9)</code>
-                        (dp[1] 이후가 0으로 남아 best가 dp[0]=3에서 멈춤),
-                        전이를 채우면 <code>최대 연속 부분합 = 9 (기대값 9)</code>가 나옵니다.
-                        dp 테이블은 [3, -2, 4, 3, 9, 1, 3]으로 채워지며, 최댓값은 dp[4] = 9입니다.
-                        <em>"dp[i]를 <strong>i에서 끝나는</strong> 부분합"으로 정의했기 때문에
-                        전이가 두 선택(새로 시작 / 이어붙이기)의 max 하나로 끝납니다 — 정의(① 단계)의 힘입니다.</em></p>
-                    </div>
-                </details>
-            </section>
-
-            <!-- 15. 실제 데이터 응용 예제 -->
+            <!-- 14. 실제 데이터 응용 예제 -->
             <section class="lesson-section" id="sec-application" aria-labelledby="h-application">
-                <h2 id="h-application" data-toc-label="실제 데이터 응용 예제"><span class="section-no">15</span>실제 데이터 응용 예제</h2>
+                <h2 id="h-application" data-toc-label="실제 데이터 응용 예제"><span class="section-no">14</span>실제 데이터 응용 예제</h2>
 
                 <h3>문제 상황 — 그리디가 실패한 그 동전, DP로 다시</h3>
                 <p>
@@ -1338,9 +1255,103 @@ dp[8] = dp[7] + dp[6] = 21 + 13 = 34 | [1, 2, 3, 5, 8, 13, 21, 34]
                 </ul>
             </section>
 
-            <!-- 16. 최종 프로그램 작성 문제 -->
-            <section class="lesson-section" id="sec-final" aria-labelledby="h-final">
-                <h2 id="h-final" data-toc-label="최종 프로그램 작성 문제"><span class="section-no">16</span>최종 프로그램 작성 문제</h2>
+            <!-- 15. 확인 퀴즈 -->
+            <section class="lesson-section" id="sec-quiz" aria-labelledby="h-quiz">
+                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">15</span>확인 퀴즈</h2>
+                <div id="quiz-root"></div>
+            </section>
+
+            <div class="assignment-banner">
+                <span class="assignment-banner__title">📝 프로그램 실습 과제</span>
+                <p>지금까지 배운 내용을 직접 코드로 적용해 보는 과제입니다. 두 과제로 구성되며, 각 과제의 정답은 이 강의를 완료로 표시해야 열립니다.</p>
+            </div>
+
+            <!-- 16. 따라 하기 실습 -->
+            <section class="lesson-section lesson-section--assignment" id="sec-practice" aria-labelledby="h-practice">
+                <h2 id="h-practice" data-toc-label="따라 하기 실습"><span class="section-no">16</span>따라 하기 실습</h2>
+
+                <h3>실습 1 — 데이터 변경</h3>
+                <p>
+                    <code>DpTableTrace.java</code>에서 <code>int n = 8;</code>을 <code>int n = 12;</code>로 바꾸고 실행하세요.
+                    테이블이 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233으로 채워지고
+                    최종 답이 <strong>233</strong>이 나오는지 확인하세요.
+                </p>
+
+                <h3>실습 2 — 점화식 변경</h3>
+                <p>
+                    캐릭터가 한 번에 <strong>1칸, 2칸, 3칸</strong>을 오를 수 있다면 점화식은 어떻게 될까요?
+                    마지막 걸음이 세 종류이므로 <code>dp[i] = dp[i-1] + dp[i-2] + dp[i-3]</code>입니다.
+                    <code>Step4ClimbStairs.java</code>의 <code>waysByTable</code>을 고쳐 보세요.
+                    기저 조건은 dp[1] = 1, dp[2] = 2, dp[3] = 4가 됩니다 (3칸: 1+1+1, 1+2, 2+1, 3).
+                    n=4의 답이 7인지 손으로도 검증해 보세요.
+                </p>
+
+                <h3>실습 3 — 코드 완성: 최대 연속 부분합</h3>
+                <p>
+                    일주일 매출 증감 <code>{3, -5, 4, -1, 6, -8, 2}</code>에서
+                    <strong>연속 구간의 합이 가장 큰 값</strong>(여기서는 4 + (-1) + 6 = 9)을 DP로 구합니다.
+                    점화식 3단계는 이미 세워 두었습니다 — ① dp[i] = "i번 원소에서 <strong>끝나는</strong>
+                    연속 부분합의 최댓값", ② dp[0] = data[0],
+                    ③ dp[i] = max(data[i], dp[i-1] + data[i]). TODO의 전이 한 줄만 채우세요.
+                </p>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">MaxSubarrayPractice.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-practice3" aria-label="MaxSubarrayPractice.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-practice3" class="language-java">public class MaxSubarrayPractice {
+
+    /** dp[i] = "i번 원소에서 끝나는" 연속 부분합의 최댓값 */
+    static int maxSubarraySum(int[] data) {
+        int n = data.length;
+        int[] dp = new int[n];
+        dp[0] = data[0];        // 기저 조건: 첫 원소에서 끝나는 부분합은 자기 자신뿐
+        int best = dp[0];
+
+        for (int i = 1; i &lt; n; i++) {
+            // TODO: 점화식으로 dp[i]를 채우세요.
+            //       dp[i] = max(data[i], dp[i - 1] + data[i])
+            //       (앞의 합을 이어받는 게 손해면 i에서 새로 시작한다)
+
+            if (dp[i] &gt; best) {
+                best = dp[i];   // 지금까지의 최댓값 갱신
+            }
+        }
+        return best;
+    }
+
+    public static void main(String[] args) {
+        int[] sales = {3, -5, 4, -1, 6, -8, 2};
+        System.out.println("최대 연속 부분합 = " + maxSubarraySum(sales) + " (기대값 9)");
+    }
+}</code></pre>
+                </article>
+                <details class="answer-box" data-locked-until-complete>
+                    <summary>실습 3 정답 확인</summary>
+                    <div class="answer-box__content">
+                        <pre class="quiz-code">for (int i = 1; i &lt; n; i++) {
+    dp[i] = Math.max(data[i], dp[i - 1] + data[i]);   // 전이: 새로 시작 vs 이어붙이기
+
+    if (dp[i] &gt; best) {
+        best = dp[i];
+    }
+}</pre>
+                        <p>TODO 상태의 출력은 <code>최대 연속 부분합 = 3 (기대값 9)</code>
+                        (dp[1] 이후가 0으로 남아 best가 dp[0]=3에서 멈춤),
+                        전이를 채우면 <code>최대 연속 부분합 = 9 (기대값 9)</code>가 나옵니다.
+                        dp 테이블은 [3, -2, 4, 3, 9, 1, 3]으로 채워지며, 최댓값은 dp[4] = 9입니다.
+                        <em>"dp[i]를 <strong>i에서 끝나는</strong> 부분합"으로 정의했기 때문에
+                        전이가 두 선택(새로 시작 / 이어붙이기)의 max 하나로 끝납니다 — 정의(① 단계)의 힘입니다.</em></p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- 17. 최종 프로그램 작성 문제 -->
+            <section class="lesson-section lesson-section--assignment" id="sec-final" aria-labelledby="h-final">
+                <h2 id="h-final" data-toc-label="최종 프로그램 작성 문제"><span class="section-no">17</span>최종 프로그램 작성 문제</h2>
 
                 <h3>문제 제목 — 유료 계단 최소 비용 계산기 "CheapClimb"</h3>
 
@@ -1522,12 +1533,10 @@ dp[8] = dp[7] + dp[6] = 21 + 13 = 34 | [1, 2, 3, 5, 8, 13, 21, 34]
                     <li><strong>3칸 점프 아이템:</strong> 한 번에 3칸까지 오를 수 있다면 전이가 어떻게 바뀔까요?
                         min의 후보가 3개가 되도록 고치고, 완전 탐색도 함께 고쳐 검증하세요.</li>
                 </ol>
-            </section>
 
-            <!-- 17. 최종 문제 정답과 해설 -->
-            <section class="lesson-section" id="sec-answer" aria-labelledby="h-answer">
-                <h2 id="h-answer" data-toc-label="최종 문제 정답과 해설"><span class="section-no">17</span>최종 문제 정답과 해설</h2>
-                <p>스스로 충분히 시도한 뒤에 여세요. 막혔다면 점화식 3단계(정의 → 기저 → 전이)를 종이에 다시 써 보는 것이 가장 빠른 길입니다.</p>
+                <h3>정답과 해설</h3>
+                <p>스스로 충분히 시도한 뒤에 여세요. 막혔다면 "구현 단계 안내"를 다시 읽고, 한 단계씩 진행해 보세요.
+                이 강의를 완료로 표시해야 정답이 열립니다.</p>
 
                 <details class="answer-box" data-locked-until-complete>
                     <summary>정답 코드와 해설 확인</summary>
@@ -1665,15 +1674,9 @@ dp[8] = dp[7] + dp[6] = 21 + 13 = 34 | [1, 2, 3, 5, 8, 13, 21, 34]
                 </details>
             </section>
 
-            <!-- 18. 확인 퀴즈 -->
-            <section class="lesson-section" id="sec-quiz" aria-labelledby="h-quiz">
-                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">18</span>확인 퀴즈</h2>
-                <div id="quiz-root"></div>
-            </section>
-
-            <!-- 19. 오늘의 핵심 정리 -->
+            <!-- 18. 오늘의 핵심 정리 -->
             <section class="lesson-section" id="sec-summary" aria-labelledby="h-summary">
-                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">19</span>오늘의 핵심 정리</h2>
+                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">18</span>오늘의 핵심 정리</h2>
                 <ul class="summary-list">
                     <li><strong>동적 계획법(DP)</strong>은 작은 문제의 답을 <strong>저장하고 재사용</strong>하는 설계 기법이다.
                         성립 조건은 <strong>중복 부분 문제</strong>와 <strong>최적 부분 구조</strong> 두 가지.</li>
@@ -1691,9 +1694,9 @@ dp[8] = dp[7] + dp[6] = 21 + 13 = 34 | [1, 2, 3, 5, 8, 13, 21, 34]
                 <div id="lesson-complete-slot"></div>
             </section>
 
-            <!-- 20. 다음 강의 연결 -->
+            <!-- 19. 다음 강의 연결 -->
             <section class="lesson-section" id="sec-next" aria-labelledby="h-next">
-                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">20</span>다음 강의 연결</h2>
+                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">19</span>다음 강의 연결</h2>
                 <p>
                     다음 강의는 <strong>12강. 최단 경로 알고리즘</strong>입니다.
                     9강의 그래프, 10강의 그리디, 그리고 오늘의 점화식이 한 문제에서 만납니다.

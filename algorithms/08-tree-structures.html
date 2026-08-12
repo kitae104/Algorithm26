@@ -1195,123 +1195,9 @@ root == null ? true</pre>
                 </ul>
             </section>
 
-            <!-- 14. 따라 하기 실습 -->
-            <section class="lesson-section" id="sec-practice" aria-labelledby="h-practice">
-                <h2 id="h-practice" data-toc-label="따라 하기 실습"><span class="section-no">14</span>따라 하기 실습</h2>
-
-                <h3>실습 1 — 데이터 변경</h3>
-                <p>
-                    <code>BstComplete.java</code>의 배열을 <code>{50, 30, 70, 20, 40, 60, 10, 45}</code>로 바꾸고 실행하세요.
-                    실행 전에 10과 45가 트리의 어디에 붙을지 종이에 먼저 그려 보고,
-                    중위 순회 결과가 <code>10 20 30 40 45 50 60 70</code>으로 나오는지 확인하세요.
-                    (10은 20의 왼쪽, 45는 40의 오른쪽에 붙습니다.)
-                </p>
-
-                <h3>실습 2 — 검색 경로 예측</h3>
-                <p>
-                    원래 데이터(50, 30, 70, 20, 40, 60)에서 <code>search(root, 20)</code>과
-                    <code>search(root, 75)</code>를 호출하도록 main을 바꿔 보세요.
-                    실행 전에 지나갈 노드를 예측해 보세요 —
-                    20은 <code>50 30 20 → 발견</code>(비교 3번), 75는 <code>50 70 → 없음</code>(비교 2번)이 나와야 합니다.
-                    75는 70의 오른쪽이 <code>null</code>이라 두 번 만에 끝납니다.
-                </p>
-
-                <h3>실습 3 — 코드 완성: 노드 수와 최댓값</h3>
-                <p>
-                    아래 클래스의 TODO 두 개를 채우세요. <code>countNodes</code>는 트리의 <strong>전체 노드 수</strong>,
-                    <code>maxValue</code>는 BST의 <strong>최댓값</strong>을 구합니다.
-                    (힌트: BST의 최댓값은 항상 오른쪽 끝에 있습니다.)
-                </p>
-                <article class="code-card">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">Java</span>
-                            <strong class="code-card__filename">TreeStatsPractice.java</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="code-practice3" aria-label="TreeStatsPractice.java 코드 복사">코드 복사</button>
-                    </header>
-                    <pre><code id="code-practice3" class="language-java">public class TreeStatsPractice {
-
-    static class Node {
-        int value;
-        Node left;
-        Node right;
-
-        Node(int value) {
-            this.value = value;
-        }
-    }
-
-    static Node insert(Node node, int value) {
-        if (node == null) {
-            return new Node(value);
-        }
-        if (value &lt; node.value) {
-            node.left = insert(node.left, value);
-        } else {
-            node.right = insert(node.right, value);
-        }
-        return node;
-    }
-
-    /** 트리의 전체 노드 수 */
-    static int countNodes(Node node) {
-        // TODO 1: node가 null이면 0을 반환하고,
-        //         아니면 1(자신) + 왼쪽 노드 수 + 오른쪽 노드 수를 반환하세요.
-        return 0;
-    }
-
-    /** BST의 최댓값 */
-    static int maxValue(Node node) {
-        // TODO 2: 오른쪽 자식이 없으면 node.value를 반환하고,
-        //         있으면 오른쪽으로 재귀하세요.
-        return 0;
-    }
-
-    public static void main(String[] args) {
-        int[] values = {50, 30, 70, 20, 40, 60};
-
-        Node root = null;
-        for (int value : values) {
-            root = insert(root, value);
-        }
-
-        System.out.println("전체 노드 수: " + countNodes(root));
-        System.out.println("최댓값: " + maxValue(root));
-    }
-}</code></pre>
-                </article>
-                <details class="answer-box" data-locked-until-complete>
-                    <summary>실습 3 정답 확인</summary>
-                    <div class="answer-box__content">
-                        <pre class="quiz-code">/** 트리의 전체 노드 수 = 1(자신) + 왼쪽 서브트리 노드 수 + 오른쪽 서브트리 노드 수 */
-static int countNodes(Node node) {
-    if (node == null) {
-        return 0;
-    }
-    return 1 + countNodes(node.left) + countNodes(node.right);
-}
-
-/** BST의 최댓값: 오른쪽 자식이 없어질 때까지 오른쪽으로만 내려간다 */
-static int maxValue(Node node) {
-    if (node.right == null) {
-        return node.value;
-    }
-    return maxValue(node.right);
-}</pre>
-                        <p>예상 출력:</p>
-                        <pre class="quiz-code">전체 노드 수: 6
-최댓값: 70</pre>
-                        <p><code>countNodes</code>는 "자신 + 자식들의 결과"를 합치는 트리 재귀의 기본 패턴입니다 —
-                        최종 문제의 부서 수 세기에서 그대로 다시 씁니다.
-                        <code>maxValue</code>는 비교 없이 오른쪽으로만 내려가면 되는 BST만의 지름길입니다.</p>
-                    </div>
-                </details>
-            </section>
-
-            <!-- 15. 실제 데이터 응용 예제 -->
+            <!-- 14. 실제 데이터 응용 예제 -->
             <section class="lesson-section" id="sec-application" aria-labelledby="h-application">
-                <h2 id="h-application" data-toc-label="실제 데이터 응용 예제"><span class="section-no">15</span>실제 데이터 응용 예제</h2>
+                <h2 id="h-application" data-toc-label="실제 데이터 응용 예제"><span class="section-no">14</span>실제 데이터 응용 예제</h2>
 
                 <h3>문제 상황</h3>
                 <p>
@@ -1472,9 +1358,134 @@ public class OrgChartApplication {
                 </ul>
             </section>
 
-            <!-- 16. 최종 프로그램 작성 문제 -->
-            <section class="lesson-section" id="sec-final" aria-labelledby="h-final">
-                <h2 id="h-final" data-toc-label="최종 프로그램 작성 문제"><span class="section-no">16</span>최종 프로그램 작성 문제</h2>
+            <!-- 15. 확인 퀴즈 -->
+            <section class="lesson-section" id="sec-quiz" aria-labelledby="h-quiz">
+                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">15</span>확인 퀴즈</h2>
+                <div id="quiz-root"></div>
+            </section>
+
+            <div class="assignment-banner">
+                <span class="assignment-banner__title">📝 프로그램 실습 과제</span>
+                <p>지금까지 배운 내용을 직접 코드로 적용해 보는 과제입니다. 두 과제로 구성되며, 각 과제의 정답은 이 강의를 완료로 표시해야 열립니다.</p>
+            </div>
+
+            <!-- 16. 따라 하기 실습 -->
+            <section class="lesson-section lesson-section--assignment" id="sec-practice" aria-labelledby="h-practice">
+                <h2 id="h-practice" data-toc-label="따라 하기 실습"><span class="section-no">16</span>따라 하기 실습</h2>
+
+                <h3>실습 1 — 데이터 변경</h3>
+                <p>
+                    <code>BstComplete.java</code>의 배열을 <code>{50, 30, 70, 20, 40, 60, 10, 45}</code>로 바꾸고 실행하세요.
+                    실행 전에 10과 45가 트리의 어디에 붙을지 종이에 먼저 그려 보고,
+                    중위 순회 결과가 <code>10 20 30 40 45 50 60 70</code>으로 나오는지 확인하세요.
+                    (10은 20의 왼쪽, 45는 40의 오른쪽에 붙습니다.)
+                </p>
+
+                <h3>실습 2 — 검색 경로 예측</h3>
+                <p>
+                    원래 데이터(50, 30, 70, 20, 40, 60)에서 <code>search(root, 20)</code>과
+                    <code>search(root, 75)</code>를 호출하도록 main을 바꿔 보세요.
+                    실행 전에 지나갈 노드를 예측해 보세요 —
+                    20은 <code>50 30 20 → 발견</code>(비교 3번), 75는 <code>50 70 → 없음</code>(비교 2번)이 나와야 합니다.
+                    75는 70의 오른쪽이 <code>null</code>이라 두 번 만에 끝납니다.
+                </p>
+
+                <h3>실습 3 — 코드 완성: 노드 수와 최댓값</h3>
+                <p>
+                    아래 클래스의 TODO 두 개를 채우세요. <code>countNodes</code>는 트리의 <strong>전체 노드 수</strong>,
+                    <code>maxValue</code>는 BST의 <strong>최댓값</strong>을 구합니다.
+                    (힌트: BST의 최댓값은 항상 오른쪽 끝에 있습니다.)
+                </p>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">TreeStatsPractice.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-practice3" aria-label="TreeStatsPractice.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-practice3" class="language-java">public class TreeStatsPractice {
+
+    static class Node {
+        int value;
+        Node left;
+        Node right;
+
+        Node(int value) {
+            this.value = value;
+        }
+    }
+
+    static Node insert(Node node, int value) {
+        if (node == null) {
+            return new Node(value);
+        }
+        if (value &lt; node.value) {
+            node.left = insert(node.left, value);
+        } else {
+            node.right = insert(node.right, value);
+        }
+        return node;
+    }
+
+    /** 트리의 전체 노드 수 */
+    static int countNodes(Node node) {
+        // TODO 1: node가 null이면 0을 반환하고,
+        //         아니면 1(자신) + 왼쪽 노드 수 + 오른쪽 노드 수를 반환하세요.
+        return 0;
+    }
+
+    /** BST의 최댓값 */
+    static int maxValue(Node node) {
+        // TODO 2: 오른쪽 자식이 없으면 node.value를 반환하고,
+        //         있으면 오른쪽으로 재귀하세요.
+        return 0;
+    }
+
+    public static void main(String[] args) {
+        int[] values = {50, 30, 70, 20, 40, 60};
+
+        Node root = null;
+        for (int value : values) {
+            root = insert(root, value);
+        }
+
+        System.out.println("전체 노드 수: " + countNodes(root));
+        System.out.println("최댓값: " + maxValue(root));
+    }
+}</code></pre>
+                </article>
+                <details class="answer-box" data-locked-until-complete>
+                    <summary>실습 3 정답 확인</summary>
+                    <div class="answer-box__content">
+                        <pre class="quiz-code">/** 트리의 전체 노드 수 = 1(자신) + 왼쪽 서브트리 노드 수 + 오른쪽 서브트리 노드 수 */
+static int countNodes(Node node) {
+    if (node == null) {
+        return 0;
+    }
+    return 1 + countNodes(node.left) + countNodes(node.right);
+}
+
+/** BST의 최댓값: 오른쪽 자식이 없어질 때까지 오른쪽으로만 내려간다 */
+static int maxValue(Node node) {
+    if (node.right == null) {
+        return node.value;
+    }
+    return maxValue(node.right);
+}</pre>
+                        <p>예상 출력:</p>
+                        <pre class="quiz-code">전체 노드 수: 6
+최댓값: 70</pre>
+                        <p><code>countNodes</code>는 "자신 + 자식들의 결과"를 합치는 트리 재귀의 기본 패턴입니다 —
+                        최종 문제의 부서 수 세기에서 그대로 다시 씁니다.
+                        <code>maxValue</code>는 비교 없이 오른쪽으로만 내려가면 되는 BST만의 지름길입니다.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- 17. 최종 프로그램 작성 문제 -->
+            <section class="lesson-section lesson-section--assignment" id="sec-final" aria-labelledby="h-final">
+                <h2 id="h-final" data-toc-label="최종 프로그램 작성 문제"><span class="section-no">17</span>최종 프로그램 작성 문제</h2>
 
                 <h3>문제 제목 — 조직도 분석 프로그램 "OrgTree"</h3>
 
@@ -1697,12 +1708,10 @@ public class OrgTreeStarter {
                     <li><strong>리프 부서만 출력:</strong> 하위 부서가 없는 "실무 팀"만 골라 출력하는
                         <code>printLeafTeams(Dept dept)</code>를 만들어 보세요. 몇 개가 나와야 할까요? (7개)</li>
                 </ol>
-            </section>
 
-            <!-- 17. 최종 문제 정답과 해설 -->
-            <section class="lesson-section" id="sec-answer" aria-labelledby="h-answer">
-                <h2 id="h-answer" data-toc-label="최종 문제 정답과 해설"><span class="section-no">17</span>최종 문제 정답과 해설</h2>
-                <p>스스로 충분히 시도한 뒤에 여세요. 막혔다면 "구현 단계 안내" 순서대로 TODO 1부터 하나씩 완성해 보세요.</p>
+                <h3>정답과 해설</h3>
+                <p>스스로 충분히 시도한 뒤에 여세요. 막혔다면 "구현 단계 안내"를 다시 읽고, 한 단계씩 진행해 보세요.
+                이 강의를 완료로 표시해야 정답이 열립니다.</p>
 
                 <details class="answer-box" data-locked-until-complete>
                     <summary>정답 코드와 해설 확인</summary>
@@ -1896,15 +1905,9 @@ public class OrgTreeSolution {
                 </details>
             </section>
 
-            <!-- 18. 확인 퀴즈 -->
-            <section class="lesson-section" id="sec-quiz" aria-labelledby="h-quiz">
-                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">18</span>확인 퀴즈</h2>
-                <div id="quiz-root"></div>
-            </section>
-
-            <!-- 19. 오늘의 핵심 정리 -->
+            <!-- 18. 오늘의 핵심 정리 -->
             <section class="lesson-section" id="sec-summary" aria-labelledby="h-summary">
-                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">19</span>오늘의 핵심 정리</h2>
+                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">18</span>오늘의 핵심 정리</h2>
                 <ul class="summary-list">
                     <li><strong>트리</strong>는 루트에서 시작해 부모-자식으로 갈라지는 계층 구조다.
                         리프는 자식이 없는 노드, 높이는 루트에서 가장 먼 리프까지의 간선 수다.</li>
@@ -1924,9 +1927,9 @@ public class OrgTreeSolution {
                 <div id="lesson-complete-slot"></div>
             </section>
 
-            <!-- 20. 다음 강의 연결 -->
+            <!-- 19. 다음 강의 연결 -->
             <section class="lesson-section" id="sec-next" aria-labelledby="h-next">
-                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">20</span>다음 강의 연결</h2>
+                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">19</span>다음 강의 연결</h2>
                 <p>
                     다음 강의는 <strong>9강. 그래프와 DFS·BFS 탐색</strong>입니다.
                     사실 여러분은 오늘 이미 그래프의 특수한 형태를 배웠습니다 —

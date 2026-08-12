@@ -1562,83 +1562,9 @@ public class BuggyEagerVisit {
                 </ul>
             </section>
 
-            <!-- 14. 따라 하기 실습 -->
-            <section class="lesson-section" id="sec-practice" aria-labelledby="h-practice">
-                <h2 id="h-practice" data-toc-label="따라 하기 실습"><span class="section-no">14</span>따라 하기 실습</h2>
-
-                <h3>실습 1 — 가중치 변경</h3>
-                <p>
-                    <code>Step4Relax.java</code>에서 A-C 간선의 가중치를 7에서 4로 바꾸고
-                    (<code>addEdge(graph, 0, 2, 4)</code>) 실행하세요.
-                    최단 거리가 A 0, B 3, <strong>C 4</strong>, D 8, E 9, <strong>F 12</strong>로 바뀌는지 확인하세요.
-                    <em>C로 직접 가는 길이 빨라지자 D(C 경유 8), E, F까지 연쇄적으로 짧아집니다</em> —
-                    간선 하나의 변화가 어디까지 전파되는지 완화 로그로 관찰해 보세요.
-                </p>
-
-                <h3>실습 2 — 출발 정점 변경</h3>
-                <p>
-                    <code>Step4Relax.java</code>의 <code>int start = 0;</code>을 <code>int start = 5;</code>(F 출발)로 바꾸고 실행하세요.
-                    F에서 A까지의 최단 거리가 13으로, A에서 F까지와 같은지 확인하세요.
-                    <em>무방향 그래프에서는 왕복 최단 거리가 같습니다 — 방향 그래프라면 달라질 수 있습니다.</em>
-                </p>
-
-                <h3>실습 3 — 결과 배열 활용 코드 완성</h3>
-                <p>다익스트라의 결과 배열을 활용하는 연습입니다. 아래 TODO 두 개를 채워 보세요.</p>
-                <article class="code-card">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">Java</span>
-                            <strong class="code-card__filename">FarthestPractice.java</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="code-practice3" aria-label="FarthestPractice.java 코드 복사">코드 복사</button>
-                    </header>
-                    <pre><code id="code-practice3" class="language-java">public class FarthestPractice {
-
-    static final int INF = Integer.MAX_VALUE;
-
-    public static void main(String[] args) {
-        String[] names = {"A", "B", "C", "D", "E", "F"};
-        int[] dist = {0, 3, 5, 9, 10, 13};   // 이번 강의 그래프에서 A 출발 다익스트라 결과
-
-        // TODO 1: 도달 가능한(INF가 아닌) 정점 중 가장 먼 정점을 찾아
-        //         이름과 거리를 출력하세요.
-
-        // TODO 2: 10분 이내(거리 &lt;= 10)에 도달할 수 있는 정점 수를 세어 출력하세요.
-    }
-}</code></pre>
-                </article>
-                <details class="answer-box" data-locked-until-complete>
-                    <summary>실습 3 정답 확인</summary>
-                    <div class="answer-box__content">
-                        <pre class="quiz-code">// TODO 1: 도달 가능한(INF가 아닌) 정점 중 가장 먼 정점
-int farthest = -1;
-for (int v = 0; v &lt; dist.length; v++) {
-    if (dist[v] != INF &amp;&amp; (farthest == -1 || dist[v] &gt; dist[farthest])) {
-        farthest = v;
-    }
-}
-System.out.println("가장 먼 정점: " + names[farthest] + " (거리 " + dist[farthest] + ")");
-
-// TODO 2: 10분 이내(거리 &lt;= 10)에 도달할 수 있는 정점 수
-int within = 0;
-for (int v = 0; v &lt; dist.length; v++) {
-    if (dist[v] != INF &amp;&amp; dist[v] &lt;= 10) {
-        within++;
-    }
-}
-System.out.println("10분 이내 도달 가능한 정점 수: " + within);</pre>
-                        <p><strong>실행 결과:</strong></p>
-                        <pre class="quiz-code">가장 먼 정점: F (거리 13)
-10분 이내 도달 가능한 정점 수: 5</pre>
-                        <p>2강의 최댓값 찾기·조건 세기 패턴이 그대로 쓰입니다.
-                        <em>INF 정점을 걸러야 하는 이유: ∞는 "가장 멀다"가 아니라 "도달 불가"이기 때문입니다.</em></p>
-                    </div>
-                </details>
-            </section>
-
-            <!-- 15. 실제 데이터 응용 예제 -->
+            <!-- 14. 실제 데이터 응용 예제 -->
             <section class="lesson-section" id="sec-application" aria-labelledby="h-application">
-                <h2 id="h-application" data-toc-label="실제 데이터 응용 예제"><span class="section-no">15</span>실제 데이터 응용 예제</h2>
+                <h2 id="h-application" data-toc-label="실제 데이터 응용 예제"><span class="section-no">14</span>실제 데이터 응용 예제</h2>
 
                 <h3>문제 상황</h3>
                 <p>
@@ -1841,9 +1767,94 @@ public class ShortestPathApplication {
                 </ul>
             </section>
 
-            <!-- 16. 최종 프로그램 작성 문제 -->
-            <section class="lesson-section" id="sec-final" aria-labelledby="h-final">
-                <h2 id="h-final" data-toc-label="최종 프로그램 작성 문제"><span class="section-no">16</span>최종 프로그램 작성 문제</h2>
+            <!-- 15. 확인 퀴즈 -->
+            <section class="lesson-section" id="sec-quiz" aria-labelledby="h-quiz">
+                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">15</span>확인 퀴즈</h2>
+                <div id="quiz-root"></div>
+            </section>
+
+            <div class="assignment-banner">
+                <span class="assignment-banner__title">📝 프로그램 실습 과제</span>
+                <p>지금까지 배운 내용을 직접 코드로 적용해 보는 과제입니다. 두 과제로 구성되며, 각 과제의 정답은 이 강의를 완료로 표시해야 열립니다.</p>
+            </div>
+
+            <!-- 16. 따라 하기 실습 -->
+            <section class="lesson-section lesson-section--assignment" id="sec-practice" aria-labelledby="h-practice">
+                <h2 id="h-practice" data-toc-label="따라 하기 실습"><span class="section-no">16</span>따라 하기 실습</h2>
+
+                <h3>실습 1 — 가중치 변경</h3>
+                <p>
+                    <code>Step4Relax.java</code>에서 A-C 간선의 가중치를 7에서 4로 바꾸고
+                    (<code>addEdge(graph, 0, 2, 4)</code>) 실행하세요.
+                    최단 거리가 A 0, B 3, <strong>C 4</strong>, D 8, E 9, <strong>F 12</strong>로 바뀌는지 확인하세요.
+                    <em>C로 직접 가는 길이 빨라지자 D(C 경유 8), E, F까지 연쇄적으로 짧아집니다</em> —
+                    간선 하나의 변화가 어디까지 전파되는지 완화 로그로 관찰해 보세요.
+                </p>
+
+                <h3>실습 2 — 출발 정점 변경</h3>
+                <p>
+                    <code>Step4Relax.java</code>의 <code>int start = 0;</code>을 <code>int start = 5;</code>(F 출발)로 바꾸고 실행하세요.
+                    F에서 A까지의 최단 거리가 13으로, A에서 F까지와 같은지 확인하세요.
+                    <em>무방향 그래프에서는 왕복 최단 거리가 같습니다 — 방향 그래프라면 달라질 수 있습니다.</em>
+                </p>
+
+                <h3>실습 3 — 결과 배열 활용 코드 완성</h3>
+                <p>다익스트라의 결과 배열을 활용하는 연습입니다. 아래 TODO 두 개를 채워 보세요.</p>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">FarthestPractice.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-practice3" aria-label="FarthestPractice.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-practice3" class="language-java">public class FarthestPractice {
+
+    static final int INF = Integer.MAX_VALUE;
+
+    public static void main(String[] args) {
+        String[] names = {"A", "B", "C", "D", "E", "F"};
+        int[] dist = {0, 3, 5, 9, 10, 13};   // 이번 강의 그래프에서 A 출발 다익스트라 결과
+
+        // TODO 1: 도달 가능한(INF가 아닌) 정점 중 가장 먼 정점을 찾아
+        //         이름과 거리를 출력하세요.
+
+        // TODO 2: 10분 이내(거리 &lt;= 10)에 도달할 수 있는 정점 수를 세어 출력하세요.
+    }
+}</code></pre>
+                </article>
+                <details class="answer-box" data-locked-until-complete>
+                    <summary>실습 3 정답 확인</summary>
+                    <div class="answer-box__content">
+                        <pre class="quiz-code">// TODO 1: 도달 가능한(INF가 아닌) 정점 중 가장 먼 정점
+int farthest = -1;
+for (int v = 0; v &lt; dist.length; v++) {
+    if (dist[v] != INF &amp;&amp; (farthest == -1 || dist[v] &gt; dist[farthest])) {
+        farthest = v;
+    }
+}
+System.out.println("가장 먼 정점: " + names[farthest] + " (거리 " + dist[farthest] + ")");
+
+// TODO 2: 10분 이내(거리 &lt;= 10)에 도달할 수 있는 정점 수
+int within = 0;
+for (int v = 0; v &lt; dist.length; v++) {
+    if (dist[v] != INF &amp;&amp; dist[v] &lt;= 10) {
+        within++;
+    }
+}
+System.out.println("10분 이내 도달 가능한 정점 수: " + within);</pre>
+                        <p><strong>실행 결과:</strong></p>
+                        <pre class="quiz-code">가장 먼 정점: F (거리 13)
+10분 이내 도달 가능한 정점 수: 5</pre>
+                        <p>2강의 최댓값 찾기·조건 세기 패턴이 그대로 쓰입니다.
+                        <em>INF 정점을 걸러야 하는 이유: ∞는 "가장 멀다"가 아니라 "도달 불가"이기 때문입니다.</em></p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- 17. 최종 프로그램 작성 문제 -->
+            <section class="lesson-section lesson-section--assignment" id="sec-final" aria-labelledby="h-final">
+                <h2 id="h-final" data-toc-label="최종 프로그램 작성 문제"><span class="section-no">17</span>최종 프로그램 작성 문제</h2>
 
                 <h3>문제 제목 — 동네 길찾기 "PathFinder"</h3>
 
@@ -2081,12 +2092,10 @@ public class PathFinderStarter {
                         <code>addPath(map, 4, 6, 6)</code>(공원-체육관 6분)을 추가해 보세요.
                         집 → 체육관이 몇 분이 되는지 손으로 먼저 계산한 뒤 실행으로 확인하세요.</li>
                 </ol>
-            </section>
 
-            <!-- 17. 최종 문제 정답과 해설 -->
-            <section class="lesson-section" id="sec-answer" aria-labelledby="h-answer">
-                <h2 id="h-answer" data-toc-label="최종 문제 정답과 해설"><span class="section-no">17</span>최종 문제 정답과 해설</h2>
-                <p>스스로 충분히 시도한 뒤에 여세요. 막혔다면 구현 3·4단계 코드를 다시 읽고 한 단계씩 진행해 보세요.</p>
+                <h3>정답과 해설</h3>
+                <p>스스로 충분히 시도한 뒤에 여세요. 막혔다면 "구현 단계 안내"를 다시 읽고, 한 단계씩 진행해 보세요.
+                이 강의를 완료로 표시해야 정답이 열립니다.</p>
 
                 <details class="answer-box" data-locked-until-complete>
                     <summary>정답 코드와 해설 확인</summary>
@@ -2286,15 +2295,9 @@ public class PathFinderSolution {
                 </details>
             </section>
 
-            <!-- 18. 확인 퀴즈 -->
-            <section class="lesson-section" id="sec-quiz" aria-labelledby="h-quiz">
-                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">18</span>확인 퀴즈</h2>
-                <div id="quiz-root"></div>
-            </section>
-
-            <!-- 19. 오늘의 핵심 정리 -->
+            <!-- 18. 오늘의 핵심 정리 -->
             <section class="lesson-section" id="sec-summary" aria-labelledby="h-summary">
-                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">19</span>오늘의 핵심 정리</h2>
+                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">18</span>오늘의 핵심 정리</h2>
                 <ul class="summary-list">
                     <li><strong>최단 경로 문제</strong>는 간선 수가 아니라 <strong>가중치의 합</strong>이 최소인 경로를 찾는 문제다.
                         BFS(9강)는 무가중치(모든 가중치 동일)에서만 최단을 보장한다.</li>
@@ -2310,9 +2313,9 @@ public class PathFinderSolution {
                 <div id="lesson-complete-slot"></div>
             </section>
 
-            <!-- 20. 다음 강의 연결 -->
+            <!-- 19. 다음 강의 연결 -->
             <section class="lesson-section" id="sec-next" aria-labelledby="h-next">
-                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">20</span>다음 강의 연결</h2>
+                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">19</span>다음 강의 연결</h2>
                 <p>
                     다음 강의는 <strong>13강. 종합 프로젝트</strong>입니다.
                     <em>새 알고리즘을 배우는 마지막 강의는 오늘이었습니다</em> —

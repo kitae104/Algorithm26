@@ -1056,87 +1056,9 @@ public class BuggyNullCounter {
                 </ul>
             </section>
 
-            <!-- 14. 따라 하기 실습 -->
-            <section class="lesson-section" id="sec-practice" aria-labelledby="h-practice">
-                <h2 id="h-practice" data-toc-label="따라 하기 실습"><span class="section-no">14</span>따라 하기 실습</h2>
-
-                <h3>실습 1 — 데이터 변경</h3>
-                <p>
-                    <code>PalindromeTrace.java</code>의 <code>tests</code> 배열에 <code>"토마토"</code>와 <code>"algorithm"</code>을 추가하고 실행하세요.
-                    "토마토"(길이 3)는 비교 1번 만에 true, "algorithm"(길이 9)은 첫 비교(a vs m)에서 false가 나오는지 확인하세요.
-                </p>
-
-                <h3>실습 2 — 조건 변경</h3>
-                <p>
-                    <code>Step3CountOneWord.java</code>의 <code>target</code>을 <code>"banana"</code>로 바꾸면 등장 횟수는 몇이 될까요? (예상: 2)
-                    이번에는 <code>equals</code>를 <code>equalsIgnoreCase</code>로 바꾸고
-                    문장에 <code>"APPLE"</code>을 추가해 보세요 — 대소문자를 무시한 빈도 계산이 됩니다.
-                    비교 횟수는 여전히 단어 수 n번, O(n)일까요? (조건이 바뀌어도 순회 횟수는 같으므로 그렇습니다.)
-                </p>
-
-                <h3>실습 3 — 코드 완성: 문자 빈도 계산</h3>
-                <p>
-                    단어 빈도를 배웠으니, 같은 패턴으로 <strong>문자 빈도</strong>를 세어 봅시다.
-                    아래 클래스의 TODO를 채워 "banana"에 들어 있는 각 문자의 등장 횟수를
-                    <code>HashMap&lt;Character, Integer&gt;</code>로 세어 보세요.
-                </p>
-                <article class="code-card">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">Java</span>
-                            <strong class="code-card__filename">CharFrequencyPractice.java</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="code-practice3" aria-label="CharFrequencyPractice.java 코드 복사">코드 복사</button>
-                    </header>
-                    <pre><code id="code-practice3" class="language-java">import java.util.HashMap;
-import java.util.Map;
-
-public class CharFrequencyPractice {
-
-    /** 단어에 들어 있는 각 문자의 등장 횟수를 HashMap으로 센다. */
-    static Map&lt;Character, Integer&gt; countChars(String word) {
-        Map&lt;Character, Integer&gt; freq = new HashMap&lt;&gt;();
-        // TODO: word.charAt(i)로 문자를 하나씩 꺼내
-        //       freq.getOrDefault(문자, 0) + 1 로 빈도를 누적하세요.
-        return freq;
-    }
-
-    public static void main(String[] args) {
-        String word = "banana";
-        Map&lt;Character, Integer&gt; freq = countChars(word);
-
-        System.out.println("단어: " + word);
-        System.out.println("b = " + freq.getOrDefault('b', 0) + "회");
-        System.out.println("a = " + freq.getOrDefault('a', 0) + "회");
-        System.out.println("n = " + freq.getOrDefault('n', 0) + "회");
-    }
-}</code></pre>
-                </article>
-                <details class="answer-box" data-locked-until-complete>
-                    <summary>실습 3 정답 확인</summary>
-                    <div class="answer-box__content">
-                        <pre class="quiz-code">static Map&lt;Character, Integer&gt; countChars(String word) {
-    Map&lt;Character, Integer&gt; freq = new HashMap&lt;&gt;();
-    for (int i = 0; i &lt; word.length(); i++) {
-        char ch = word.charAt(i);
-        freq.put(ch, freq.getOrDefault(ch, 0) + 1);
-    }
-    return freq;
-}</pre>
-                        <p>예상 출력:</p>
-                        <pre class="quiz-code">단어: banana
-b = 1회
-a = 3회
-n = 2회</pre>
-                        <p>단어 빈도와 완전히 같은 구조이고, 키의 자료형만 <code>String</code>에서 <code>Character</code>로 바뀌었습니다.
-                        "무엇이든 키가 될 수 있다"는 것이 HashMap의 힘입니다.</p>
-                    </div>
-                </details>
-            </section>
-
-            <!-- 15. 실제 데이터 응용 예제 -->
+            <!-- 14. 실제 데이터 응용 예제 -->
             <section class="lesson-section" id="sec-application" aria-labelledby="h-application">
-                <h2 id="h-application" data-toc-label="실제 데이터 응용 예제"><span class="section-no">15</span>실제 데이터 응용 예제</h2>
+                <h2 id="h-application" data-toc-label="실제 데이터 응용 예제"><span class="section-no">14</span>실제 데이터 응용 예제</h2>
 
                 <h3>문제 상황</h3>
                 <p>
@@ -1306,9 +1228,278 @@ public class NoticeAnalysisApplication {
                 </ul>
             </section>
 
-            <!-- 16. 최종 프로그램 작성 문제 -->
-            <section class="lesson-section" id="sec-final" aria-labelledby="h-final">
-                <h2 id="h-final" data-toc-label="최종 프로그램 작성 문제"><span class="section-no">16</span>최종 프로그램 작성 문제</h2>
+            <!-- 15. 람다·스트림 수정 문제 -->
+            <section class="lesson-section" id="sec-modernize" aria-labelledby="h-modernize">
+                <h2 id="h-modernize" data-toc-label="람다·스트림 수정 문제"><span class="section-no">15</span>람다·스트림 수정 문제</h2>
+                <p>
+                    지금까지 쓴 코드를 <strong>같은 결과를 내는 다른 문법</strong>으로 고쳐 보는 문제입니다.
+                    필요한 문법은 추가 정보의
+                    <a href="../supplements/java-streams.html">자바 스트림</a> 문서에 모두 있습니다.
+                    먼저 스스로 고쳐 본 뒤 정답을 펼치세요.
+                </p>
+                <div class="note-box note-box--warn">
+                    <span class="note-box__title">이 강의의 성과는 문법이 아니라 해시다</span>
+                    <p>
+                        빈도 계산이 O(n)인 것은 <strong>해시</strong> 덕분이지 문법 덕분이 아닙니다.
+                        3강의 성과는 이중 반복문 <strong>O(n²)</strong>을 해시 <strong>O(n)</strong>으로
+                        바꾼 것이고, 그 성과는 스트림으로 쓰든 반복문으로 쓰든 그대로입니다.
+                        아래 문제로 바뀌는 것은 <strong>읽기 쉬움</strong>뿐입니다.
+                    </p>
+                </div>
+
+                <h3>수정 문제 ① — getOrDefault 누적을 한 줄로</h3>
+                <p>
+                    <code>WordAnalysisComplete.java</code>의 <code>countFrequencies</code>는
+                    <code>HashMap</code>을 직접 만들고 <strong>"없으면 0에서, 있으면 지금 값에서 +1"</strong>을
+                    손으로 적습니다. 이 패턴은 자주 나오므로 표준 도구가 준비되어 있습니다.
+                </p>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">WordAnalysisComplete.java — 지금 코드</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-mod-q1" aria-label="수정 문제 1 원본 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-mod-q1" class="language-java">static Map&lt;String, Integer&gt; countFrequencies(String[] words) {
+    Map&lt;String, Integer&gt; freq = new HashMap&lt;&gt;();
+    for (String word : words) {
+        // 처음 보는 단어면 0에서, 이미 본 단어면 지금까지의 횟수에서 1을 더한다
+        freq.put(word, freq.getOrDefault(word, 0) + 1);
+    }
+    return freq;
+}</code></pre>
+                </article>
+                <p><strong>요구사항</strong></p>
+                <ul>
+                    <li><code>HashMap</code>을 직접 만들지 말고 빈도표를 얻을 것</li>
+                    <li>결과는 반복문 버전과 같아야 함 (apple 3, banana 2, kiwi 2, orange 2, plum 1)</li>
+                    <li>힌트 — <a href="../supplements/java-streams.html#sec-collect">모으기와 그룹핑</a> 절의
+                        <code>groupingBy</code>와 <code>counting()</code></li>
+                </ul>
+
+                <details class="answer-box" data-locked-until-complete>
+                    <summary>정답과 해설 보기 — 수정 문제 ①</summary>
+                    <article class="code-card">
+                        <header class="code-card__header">
+                            <div class="code-card__info">
+                                <span class="code-card__language">Java</span>
+                                <strong class="code-card__filename">ModernizeSolution.java — 정답</strong>
+                            </div>
+                            <button type="button" class="copy-code-button" data-copy-target="code-mod-a1" aria-label="수정 문제 1 정답 코드 복사">코드 복사</button>
+                        </header>
+                        <pre><code id="code-mod-a1" class="language-java">Map&lt;String, Long&gt; freq = Arrays.stream(words)
+        .collect(Collectors.groupingBy(w -&gt; w, Collectors.counting()));
+
+// groupingBy(무엇으로 묶을까, 묶은 것을 어떻게 셀까)</code></pre>
+                    </article>
+                    <p>
+                        <em><strong>값의 타입이 <code>Integer</code>가 아니라 <code>Long</code>으로 바뀌는 것</strong>에
+                        주의하세요.</em> <code>counting()</code>은 원소 수를 <code>long</code>으로 셉니다.
+                        기존 코드와 이어 붙일 때 <code>freq.get(w) == 2</code> 같은 비교가
+                        조용히 어긋날 수 있는 자리입니다.
+                    </p>
+                    <p>
+                        <code>groupingBy(w -&gt; w, ...)</code>의 <code>w -&gt; w</code>가 어색해 보인다면
+                        제대로 읽은 것입니다. "단어 자신을 기준으로 묶어라"는 뜻입니다.
+                        묶는 기준이 원소 자체일 때 쓰는 관용구입니다.
+                    </p>
+                </details>
+
+                <h3>수정 문제 ② — 최빈 단어와 "2회 이상" 목록</h3>
+                <p>
+                    빈도표를 얻은 다음에는 대개 <strong>정렬</strong>이 따라옵니다.
+                    아래 반복문은 최빈 단어를 찾고, 2회 이상 나온 단어를
+                    빈도 내림차순·동점이면 사전순으로 늘어놓습니다 (4강 삽입 정렬).
+                </p>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">반복문으로 쓴 최빈 단어와 정렬</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-mod-q2" aria-label="수정 문제 2 원본 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-mod-q2" class="language-java">static String mostFrequent(String[] words, Map&lt;String, Integer&gt; freq) {
+    String best = null;
+    for (String word : words) {
+        if (best == null || freq.get(word) &gt; freq.get(best)) {
+            best = word;
+        }
+    }
+    return best;
+}
+
+static List&lt;String&gt; repeated(Map&lt;String, Integer&gt; freq) {
+    List&lt;String&gt; result = new ArrayList&lt;&gt;();
+    for (Map.Entry&lt;String, Integer&gt; e : freq.entrySet()) {
+        if (e.getValue() &gt;= 2) {
+            result.add(e.getKey());
+        }
+    }
+    // 이어서 삽입 정렬로 빈도 내림차순, 동점이면 사전순으로 정렬한다 (약 10줄)
+    return result;
+}</code></pre>
+                </article>
+                <p><strong>요구사항</strong></p>
+                <ul>
+                    <li>가장 많이 나온 단어 하나를 구할 것</li>
+                    <li>2회 이상 나온 단어를 <strong>빈도 내림차순, 동점이면 사전순</strong>으로 늘어놓을 것</li>
+                    <li>정렬 코드를 직접 쓰지 말 것</li>
+                    <li>힌트 — <a href="../supplements/java-streams.html#sec-terminal">최종 연산</a>의
+                        <code>max(Comparator)</code>, 그리고
+                        <a href="../supplements/lambda-expressions.html#sec-standard">람다식 문서</a>의
+                        <code>reversed()</code>·<code>thenComparing()</code></li>
+                </ul>
+
+                <details class="answer-box" data-locked-until-complete>
+                    <summary>정답과 해설 보기 — 수정 문제 ②</summary>
+                    <article class="code-card">
+                        <header class="code-card__header">
+                            <div class="code-card__info">
+                                <span class="code-card__language">Java</span>
+                                <strong class="code-card__filename">ModernizeSolution.java — 정답</strong>
+                            </div>
+                            <button type="button" class="copy-code-button" data-copy-target="code-mod-a2" aria-label="수정 문제 2 정답 코드 복사">코드 복사</button>
+                        </header>
+                        <pre><code id="code-mod-a2" class="language-java">String best = freq.entrySet().stream()
+        .max(Map.Entry.comparingByValue())
+        .map(Map.Entry::getKey)
+        .orElse(null);
+
+// 빈도 내림차순, 동점이면 사전순 — 기준을 조립해서 만든다
+Comparator&lt;Map.Entry&lt;String, Long&gt;&gt; byCountDescThenWord =
+        Map.Entry.&lt;String, Long&gt;comparingByValue()
+                 .reversed()
+                 .thenComparing(Map.Entry::getKey);
+
+List&lt;String&gt; repeated = freq.entrySet().stream()
+        .filter(e -&gt; e.getValue() &gt;= 2)
+        .sorted(byCountDescThenWord)
+        .map(Map.Entry::getKey)
+        .toList();</code></pre>
+                    </article>
+                    <p>
+                        <code>Map.Entry.&lt;String, Long&gt;comparingByValue()</code>처럼
+                        <strong>타입을 직접 적어 준 이유</strong>가 있습니다.
+                        <code>comparingByValue()</code>만 보고는 컴파일러가 무엇을 비교하는지 알 수 없기 때문입니다.
+                        람다식 문서의 "타입은 추론할 근거가 있을 때만 생략한다"가 여기에 그대로 적용됩니다.
+                    </p>
+                    <p>
+                        <strong>동점 처리를 반드시 적어야 하는 이유</strong>도 짚어 두세요.
+                        <code>HashMap</code>은 순서를 보장하지 않으므로,
+                        <code>thenComparing</code>을 빼면 banana·kiwi·orange 세 단어(모두 2회)의 순서가
+                        실행할 때마다 달라질 수 있습니다. 3강에서 배운
+                        <strong>"HashMap의 출력 순서에 주의"</strong>라는 함정이 스트림에도 똑같이 있습니다.
+                    </p>
+                    <p>
+                        <code>max</code>도 마찬가지입니다. 최빈 단어가 여럿이면
+                        반복문 버전은 <strong>문장에서 먼저 나온 단어</strong>를, 스트림 버전은
+                        <strong>맵을 훑다가 먼저 만난 단어</strong>를 고릅니다. 이번 예문은 apple(3회)이
+                        유일한 최빈이라 결과가 같지만, 동점이 생기면 갈릴 수 있습니다.
+                        <em><strong>"같은 결과"를 원한다면 동점 규칙까지 적어야 합니다.</strong></em>
+                    </p>
+                </details>
+
+                <p>
+                    정답 전체와 "반복문 결과와 같은지" 확인하는 코드는
+                    <code>examples/java/03-brute-force-string-hash/ModernizeSolution.java</code>에 있습니다.
+                    직접 실행해 모든 비교가 <code>true</code>로 나오는지 확인하세요.
+                </p>
+            </section>
+
+            <!-- 16. 확인 퀴즈 -->
+            <section class="lesson-section" id="sec-quiz" aria-labelledby="h-quiz">
+                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">16</span>확인 퀴즈</h2>
+                <div id="quiz-root"></div>
+            </section>
+
+            <div class="assignment-banner">
+                <span class="assignment-banner__title">📝 프로그램 실습 과제</span>
+                <p>지금까지 배운 내용을 직접 코드로 적용해 보는 과제입니다. 두 과제로 구성되며, 각 과제의 정답은 이 강의를 완료로 표시해야 열립니다.</p>
+            </div>
+
+            <!-- 17. 따라 하기 실습 -->
+            <section class="lesson-section lesson-section--assignment" id="sec-practice" aria-labelledby="h-practice">
+                <h2 id="h-practice" data-toc-label="따라 하기 실습"><span class="section-no">17</span>따라 하기 실습</h2>
+
+                <h3>실습 1 — 데이터 변경</h3>
+                <p>
+                    <code>PalindromeTrace.java</code>의 <code>tests</code> 배열에 <code>"토마토"</code>와 <code>"algorithm"</code>을 추가하고 실행하세요.
+                    "토마토"(길이 3)는 비교 1번 만에 true, "algorithm"(길이 9)은 첫 비교(a vs m)에서 false가 나오는지 확인하세요.
+                </p>
+
+                <h3>실습 2 — 조건 변경</h3>
+                <p>
+                    <code>Step3CountOneWord.java</code>의 <code>target</code>을 <code>"banana"</code>로 바꾸면 등장 횟수는 몇이 될까요? (예상: 2)
+                    이번에는 <code>equals</code>를 <code>equalsIgnoreCase</code>로 바꾸고
+                    문장에 <code>"APPLE"</code>을 추가해 보세요 — 대소문자를 무시한 빈도 계산이 됩니다.
+                    비교 횟수는 여전히 단어 수 n번, O(n)일까요? (조건이 바뀌어도 순회 횟수는 같으므로 그렇습니다.)
+                </p>
+
+                <h3>실습 3 — 코드 완성: 문자 빈도 계산</h3>
+                <p>
+                    단어 빈도를 배웠으니, 같은 패턴으로 <strong>문자 빈도</strong>를 세어 봅시다.
+                    아래 클래스의 TODO를 채워 "banana"에 들어 있는 각 문자의 등장 횟수를
+                    <code>HashMap&lt;Character, Integer&gt;</code>로 세어 보세요.
+                </p>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">CharFrequencyPractice.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-practice3" aria-label="CharFrequencyPractice.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-practice3" class="language-java">import java.util.HashMap;
+import java.util.Map;
+
+public class CharFrequencyPractice {
+
+    /** 단어에 들어 있는 각 문자의 등장 횟수를 HashMap으로 센다. */
+    static Map&lt;Character, Integer&gt; countChars(String word) {
+        Map&lt;Character, Integer&gt; freq = new HashMap&lt;&gt;();
+        // TODO: word.charAt(i)로 문자를 하나씩 꺼내
+        //       freq.getOrDefault(문자, 0) + 1 로 빈도를 누적하세요.
+        return freq;
+    }
+
+    public static void main(String[] args) {
+        String word = "banana";
+        Map&lt;Character, Integer&gt; freq = countChars(word);
+
+        System.out.println("단어: " + word);
+        System.out.println("b = " + freq.getOrDefault('b', 0) + "회");
+        System.out.println("a = " + freq.getOrDefault('a', 0) + "회");
+        System.out.println("n = " + freq.getOrDefault('n', 0) + "회");
+    }
+}</code></pre>
+                </article>
+                <details class="answer-box" data-locked-until-complete>
+                    <summary>실습 3 정답 확인</summary>
+                    <div class="answer-box__content">
+                        <pre class="quiz-code">static Map&lt;Character, Integer&gt; countChars(String word) {
+    Map&lt;Character, Integer&gt; freq = new HashMap&lt;&gt;();
+    for (int i = 0; i &lt; word.length(); i++) {
+        char ch = word.charAt(i);
+        freq.put(ch, freq.getOrDefault(ch, 0) + 1);
+    }
+    return freq;
+}</pre>
+                        <p>예상 출력:</p>
+                        <pre class="quiz-code">단어: banana
+b = 1회
+a = 3회
+n = 2회</pre>
+                        <p>단어 빈도와 완전히 같은 구조이고, 키의 자료형만 <code>String</code>에서 <code>Character</code>로 바뀌었습니다.
+                        "무엇이든 키가 될 수 있다"는 것이 HashMap의 힘입니다.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- 18. 최종 프로그램 작성 문제 -->
+            <section class="lesson-section lesson-section--assignment" id="sec-final" aria-labelledby="h-final">
+                <h2 id="h-final" data-toc-label="최종 프로그램 작성 문제"><span class="section-no">18</span>최종 프로그램 작성 문제</h2>
 
                 <h3>문제 제목 — 게시글 단어 분석기 "WordLens"</h3>
 
@@ -1531,12 +1722,10 @@ public class WordFrequencyStarter {
                     <li><strong>상위 3개 확장:</strong> 응용 예제(15번 섹션)의 <code>topWords</code>를 참고해
                         "가장 많이 등장한 단어" 대신 상위 3개를 출력해 보세요.</li>
                 </ol>
-            </section>
 
-            <!-- 17. 최종 문제 정답과 해설 -->
-            <section class="lesson-section" id="sec-answer" aria-labelledby="h-answer">
-                <h2 id="h-answer" data-toc-label="최종 문제 정답과 해설"><span class="section-no">17</span>최종 문제 정답과 해설</h2>
-                <p>스스로 충분히 시도한 뒤에 여세요. 막혔다면 "구현 단계 안내"의 순서대로 TODO를 하나씩 채워 보세요.</p>
+                <h3>정답과 해설</h3>
+                <p>스스로 충분히 시도한 뒤에 여세요. 막혔다면 "구현 단계 안내"를 다시 읽고, 한 단계씩 진행해 보세요.
+                이 강의를 완료로 표시해야 정답이 열립니다.</p>
 
                 <details class="answer-box" data-locked-until-complete>
                     <summary>정답 코드와 해설 확인</summary>
@@ -1697,195 +1886,9 @@ public class WordFrequencySolution {
                 </details>
             </section>
 
-            <!-- 18. 람다·스트림 수정 문제 -->
-            <section class="lesson-section" id="sec-modernize" aria-labelledby="h-modernize">
-                <h2 id="h-modernize" data-toc-label="람다·스트림 수정 문제"><span class="section-no">18</span>람다·스트림 수정 문제</h2>
-                <p>
-                    지금까지 쓴 코드를 <strong>같은 결과를 내는 다른 문법</strong>으로 고쳐 보는 문제입니다.
-                    필요한 문법은 추가 정보의
-                    <a href="../supplements/java-streams.html">자바 스트림</a> 문서에 모두 있습니다.
-                    먼저 스스로 고쳐 본 뒤 정답을 펼치세요.
-                </p>
-                <div class="note-box note-box--warn">
-                    <span class="note-box__title">이 강의의 성과는 문법이 아니라 해시다</span>
-                    <p>
-                        빈도 계산이 O(n)인 것은 <strong>해시</strong> 덕분이지 문법 덕분이 아닙니다.
-                        3강의 성과는 이중 반복문 <strong>O(n²)</strong>을 해시 <strong>O(n)</strong>으로
-                        바꾼 것이고, 그 성과는 스트림으로 쓰든 반복문으로 쓰든 그대로입니다.
-                        아래 문제로 바뀌는 것은 <strong>읽기 쉬움</strong>뿐입니다.
-                    </p>
-                </div>
-
-                <h3>수정 문제 ① — getOrDefault 누적을 한 줄로</h3>
-                <p>
-                    <code>WordAnalysisComplete.java</code>의 <code>countFrequencies</code>는
-                    <code>HashMap</code>을 직접 만들고 <strong>"없으면 0에서, 있으면 지금 값에서 +1"</strong>을
-                    손으로 적습니다. 이 패턴은 자주 나오므로 표준 도구가 준비되어 있습니다.
-                </p>
-                <article class="code-card">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">Java</span>
-                            <strong class="code-card__filename">WordAnalysisComplete.java — 지금 코드</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="code-mod-q1" aria-label="수정 문제 1 원본 코드 복사">코드 복사</button>
-                    </header>
-                    <pre><code id="code-mod-q1" class="language-java">static Map&lt;String, Integer&gt; countFrequencies(String[] words) {
-    Map&lt;String, Integer&gt; freq = new HashMap&lt;&gt;();
-    for (String word : words) {
-        // 처음 보는 단어면 0에서, 이미 본 단어면 지금까지의 횟수에서 1을 더한다
-        freq.put(word, freq.getOrDefault(word, 0) + 1);
-    }
-    return freq;
-}</code></pre>
-                </article>
-                <p><strong>요구사항</strong></p>
-                <ul>
-                    <li><code>HashMap</code>을 직접 만들지 말고 빈도표를 얻을 것</li>
-                    <li>결과는 반복문 버전과 같아야 함 (apple 3, banana 2, kiwi 2, orange 2, plum 1)</li>
-                    <li>힌트 — <a href="../supplements/java-streams.html#sec-collect">모으기와 그룹핑</a> 절의
-                        <code>groupingBy</code>와 <code>counting()</code></li>
-                </ul>
-
-                <details class="answer-box" data-locked-until-complete>
-                    <summary>정답과 해설 보기 — 수정 문제 ①</summary>
-                    <article class="code-card">
-                        <header class="code-card__header">
-                            <div class="code-card__info">
-                                <span class="code-card__language">Java</span>
-                                <strong class="code-card__filename">ModernizeSolution.java — 정답</strong>
-                            </div>
-                            <button type="button" class="copy-code-button" data-copy-target="code-mod-a1" aria-label="수정 문제 1 정답 코드 복사">코드 복사</button>
-                        </header>
-                        <pre><code id="code-mod-a1" class="language-java">Map&lt;String, Long&gt; freq = Arrays.stream(words)
-        .collect(Collectors.groupingBy(w -&gt; w, Collectors.counting()));
-
-// groupingBy(무엇으로 묶을까, 묶은 것을 어떻게 셀까)</code></pre>
-                    </article>
-                    <p>
-                        <em><strong>값의 타입이 <code>Integer</code>가 아니라 <code>Long</code>으로 바뀌는 것</strong>에
-                        주의하세요.</em> <code>counting()</code>은 원소 수를 <code>long</code>으로 셉니다.
-                        기존 코드와 이어 붙일 때 <code>freq.get(w) == 2</code> 같은 비교가
-                        조용히 어긋날 수 있는 자리입니다.
-                    </p>
-                    <p>
-                        <code>groupingBy(w -&gt; w, ...)</code>의 <code>w -&gt; w</code>가 어색해 보인다면
-                        제대로 읽은 것입니다. "단어 자신을 기준으로 묶어라"는 뜻입니다.
-                        묶는 기준이 원소 자체일 때 쓰는 관용구입니다.
-                    </p>
-                </details>
-
-                <h3>수정 문제 ② — 최빈 단어와 "2회 이상" 목록</h3>
-                <p>
-                    빈도표를 얻은 다음에는 대개 <strong>정렬</strong>이 따라옵니다.
-                    아래 반복문은 최빈 단어를 찾고, 2회 이상 나온 단어를
-                    빈도 내림차순·동점이면 사전순으로 늘어놓습니다 (4강 삽입 정렬).
-                </p>
-                <article class="code-card">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">Java</span>
-                            <strong class="code-card__filename">반복문으로 쓴 최빈 단어와 정렬</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="code-mod-q2" aria-label="수정 문제 2 원본 코드 복사">코드 복사</button>
-                    </header>
-                    <pre><code id="code-mod-q2" class="language-java">static String mostFrequent(String[] words, Map&lt;String, Integer&gt; freq) {
-    String best = null;
-    for (String word : words) {
-        if (best == null || freq.get(word) &gt; freq.get(best)) {
-            best = word;
-        }
-    }
-    return best;
-}
-
-static List&lt;String&gt; repeated(Map&lt;String, Integer&gt; freq) {
-    List&lt;String&gt; result = new ArrayList&lt;&gt;();
-    for (Map.Entry&lt;String, Integer&gt; e : freq.entrySet()) {
-        if (e.getValue() &gt;= 2) {
-            result.add(e.getKey());
-        }
-    }
-    // 이어서 삽입 정렬로 빈도 내림차순, 동점이면 사전순으로 정렬한다 (약 10줄)
-    return result;
-}</code></pre>
-                </article>
-                <p><strong>요구사항</strong></p>
-                <ul>
-                    <li>가장 많이 나온 단어 하나를 구할 것</li>
-                    <li>2회 이상 나온 단어를 <strong>빈도 내림차순, 동점이면 사전순</strong>으로 늘어놓을 것</li>
-                    <li>정렬 코드를 직접 쓰지 말 것</li>
-                    <li>힌트 — <a href="../supplements/java-streams.html#sec-terminal">최종 연산</a>의
-                        <code>max(Comparator)</code>, 그리고
-                        <a href="../supplements/lambda-expressions.html#sec-standard">람다식 문서</a>의
-                        <code>reversed()</code>·<code>thenComparing()</code></li>
-                </ul>
-
-                <details class="answer-box" data-locked-until-complete>
-                    <summary>정답과 해설 보기 — 수정 문제 ②</summary>
-                    <article class="code-card">
-                        <header class="code-card__header">
-                            <div class="code-card__info">
-                                <span class="code-card__language">Java</span>
-                                <strong class="code-card__filename">ModernizeSolution.java — 정답</strong>
-                            </div>
-                            <button type="button" class="copy-code-button" data-copy-target="code-mod-a2" aria-label="수정 문제 2 정답 코드 복사">코드 복사</button>
-                        </header>
-                        <pre><code id="code-mod-a2" class="language-java">String best = freq.entrySet().stream()
-        .max(Map.Entry.comparingByValue())
-        .map(Map.Entry::getKey)
-        .orElse(null);
-
-// 빈도 내림차순, 동점이면 사전순 — 기준을 조립해서 만든다
-Comparator&lt;Map.Entry&lt;String, Long&gt;&gt; byCountDescThenWord =
-        Map.Entry.&lt;String, Long&gt;comparingByValue()
-                 .reversed()
-                 .thenComparing(Map.Entry::getKey);
-
-List&lt;String&gt; repeated = freq.entrySet().stream()
-        .filter(e -&gt; e.getValue() &gt;= 2)
-        .sorted(byCountDescThenWord)
-        .map(Map.Entry::getKey)
-        .toList();</code></pre>
-                    </article>
-                    <p>
-                        <code>Map.Entry.&lt;String, Long&gt;comparingByValue()</code>처럼
-                        <strong>타입을 직접 적어 준 이유</strong>가 있습니다.
-                        <code>comparingByValue()</code>만 보고는 컴파일러가 무엇을 비교하는지 알 수 없기 때문입니다.
-                        람다식 문서의 "타입은 추론할 근거가 있을 때만 생략한다"가 여기에 그대로 적용됩니다.
-                    </p>
-                    <p>
-                        <strong>동점 처리를 반드시 적어야 하는 이유</strong>도 짚어 두세요.
-                        <code>HashMap</code>은 순서를 보장하지 않으므로,
-                        <code>thenComparing</code>을 빼면 banana·kiwi·orange 세 단어(모두 2회)의 순서가
-                        실행할 때마다 달라질 수 있습니다. 3강에서 배운
-                        <strong>"HashMap의 출력 순서에 주의"</strong>라는 함정이 스트림에도 똑같이 있습니다.
-                    </p>
-                    <p>
-                        <code>max</code>도 마찬가지입니다. 최빈 단어가 여럿이면
-                        반복문 버전은 <strong>문장에서 먼저 나온 단어</strong>를, 스트림 버전은
-                        <strong>맵을 훑다가 먼저 만난 단어</strong>를 고릅니다. 이번 예문은 apple(3회)이
-                        유일한 최빈이라 결과가 같지만, 동점이 생기면 갈릴 수 있습니다.
-                        <em><strong>"같은 결과"를 원한다면 동점 규칙까지 적어야 합니다.</strong></em>
-                    </p>
-                </details>
-
-                <p>
-                    정답 전체와 "반복문 결과와 같은지" 확인하는 코드는
-                    <code>examples/java/03-brute-force-string-hash/ModernizeSolution.java</code>에 있습니다.
-                    직접 실행해 모든 비교가 <code>true</code>로 나오는지 확인하세요.
-                </p>
-            </section>
-
-            <!-- 19. 확인 퀴즈 -->
-            <section class="lesson-section" id="sec-quiz" aria-labelledby="h-quiz">
-                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">19</span>확인 퀴즈</h2>
-                <div id="quiz-root"></div>
-            </section>
-
-            <!-- 20. 오늘의 핵심 정리 -->
+            <!-- 19. 오늘의 핵심 정리 -->
             <section class="lesson-section" id="sec-summary" aria-labelledby="h-summary">
-                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">20</span>오늘의 핵심 정리</h2>
+                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">19</span>오늘의 핵심 정리</h2>
                 <ul class="summary-list">
                     <li><strong>완전 탐색</strong>은 가능한 모든 경우를 확인하는 전략이다 — 느릴 수는 있어도 틀리지 않으므로, 모든 알고리즘 설계의 출발점이자 정확성 검증의 기준이 된다.</li>
                     <li><strong>중첩 반복문</strong>(i 고정, j = i+1부터)은 모든 쌍을 만드는 완전 탐색의 대표 패턴이며, 비교 횟수는 n(n-1)/2번, <strong>O(n²)</strong>이다.</li>
@@ -1898,9 +1901,9 @@ List&lt;String&gt; repeated = freq.entrySet().stream()
                 <div id="lesson-complete-slot"></div>
             </section>
 
-            <!-- 21. 다음 강의 연결 -->
+            <!-- 20. 다음 강의 연결 -->
             <section class="lesson-section" id="sec-next" aria-labelledby="h-next">
-                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">21</span>다음 강의 연결</h2>
+                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">20</span>다음 강의 연결</h2>
                 <p>
                     다음 강의는 <strong>4강. 정렬 알고리즘과 객체 정렬</strong>입니다.
                     오늘 배운 것들이 그대로 이어집니다.

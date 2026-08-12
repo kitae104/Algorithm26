@@ -899,86 +899,9 @@ n이 10배 커질 때: 반복문의 일은 10배 늘고, 공식의 일은 그대
                 </ul>
             </section>
 
-            <!-- 14. 따라 하기 실습 -->
-            <section class="lesson-section" id="sec-practice" aria-labelledby="h-practice">
-                <h2 id="h-practice" data-toc-label="따라 하기 실습"><span class="section-no">14</span>따라 하기 실습</h2>
-
-                <h3>실습 1 — 데이터 변경</h3>
-                <p>
-                    <code>SumTwoWaysTrace.java</code>에서 <code>int n = 8;</code>을 <code>int n = 12;</code>로 바꾸고 실행하세요.
-                    마지막 누적 합이 공식 <code>12 × 13 / 2 = 78</code>과 일치하는지 확인하세요.
-                </p>
-
-                <h3>실습 2 — 조건 변경</h3>
-                <p>
-                    <code>SumTwoWaysComplete.java</code>의 <code>sumByLoop</code>를
-                    <strong>짝수만 더하도록</strong> 바꿔 보세요 (힌트: <code>i % 2 == 0</code>).
-                    이때도 시간 복잡도는 여전히 O(n)일까요? (조건 검사도 n번 하므로 그렇습니다.)
-                </p>
-
-                <h3>실습 3 — 코드 완성</h3>
-                <p>아래 클래스의 TODO를 채워 <strong>"1부터 n까지 홀수의 합"</strong>을 반복문과 공식(k개의 홀수 합 = k²) 두 방법으로 구하세요.</p>
-                <article class="code-card">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">Java</span>
-                            <strong class="code-card__filename">OddSumPractice.java</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="code-practice3" aria-label="OddSumPractice.java 코드 복사">코드 복사</button>
-                    </header>
-                    <pre><code id="code-practice3" class="language-java">public class OddSumPractice {
-
-    /** 방법 A: 1부터 n까지의 홀수를 반복문으로 더한다. */
-    static long oddSumByLoop(int n) {
-        long sum = 0;
-        // TODO: 1부터 n까지 반복하며 홀수(i % 2 == 1)만 sum에 더하세요.
-        return sum;
-    }
-
-    /** 방법 B: 1부터 n까지 홀수의 개수를 k라 하면, 홀수의 합은 k * k 이다. */
-    static long oddSumByFormula(int n) {
-        long k = 0;
-        // TODO: 1부터 n까지 홀수의 개수 k를 계산한 뒤 k * k를 반환하세요.
-        //       (힌트: k = (n + 1) / 2, 정수 나눗셈)
-        return k * k;
-    }
-
-    public static void main(String[] args) {
-        int[] tests = {1, 7, 8, 100};
-        for (int n : tests) {
-            long a = oddSumByLoop(n);
-            long b = oddSumByFormula(n);
-            System.out.println("n=" + n + " : 반복문 " + a + ", 공식 " + b
-                    + ", 일치 = " + (a == b));
-        }
-    }
-}</code></pre>
-                </article>
-                <details class="answer-box" data-locked-until-complete>
-                    <summary>실습 3 정답 확인</summary>
-                    <div class="answer-box__content">
-                        <pre class="quiz-code">static long oddSumByLoop(int n) {
-    long sum = 0;
-    for (int i = 1; i &lt;= n; i++) {
-        if (i % 2 == 1) {
-            sum = sum + i;
-        }
-    }
-    return sum;
-}
-
-static long oddSumByFormula(int n) {
-    long k = (n + 1) / 2;   // 1부터 n까지 홀수의 개수
-    return k * k;
-}</pre>
-                        <p>예상 출력: n=1 → 1, n=7 → 16, n=8 → 16, n=100 → 2500 (모두 일치 = true).</p>
-                    </div>
-                </details>
-            </section>
-
-            <!-- 15. 실제 데이터 응용 예제 -->
+            <!-- 14. 실제 데이터 응용 예제 -->
             <section class="lesson-section" id="sec-application" aria-labelledby="h-application">
-                <h2 id="h-application" data-toc-label="실제 데이터 응용 예제"><span class="section-no">15</span>실제 데이터 응용 예제</h2>
+                <h2 id="h-application" data-toc-label="실제 데이터 응용 예제"><span class="section-no">14</span>실제 데이터 응용 예제</h2>
 
                 <h3>문제 상황</h3>
                 <p>
@@ -1091,9 +1014,97 @@ static long oddSumByFormula(int n) {
                 </ul>
             </section>
 
-            <!-- 16. 최종 프로그램 작성 문제 -->
-            <section class="lesson-section" id="sec-final" aria-labelledby="h-final">
-                <h2 id="h-final" data-toc-label="최종 프로그램 작성 문제"><span class="section-no">16</span>최종 프로그램 작성 문제</h2>
+            <!-- 15. 확인 퀴즈 -->
+            <section class="lesson-section" id="sec-quiz" aria-labelledby="h-quiz">
+                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">15</span>확인 퀴즈</h2>
+                <div id="quiz-root"></div>
+            </section>
+
+            <div class="assignment-banner">
+                <span class="assignment-banner__title">📝 프로그램 실습 과제</span>
+                <p>지금까지 배운 내용을 직접 코드로 적용해 보는 과제입니다. 두 과제로 구성되며, 각 과제의 정답은 이 강의를 완료로 표시해야 열립니다.</p>
+            </div>
+
+            <!-- 16. 따라 하기 실습 -->
+            <section class="lesson-section lesson-section--assignment" id="sec-practice" aria-labelledby="h-practice">
+                <h2 id="h-practice" data-toc-label="따라 하기 실습"><span class="section-no">16</span>따라 하기 실습</h2>
+
+                <h3>실습 1 — 데이터 변경</h3>
+                <p>
+                    <code>SumTwoWaysTrace.java</code>에서 <code>int n = 8;</code>을 <code>int n = 12;</code>로 바꾸고 실행하세요.
+                    마지막 누적 합이 공식 <code>12 × 13 / 2 = 78</code>과 일치하는지 확인하세요.
+                </p>
+
+                <h3>실습 2 — 조건 변경</h3>
+                <p>
+                    <code>SumTwoWaysComplete.java</code>의 <code>sumByLoop</code>를
+                    <strong>짝수만 더하도록</strong> 바꿔 보세요 (힌트: <code>i % 2 == 0</code>).
+                    이때도 시간 복잡도는 여전히 O(n)일까요? (조건 검사도 n번 하므로 그렇습니다.)
+                </p>
+
+                <h3>실습 3 — 코드 완성</h3>
+                <p>아래 클래스의 TODO를 채워 <strong>"1부터 n까지 홀수의 합"</strong>을 반복문과 공식(k개의 홀수 합 = k²) 두 방법으로 구하세요.</p>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">OddSumPractice.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-practice3" aria-label="OddSumPractice.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-practice3" class="language-java">public class OddSumPractice {
+
+    /** 방법 A: 1부터 n까지의 홀수를 반복문으로 더한다. */
+    static long oddSumByLoop(int n) {
+        long sum = 0;
+        // TODO: 1부터 n까지 반복하며 홀수(i % 2 == 1)만 sum에 더하세요.
+        return sum;
+    }
+
+    /** 방법 B: 1부터 n까지 홀수의 개수를 k라 하면, 홀수의 합은 k * k 이다. */
+    static long oddSumByFormula(int n) {
+        long k = 0;
+        // TODO: 1부터 n까지 홀수의 개수 k를 계산한 뒤 k * k를 반환하세요.
+        //       (힌트: k = (n + 1) / 2, 정수 나눗셈)
+        return k * k;
+    }
+
+    public static void main(String[] args) {
+        int[] tests = {1, 7, 8, 100};
+        for (int n : tests) {
+            long a = oddSumByLoop(n);
+            long b = oddSumByFormula(n);
+            System.out.println("n=" + n + " : 반복문 " + a + ", 공식 " + b
+                    + ", 일치 = " + (a == b));
+        }
+    }
+}</code></pre>
+                </article>
+                <details class="answer-box" data-locked-until-complete>
+                    <summary>실습 3 정답 확인</summary>
+                    <div class="answer-box__content">
+                        <pre class="quiz-code">static long oddSumByLoop(int n) {
+    long sum = 0;
+    for (int i = 1; i &lt;= n; i++) {
+        if (i % 2 == 1) {
+            sum = sum + i;
+        }
+    }
+    return sum;
+}
+
+static long oddSumByFormula(int n) {
+    long k = (n + 1) / 2;   // 1부터 n까지 홀수의 개수
+    return k * k;
+}</pre>
+                        <p>예상 출력: n=1 → 1, n=7 → 16, n=8 → 16, n=100 → 2500 (모두 일치 = true).</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- 17. 최종 프로그램 작성 문제 -->
+            <section class="lesson-section lesson-section--assignment" id="sec-final" aria-labelledby="h-final">
+                <h2 id="h-final" data-toc-label="최종 프로그램 작성 문제"><span class="section-no">17</span>최종 프로그램 작성 문제</h2>
 
                 <h3>문제 제목 — 알고리즘 효율성 분석기 "AlgoMeter"</h3>
 
@@ -1276,12 +1287,9 @@ n      | 반복문 결과 | 공식 결과   | 반복 연산 | 공식 연산
                         연산 횟수와 실제 시간이 비례하는지 관찰하세요.</li>
                     <li><strong>표 정렬:</strong> 출력 표의 열 너비를 <code>printf</code> 서식으로 더 깔끔하게 다듬어 보세요.</li>
                 </ol>
-            </section>
 
-            <!-- 17. 최종 문제 정답과 해설 -->
-            <section class="lesson-section" id="sec-answer" aria-labelledby="h-answer">
-                <h2 id="h-answer" data-toc-label="최종 문제 정답과 해설"><span class="section-no">17</span>최종 문제 정답과 해설</h2>
-                <p>스스로 충분히 시도한 뒤에 여세요. 막혔다면 "구현 단계 안내"를 다시 읽고 한 단계씩 진행해 보세요.
+                <h3>정답과 해설</h3>
+                <p>스스로 충분히 시도한 뒤에 여세요. 막혔다면 "구현 단계 안내"를 다시 읽고, 한 단계씩 진행해 보세요.
                 이 강의를 완료로 표시해야 정답이 열립니다.</p>
 
                 <details class="answer-box" data-locked-until-complete>
@@ -1438,15 +1446,9 @@ n      | 반복문 결과 | 공식 결과   | 반복 연산 | 공식 연산
                 </details>
             </section>
 
-            <!-- 18. 확인 퀴즈 -->
-            <section class="lesson-section" id="sec-quiz" aria-labelledby="h-quiz">
-                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">18</span>확인 퀴즈</h2>
-                <div id="quiz-root"></div>
-            </section>
-
-            <!-- 19. 오늘의 핵심 정리 -->
+            <!-- 18. 오늘의 핵심 정리 -->
             <section class="lesson-section" id="sec-summary" aria-labelledby="h-summary">
-                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">19</span>오늘의 핵심 정리</h2>
+                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">18</span>오늘의 핵심 정리</h2>
                 <ul class="summary-list">
                     <li><strong>알고리즘</strong>은 문제를 해결하는 명확한 절차이며, 같은 문제에 여러 알고리즘이 존재할 수 있다.</li>
                     <li>문제는 <strong>입력 → 처리 → 출력</strong>으로 나누고, 큰 문제는 작은 문제로 <strong>분해</strong>한다.</li>
@@ -1461,9 +1463,9 @@ n      | 반복문 결과 | 공식 결과   | 반복 연산 | 공식 연산
                 <div id="lesson-complete-slot"></div>
             </section>
 
-            <!-- 20. 다음 강의 연결 -->
+            <!-- 19. 다음 강의 연결 -->
             <section class="lesson-section" id="sec-next" aria-labelledby="h-next">
-                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">20</span>다음 강의 연결</h2>
+                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">19</span>다음 강의 연결</h2>
                 <p>
                     다음 강의는 <strong>2강. 배열과 리스트를 활용한 데이터 처리</strong>입니다.
                     오늘 배운 것들이 그대로 이어집니다.

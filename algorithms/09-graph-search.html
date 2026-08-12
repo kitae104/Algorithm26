@@ -1176,103 +1176,9 @@ public class BuggyDfsNoMark {
                 </ul>
             </section>
 
-            <!-- 14. 따라 하기 실습 -->
-            <section class="lesson-section" id="sec-practice" aria-labelledby="h-practice">
-                <h2 id="h-practice" data-toc-label="따라 하기 실습"><span class="section-no">14</span>따라 하기 실습</h2>
-
-                <h3>실습 1 — 간선 추가</h3>
-                <p>
-                    <code>Step4RecursiveDfs.java</code>의 간선 배열에 <code>{5, 6}</code>을 추가해
-                    <code>{ {0, 1}, {0, 2}, {1, 3}, {2, 4}, {3, 5}, {4, 5}, {5, 6} }</code>로 바꾸고 실행하세요.
-                    고립됐던 6번이 어디쯤에서 방문되는지 예측한 뒤 확인하세요.
-                    (실행하면 방문 순서가 <strong>0 → 1 → 3 → 5 → 4 → 2 → 6</strong>, 방문 정점 수 7/7이 됩니다.
-                    5까지 갔을 때가 아니라, 5의 이웃 4의 탐색이 모두 끝나고 <strong>5로 되돌아온 뒤</strong>에야 6이 방문되는 것이 포인트입니다.)
-                </p>
-
-                <h3>실습 2 — 출발 정점 변경</h3>
-                <p>
-                    <code>GraphSearchComplete.java</code>의 <code>main</code>에서 <code>bfs(adjacency, 0)</code>을
-                    <code>bfs(adjacency, 3)</code>으로 바꿔 보세요. 3에서 가까운 순서(3 → 1다리인 1, 5 → 2다리인 0, 4 → 3다리인 2)로 퍼지므로
-                    출력은 <code>[3, 1, 5, 0, 4, 2]</code>가 됩니다. 손으로 먼저 예측하고 실행으로 확인하세요.
-                    출발점이 바뀌면 방문 순서도, 각 정점까지의 거리도 달라집니다.
-                </p>
-
-                <h3>실습 3 — 방향 그래프 코드 완성</h3>
-                <p>
-                    아래 클래스의 TODO를 채우세요. 이번에는 <strong>방향 그래프</strong>입니다 —
-                    "a가 b에게 소식을 전달한다"는 a → b 한 방향이므로, 간선을 <strong>한쪽 리스트에만</strong> 추가해야 합니다.
-                    0번의 소식이 누구에게까지 퍼지는지 DFS로 알아냅니다.
-                </p>
-                <article class="code-card">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">Java</span>
-                            <strong class="code-card__filename">FollowReachPractice.java</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="code-practice3" aria-label="FollowReachPractice.java 코드 복사">코드 복사</button>
-                    </header>
-                    <pre><code id="code-practice3" class="language-java">import java.util.ArrayList;
-import java.util.List;
-
-public class FollowReachPractice {
-
-    static List&lt;List&lt;Integer&gt;&gt; adjacency = new ArrayList&lt;&gt;();
-    static boolean[] visited;
-    static List&lt;Integer&gt; reached = new ArrayList&lt;&gt;();
-
-    /** v를 방문하고, v가 소식을 전달할 수 있는 미방문 이웃으로 재귀한다 */
-    static void dfs(int v) {
-        // TODO 2: v를 방문 표시하고 reached에 추가한 뒤,
-        //         미방문 이웃마다 dfs를 재귀 호출하세요.
-    }
-
-    public static void main(String[] args) {
-        int userCount = 6;
-        // deliveries[i] = {a, b} : a가 b에게 소식을 전달한다 (a → b 한 방향!)
-        int[][] deliveries = { {0, 1}, {0, 2}, {2, 3}, {3, 4}, {5, 0} };
-
-        for (int v = 0; v &lt; userCount; v++) {
-            adjacency.add(new ArrayList&lt;&gt;());
-        }
-        // TODO 1: 방향 그래프이므로 a의 리스트에만 b를 추가하세요.
-
-        visited = new boolean[userCount];
-        dfs(0);
-        System.out.println("0번의 소식이 도달하는 사용자: " + reached);
-    }
-}</code></pre>
-                </article>
-                <details class="answer-box" data-locked-until-complete>
-                    <summary>실습 3 정답 확인</summary>
-                    <div class="answer-box__content">
-                        <pre class="quiz-code">// TODO 1: 방향 그래프 — 한쪽에만 추가한다
-for (int[] pair : deliveries) {
-    adjacency.get(pair[0]).add(pair[1]);
-}
-
-// TODO 2: 재귀 DFS
-static void dfs(int v) {
-    visited[v] = true;
-    reached.add(v);
-    for (int neighbor : adjacency.get(v)) {
-        if (!visited[neighbor]) {
-            dfs(neighbor);
-        }
-    }
-}</pre>
-                        <p>실행 결과: <code>0번의 소식이 도달하는 사용자: [0, 1, 2, 3, 4]</code></p>
-                        <p>
-                            5 → 0 간선이 있지만 방향이 반대라서 0의 소식은 5에게 <strong>가지 못합니다</strong>.
-                            무방향 그래프였다면 5도 포함됐을 것입니다 —
-                            <em>간선을 양쪽에 넣느냐 한쪽에 넣느냐가 도달 범위를 바꾼다는 것이 이 실습의 핵심입니다.</em>
-                        </p>
-                    </div>
-                </details>
-            </section>
-
-            <!-- 15. 실제 데이터 응용 예제 -->
+            <!-- 14. 실제 데이터 응용 예제 -->
             <section class="lesson-section" id="sec-application" aria-labelledby="h-application">
-                <h2 id="h-application" data-toc-label="실제 데이터 응용 예제"><span class="section-no">15</span>실제 데이터 응용 예제</h2>
+                <h2 id="h-application" data-toc-label="실제 데이터 응용 예제"><span class="section-no">14</span>실제 데이터 응용 예제</h2>
 
                 <h3>문제 상황</h3>
                 <p>
@@ -1413,9 +1319,114 @@ public class SubwayRouteApplication {
                 </ul>
             </section>
 
-            <!-- 16. 최종 프로그램 작성 문제 -->
-            <section class="lesson-section" id="sec-final" aria-labelledby="h-final">
-                <h2 id="h-final" data-toc-label="최종 프로그램 작성 문제"><span class="section-no">16</span>최종 프로그램 작성 문제</h2>
+            <!-- 15. 확인 퀴즈 -->
+            <section class="lesson-section" id="sec-quiz" aria-labelledby="h-quiz">
+                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">15</span>확인 퀴즈</h2>
+                <div id="quiz-root"></div>
+            </section>
+
+            <div class="assignment-banner">
+                <span class="assignment-banner__title">📝 프로그램 실습 과제</span>
+                <p>지금까지 배운 내용을 직접 코드로 적용해 보는 과제입니다. 두 과제로 구성되며, 각 과제의 정답은 이 강의를 완료로 표시해야 열립니다.</p>
+            </div>
+
+            <!-- 16. 따라 하기 실습 -->
+            <section class="lesson-section lesson-section--assignment" id="sec-practice" aria-labelledby="h-practice">
+                <h2 id="h-practice" data-toc-label="따라 하기 실습"><span class="section-no">16</span>따라 하기 실습</h2>
+
+                <h3>실습 1 — 간선 추가</h3>
+                <p>
+                    <code>Step4RecursiveDfs.java</code>의 간선 배열에 <code>{5, 6}</code>을 추가해
+                    <code>{ {0, 1}, {0, 2}, {1, 3}, {2, 4}, {3, 5}, {4, 5}, {5, 6} }</code>로 바꾸고 실행하세요.
+                    고립됐던 6번이 어디쯤에서 방문되는지 예측한 뒤 확인하세요.
+                    (실행하면 방문 순서가 <strong>0 → 1 → 3 → 5 → 4 → 2 → 6</strong>, 방문 정점 수 7/7이 됩니다.
+                    5까지 갔을 때가 아니라, 5의 이웃 4의 탐색이 모두 끝나고 <strong>5로 되돌아온 뒤</strong>에야 6이 방문되는 것이 포인트입니다.)
+                </p>
+
+                <h3>실습 2 — 출발 정점 변경</h3>
+                <p>
+                    <code>GraphSearchComplete.java</code>의 <code>main</code>에서 <code>bfs(adjacency, 0)</code>을
+                    <code>bfs(adjacency, 3)</code>으로 바꿔 보세요. 3에서 가까운 순서(3 → 1다리인 1, 5 → 2다리인 0, 4 → 3다리인 2)로 퍼지므로
+                    출력은 <code>[3, 1, 5, 0, 4, 2]</code>가 됩니다. 손으로 먼저 예측하고 실행으로 확인하세요.
+                    출발점이 바뀌면 방문 순서도, 각 정점까지의 거리도 달라집니다.
+                </p>
+
+                <h3>실습 3 — 방향 그래프 코드 완성</h3>
+                <p>
+                    아래 클래스의 TODO를 채우세요. 이번에는 <strong>방향 그래프</strong>입니다 —
+                    "a가 b에게 소식을 전달한다"는 a → b 한 방향이므로, 간선을 <strong>한쪽 리스트에만</strong> 추가해야 합니다.
+                    0번의 소식이 누구에게까지 퍼지는지 DFS로 알아냅니다.
+                </p>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">FollowReachPractice.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-practice3" aria-label="FollowReachPractice.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-practice3" class="language-java">import java.util.ArrayList;
+import java.util.List;
+
+public class FollowReachPractice {
+
+    static List&lt;List&lt;Integer&gt;&gt; adjacency = new ArrayList&lt;&gt;();
+    static boolean[] visited;
+    static List&lt;Integer&gt; reached = new ArrayList&lt;&gt;();
+
+    /** v를 방문하고, v가 소식을 전달할 수 있는 미방문 이웃으로 재귀한다 */
+    static void dfs(int v) {
+        // TODO 2: v를 방문 표시하고 reached에 추가한 뒤,
+        //         미방문 이웃마다 dfs를 재귀 호출하세요.
+    }
+
+    public static void main(String[] args) {
+        int userCount = 6;
+        // deliveries[i] = {a, b} : a가 b에게 소식을 전달한다 (a → b 한 방향!)
+        int[][] deliveries = { {0, 1}, {0, 2}, {2, 3}, {3, 4}, {5, 0} };
+
+        for (int v = 0; v &lt; userCount; v++) {
+            adjacency.add(new ArrayList&lt;&gt;());
+        }
+        // TODO 1: 방향 그래프이므로 a의 리스트에만 b를 추가하세요.
+
+        visited = new boolean[userCount];
+        dfs(0);
+        System.out.println("0번의 소식이 도달하는 사용자: " + reached);
+    }
+}</code></pre>
+                </article>
+                <details class="answer-box" data-locked-until-complete>
+                    <summary>실습 3 정답 확인</summary>
+                    <div class="answer-box__content">
+                        <pre class="quiz-code">// TODO 1: 방향 그래프 — 한쪽에만 추가한다
+for (int[] pair : deliveries) {
+    adjacency.get(pair[0]).add(pair[1]);
+}
+
+// TODO 2: 재귀 DFS
+static void dfs(int v) {
+    visited[v] = true;
+    reached.add(v);
+    for (int neighbor : adjacency.get(v)) {
+        if (!visited[neighbor]) {
+            dfs(neighbor);
+        }
+    }
+}</pre>
+                        <p>실행 결과: <code>0번의 소식이 도달하는 사용자: [0, 1, 2, 3, 4]</code></p>
+                        <p>
+                            5 → 0 간선이 있지만 방향이 반대라서 0의 소식은 5에게 <strong>가지 못합니다</strong>.
+                            무방향 그래프였다면 5도 포함됐을 것입니다 —
+                            <em>간선을 양쪽에 넣느냐 한쪽에 넣느냐가 도달 범위를 바꾼다는 것이 이 실습의 핵심입니다.</em>
+                        </p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- 17. 최종 프로그램 작성 문제 -->
+            <section class="lesson-section lesson-section--assignment" id="sec-final" aria-labelledby="h-final">
+                <h2 id="h-final" data-toc-label="최종 프로그램 작성 문제"><span class="section-no">17</span>최종 프로그램 작성 문제</h2>
 
                 <h3>문제 제목 — SNS 친구 네트워크 분석기 "FriendNet"</h3>
 
@@ -1632,12 +1643,10 @@ public class FriendNetworkStarter {
                     <li><strong>연결 경로 보여주기:</strong> 응용 예제의 <code>previous</code> 배열 기법을 가져와
                         "민준 → 서연 → 하은"처럼 특정 사용자까지의 실제 연결 경로를 출력해 보세요.</li>
                 </ol>
-            </section>
 
-            <!-- 17. 최종 문제 정답과 해설 -->
-            <section class="lesson-section" id="sec-answer" aria-labelledby="h-answer">
-                <h2 id="h-answer" data-toc-label="최종 문제 정답과 해설"><span class="section-no">17</span>최종 문제 정답과 해설</h2>
-                <p>스스로 충분히 시도한 뒤에 여세요. 막혔다면 "구현 단계 안내"를 다시 읽고, 구현 1~4단계 코드와 비교하며 한 단계씩 진행해 보세요.</p>
+                <h3>정답과 해설</h3>
+                <p>스스로 충분히 시도한 뒤에 여세요. 막혔다면 "구현 단계 안내"를 다시 읽고, 한 단계씩 진행해 보세요.
+                이 강의를 완료로 표시해야 정답이 열립니다.</p>
 
                 <details class="answer-box" data-locked-until-complete>
                     <summary>정답 코드와 해설 확인</summary>
@@ -1825,15 +1834,9 @@ public class FriendNetworkSolution {
                 </details>
             </section>
 
-            <!-- 18. 확인 퀴즈 -->
-            <section class="lesson-section" id="sec-quiz" aria-labelledby="h-quiz">
-                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">18</span>확인 퀴즈</h2>
-                <div id="quiz-root"></div>
-            </section>
-
-            <!-- 19. 오늘의 핵심 정리 -->
+            <!-- 18. 오늘의 핵심 정리 -->
             <section class="lesson-section" id="sec-summary" aria-labelledby="h-summary">
-                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">19</span>오늘의 핵심 정리</h2>
+                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">18</span>오늘의 핵심 정리</h2>
                 <ul class="summary-list">
                     <li><strong>그래프</strong>는 정점과 간선으로 연결 관계를 표현한다. 트리와 달리 순환·여러 경로·고립 정점이 있을 수 있다.</li>
                     <li>간선 쌍 목록은 <strong>인접 리스트</strong>(<code>List&lt;List&lt;Integer&gt;&gt;</code>)로 바꿔 다룬다.
@@ -1849,9 +1852,9 @@ public class FriendNetworkSolution {
                 <div id="lesson-complete-slot"></div>
             </section>
 
-            <!-- 20. 다음 강의 연결 -->
+            <!-- 19. 다음 강의 연결 -->
             <section class="lesson-section" id="sec-next" aria-labelledby="h-next">
-                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">20</span>다음 강의 연결</h2>
+                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">19</span>다음 강의 연결</h2>
                 <p>
                     다음 강의는 <strong>10강. 그리디 알고리즘</strong>입니다.
                     "모든 곳을 빠짐없이 탐색"하던 오늘과 반대로, "매 순간 가장 좋아 보이는 것 하나만 선택"하는 설계 기법을 배웁니다.
