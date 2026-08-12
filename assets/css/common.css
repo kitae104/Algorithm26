@@ -37,6 +37,11 @@
     --state-visit: #2b50e0;        /* 방문 (블루) */
     --state-visit-bg: #e7ecfd;
 
+    /* 프로그램 실습 과제(따라 하기 실습·최종 프로그램 문제) 전용 액센트 —
+       확인 퀴즈의 브랜드 블루와 구분되는 보라 계열 */
+    --assignment: #6d28d9;
+    --assignment-bg: #efe7fe;
+
     /* 액센트 잉크 — 상태색이 "칠하는 색"이 아니라 "읽히는 색"으로 쓰이는 곳.
        --state-*는 배경·테두리용으로 맞춰진 값이라 자기 -bg나 카드 표면 위에
        얹으면 라이트 테마에서 2.4~3.7:1로 떨어진다. 글리프(안내 박스 ✓·⚠,
@@ -136,6 +141,8 @@
         --state-error-bg: #431f24;
         --state-visit: #8ba3ff;
         --state-visit-bg: #202c52;
+        --assignment: #c4a3ff;
+        --assignment-bg: #2c2350;
         --glyph-ink-done: #34d399;
         --glyph-ink-warn: #ffb224;
         --glyph-ink-danger: #ff7b85;
@@ -183,6 +190,8 @@ html[data-theme="light"] {
     --state-error-bg: #fde8ea;
     --state-visit: #2b50e0;
     --state-visit-bg: #e7ecfd;
+    --assignment: #6d28d9;
+    --assignment-bg: #efe7fe;
     --glyph-ink-done: #0a7a54;
     --glyph-ink-warn: #9a5a00;
     --glyph-ink-danger: #b8323d;
@@ -229,6 +238,8 @@ html[data-theme="dark"] {
     --state-error-bg: #431f24;
     --state-visit: #8ba3ff;
     --state-visit-bg: #202c52;
+    --assignment: #c4a3ff;
+    --assignment-bg: #2c2350;
     --glyph-ink-done: #34d399;
     --glyph-ink-warn: #ffb224;
     --glyph-ink-danger: #ff7b85;
