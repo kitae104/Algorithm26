@@ -42,6 +42,12 @@
     --assignment: #6d28d9;
     --assignment-bg: #efe7fe;
 
+    /* 확인 퀴즈 전용 액센트 — 기본 섹션의 브랜드 블루, 과제의 보라와 모두
+       구분되는 청록 계열. 정답/오답 판정에 이미 쓰이는 그린·레드·앰버와도
+       겹치지 않는다. */
+    --quiz: #0f7a8c;
+    --quiz-bg: #dcf3f7;
+
     /* 액센트 잉크 — 상태색이 "칠하는 색"이 아니라 "읽히는 색"으로 쓰이는 곳.
        --state-*는 배경·테두리용으로 맞춰진 값이라 자기 -bg나 카드 표면 위에
        얹으면 라이트 테마에서 2.4~3.7:1로 떨어진다. 글리프(안내 박스 ✓·⚠,
@@ -143,6 +149,8 @@
         --state-visit-bg: #202c52;
         --assignment: #c4a3ff;
         --assignment-bg: #2c2350;
+        --quiz: #5cd3e8;
+        --quiz-bg: #0c333d;
         --glyph-ink-done: #34d399;
         --glyph-ink-warn: #ffb224;
         --glyph-ink-danger: #ff7b85;
@@ -192,6 +200,8 @@ html[data-theme="light"] {
     --state-visit-bg: #e7ecfd;
     --assignment: #6d28d9;
     --assignment-bg: #efe7fe;
+    --quiz: #0f7a8c;
+    --quiz-bg: #dcf3f7;
     --glyph-ink-done: #0a7a54;
     --glyph-ink-warn: #9a5a00;
     --glyph-ink-danger: #b8323d;
@@ -240,6 +250,8 @@ html[data-theme="dark"] {
     --state-visit-bg: #202c52;
     --assignment: #c4a3ff;
     --assignment-bg: #2c2350;
+    --quiz: #5cd3e8;
+    --quiz-bg: #0c333d;
     --glyph-ink-done: #34d399;
     --glyph-ink-warn: #ffb224;
     --glyph-ink-danger: #ff7b85;

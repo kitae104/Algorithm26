@@ -474,6 +474,16 @@
     flex-shrink: 0;
 }
 
+/* ---------- 확인 퀴즈 (프로그램 실습 과제와 구분되는 청록 액센트) ---------- */
+.lesson-section--quiz {
+    border-left: 4px solid var(--quiz);
+}
+
+.lesson-section--quiz > h2 .section-no {
+    color: var(--quiz);
+    background: var(--quiz-bg);
+}
+
 /* ---------- 프로그램 실습 과제 (확인 퀴즈 뒤, 따라 하기 실습 + 최종 프로그램 문제) ---------- */
 .lesson-section--assignment {
     border-left: 4px solid var(--assignment);
