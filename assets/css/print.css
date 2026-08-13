@@ -99,6 +99,7 @@
     .lesson-toc,
     .lesson-complete-slot,
     .hero__actions,
+    .concept-loop,
     /* 히어로 라이브 무대는 종이에서 뜻이 없다. 3D는 WebGL 캔버스라 인쇄
        스냅샷이 빈 사각형으로 찍히기까지 한다 — 통째로 뺀다. */
     .hero-viz,

@@ -258,6 +258,26 @@
                     한 가지를 끝까지 시도한 뒤에는 <strong>반드시 상태를 원래대로 되돌리고</strong>
                     다음 선택지를 시도하는 기법입니다. 모든 백트래킹 코드는 아래 3단계 패턴을 따릅니다.
                 </p>
+                <figure class="concept-loop" aria-hidden="true">
+                    <svg class="concept-loop__svg" viewBox="0 0 320 130" role="presentation">
+                        <rect class="concept-loop__bracket" x="212" y="28" width="78" height="58" rx="10"></rect>
+                        <text class="concept-loop__bracket-label" x="251" y="20">chosen</text>
+                        <g class="concept-loop__token cl-anim-move">
+                            <circle class="concept-loop__token-circle cl-anim-fill" cx="45" cy="57" r="16"></circle>
+                            <text class="concept-loop__token-label" x="45" y="57">x</text>
+                        </g>
+                        <text class="concept-loop__frame-label cl-anim-frame" x="251" y="112">↓ 재귀 호출</text>
+                    </svg>
+                    <div class="concept-loop__steps">
+                        <span class="concept-loop__step concept-loop__step--1 cl-anim-step1">① 선택</span>
+                        <span class="concept-loop__step concept-loop__step--2 cl-anim-step2">② 진행</span>
+                        <span class="concept-loop__step concept-loop__step--3 cl-anim-step3">③ 취소</span>
+                    </div>
+                    <figcaption class="concept-loop__caption">
+                        원소 x를 chosen에 넣었다가(선택), 재귀 호출로 내려갔다가(진행),
+                        되돌아오며 다시 빼는(취소) 한 사이클이 반복 재생됩니다.
+                    </figcaption>
+                </figure>
                 <div class="table-scroll">
                     <table class="data-table">
                         <thead>

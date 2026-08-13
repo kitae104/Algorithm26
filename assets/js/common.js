@@ -799,6 +799,28 @@
             }
         })();
 
+        /* ---------- 개념 다이어그램 재생 제어 (.concept-loop) ----------
+           히어로 모티프와 같은 근거: 뷰포트에 들어와 있을 때만 재생해
+           본문을 읽는 동안 무관한 곳에서 움직이지 않게 한다. */
+        (function () {
+            var loops = document.querySelectorAll(".concept-loop");
+            if (!loops.length) return;
+            if ("IntersectionObserver" in window) {
+                var loopObserver = new IntersectionObserver(function (entries) {
+                    entries.forEach(function (entry) {
+                        entry.target.classList.toggle("is-playing", entry.isIntersecting);
+                    });
+                }, { threshold: 0 });
+                Array.prototype.forEach.call(loops, function (loop) {
+                    loopObserver.observe(loop);
+                });
+            } else {
+                Array.prototype.forEach.call(loops, function (loop) {
+                    loop.classList.add("is-playing");
+                });
+            }
+        })();
+
         /* ---------- 내부 목차 자동 생성 + 스크롤스파이 ---------- */
         var tocList = document.getElementById("lesson-toc-list");
         var sections = Array.prototype.slice.call(document.querySelectorAll(".lesson-section[id]"));

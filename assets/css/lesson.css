@@ -361,6 +361,156 @@
     fill: var(--brand);
 }
 
+/* ---------- 선택·진행·취소 미니 다이어그램 (7강 핵심 개념) ----------
+   장식용 자동 재생 루프. transform/opacity/fill/stroke만 애니메이션한다.
+   재생 제어(뷰포트 진입 시에만 재생)는 common.js가 담당한다 — 위 히어로
+   모티프와 같은 근거(본문을 읽는 동안 무관한 곳에서 움직이지 않게). */
+.concept-loop {
+    margin: 18px 0 24px;
+    padding: 16px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-m);
+    background: var(--surface);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.concept-loop__svg {
+    width: 100%;
+    max-width: 340px;
+    height: auto;
+}
+
+.concept-loop__bracket {
+    fill: var(--surface-2);
+    stroke: var(--line-strong);
+    stroke-width: 1.5;
+}
+
+.concept-loop__bracket-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    fill: var(--ink-faint);
+    text-anchor: middle;
+}
+
+.concept-loop__token-circle {
+    stroke-width: 2;
+}
+
+.concept-loop__token-label {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 700;
+    text-anchor: middle;
+    dominant-baseline: central;
+    fill: var(--ink);
+}
+
+.concept-loop__frame-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    fill: var(--state-visit);
+    text-anchor: middle;
+    opacity: 0;
+}
+
+.concept-loop__steps {
+    display: flex;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+}
+
+.concept-loop__step {
+    font-weight: 700;
+    color: var(--ink-faint);
+    opacity: 0.55;
+}
+
+.concept-loop__caption {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--ink-faint);
+    text-align: center;
+}
+
+/* 재생 제어 — common.js가 뷰포트 진입 시 .is-playing을 토글한다.
+   기본은 정지라서 스크롤해서 보기 전에는 아무것도 움직이지 않는다. */
+.concept-loop [class*="cl-anim"] {
+    animation-duration: 6s;
+    animation-iteration-count: infinite;
+    animation-timing-function: var(--ease-in-out);
+    animation-play-state: paused;
+}
+
+.concept-loop.is-playing [class*="cl-anim"] {
+    animation-play-state: running;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .concept-loop [class*="cl-anim"] {
+        animation: none !important;
+    }
+    /* 정지 프레임 = "① 선택" 직후: 토큰이 chosen 안, ①만 밝음 */
+    .concept-loop__token {
+        transform: translateX(206px);
+    }
+    .concept-loop__token-circle {
+        fill: var(--state-visit-bg);
+        stroke: var(--state-visit);
+    }
+    .concept-loop__step--1 {
+        color: var(--state-visit);
+        opacity: 1;
+    }
+}
+
+.concept-loop__token.cl-anim-move { animation-name: cl-token-move; }
+.concept-loop__token-circle.cl-anim-fill { animation-name: cl-token-fill; }
+.concept-loop__frame-label.cl-anim-frame { animation-name: cl-frame; }
+.concept-loop__step--1.cl-anim-step1 { animation-name: cl-step-1; }
+.concept-loop__step--2.cl-anim-step2 { animation-name: cl-step-2; }
+.concept-loop__step--3.cl-anim-step3 { animation-name: cl-step-3; }
+
+@keyframes cl-token-move {
+    0%, 2%    { transform: translateX(0); }
+    20%, 53%  { transform: translateX(206px); }
+    76%, 100% { transform: translateX(0); }
+}
+
+@keyframes cl-token-fill {
+    0%, 2%    { fill: var(--surface-2); stroke: var(--line-strong); }
+    20%, 53%  { fill: var(--state-visit-bg); stroke: var(--state-visit); }
+    76%, 100% { fill: var(--surface-2); stroke: var(--line-strong); }
+}
+
+@keyframes cl-frame {
+    0%, 20%   { opacity: 0; }
+    30%, 45%  { opacity: 1; }
+    53%, 100% { opacity: 0; }
+}
+
+@keyframes cl-step-1 {
+    0%, 20%   { color: var(--state-visit); opacity: 1; }
+    22%, 100% { color: var(--ink-faint); opacity: 0.55; }
+}
+
+@keyframes cl-step-2 {
+    0%, 20%   { color: var(--ink-faint); opacity: 0.55; }
+    22%, 53%  { color: var(--state-visit); opacity: 1; }
+    55%, 100% { color: var(--ink-faint); opacity: 0.55; }
+}
+
+@keyframes cl-step-3 {
+    0%, 53%   { color: var(--ink-faint); opacity: 0.55; }
+    55%, 76%  { color: var(--state-visit); opacity: 1; }
+    78%, 100% { color: var(--ink-faint); opacity: 0.55; }
+}
+
 /* ---------- 내부 목차 (사이드바) ---------- */
 .lesson-toc {
     position: sticky;
