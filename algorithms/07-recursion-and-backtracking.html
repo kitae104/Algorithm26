@@ -1893,6 +1893,14 @@ reverse("recursion") = noisrucer (기대값 noisrucer)</pre>
                                 return { v: name, cls: i === frames.length - 1 ? "current" : "" };
                             }),
                             emptyText: "(호출 스택이 비어 있음)"
+                        },
+                        {
+                            type: "array",
+                            label: "발견된 부분집합 (지금까지 " + found.length + "개)",
+                            cells: found.map(function (label, i) {
+                                return { v: label, sub: (i + 1) + "번째", cls: "done" };
+                            }),
+                            emptyText: "(아직 없음)"
                         }
                     ];
                     if (noteText) groups.push({ type: "note", text: noteText });
