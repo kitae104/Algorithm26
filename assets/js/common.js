@@ -465,6 +465,52 @@
         }
     };
 
+    /* ---------- 강의별 완료 버튼 잠금 코드 ----------
+       "완료로 표시" 버튼을 비밀번호를 맞히기 전까지 숨겨서, 학생들이
+       순서대로 진도를 나가도록 유도한다. 정적 사이트라 소스를 열어보면
+       코드가 보이므로 실제 보안 장치는 아니다 — 전체 목록은 저장소 루트
+       secret.txt에 강의별로 정리되어 있다. */
+    var LESSON_UNLOCK_CODES = {
+        "algorithm-basics": "5532",
+        "arrays-and-lists": "0326",
+        "brute-force-string-hash": "7489",
+        "sorting-algorithms": "1098",
+        "search-algorithms": "4298",
+        "stack-and-queue": "4930",
+        "recursion-and-backtracking": "2257",
+        "tree-structures": "3038",
+        "graph-search": "1885",
+        "greedy-algorithms": "6167",
+        "dynamic-programming": "0287",
+        "shortest-path": "9915",
+        "algorithm-project": "0198"
+    };
+
+    var LESSON_UNLOCK_KEY = "lesson-unlock-v1";
+
+    function readLessonUnlockState() {
+        try {
+            var raw = localStorage.getItem(LESSON_UNLOCK_KEY);
+            return raw ? JSON.parse(raw) : {};
+        } catch (e) {
+            return {};
+        }
+    }
+
+    function isLessonUnlocked(id) {
+        return Boolean(readLessonUnlockState()[id]);
+    }
+
+    function unlockLesson(id) {
+        var state = readLessonUnlockState();
+        state[id] = true;
+        try {
+            localStorage.setItem(LESSON_UNLOCK_KEY, JSON.stringify(state));
+        } catch (e) {
+            /* 저장 실패(사생활 보호 모드 등)해도 이번 세션에서는 계속 진행 */
+        }
+    }
+
     ready(function () {
         var lessons = window.ALGORITHMS || [];
         var supplements = window.SUPPLEMENTS || [];
@@ -937,14 +983,61 @@
                     });
                     completeSlot.appendChild(undoBtn);
                 } else {
-                    var doneBtn = el("button", "button button--primary", "이 강의를 완료로 표시");
-                    doneBtn.type = "button";
-                    doneBtn.addEventListener("click", function () {
-                        window.AllProgress.markCompleted(lessonId);
-                        renderCompleteSlot();
-                    });
-                    completeSlot.appendChild(doneBtn);
+                    var requiredCode = LESSON_UNLOCK_CODES[lessonId];
+                    if (requiredCode && !isLessonUnlocked(lessonId)) {
+                        renderUnlockForm(requiredCode);
+                    } else {
+                        renderDoneButton();
+                    }
                 }
+            }
+
+            function renderDoneButton() {
+                var doneBtn = el("button", "button button--primary", "이 강의를 완료로 표시");
+                doneBtn.type = "button";
+                doneBtn.addEventListener("click", function () {
+                    window.AllProgress.markCompleted(lessonId);
+                    renderCompleteSlot();
+                });
+                completeSlot.appendChild(doneBtn);
+            }
+
+            function renderUnlockForm(requiredCode) {
+                completeSlot.appendChild(el("span", "lesson-unlock__hint",
+                    "🔒 강사에게 받은 비밀번호를 입력하면 완료 버튼이 나타납니다."));
+
+                var form = el("form", "lesson-unlock__form");
+
+                var input = document.createElement("input");
+                input.type = "text";
+                input.inputMode = "numeric";
+                input.autocomplete = "off";
+                input.maxLength = 4;
+                input.className = "lesson-unlock__input";
+                input.placeholder = "0000";
+                input.setAttribute("aria-label", "강의 잠금 해제 비밀번호");
+                form.appendChild(input);
+
+                var submitBtn = el("button", "button button--primary", "확인");
+                submitBtn.type = "submit";
+                form.appendChild(submitBtn);
+
+                var errorMsg = el("span", "lesson-unlock__error", "");
+                form.appendChild(errorMsg);
+
+                form.addEventListener("submit", function (e) {
+                    e.preventDefault();
+                    if (input.value.trim() === requiredCode) {
+                        unlockLesson(lessonId);
+                        renderCompleteSlot();
+                    } else {
+                        errorMsg.textContent = "비밀번호가 올바르지 않습니다.";
+                        input.value = "";
+                        input.focus();
+                    }
+                });
+
+                completeSlot.appendChild(form);
             }
 
             renderCompleteSlot();

@@ -964,6 +964,35 @@
     font-weight: 700;
 }
 
+/* 완료 버튼 잠금 해제 폼 */
+.lesson-unlock__hint {
+    color: var(--ink-soft);
+}
+
+.lesson-unlock__form {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.lesson-unlock__input {
+    width: 6em;
+    padding: 6px 10px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-s);
+    background: var(--surface);
+    color: var(--ink);
+    font: inherit;
+    letter-spacing: 0.15em;
+    text-align: center;
+}
+
+.lesson-unlock__error {
+    color: var(--state-error);
+    font-size: 0.9em;
+}
+
 /* ---------- 읽는 진도 바 ---------- */
 .reading-progress {
     position: fixed;
