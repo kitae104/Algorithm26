@@ -1004,7 +1004,7 @@
 
             function renderUnlockForm(requiredCode) {
                 completeSlot.appendChild(el("span", "lesson-unlock__hint",
-                    "🔒 강사에게 받은 비밀번호를 입력하면 완료 버튼이 나타납니다."));
+                    "🔒 교수에게 받은 비밀번호를 입력하면 완료 버튼이 나타납니다."));
 
                 var form = el("form", "lesson-unlock__form");
 
