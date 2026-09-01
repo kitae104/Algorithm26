@@ -276,9 +276,6 @@ i가 n 이하인 동안 반복:     // ① 조건 검사
                     </p>
                 </div>
 
-                <details class="reveal-box">
-                    <summary>📖 읽을거리 — Big-O의 정확한 뜻: 함수의 상한 (형식적 정의, 참고용)</summary>
-                    <div class="reveal-box__content">
                 <h4>Big-O의 정확한 뜻 — 함수의 상한</h4>
                 <p>
                     Big-O는 "대충 이 정도로 늘어난다"는 감이 아니라 <strong>정확히 정의된 상한선</strong>입니다.
@@ -304,8 +301,6 @@ i가 n 이하인 동안 반복:     // ① 조건 검사
                     n≥2일 때 2n+1 ≤ 3n이 항상 성립하므로 <code>2n + 1 = O(n)</code>이고,
                     같은 이유로 <code>3n + 4</code>도 O(n)입니다.
                 </p>
-                    </div>
-                </details>
 
                 <h4>자주 쓰는 Big-O 종류</h4>
                 <div class="table-scroll">
@@ -448,10 +443,7 @@ i가 n 이하인 동안 반복:     // ① 조건 검사
                 </p>
 
                 <h3>구현 1단계 — 입력 데이터 준비</h3>
-                <p>먼저 처리할 데이터를 준비하고 눈으로 확인합니다. 여기서는 학생 5명의 점수 배열을 선언하고 출력만 합니다.</p>
-                <details class="reveal-box">
-                    <summary>📖 읽을거리 — Step1ScoreData.java 전체 코드 보기</summary>
-                    <div class="reveal-box__content">
+                <p>먼저 처리할 데이터를 준비하고 눈으로 확인합니다. 여기서는 학생 5명의 점수를 사용합니다.</p>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -489,8 +481,6 @@ scores[2] = 90
 scores[3] = 66
 scores[4] = 78</code></pre>
                 </article>
-                    </div>
-                </details>
 
                 <h3>구현 2단계 — 핵심 연산 하나 구현</h3>
                 <p>
