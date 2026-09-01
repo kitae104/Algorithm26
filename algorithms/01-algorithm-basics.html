@@ -276,6 +276,9 @@ i가 n 이하인 동안 반복:     // ① 조건 검사
                     </p>
                 </div>
 
+                <details class="reveal-box">
+                    <summary>📖 읽을거리 — Big-O의 정확한 뜻: 함수의 상한 (형식적 정의, 참고용)</summary>
+                    <div class="reveal-box__content">
                 <h4>Big-O의 정확한 뜻 — 함수의 상한</h4>
                 <p>
                     Big-O는 "대충 이 정도로 늘어난다"는 감이 아니라 <strong>정확히 정의된 상한선</strong>입니다.
@@ -301,6 +304,8 @@ i가 n 이하인 동안 반복:     // ① 조건 검사
                     n≥2일 때 2n+1 ≤ 3n이 항상 성립하므로 <code>2n + 1 = O(n)</code>이고,
                     같은 이유로 <code>3n + 4</code>도 O(n)입니다.
                 </p>
+                    </div>
+                </details>
 
                 <h4>자주 쓰는 Big-O 종류</h4>
                 <div class="table-scroll">
@@ -443,7 +448,10 @@ i가 n 이하인 동안 반복:     // ① 조건 검사
                 </p>
 
                 <h3>구현 1단계 — 입력 데이터 준비</h3>
-                <p>먼저 처리할 데이터를 준비하고 눈으로 확인합니다. 여기서는 학생 5명의 점수를 사용합니다.</p>
+                <p>먼저 처리할 데이터를 준비하고 눈으로 확인합니다. 여기서는 학생 5명의 점수 배열을 선언하고 출력만 합니다.</p>
+                <details class="reveal-box">
+                    <summary>📖 읽을거리 — Step1ScoreData.java 전체 코드 보기</summary>
+                    <div class="reveal-box__content">
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -481,6 +489,8 @@ scores[2] = 90
 scores[3] = 66
 scores[4] = 78</code></pre>
                 </article>
+                    </div>
+                </details>
 
                 <h3>구현 2단계 — 핵심 연산 하나 구현</h3>
                 <p>
@@ -1105,6 +1115,13 @@ static long oddSumByFormula(int n) {
             <!-- 17. 최종 프로그램 작성 문제 -->
             <section class="lesson-section lesson-section--assignment" id="sec-final" aria-labelledby="h-final">
                 <h2 id="h-final" data-toc-label="최종 프로그램 작성 문제"><span class="section-no">17</span>최종 프로그램 작성 문제</h2>
+                <div class="note-box note-box--tip">
+                    <span class="note-box__title">과제 안내</span>
+                    <p>
+                        이 문제는 수업 시간이 아니라 <strong>수업 후 과제</strong>로 진행합니다.
+                        수업에서는 문제 배경과 시작 코드만 짚고 넘어가고, 나머지는 직접 완성해 오세요.
+                    </p>
+                </div>
 
                 <h3>문제 제목 — 알고리즘 효율성 분석기 "AlgoMeter"</h3>
 
