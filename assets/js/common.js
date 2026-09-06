@@ -908,6 +908,33 @@
             }
         }
 
+        /* ---------- 목차 사이드바 접기/펼치기 (좌우로 접어 본문 폭을 넓힌다) ---------- */
+        (function () {
+            var tocToggle = document.getElementById("lesson-toc-toggle");
+            var layout = document.querySelector(".lesson-layout");
+            if (!tocToggle || !layout) return;
+
+            var STORAGE_KEY = "algo-lesson-toc-collapsed";
+            var collapsed = false;
+            try {
+                collapsed = localStorage.getItem(STORAGE_KEY) === "1";
+            } catch (e) { /* 저장소 접근 불가 시 기본값(펼침) 유지 */ }
+
+            function applyState() {
+                layout.classList.toggle("lesson-layout--toc-collapsed", collapsed);
+                tocToggle.setAttribute("aria-expanded", String(!collapsed));
+                tocToggle.setAttribute("aria-label", collapsed ? "목차 펼치기" : "목차 접기");
+            }
+
+            applyState();
+
+            tocToggle.addEventListener("click", function () {
+                collapsed = !collapsed;
+                applyState();
+                try { localStorage.setItem(STORAGE_KEY, collapsed ? "1" : "0"); } catch (e) { /* 무시 */ }
+            });
+        })();
+
         /* ---------- 이전/다음 강의 ---------- */
         var pager = document.getElementById("lesson-pager");
         if (pager && current) {

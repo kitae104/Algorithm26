@@ -45,8 +45,13 @@
 
         <!-- 내부 목차 (common.js가 자동 생성) -->
         <nav class="lesson-toc" aria-label="이 강의의 목차">
-            <p class="lesson-toc__title">이 강의의 목차</p>
-            <ol id="lesson-toc-list"></ol>
+            <button type="button" class="lesson-toc__toggle" id="lesson-toc-toggle" aria-expanded="true" aria-controls="lesson-toc-body" aria-label="목차 접기">
+                <span class="lesson-toc__toggle-icon" aria-hidden="true">&#8249;</span>
+            </button>
+            <div class="lesson-toc__body" id="lesson-toc-body">
+                <p class="lesson-toc__title">이 강의의 목차</p>
+                <ol id="lesson-toc-list"></ol>
+            </div>
         </nav>
 
         <div class="lesson-body">
@@ -54,20 +59,14 @@
             <!-- 1. 강의 소개 -->
             <section class="lesson-section" id="sec-intro" aria-labelledby="h-intro">
                 <h2 id="h-intro" data-toc-label="강의 소개"><span class="section-no">01</span>강의 소개</h2>
-                <p>
-                    지금까지 배운 알고리즘은 대부분 "어떤 자료구조를 쓰는가"의 이야기였습니다.
-                    이번 강의부터는 <strong>"문제를 어떻게 설계하는가"</strong>의 이야기입니다.
-                    동적 계획법(Dynamic Programming, DP)은 특정 자료구조가 아니라 <strong>설계 기법</strong>입니다.
-                    <em>큰 문제를 작은 문제로 나누고, <strong>작은 문제의 답을 저장해서 다시 쓰는</strong> 것이 전부입니다.</em>
-                </p>
-                <p>
-                    출발점은 7강에서 이미 만난 재귀 피보나치입니다.
-                    이 코드가 왜 느린지 <strong>호출 횟수를 실제로 세어</strong> 확인하고(n=35에서 29,860,703번!),
-                    답을 저장하는 것만으로 호출이 69번으로 줄어드는 것을 직접 봅니다.
-                    그다음 재귀 없이 표를 채우는 <strong>바텀업 테이블</strong>로 바꾸고,
-                    같은 요령으로 새 문제(계단 오르기)의 <strong>점화식을 스스로 세우는 3단계</strong>를 연습합니다.
-                    마지막에는 10강에서 그리디가 틀렸던 동전 문제를 DP로 최적 해결하며 두 기법의 차이를 확인합니다.
-                </p>
+                <p class="lecture-lead">이번 강의는 자료구조가 아니라 <strong>"문제를 어떻게 설계하는가"</strong>를 다루는 <strong>설계 기법</strong>, 동적 계획법(DP)입니다.</p>
+                <ul>
+                    <li>DP = <em>큰 문제를 작은 문제로 나누고, <strong>작은 문제의 답을 저장해서 다시 쓰는</strong> 것</em></li>
+                    <li>출발점: 7강 재귀 피보나치의 <strong>호출 횟수를 실제로 세어</strong> 확인(n=35에서 29,860,703번!), 저장만으로 호출이 69번으로 감소</li>
+                    <li>재귀 없이 표를 채우는 <strong>바텀업 테이블</strong>로 전환</li>
+                    <li>새 문제(계단 오르기)의 <strong>점화식을 스스로 세우는 3단계</strong> 연습</li>
+                    <li>10강에서 그리디가 틀렸던 동전 문제를 DP로 최적 해결하며 두 기법의 차이 확인</li>
+                </ul>
             </section>
 
             <!-- 2. 학습 목표 -->
@@ -87,7 +86,7 @@
             <!-- 3. 선수 지식 -->
             <section class="lesson-section" id="sec-prereq" aria-labelledby="h-prereq">
                 <h2 id="h-prereq" data-toc-label="선수 지식"><span class="section-no">03</span>선수 지식</h2>
-                <p>이 강의는 다음 내용을 이미 알고 있다고 가정합니다.</p>
+                <p class="lecture-lead">이 강의는 다음 내용을 이미 알고 있다고 가정합니다.</p>
                 <div class="table-scroll">
                     <table class="data-table">
                         <thead>
@@ -108,15 +107,15 @@
             <!-- 4. 실제 문제 상황 -->
             <section class="lesson-section" id="sec-problem" aria-labelledby="h-problem">
                 <h2 id="h-problem" data-toc-label="실제 문제 상황"><span class="section-no">04</span>실제 문제 상황</h2>
-                <p>
-                    여러분은 모바일 게임 개발팀에서 이벤트 기능을 맡았습니다.
-                    캐릭터가 n칸짜리 계단을 <strong>한 번에 1칸 또는 2칸씩</strong> 올라가는데,
-                    "계단을 오르는 서로 다른 방법의 수"만큼 보상 경우의 수를 미리 계산해 둬야 합니다.
-                    7강에서 배운 재귀로 금방 구현했고 계단 10칸에서는 잘 돌았지만, 50칸으로 늘어나자
-                    <strong>프로그램이 몇 분이 지나도 끝나지 않습니다</strong>. 로그를 찍어 보니 같은 함수가
-                    같은 인자로 <strong>수백억 번</strong> 호출되고 있었습니다.
-                    <em>선배가 코드를 보더니 한마디 합니다. <strong>"한 번 구한 답을 왜 버려? 적어 두고 다시 써."</strong></em>
-                </p>
+                <ul>
+                    <li>상황: 모바일 게임 개발팀에서 이벤트 기능을 맡음</li>
+                    <li>캐릭터가 n칸짜리 계단을 <strong>한 번에 1칸 또는 2칸씩</strong> 올라감 —
+                        "계단을 오르는 서로 다른 방법의 수"만큼 보상 경우의 수를 미리 계산해야 함</li>
+                    <li>7강 재귀로 금방 구현, 계단 10칸에서는 잘 돌았지만 50칸으로 늘어나자
+                        <strong>프로그램이 몇 분이 지나도 끝나지 않음</strong></li>
+                    <li>로그를 찍어 보니 같은 함수가 같은 인자로 <strong>수백억 번</strong> 호출되고 있었음</li>
+                    <li><em>선배의 한마디: <strong>"한 번 구한 답을 왜 버려? 적어 두고 다시 써."</strong></em></li>
+                </ul>
                 <div class="note-box">
                     <span class="note-box__title">오늘의 핵심 질문</span>
                     <p>재귀가 <strong>같은 작은 문제를 반복해서</strong> 푼다면 —
@@ -127,40 +126,33 @@
             <!-- 5. 사람이 직접 해결해 보기 -->
             <section class="lesson-section" id="sec-hand" aria-labelledby="h-hand">
                 <h2 id="h-hand" data-toc-label="사람이 직접 해결해 보기"><span class="section-no">05</span>사람이 직접 해결해 보기</h2>
-                <p>
-                    코드를 만지기 전에, 작은 입력으로 두 가지를 손으로 확인합니다.
-                    (1) 재귀가 정말 같은 계산을 반복하는가? (2) 답을 적어 두면 정말 줄어드는가?
-                </p>
+                <p class="lecture-lead">코드를 만지기 전에, 작은 입력으로 두 가지를 손으로 확인 — (1) 재귀가 정말 같은 계산을 반복하는가? (2) 답을 적어 두면 정말 줄어드는가?</p>
 
                 <h3>먼저 — 재귀 피보나치의 호출 나무 그리기</h3>
                 <div class="hand-step">
                     <span class="hand-step__label">STEP 1</span>
-                    <p>
-                        종이에 fibo(5)의 호출 나무를 그려 봅시다. fibo(5)는 fibo(4)와 fibo(3)을 부르고,
-                        fibo(4)는 다시 fibo(3)과 fibo(2)를 부릅니다. 끝까지 그려 보세요.
-                    </p>
+                    <p class="lecture-lead">종이에 fibo(5)의 호출 나무를 그려 봅시다. fibo(5)는 fibo(4)와 fibo(3)을 부르고, fibo(4)는 다시 fibo(3)과 fibo(2)를 부릅니다. 끝까지 그려 보세요.</p>
                     <details class="reveal-box">
                         <summary>질문: fibo(3)은 몇 번, fibo(2)는 몇 번 등장하나요?</summary>
                         <div class="reveal-box__content">
-                            <p>fibo(3)은 <strong>2번</strong>(fibo(5)와 fibo(4)가 각각 부름),
-                            fibo(2)는 <strong>3번</strong>, fibo(1)은 <strong>5번</strong> 등장합니다.
-                            전체 호출은 15번입니다. <strong>같은 문제를 여러 번 다시 푸는 것</strong> —
-                            이것이 오늘의 적, "중복 부분 문제"입니다.</p>
+                            <ul>
+                                <li>fibo(3)은 <strong>2번</strong>(fibo(5)와 fibo(4)가 각각 부름), fibo(2)는 <strong>3번</strong>, fibo(1)은 <strong>5번</strong> 등장</li>
+                                <li>전체 호출은 15번</li>
+                                <li><strong>같은 문제를 여러 번 다시 푸는 것</strong> — 이것이 오늘의 적, "중복 부분 문제"</li>
+                            </ul>
                         </div>
                     </details>
                 </div>
                 <div class="hand-step">
                     <span class="hand-step__label">STEP 2</span>
-                    <p>
-                        이번에는 수첩을 하나 준비합니다. fibo(2)를 처음 계산하면 수첩에 "fibo(2)=1"이라고 적고,
-                        다음부터 fibo(2)가 필요하면 <strong>계산하지 않고 수첩을 봅니다</strong>. 다시 나무를 그려 보세요.
-                    </p>
+                    <p class="lecture-lead">이번에는 수첩을 하나 준비합니다. fibo(2)를 처음 계산하면 수첩에 "fibo(2)=1"이라고 적고, 다음부터 fibo(2)가 필요하면 <strong>계산하지 않고 수첩을 봅니다</strong>. 다시 나무를 그려 보세요.</p>
                     <details class="reveal-box">
                         <summary>질문: 수첩을 쓰면 호출이 몇 번으로 줄어드나요?</summary>
                         <div class="reveal-box__content">
-                            <p><strong>9번</strong>으로 줄어듭니다. 각 fibo(k)를 실제로 계산하는 것은 딱 한 번씩이고,
-                            나머지는 수첩을 열어 보는 것뿐이기 때문입니다.
-                            <em>이 수첩이 코드에서는 배열 <code>memo</code>가 되고, 이 기법의 이름이 <strong>메모이제이션</strong>입니다.</em></p>
+                            <ul>
+                                <li><strong>9번</strong>으로 줄어듦 — 각 fibo(k)를 실제로 계산하는 것은 딱 한 번씩이고, 나머지는 수첩을 열어 보는 것뿐</li>
+                                <li><em>이 수첩이 코드에서는 배열 <code>memo</code>가 되고, 이 기법의 이름이 <strong>메모이제이션</strong></em></li>
+                            </ul>
                         </div>
                     </details>
                 </div>
@@ -168,33 +160,29 @@
                 <h3>다음 — 계단 4칸을 손으로 오르기</h3>
                 <div class="hand-step">
                     <span class="hand-step__label">STEP 3</span>
-                    <p>
-                        계단 4칸을 1칸/2칸 걸음으로 오르는 방법을 전부 나열해 봅시다.
-                        (1+1+1+1), (1+1+2), (1+2+1), (2+1+1), (2+2) — 모두 <strong>5가지</strong>입니다.
-                    </p>
+                    <p class="lecture-lead">계단 4칸을 1칸/2칸 걸음으로 오르는 방법을 전부 나열해 봅시다. (1+1+1+1), (1+1+2), (1+2+1), (2+1+1), (2+2) — 모두 <strong>5가지</strong>입니다.</p>
                     <details class="reveal-box">
                         <summary>질문: 5가지를 "마지막 걸음"으로 나누면 어떻게 묶이나요?</summary>
                         <div class="reveal-box__content">
-                            <p>마지막 걸음이 <strong>1칸</strong>인 경우: (1+1+1+<u>1</u>), (1+2+<u>1</u>), (2+1+<u>1</u>) — 3가지.
-                            앞부분은 정확히 "3칸을 오르는 방법"입니다.<br>
-                            마지막 걸음이 <strong>2칸</strong>인 경우: (1+1+<u>2</u>), (2+<u>2</u>) — 2가지.
-                            앞부분은 정확히 "2칸을 오르는 방법"입니다.<br>
-                            즉 <strong>4칸의 답(5) = 3칸의 답(3) + 2칸의 답(2)</strong>. 큰 문제의 답이 작은 문제의 답으로 조립됩니다!</p>
+                            <ul>
+                                <li>마지막 걸음이 <strong>1칸</strong>인 경우: (1+1+1+<u>1</u>), (1+2+<u>1</u>), (2+1+<u>1</u>) — 3가지, 앞부분은 정확히 "3칸을 오르는 방법"</li>
+                                <li>마지막 걸음이 <strong>2칸</strong>인 경우: (1+1+<u>2</u>), (2+<u>2</u>) — 2가지, 앞부분은 정확히 "2칸을 오르는 방법"</li>
+                                <li>즉 <strong>4칸의 답(5) = 3칸의 답(3) + 2칸의 답(2)</strong> — 큰 문제의 답이 작은 문제의 답으로 조립됨!</li>
+                            </ul>
                         </div>
                     </details>
                 </div>
                 <div class="hand-step">
                     <span class="hand-step__label">STEP 4</span>
-                    <p>
-                        이 규칙이 항상 성립한다면, 나열하지 않고도 표를 채울 수 있습니다.
-                        1칸: 1가지, 2칸: 2가지에서 시작해 "앞의 두 칸을 더하기"만 반복해 8칸까지 채워 보세요.
-                    </p>
+                    <p class="lecture-lead">이 규칙이 항상 성립한다면, 나열하지 않고도 표를 채울 수 있습니다. 1칸: 1가지, 2칸: 2가지에서 시작해 "앞의 두 칸을 더하기"만 반복해 8칸까지 채워 보세요.</p>
                     <details class="reveal-box">
                         <summary>질문: 표를 채우면 8칸의 답은 얼마인가요?</summary>
                         <div class="reveal-box__content">
-                            <p>1, 2, 3, 5, 8, 13, 21, <strong>34</strong>. 즉 8칸은 34가지입니다.
-                            나열은 34개를 다 써야 하지만, 표는 <strong>덧셈 6번</strong>으로 끝났습니다.
-                            <em>이 "표 채우기"가 바로 바텀업 DP입니다.</em> 아래 시각화와 코드에서 똑같이 확인합니다.</p>
+                            <ul>
+                                <li>1, 2, 3, 5, 8, 13, 21, <strong>34</strong> — 8칸은 34가지</li>
+                                <li>나열은 34개를 다 써야 하지만, 표는 <strong>덧셈 6번</strong>으로 끝남</li>
+                                <li><em>이 "표 채우기"가 바로 바텀업 DP</em> — 아래 시각화와 코드에서 똑같이 확인</li>
+                            </ul>
                         </div>
                     </details>
                 </div>
@@ -205,13 +193,11 @@
                 <h2 id="h-concepts" data-toc-label="핵심 개념"><span class="section-no">06</span>핵심 개념</h2>
 
                 <h3>동적 계획법(DP)이란?</h3>
-                <p>
-                    동적 계획법은 <strong>큰 문제를 작은 부분 문제로 나누고, 각 부분 문제의 답을 한 번만 계산해
-                    저장한 뒤 재사용하는 설계 기법</strong>입니다.
-                    이름의 "동적(dynamic)"에 특별한 뜻은 없습니다 — 핵심은 <strong>"저장하고 재사용한다"</strong>뿐입니다.
-                    정렬이나 스택 같은 특정 알고리즘·자료구조가 아니라, 문제에 접근하는 <strong>방법</strong>이라는 점에서
-                    10강의 그리디와 같은 "설계 기법" 분류에 속합니다.
-                </p>
+                <p class="lecture-lead">동적 계획법은 <strong>큰 문제를 작은 부분 문제로 나누고, 각 부분 문제의 답을 한 번만 계산해 저장한 뒤 재사용하는 설계 기법</strong>입니다.</p>
+                <ul>
+                    <li>이름의 "동적(dynamic)"에 특별한 뜻은 없음 — 핵심은 <strong>"저장하고 재사용한다"</strong>뿐</li>
+                    <li>정렬이나 스택 같은 특정 알고리즘·자료구조가 아니라, 문제에 접근하는 <strong>방법</strong> — 10강의 그리디와 같은 "설계 기법" 분류</li>
+                </ul>
 
                 <h3>DP가 통하는 두 가지 조건</h3>
                 <div class="table-scroll">
@@ -233,29 +219,22 @@
                         </tbody>
                     </table>
                 </div>
-                <p>
-                    중복이 없다면 저장해 봐야 다시 쓸 일이 없고(그냥 분할 정복),
-                    조립이 안 된다면 작은 답을 모아도 큰 답이 안 됩니다.
-                    <em><strong>두 조건이 모두 성립할 때 DP가 위력을 발휘합니다.</strong></em>
-                </p>
+                <p class="lecture-lead">중복이 없다면 저장해 봐야 다시 쓸 일이 없고(그냥 분할 정복), 조립이 안 된다면 작은 답을 모아도 큰 답이 안 됩니다. <em><strong>두 조건이 모두 성립할 때 DP가 위력을 발휘합니다.</strong></em></p>
 
                 <h3>점화식 — DP의 설계도 (코드보다 먼저!)</h3>
-                <p>
-                    "작은 문제의 답으로 큰 문제의 답을 만드는 규칙"을 식으로 적은 것이 <strong>점화식</strong>입니다.
-                    피보나치의 정의 자체가 점화식입니다: <strong>F(n) = F(n-1) + F(n-2)</strong>, 그리고 F(0) = 0, F(1) = 1.
-                </p>
-                <p>
-                    계단 오르기는 정의가 식으로 주어지지 않으므로 <strong>우리가 유도</strong>해야 합니다.
-                    손 풀이 STEP 3의 논리를 그대로 일반화하면 됩니다.
-                    n칸에 도착하는 <strong>마지막 걸음</strong>은 반드시 1칸 아니면 2칸입니다.
-                    마지막이 1칸이면 그 앞은 "n-1칸을 오르는 모든 방법", 마지막이 2칸이면 "n-2칸을 오르는 모든 방법"이고,
-                    두 묶음은 서로 겹치지 않습니다. 따라서:
-                </p>
+                <p class="lecture-lead">"작은 문제의 답으로 큰 문제의 답을 만드는 규칙"을 식으로 적은 것이 <strong>점화식</strong>입니다. 피보나치의 정의 자체가 점화식입니다: <strong>F(n) = F(n-1) + F(n-2)</strong>, 그리고 F(0) = 0, F(1) = 1.</p>
+                <ul>
+                    <li>계단 오르기는 정의가 식으로 주어지지 않으므로 <strong>우리가 유도</strong>해야 함 — 손 풀이 STEP 3의 논리를 그대로 일반화</li>
+                    <li>n칸에 도착하는 <strong>마지막 걸음</strong>은 반드시 1칸 아니면 2칸</li>
+                    <li>마지막이 1칸이면 그 앞은 "n-1칸을 오르는 모든 방법", 마지막이 2칸이면 "n-2칸을 오르는 모든 방법" — 두 묶음은 서로 겹치지 않음. 따라서:</li>
+                </ul>
                 <div class="note-box note-box--tip">
                     <span class="note-box__title">계단 오르기의 점화식</span>
-                    <p><strong>dp[n] = dp[n-1] + dp[n-2]</strong> &nbsp;(단, dp[1] = 1, dp[2] = 2)</p>
-                    <p>dp[n]은 "n칸 계단을 오르는 방법의 수". 이 식이 확정되면 구현은 옮겨 적기에 가깝습니다.
-                    <em><strong>DP 문제의 승부는 코드가 아니라 점화식에서 납니다.</strong></em></p>
+                    <ul>
+                        <li><strong>dp[n] = dp[n-1] + dp[n-2]</strong> &nbsp;(단, dp[1] = 1, dp[2] = 2)</li>
+                        <li>dp[n]은 "n칸 계단을 오르는 방법의 수" — 이 식이 확정되면 구현은 옮겨 적기에 가까움</li>
+                        <li><em><strong>DP 문제의 승부는 코드가 아니라 점화식에서 납니다.</strong></em></li>
+                    </ul>
                 </div>
 
                 <h3>점화식을 세우는 3단계</h3>
@@ -269,7 +248,7 @@
                 </ol>
 
                 <h3>같은 점화식, 두 가지 구현 — 메모이제이션 vs 타뷸레이션</h3>
-                <p>점화식이 정해지면 구현 방향은 두 가지입니다. 위에서 내려가며 필요할 때 계산하거나, 아래에서 올라가며 미리 다 채우거나.</p>
+                <p class="lecture-lead">점화식이 정해지면 구현 방향은 두 가지 — 위에서 내려가며 필요할 때 계산하거나, 아래에서 올라가며 미리 다 채우거나.</p>
                 <div class="table-scroll">
                     <table class="data-table">
                         <thead>
@@ -287,39 +266,33 @@
                 </div>
 
                 <h3>그리디(10강)와 DP의 차이</h3>
-                <p>
-                    그리디는 매 순간 <strong>하나의 선택을 확정</strong>하고 되돌리지 않습니다.
-                    DP는 각 부분 문제에서 <strong>가능한 모든 선택을 점화식으로 비교</strong>한 뒤 가장 좋은 답만 기록합니다.
-                    동전 문제로 말하면 — 그리디는 "일단 100원!"이지만,
-                    DP의 점화식 <code>dp[금액] = min(dp[금액 - 동전] + 1)</code>은
-                    <strong>모든 동전을 다 넣어 보고</strong> 최소를 고릅니다.
-                    <em>그래서 그리디가 실패하는 동전 {1, 60, 100}에서도 DP는 항상 최적입니다.</em>
-                    (16번 응용 섹션에서 실측으로 확인합니다.)
-                </p>
+                <ul>
+                    <li>그리디는 매 순간 <strong>하나의 선택을 확정</strong>하고 되돌리지 않음</li>
+                    <li>DP는 각 부분 문제에서 <strong>가능한 모든 선택을 점화식으로 비교</strong>한 뒤 가장 좋은 답만 기록</li>
+                    <li>동전 문제로 말하면 — 그리디는 "일단 100원!"이지만, DP의 점화식 <code>dp[금액] = min(dp[금액 - 동전] + 1)</code>은 <strong>모든 동전을 다 넣어 보고</strong> 최소를 고름</li>
+                    <li><em>그래서 그리디가 실패하는 동전 {1, 60, 100}에서도 DP는 항상 최적</em>(16번 응용 섹션에서 실측으로 확인)</li>
+                </ul>
             </section>
 
             <!-- 7. 단계별 동작 과정 -->
             <section class="lesson-section" id="sec-steps" aria-labelledby="h-steps">
                 <h2 id="h-steps" data-toc-label="단계별 동작 과정"><span class="section-no">07</span>단계별 동작 과정</h2>
-                <p>
-                    계단 오르기 DP 테이블이 채워지는 과정을 단계별로 봅니다.
-                    <strong>다음 단계 ▶</strong> 버튼으로 진행하세요.
-                    지금 계산 중인 칸은 <strong>파란색(현재)</strong>,
-                    점화식이 참조하는 앞의 두 칸은 <strong>앰버색(참조)</strong>,
-                    값이 확정된 칸은 <strong>초록색(확정)</strong>으로 표시됩니다.
-                </p>
+                <ul>
+                    <li>계단 오르기 DP 테이블이 채워지는 과정을 단계별로 확인 — <strong>다음 단계 ▶</strong> 버튼으로 진행</li>
+                    <li>지금 계산 중인 칸은 <strong>파란색(현재)</strong>, 점화식이 참조하는 앞의 두 칸은 <strong>앰버색(참조)</strong>, 값이 확정된 칸은 <strong>초록색(확정)</strong></li>
+                </ul>
                 <div id="viz-dp-table" aria-label="계단 오르기 DP 테이블이 채워지는 과정 시각화"></div>
-                <p>
-                    매 단계에서 하는 일은 단 하나 — <strong>이미 확정된 두 칸을 더해 다음 칸을 채우는 것</strong>입니다.
-                    <em>재귀처럼 위에서 내려갔다 올라오는 여행이 없고, 왼쪽에서 오른쪽으로 한 번 지나가면 끝입니다.</em>
-                    이것이 손 풀이 STEP 4의 "표 채우기"이고, 구현 3단계의 코드와 정확히 같은 동작입니다.
-                </p>
+                <ul>
+                    <li>매 단계에서 하는 일은 단 하나 — <strong>이미 확정된 두 칸을 더해 다음 칸을 채우는 것</strong></li>
+                    <li><em>재귀처럼 위에서 내려갔다 올라오는 여행이 없고, 왼쪽에서 오른쪽으로 한 번 지나가면 끝</em></li>
+                    <li>이것이 손 풀이 STEP 4의 "표 채우기"이고, 구현 3단계의 코드와 정확히 같은 동작</li>
+                </ul>
             </section>
 
             <!-- 8. 의사코드 -->
             <section class="lesson-section" id="sec-pseudo" aria-labelledby="h-pseudo">
                 <h2 id="h-pseudo" data-toc-label="의사코드"><span class="section-no">08</span>의사코드</h2>
-                <p>점화식 3단계를 그대로 의사코드로 옮깁니다. 두 구현 방향을 나란히 봅니다.</p>
+                <p class="lecture-lead">점화식 3단계를 그대로 의사코드로 옮깁니다. 두 구현 방향을 나란히 봅니다.</p>
 
                 <article class="code-card">
                     <header class="code-card__header">
@@ -354,26 +327,16 @@
     dp[n]을 반환한다                   // 표의 마지막 칸이 최종 답</code></pre>
                 </article>
 
-                <p>
-                    두 의사코드의 <strong>점화식은 완전히 같습니다</strong>. 다른 것은 계산 순서뿐입니다.
-                    탑다운은 "필요하면 내려가서 구해 오기", 바텀업은 "아래부터 미리 다 채워 두기"입니다.
-                </p>
+                <p class="lecture-lead">두 의사코드의 <strong>점화식은 완전히 같습니다</strong> — 다른 것은 계산 순서뿐, 탑다운은 "필요하면 내려가서 구해 오기", 바텀업은 "아래부터 미리 다 채워 두기"입니다.</p>
             </section>
 
             <!-- 9. 점진적 Java 구현 -->
             <section class="lesson-section" id="sec-impl" aria-labelledby="h-impl">
                 <h2 id="h-impl" data-toc-label="점진적 Java 구현"><span class="section-no">09</span>점진적 Java 구현</h2>
-                <p>
-                    완성 코드를 한 번에 쓰지 않습니다.
-                    <strong>문제를 실측 → 저장 추가(메모) → 반복문으로 전환(테이블) → 새 문제에 적용</strong>
-                    순서로, 매 단계에서 직전 단계와의 차이를 확인하며 나아갑니다.
-                </p>
+                <p class="lecture-lead">완성 코드를 한 번에 쓰지 않습니다. <strong>문제를 실측 → 저장 추가(메모) → 반복문으로 전환(테이블) → 새 문제에 적용</strong> 순서로, 매 단계에서 직전 단계와의 차이를 확인하며 나아갑니다.</p>
 
                 <h3>구현 1단계 — 순수 재귀의 호출 횟수 실측</h3>
-                <p>
-                    7강의 재귀 피보나치에 1강의 연산 카운터를 붙입니다.
-                    "느리다더라"가 아니라 <strong>몇 번 호출되는지 숫자로</strong> 확인하는 것이 목적입니다.
-                </p>
+                <p class="lecture-lead">7강의 재귀 피보나치에 1강의 연산 카운터를 붙입니다. "느리다더라"가 아니라 <strong>몇 번 호출되는지 숫자로</strong> 확인하는 것이 목적입니다.</p>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -434,16 +397,15 @@ n이 5 커질 때마다 호출 횟수가 약 11배씩 늘어난다.
                 </article>
                 <div class="note-box note-box--warn">
                     <span class="note-box__title">실측이 말해 주는 것</span>
-                    <p>n이 10 → 20 → 30으로 커질 때 호출은 177 → 21,891 → 2,692,537번 — 약 <strong>123배씩</strong> 폭발합니다.
-                    이런 증가는 O(2ⁿ)에 가깝습니다. n=50이면 약 <strong>407억 번</strong>이라 사실상 끝나지 않습니다.
-                    <em>문제 상황에서 프로그램이 멈춘 이유가 바로 이것입니다.</em></p>
+                    <ul>
+                        <li>n이 10 → 20 → 30으로 커질 때 호출은 177 → 21,891 → 2,692,537번 — 약 <strong>123배씩</strong> 폭발</li>
+                        <li>이런 증가는 O(2ⁿ)에 가까움 — n=50이면 약 <strong>407억 번</strong>이라 사실상 끝나지 않음</li>
+                        <li><em>문제 상황에서 프로그램이 멈춘 이유가 바로 이것</em></li>
+                    </ul>
                 </div>
 
                 <h3>구현 2단계 — 메모이제이션: 저장 배열 추가 (탑다운)</h3>
-                <p>
-                    1단계 코드에 달라지는 것은 <strong>배열 <code>memo</code>와 두 줄</strong>뿐입니다.
-                    답이 저장돼 있으면 즉시 반환하고, 없으면 계산한 뒤 저장합니다. 손 풀이 STEP 2의 "수첩" 그대로입니다.
-                </p>
+                <p class="lecture-lead">1단계 코드에 달라지는 것은 <strong>배열 <code>memo</code>와 두 줄</strong>뿐입니다. 답이 저장돼 있으면 즉시 반환하고, 없으면 계산한 뒤 저장합니다. 손 풀이 STEP 2의 "수첩" 그대로입니다.</p>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -525,18 +487,15 @@ n=50이면 약 407억 번이 99번이 된다 — 저장 공간 O(n)과 바꾼 �
                 </article>
                 <div class="note-box note-box--tip">
                     <span class="note-box__title">관찰</span>
-                    <p>n=35에서 29,860,703번이 <strong>69번</strong>이 됐습니다.
-                    코드는 세 줄 늘었을 뿐인데 O(2ⁿ)이 O(n)이 됐습니다 —
-                    저장(메모리 O(n))과 시간을 맞바꾼 것입니다.
-                    1단계에서 몇 분씩 걸리던 n=50도 이제 즉시 끝납니다(12586269025).</p>
+                    <ul>
+                        <li>n=35에서 29,860,703번이 <strong>69번</strong>이 됨</li>
+                        <li>코드는 세 줄 늘었을 뿐인데 O(2ⁿ)이 O(n)이 됨 — 저장(메모리 O(n))과 시간을 맞바꾼 것</li>
+                        <li>1단계에서 몇 분씩 걸리던 n=50도 이제 즉시 끝남(12586269025)</li>
+                    </ul>
                 </div>
 
                 <h3>구현 3단계 — 타뷸레이션: 재귀를 반복문으로 (바텀업)</h3>
-                <p>
-                    메모이제이션은 여전히 재귀입니다. 그런데 잘 보면 fibo(n)에 필요한 것은
-                    fibo(0)부터 fibo(n-1)까지 — <strong>어차피 전부</strong>입니다.
-                    그렇다면 처음부터 작은 쪽에서 <strong>표를 차례로 채우면</strong> 재귀가 필요 없습니다.
-                </p>
+                <p class="lecture-lead">메모이제이션은 여전히 재귀입니다. 그런데 잘 보면 fibo(n)에 필요한 것은 fibo(0)부터 fibo(n-1)까지 — <strong>어차피 전부</strong>입니다. 그렇다면 처음부터 작은 쪽에서 <strong>표를 차례로 채우면</strong> 재귀가 필요 없습니다.</p>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -621,18 +580,21 @@ n    | fiboByTable(n) | 덧셈 횟수 (n - 1)
                 </article>
                 <div class="note-box">
                     <span class="note-box__title">2단계와 3단계는 같은 점화식이다</span>
-                    <p>메모(59번 호출)와 테이블(29번 덧셈)의 결과는 n=30에서 둘 다 832040으로 같습니다.
-                    바뀐 것은 <strong>계산 방향</strong>뿐입니다. 테이블 방식은 호출 스택을 쓰지 않으므로
-                    n이 수십만이어도 StackOverflow 걱정이 없습니다. 이후 이 과정에서는 바텀업을 기본으로 씁니다.</p>
+                    <ul>
+                        <li>메모(59번 호출)와 테이블(29번 덧셈)의 결과는 n=30에서 둘 다 832040으로 같음 — 바뀐 것은 <strong>계산 방향</strong>뿐</li>
+                        <li>테이블 방식은 호출 스택을 쓰지 않으므로 n이 수십만이어도 StackOverflow 걱정이 없음</li>
+                        <li>이후 이 과정에서는 바텀업을 기본으로 씀</li>
+                    </ul>
                 </div>
 
                 <h3>구현 4단계 — 새 문제에 적용: 계단 오르기</h3>
-                <p>
-                    이제 점화식 3단계를 <strong>새 문제에 스스로 적용</strong>합니다.
-                    ① 정의: dp[i] = i칸 계단을 오르는 방법의 수. ② 기저: dp[1] = 1, dp[2] = 2.
-                    ③ 전이: dp[i] = dp[i-1] + dp[i-2] (마지막 걸음이 1칸이냐 2칸이냐).
-                    순수 재귀와 테이블을 나란히 구현해 결과가 같은지 검증합니다.
-                </p>
+                <p class="lecture-lead">이제 점화식 3단계를 <strong>새 문제에 스스로 적용</strong>합니다.</p>
+                <ul>
+                    <li>① 정의: dp[i] = i칸 계단을 오르는 방법의 수</li>
+                    <li>② 기저: dp[1] = 1, dp[2] = 2</li>
+                    <li>③ 전이: dp[i] = dp[i-1] + dp[i-2] (마지막 걸음이 1칸이냐 2칸이냐)</li>
+                    <li>순수 재귀와 테이블을 나란히 구현해 결과가 같은지 검증</li>
+                </ul>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -716,20 +678,18 @@ n    | 재귀 결과  | 테이블 결과 | 재귀 호출 횟수 | 테이블 덧�
                 </article>
                 <div class="note-box note-box--tip">
                     <span class="note-box__title">관찰</span>
-                    <p>n=4의 답 5는 손 풀이 STEP 3에서 나열한 5가지와 일치합니다.
-                    n=30에서 재귀는 1,664,079번 호출, 테이블은 <strong>덧셈 28번</strong>.
-                    <em>점화식만 옳으면, 어떤 문제든 같은 방식으로 폭발을 잠재울 수 있습니다.</em></p>
+                    <ul>
+                        <li>n=4의 답 5는 손 풀이 STEP 3에서 나열한 5가지와 일치</li>
+                        <li>n=30에서 재귀는 1,664,079번 호출, 테이블은 <strong>덧셈 28번</strong></li>
+                        <li><em>점화식만 옳으면, 어떤 문제든 같은 방식으로 폭발을 잠재울 수 있음</em></li>
+                    </ul>
                 </div>
             </section>
 
             <!-- 10. 완성 Java 코드 -->
             <section class="lesson-section" id="sec-complete" aria-labelledby="h-complete">
                 <h2 id="h-complete" data-toc-label="완성 Java 코드"><span class="section-no">10</span>완성 Java 코드</h2>
-                <p>
-                    지금까지의 조각을 모아 계단 오르기를 <strong>네 가지 방법</strong>으로 구현하고 서로 검증하는
-                    프로그램을 완성합니다. 마지막 방법은 새로 등장하는 <strong>공간 최적화</strong>입니다 —
-                    점화식이 직전 두 칸만 참조하므로, 표 전체 대신 <strong>변수 2개</strong>만 유지해도 됩니다.
-                </p>
+                <p class="lecture-lead">지금까지의 조각을 모아 계단 오르기를 <strong>네 가지 방법</strong>으로 구현하고 서로 검증하는 프로그램을 완성합니다. 마지막 방법은 새로 등장하는 <strong>공간 최적화</strong>입니다 — 점화식이 직전 두 칸만 참조하므로, 표 전체 대신 <strong>변수 2개</strong>만 유지해도 됩니다.</p>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -865,20 +825,19 @@ n    | 결과      | 재귀 호출    | 메모 호출 | 테이블 덧셈
                 </article>
                 <div class="note-box note-box--warn">
                     <span class="note-box__title">공간 최적화는 언제 가능한가?</span>
-                    <p>점화식이 <strong>직전 몇 칸만</strong> 참조할 때만 가능합니다.
-                    dp[i]가 dp[i-1], dp[i-2]만 보면 변수 2개로 충분하지만,
-                    15번 섹션의 동전 문제처럼 dp[money - 60] 같은 <strong>먼 칸</strong>을 참조하면 표 전체가 필요합니다.
-                    <em>최적화 전에 항상 "무엇을 참조하는가"를 먼저 확인하세요.</em></p>
+                    <ul>
+                        <li>점화식이 <strong>직전 몇 칸만</strong> 참조할 때만 가능</li>
+                        <li>dp[i]가 dp[i-1], dp[i-2]만 보면 변수 2개로 충분</li>
+                        <li>15번 섹션의 동전 문제처럼 dp[money - 60] 같은 <strong>먼 칸</strong>을 참조하면 표 전체가 필요</li>
+                        <li><em>최적화 전에 항상 "무엇을 참조하는가"를 먼저 확인할 것</em></li>
+                    </ul>
                 </div>
             </section>
 
             <!-- 11. 실행 과정 추적 -->
             <section class="lesson-section" id="sec-trace" aria-labelledby="h-trace">
                 <h2 id="h-trace" data-toc-label="실행 과정 추적"><span class="section-no">11</span>실행 과정 추적</h2>
-                <p>
-                    완성 코드의 테이블이 정말 시각화(7번 섹션)·손 풀이(5번 섹션)와 똑같이 채워지는지,
-                    매 칸의 계산 과정을 출력해 확인합니다. n=8로 실행합니다.
-                </p>
+                <p class="lecture-lead">완성 코드의 테이블이 정말 시각화(7번 섹션)·손 풀이(5번 섹션)와 똑같이 채워지는지, 매 칸의 계산 과정을 출력해 확인합니다. n=8로 실행합니다.</p>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -946,17 +905,13 @@ dp[8] = dp[7] + dp[6] = 21 + 13 = 34 | [1, 2, 3, 5, 8, 13, 21, 34]
 
 최종 답: dp[8] = 34 — 8칸 계단을 오르는 방법은 34가지</code></pre>
                 </article>
-                <p>
-                    테이블이 1 → 2 → 3 → 5 → 8 → 13 → 21 → 34로 채워지는 과정이
-                    손 풀이 STEP 4에서 적은 값, 7번 섹션 시각화의 각 단계와 모두 일치합니다.
-                    <em><strong>손 풀이 = 시각화 = 코드</strong>가 같은 절차임을 확인했습니다.</em>
-                </p>
+                <p class="lecture-lead">테이블이 1 → 2 → 3 → 5 → 8 → 13 → 21 → 34로 채워지는 과정이 손 풀이 STEP 4에서 적은 값, 7번 섹션 시각화의 각 단계와 모두 일치합니다. <em><strong>손 풀이 = 시각화 = 코드</strong>가 같은 절차임을 확인했습니다.</em></p>
             </section>
 
             <!-- 12. 잘못된 코드와 오류 찾기 -->
             <section class="lesson-section" id="sec-bugs" aria-labelledby="h-bugs">
                 <h2 id="h-bugs" data-toc-label="잘못된 코드와 오류 찾기"><span class="section-no">12</span>잘못된 코드와 오류 찾기</h2>
-                <p>DP를 처음 배울 때 가장 자주 나는 오류 두 가지입니다. 먼저 코드를 읽고 무엇이 잘못됐는지 생각한 뒤 해설을 여세요.</p>
+                <p class="lecture-lead">DP를 처음 배울 때 가장 자주 나는 오류 두 가지입니다. 먼저 코드를 읽고 무엇이 잘못됐는지 생각한 뒤 해설을 여세요.</p>
 
                 <article class="bug-card">
                     <h3 class="bug-card__title">오류 1 — 기저 조건이 없는 메모이제이션</h3>
@@ -992,17 +947,20 @@ dp[8] = dp[7] + dp[6] = 21 + 13 = 34 | [1, 2, 3, 5, 8, 13, 21, 34]
                         <details class="answer-box" data-locked-until-complete>
                             <summary>발생하는 문제와 수정 방법 확인</summary>
                             <div class="answer-box__content">
-                                <p><strong>발생하는 문제:</strong> 실행하면 답 대신 예외가 납니다.</p>
+                                <ul>
+                                    <li><strong>발생하는 문제:</strong> 실행하면 답 대신 예외가 남</li>
+                                </ul>
                                 <pre class="quiz-code">Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: Index -1 out of bounds for length 31
 	at BuggyFiboNoBase.fibo(BuggyFiboNoBase.java:7)
 	at BuggyFiboNoBase.fibo(BuggyFiboNoBase.java:10)
 	...(fibo가 fibo를 부르는 줄이 계속 이어짐)</pre>
-                                <p><strong>원인:</strong> <strong>기저 조건이 없습니다.</strong>
-                                재귀가 멈출 곳이 없어 n = 1 → 0 → <strong>-1</strong>까지 내려가고,
-                                <code>memo[-1]</code>에서 음수 인덱스 예외가 납니다.
-                                (memo 배열조차 없었다면 7강에서 본 <code>StackOverflowError</code>가 났을 것입니다.)
-                                메모이제이션은 재귀입니다 — <strong>저장 로직을 추가해도 기저 조건은 여전히 필수</strong>입니다.</p>
-                                <p><strong>수정 방법:</strong> 메모 확인보다 먼저 기저 조건을 처리합니다.</p>
+                                <ul>
+                                    <li><strong>원인:</strong> <strong>기저 조건이 없음</strong> — 재귀가 멈출 곳이 없어 n = 1 → 0 → <strong>-1</strong>까지 내려가고,
+                                        <code>memo[-1]</code>에서 음수 인덱스 예외가 남
+                                        (memo 배열조차 없었다면 7강에서 본 <code>StackOverflowError</code>가 났을 것)</li>
+                                    <li>메모이제이션은 재귀 — <strong>저장 로직을 추가해도 기저 조건은 여전히 필수</strong></li>
+                                    <li><strong>수정 방법:</strong> 메모 확인보다 먼저 기저 조건을 처리</li>
+                                </ul>
                                 <pre class="quiz-code">static long fibo(int n) {
     if (n &lt;= 1) {
         return n;          // 기저 조건이 가장 먼저!
@@ -1047,14 +1005,18 @@ dp[8] = dp[7] + dp[6] = 21 + 13 = 34 | [1, 2, 3, 5, 8, 13, 21, 34]
                         <details class="answer-box" data-locked-until-complete>
                             <summary>발생하는 문제와 수정 방법 확인</summary>
                             <div class="answer-box__content">
-                                <p><strong>발생하는 문제:</strong> 마지막 회차(i = 10)에서 예외가 납니다.</p>
+                                <ul>
+                                    <li><strong>발생하는 문제:</strong> 마지막 회차(i = 10)에서 예외가 남</li>
+                                </ul>
                                 <pre class="quiz-code">Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: Index 10 out of bounds for length 10
 	at BuggyTableSize.main(BuggyTableSize.java:8)</pre>
-                                <p><strong>원인:</strong> 인덱스 0부터 <strong>n까지</strong> 쓰려면 칸이 <strong>n + 1개</strong> 필요한데
-                                <code>new long[n]</code>은 0부터 n-1까지, n칸뿐입니다.
-                                2강에서 배운 "배열 크기 vs 마지막 인덱스"의 off-by-one이 DP 테이블에서 그대로 재현된 것입니다.
-                                dp[n]까지 쓰는 DP에서 아주 흔한 실수입니다.</p>
-                                <p><strong>수정 방법:</strong> 테이블 크기를 n + 1로 잡습니다.</p>
+                                <ul>
+                                    <li><strong>원인:</strong> 인덱스 0부터 <strong>n까지</strong> 쓰려면 칸이 <strong>n + 1개</strong> 필요한데
+                                        <code>new long[n]</code>은 0부터 n-1까지, n칸뿐 — 2강에서 배운 "배열 크기 vs 마지막 인덱스"의
+                                        off-by-one이 DP 테이블에서 그대로 재현된 것</li>
+                                    <li>dp[n]까지 쓰는 DP에서 아주 흔한 실수</li>
+                                    <li><strong>수정 방법:</strong> 테이블 크기를 n + 1로 잡음</li>
+                                </ul>
                                 <pre class="quiz-code">long[] dp = new long[n + 1];   // 인덱스 0 ~ n → 크기 n + 1</pre>
                                 <p>수정 후 출력: <code>fibo(10) = 55</code>.
                                 <em>테이블을 선언할 때마다 "몇 번 인덱스까지 쓰는가?"를 소리 내어 확인하는 습관을 들이세요.</em></p>
@@ -1114,13 +1076,11 @@ dp[8] = dp[7] + dp[6] = 21 + 13 = 34 | [1, 2, 3, 5, 8, 13, 21, 34]
                 <h2 id="h-application" data-toc-label="실제 데이터 응용 예제"><span class="section-no">14</span>실제 데이터 응용 예제</h2>
 
                 <h3>문제 상황 — 그리디가 실패한 그 동전, DP로 다시</h3>
-                <p>
-                    10강의 마지막 장면을 기억하나요? 이상한 나라의 자판기는 동전이 {1, 60, 100}원뿐이었고,
-                    120원을 거슬러 줄 때 그리디(큰 동전부터)는 100원을 덥석 집은 탓에
-                    100 + 1×20 = <strong>21개</strong>를 내놓았습니다. 최적은 60×2 = <strong>2개</strong>인데 말이죠.
-                    이제 우리에게는 DP가 있습니다. "모든 선택을 비교하고 기록한다"는 방식이
-                    이 문제를 어떻게 구하는지 확인합니다.
-                </p>
+                <ul>
+                    <li>10강의 마지막 장면: 이상한 나라의 자판기는 동전이 {1, 60, 100}원뿐</li>
+                    <li>120원을 거슬러 줄 때 그리디(큰 동전부터)는 100원을 덥석 집은 탓에 100 + 1×20 = <strong>21개</strong>를 내놓음 — 최적은 60×2 = <strong>2개</strong></li>
+                    <li>이제 DP로 "모든 선택을 비교하고 기록한다"는 방식이 이 문제를 어떻게 구하는지 확인</li>
+                </ul>
 
                 <h3>데이터 모델과 점화식 (코드보다 먼저!)</h3>
                 <ul>
@@ -1129,12 +1089,9 @@ dp[8] = dp[7] + dp[6] = 21 + 13 = 34 | [1, 2, 3, 5, 8, 13, 21, 34]
                     <li><strong>② 기저:</strong> dp[0] = 0 (0원은 동전 0개로 만든다)</li>
                     <li><strong>③ 전이:</strong> 마지막에 넣은 동전이 coin이었다면 그 전 상태는 money - coin.
                         따라서 <code>dp[money] = min(dp[money - coin] + 1)</code> — <strong>모든 동전 coin에 대해 비교</strong></li>
+                    <li><em>그리디와의 차이가 전이에 그대로 드러남 — 그리디는 "가장 큰 동전 하나"만 보지만, 이 점화식은 <strong>세 동전을 전부 넣어 보고</strong> 최소를 고름</em></li>
+                    <li>이 점화식은 dp[money - 100]처럼 먼 칸을 참조하므로 변수 2개 최적화는 불가능하고 표 전체가 필요</li>
                 </ul>
-                <p>
-                    <em>그리디와의 차이가 전이에 그대로 드러납니다. 그리디는 "가장 큰 동전 하나"만 보지만,
-                    이 점화식은 <strong>세 동전을 전부 넣어 보고</strong> 최소를 고릅니다.</em>
-                    또 하나 — 이 점화식은 dp[money - 100]처럼 먼 칸을 참조하므로 변수 2개 최적화는 불가능하고 표 전체가 필요합니다.
-                </p>
 
                 <article class="code-card">
                     <header class="code-card__header">

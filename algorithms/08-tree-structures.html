@@ -46,8 +46,13 @@
 
         <!-- 내부 목차 (common.js가 자동 생성) -->
         <nav class="lesson-toc" aria-label="이 강의의 목차">
-            <p class="lesson-toc__title">이 강의의 목차</p>
-            <ol id="lesson-toc-list"></ol>
+            <button type="button" class="lesson-toc__toggle" id="lesson-toc-toggle" aria-expanded="true" aria-controls="lesson-toc-body" aria-label="목차 접기">
+                <span class="lesson-toc__toggle-icon" aria-hidden="true">&#8249;</span>
+            </button>
+            <div class="lesson-toc__body" id="lesson-toc-body">
+                <p class="lesson-toc__title">이 강의의 목차</p>
+                <ol id="lesson-toc-list"></ol>
+            </div>
         </nav>
 
         <div class="lesson-body">
@@ -55,28 +60,24 @@
             <!-- 1. 강의 소개 -->
             <section class="lesson-section" id="sec-intro" aria-labelledby="h-intro">
                 <h2 id="h-intro" data-toc-label="강의 소개"><span class="section-no">01</span>강의 소개</h2>
-                <p>
-                    지금까지 배운 배열, 리스트, 스택, 큐는 모두 데이터를 <strong>일렬로</strong> 담는 구조였습니다.
-                    그런데 "인사팀은 경영지원본부 소속이고, 경영지원본부는 대표이사실 소속이다" 같은
-                    <strong>포함 관계·상하 관계</strong>는 일렬로는 표현할 수 없습니다.
-                    이런 데이터를 담는 구조가 <strong>트리(tree)</strong>입니다 —
-                    뿌리(루트)에서 시작해 가지가 갈라져 나가는 나무를 거꾸로 세운 모양입니다.
-                </p>
-                <p>
-                    이번 강의에서는 먼저 루트·부모·자식·리프·높이 같은 <strong>트리 용어</strong>를 익히고,
-                    자식이 최대 2개인 <strong>이진 트리</strong>를 노드 클래스로 직접 조립합니다.
-                    그다음 트리의 모든 노드를 빠짐없이 한 번씩 방문하는 네 가지 <strong>순회</strong>
-                    (전위·중위·후위·레벨)를 구현합니다.
-                    후반부에는 "작으면 왼쪽, 크면 오른쪽" 규칙을 가진 <strong>이진 탐색 트리(BST)</strong>에
-                    값을 넣고 찾는 과정을 만들고,
-                    마지막에는 자식 수 제한이 없는 <strong>일반 트리</strong>로 회사 조직도 프로그램을 완성합니다.
-                </p>
+                <ul>
+                    <li>배열, 리스트, 스택, 큐 = 데이터를 <strong>일렬로</strong> 담는 구조</li>
+                    <li>"인사팀은 경영지원본부 소속, 경영지원본부는 대표이사실 소속" 같은
+                        <strong>포함 관계·상하 관계</strong>는 일렬로 표현 불가</li>
+                    <li>이런 데이터를 담는 구조 = <strong>트리(tree)</strong> — 뿌리(루트)에서 가지가 갈라져 나가는 나무를 거꾸로 세운 모양</li>
+                </ul>
+                <ul>
+                    <li>루트·부모·자식·리프·높이 같은 <strong>트리 용어</strong>부터 익히고, 자식 최대 2개인 <strong>이진 트리</strong>를 노드 클래스로 직접 조립</li>
+                    <li>트리의 모든 노드를 빠짐없이 방문하는 네 가지 <strong>순회</strong>(전위·중위·후위·레벨) 구현</li>
+                    <li>후반부: "작으면 왼쪽, 크면 오른쪽" 규칙의 <strong>이진 탐색 트리(BST)</strong> 삽입·검색</li>
+                    <li>마지막: 자식 수 제한 없는 <strong>일반 트리</strong>로 회사 조직도 프로그램 완성</li>
+                </ul>
             </section>
 
             <!-- 2. 학습 목표 -->
             <section class="lesson-section" id="sec-objectives" aria-labelledby="h-objectives">
                 <h2 id="h-objectives" data-toc-label="학습 목표"><span class="section-no">02</span>학습 목표</h2>
-                <p>이 강의를 마치면 다음을 할 수 있습니다.</p>
+                <p class="lecture-lead">이 강의를 마치면 다음을 할 수 있습니다.</p>
                 <ul class="objective-list">
                     <li>학생은 루트, 부모·자식, 리프, 높이, 서브트리 용어를 사용해 계층 구조 데이터를 설명할 수 있다.</li>
                     <li>학생은 값과 왼쪽·오른쪽 참조를 가진 노드 클래스를 정의하고, 참조 연결로 이진 트리를 직접 조립할 수 있다.</li>
@@ -90,7 +91,7 @@
             <!-- 3. 선수 지식 -->
             <section class="lesson-section" id="sec-prereq" aria-labelledby="h-prereq">
                 <h2 id="h-prereq" data-toc-label="선수 지식"><span class="section-no">03</span>선수 지식</h2>
-                <p>이 강의는 다음 내용을 이미 알고 있다고 가정합니다.</p>
+                <p class="lecture-lead">이 강의는 다음 내용을 이미 알고 있다고 가정합니다.</p>
                 <div class="table-scroll">
                     <table class="data-table">
                         <thead>
@@ -110,15 +111,14 @@
             <!-- 4. 실제 문제 상황 -->
             <section class="lesson-section" id="sec-problem" aria-labelledby="h-problem">
                 <h2 id="h-problem" data-toc-label="실제 문제 상황"><span class="section-no">04</span>실제 문제 상황</h2>
-                <p>
-                    여러분은 사내 인트라넷 개발팀에 배치되어, 첫 업무로 <strong>조직도 화면</strong>을 맡았습니다.
-                    회사는 대표이사실 아래 본부가 3개, 각 본부 아래 팀이 2~3개씩 있습니다.
-                    처음에는 부서 이름을 <code>ArrayList&lt;String&gt;</code>에 전부 담아 봤지만,
-                    "품질관리팀은 어느 본부 소속인가?", "제품개발본부 산하 전체 인원은 몇 명인가?" 같은
-                    질문에는 답할 수 없었습니다.
-                    <em>리스트는 <strong>순서</strong>는 기억하지만 <strong>위아래 관계</strong>는 기억하지 못하기 때문입니다</em> —
-                    폴더 안에 폴더가 있는 컴퓨터의 폴더 구조도 마찬가지로 일렬 목록으로는 관리할 수 없습니다.
-                </p>
+                <ul>
+                    <li>사내 인트라넷 개발팀에서 첫 업무로 <strong>조직도 화면</strong>을 맡음 —
+                        대표이사실 아래 본부 3개, 각 본부 아래 팀 2~3개</li>
+                    <li>처음에는 부서 이름을 <code>ArrayList&lt;String&gt;</code>에 전부 담아 봤지만,
+                        "품질관리팀은 어느 본부 소속인가?", "제품개발본부 산하 전체 인원은 몇 명인가?" 같은 질문에는 답할 수 없었음</li>
+                    <li><em>리스트는 <strong>순서</strong>는 기억하지만 <strong>위아래 관계</strong>는 기억하지 못하기 때문</em> —
+                        폴더 안에 폴더가 있는 컴퓨터의 폴더 구조도 마찬가지로 일렬 목록으로는 관리 불가</li>
+                </ul>
                 <div class="note-box">
                     <span class="note-box__title">오늘의 핵심 질문</span>
                     <p>위아래 관계가 있는 데이터를 <strong>어떤 구조로 저장</strong>하고,
@@ -129,31 +129,32 @@
             <!-- 5. 사람이 직접 해결해 보기 -->
             <section class="lesson-section" id="sec-hand" aria-labelledby="h-hand">
                 <h2 id="h-hand" data-toc-label="사람이 직접 해결해 보기"><span class="section-no">05</span>사람이 직접 해결해 보기</h2>
-                <p>
-                    코드를 쓰기 전에 종이 위에서 트리를 직접 만들어 봅니다.
-                    숫자 카드 6장 <strong>50, 30, 70, 20, 40, 60</strong>을 이 순서대로,
-                    규칙 하나만 지키며 붙여 봅시다: <strong>"현재 카드보다 작으면 왼쪽 아래, 크거나 같으면 오른쪽 아래"</strong>.
+                <p class="lecture-lead">
+                    숫자 카드 6장 <strong>50, 30, 70, 20, 40, 60</strong>을 순서대로,
+                    규칙 하나만 지키며 종이 위에 붙여 봅시다: <strong>"현재 카드보다 작으면 왼쪽 아래, 크거나 같으면 오른쪽 아래"</strong>.
                 </p>
 
                 <h3>카드를 하나씩 붙이기</h3>
                 <div class="hand-step">
                     <span class="hand-step__label">STEP 1</span>
-                    <p>
-                        첫 카드 <strong>50</strong>은 비교할 대상이 없으므로 맨 위에 놓습니다. 이것이 <strong>루트</strong>입니다.
-                        다음 카드 <strong>30</strong>은 50보다 작으니 50의 왼쪽 아래에,
-                        <strong>70</strong>은 50보다 크니 오른쪽 아래에 붙입니다.
-                    </p>
+                    <ul>
+                        <li>첫 카드 <strong>50</strong>은 비교할 대상이 없으므로 맨 위 — 이것이 <strong>루트</strong></li>
+                        <li><strong>30</strong>은 50보다 작으니 왼쪽 아래, <strong>70</strong>은 50보다 크니 오른쪽 아래에 붙임</li>
+                    </ul>
                     <details class="reveal-box">
                         <summary>질문: 다음 카드 20은 어디에 붙을까요? 비교를 몇 번 할까요?</summary>
                         <div class="reveal-box__content">
-                            <p>먼저 루트 50과 비교(1번) — 작으니 왼쪽으로. 왼쪽에는 이미 30이 있으니 30과 비교(2번) —
-                            또 작으니 30의 왼쪽 아래에 붙입니다. <strong>비교 2번</strong>으로 자리가 정해졌습니다.</p>
+                            <ul>
+                                <li>루트 50과 비교(1번) — 작으니 왼쪽으로</li>
+                                <li>왼쪽의 30과 비교(2번) — 또 작으니 30의 왼쪽 아래에 붙임</li>
+                                <li><strong>비교 2번</strong>으로 자리 확정</li>
+                            </ul>
                         </div>
                     </details>
                 </div>
                 <div class="hand-step">
                     <span class="hand-step__label">STEP 2</span>
-                    <p>같은 규칙으로 <strong>40</strong>과 <strong>60</strong>까지 붙이면 트리가 완성됩니다.</p>
+                    <p class="lecture-lead">같은 규칙으로 <strong>40</strong>과 <strong>60</strong>까지 붙이면 트리가 완성됩니다.</p>
                     <pre class="quiz-code">        50
        /  \
      30    70
@@ -162,9 +163,11 @@
                     <details class="reveal-box">
                         <summary>질문: 40은 어떤 비교를 거쳐 그 자리에 갔을까요?</summary>
                         <div class="reveal-box__content">
-                            <p>50과 비교 → 작으니 왼쪽. 30과 비교 → 40은 30보다 크니 <strong>오른쪽</strong>.
-                            30의 오른쪽이 비어 있으므로 거기에 붙습니다.
-                            "한 노드와 비교 → 한쪽으로 내려감"의 반복 — 이것이 잠시 후 코드로 만들 <strong>BST 삽입</strong>입니다.</p>
+                            <ul>
+                                <li>50과 비교 → 작으니 왼쪽</li>
+                                <li>30과 비교 → 40은 30보다 크니 <strong>오른쪽</strong>, 그 자리가 비어 있으므로 붙음</li>
+                                <li>"한 노드와 비교 → 한쪽으로 내려감"의 반복 — 잠시 후 코드로 만들 <strong>BST 삽입</strong></li>
+                            </ul>
                         </div>
                     </details>
                 </div>
@@ -172,28 +175,31 @@
                 <h3>완성된 트리 읽기</h3>
                 <div class="hand-step">
                     <span class="hand-step__label">STEP 3</span>
-                    <p>이 트리에서 <strong>작은 수부터 순서대로</strong> 모든 카드를 읽어 보세요. 어디서부터 시작해야 할까요?</p>
+                    <p class="lecture-lead">이 트리에서 <strong>작은 수부터 순서대로</strong> 모든 카드를 읽어 보세요. 어디서부터 시작해야 할까요?</p>
                     <details class="reveal-box">
                         <summary>질문: 어떤 순서로 읽으면 20, 30, 40, 50, 60, 70이 될까요?</summary>
                         <div class="reveal-box__content">
-                            <p>각 노드에서 <strong>"왼쪽 전부 → 자기 자신 → 오른쪽 전부"</strong> 순서로 읽으면 됩니다.
-                            왼쪽 끝(20)부터: 20 → 30 → 40 → 50 → 60 → 70.
-                            이 읽기 방법이 <strong>중위 순회</strong>이고, 규칙대로 만든 트리(BST)를 중위 순회하면
-                            항상 오름차순이 나옵니다.</p>
+                            <ul>
+                                <li>각 노드에서 <strong>"왼쪽 전부 → 자기 자신 → 오른쪽 전부"</strong> 순서로 읽으면 됨</li>
+                                <li>왼쪽 끝(20)부터: 20 → 30 → 40 → 50 → 60 → 70</li>
+                                <li>이 읽기 방법이 <strong>중위 순회</strong> — 규칙대로 만든 트리(BST)를 중위 순회하면 항상 오름차순</li>
+                            </ul>
                         </div>
                     </details>
                 </div>
                 <div class="hand-step">
                     <span class="hand-step__label">STEP 4</span>
-                    <p>이번에는 트리에서 <strong>65</strong>를 찾아보세요. 루트 50에서 출발합니다.</p>
+                    <p class="lecture-lead">이번에는 트리에서 <strong>65</strong>를 찾아보세요. 루트 50에서 출발합니다.</p>
                     <details class="reveal-box">
                         <summary>질문: 몇 번 비교했고, 아예 쳐다보지도 않은 카드는 몇 장인가요?</summary>
                         <div class="reveal-box__content">
-                            <p>50과 비교(크다 → 오른쪽), 70과 비교(작다 → 왼쪽), 60과 비교(크다 → 오른쪽인데 비어 있음)
-                            — <strong>비교 3번</strong> 만에 "없다"고 확정합니다.
-                            왼쪽 서브트리의 20, 30, 40 <strong>3장은 한 번도 보지 않았습니다</strong>.
-                            <em>50과 한 번 비교하는 순간 왼쪽 절반을 통째로 버렸기 때문입니다 — 5강 이진 탐색의
-                            "절반 버리기"가 트리 위에서 일어난 것입니다.</em></p>
+                            <ul>
+                                <li>50과 비교(크다 → 오른쪽), 70과 비교(작다 → 왼쪽), 60과 비교(크다 → 오른쪽인데 비어 있음)
+                                    — <strong>비교 3번</strong> 만에 "없다" 확정</li>
+                                <li>왼쪽 서브트리의 20, 30, 40 <strong>3장은 한 번도 보지 않음</strong></li>
+                                <li><em>50과 한 번 비교하는 순간 왼쪽 절반을 통째로 버렸기 때문 — 5강 이진 탐색의
+                                    "절반 버리기"가 트리 위에서 일어난 것</em></li>
+                            </ul>
                         </div>
                     </details>
                 </div>
@@ -204,12 +210,12 @@
                 <h2 id="h-concepts" data-toc-label="핵심 개념"><span class="section-no">06</span>핵심 개념</h2>
 
                 <h3>트리와 트리 용어</h3>
-                <p>
-                    <em>트리는 <strong>하나의 루트에서 시작해, 각 노드가 여러 자식 노드를 가리키는 계층 구조</strong>입니다.</em>
-                    <strong>노드(node)</strong>는 데이터를 담는 동그라미, <strong>간선(edge)</strong>은 노드 사이의 연결선입니다.
-                    부모에서 자식으로만 갈라져 내려가므로 <strong>순환(사이클)이 없고</strong>,
-                    루트를 제외한 모든 노드는 부모가 정확히 하나입니다.
-                </p>
+                <ul>
+                    <li><em>트리 = <strong>하나의 루트에서 시작해, 각 노드가 여러 자식 노드를 가리키는 계층 구조</strong></em></li>
+                    <li><strong>노드(node)</strong> = 데이터를 담는 동그라미, <strong>간선(edge)</strong> = 노드 사이의 연결선</li>
+                    <li>부모에서 자식으로만 갈라져 내려가므로 <strong>순환(사이클)이 없음</strong></li>
+                    <li>루트를 제외한 모든 노드는 부모가 정확히 하나</li>
+                </ul>
                 <div class="table-scroll">
                     <table class="data-table">
                         <thead>
@@ -225,27 +231,25 @@
                         </tbody>
                     </table>
                 </div>
-                <p>
+                <p class="lecture-lead">
                     폴더 구조로 바꿔 말하면: 루트는 최상위 폴더, 자식은 하위 폴더, 리프는 더 하위 폴더가 없는 폴더,
-                    높이는 "가장 깊이 들어간 폴더까지 몇 번 클릭하는가"입니다.
+                    높이는 "가장 깊이 들어간 폴더까지 몇 번 클릭하는가".
                 </p>
 
                 <h3>이진 트리와 일반 트리</h3>
-                <p>
-                    자식 수가 <strong>최대 2개(왼쪽·오른쪽)</strong>로 제한된 트리를 <strong>이진 트리(binary tree)</strong>라고 합니다.
-                    자식이 딱 두 자리이므로 노드를 <code>value</code>, <code>left</code>, <code>right</code>
-                    세 필드로 표현할 수 있어 코드가 단순합니다.
-                    반면 조직도처럼 자식 수가 정해져 있지 않으면 자식들을 <code>List</code>에 담는
-                    <strong>일반 트리</strong>를 씁니다. 이 강의의 앞부분은 이진 트리로,
-                    응용 예제와 최종 문제는 일반 트리로 연습합니다.
-                </p>
+                <ul>
+                    <li>자식 수가 <strong>최대 2개(왼쪽·오른쪽)</strong>로 제한된 트리 = <strong>이진 트리(binary tree)</strong> —
+                        노드를 <code>value</code>, <code>left</code>, <code>right</code> 세 필드로 표현할 수 있어 코드가 단순</li>
+                    <li>조직도처럼 자식 수가 정해져 있지 않으면 자식들을 <code>List</code>에 담는 <strong>일반 트리</strong>를 사용</li>
+                    <li>이 강의의 앞부분은 이진 트리로, 응용 예제와 최종 문제는 일반 트리로 연습</li>
+                </ul>
 
                 <h3>트리 순회 — 모든 노드를 한 번씩 방문하기</h3>
-                <p>
-                    배열은 <code>for</code> 한 줄로 전부 방문할 수 있지만, 트리는 갈림길이 있어서
-                    <strong>방문 순서를 정하는 규칙</strong>이 필요합니다. 이 규칙이 순회(traversal)입니다.
-                    재귀 순회 세 가지는 "자기 자신을 언제 처리하느냐"만 다릅니다.
-                </p>
+                <ul>
+                    <li>배열은 <code>for</code> 한 줄로 전부 방문할 수 있지만, 트리는 갈림길이 있어서
+                        <strong>방문 순서를 정하는 규칙</strong>이 필요 — 이 규칙이 순회(traversal)</li>
+                    <li>재귀 순회 세 가지는 "자기 자신을 언제 처리하느냐"만 다름</li>
+                </ul>
                 <div class="table-scroll">
                     <table class="data-table">
                         <thead>
@@ -267,46 +271,44 @@
                 </div>
 
                 <h3>이진 탐색 트리(BST) — 절반 버리기를 구조로 만들다</h3>
-                <p>
-                    이진 탐색 트리는 이진 트리에 규칙 하나를 더한 것입니다:
-                    <strong>모든 노드에서, 왼쪽 서브트리의 값은 자신보다 작고 오른쪽 서브트리의 값은 자신보다 크거나 같다.</strong>
-                    이 규칙 덕분에 값을 찾을 때 노드 하나와 비교하면 <strong>반대쪽 서브트리 전체를 버릴 수 있습니다</strong>.
-                    5강 이진 탐색이 "정렬된 배열 + 가운데 비교"였다면,
-                    BST는 비교하며 내려갈 길을 <strong>미리 구조로 만들어 둔 것</strong>입니다.
-                    삽입도 같은 비교 경로를 따라 내려가 빈자리에 붙이면 끝입니다.
-                </p>
+                <ul>
+                    <li>이진 탐색 트리 = 이진 트리 + 규칙 하나:
+                        <strong>모든 노드에서, 왼쪽 서브트리의 값은 자신보다 작고 오른쪽 서브트리의 값은 자신보다 크거나 같다</strong></li>
+                    <li>이 규칙 덕분에 값을 찾을 때 노드 하나와 비교하면 <strong>반대쪽 서브트리 전체를 버릴 수 있음</strong></li>
+                    <li>5강 이진 탐색이 "정렬된 배열 + 가운데 비교"였다면, BST는 비교하며 내려갈 길을 <strong>미리 구조로 만들어 둔 것</strong></li>
+                    <li>삽입도 같은 비교 경로를 따라 내려가 빈자리에 붙이면 끝</li>
+                </ul>
                 <div class="note-box note-box--warn">
                     <span class="note-box__title">미리 알아 둘 함정</span>
-                    <p><em>BST의 성능은 <strong>트리의 모양</strong>에 달려 있습니다.</em> 정렬된 순서(10, 20, 30, …)로 삽입하면
-                    오른쪽으로만 자라 사실상 연결 리스트가 되고, 탐색이 O(n)으로 떨어집니다.
-                    자세한 내용은 14번 복잡도 섹션에서 다룹니다.
-                    또한 이 강의의 구현은 같은 값을 오른쪽에 넣는 방식으로 중복을 처리합니다.</p>
+                    <ul>
+                        <li><em>BST의 성능은 <strong>트리의 모양</strong>에 달려 있음</em> — 정렬된 순서(10, 20, 30, …)로 삽입하면
+                            오른쪽으로만 자라 사실상 연결 리스트가 되고, 탐색이 O(n)으로 떨어짐 (자세한 내용은 14번 복잡도 섹션)</li>
+                        <li>이 강의의 구현은 같은 값을 오른쪽에 넣는 방식으로 중복을 처리</li>
+                    </ul>
                 </div>
             </section>
 
             <!-- 7. 단계별 동작 과정 -->
             <section class="lesson-section" id="sec-steps" aria-labelledby="h-steps">
                 <h2 id="h-steps" data-toc-label="단계별 동작 과정"><span class="section-no">07</span>단계별 동작 과정</h2>
-                <p>
-                    삽입 순서 50, 30, 70, 20, 40, 60으로 만든 BST 위에서
-                    <strong>중위 순회(왼쪽 → 자신 → 오른쪽)</strong>가 진행되는 모습을 단계별로 관찰하세요.
-                    <strong>다음 단계 ▶</strong> 버튼으로 한 단계씩 진행할 수 있습니다.
-                    지금 방문 중인 노드는 <strong>파란색(현재)</strong>, 값이 출력된 노드는
-                    <strong>초록색(완료)</strong>으로 표시되고, 아래 배열에 출력 순서가 쌓입니다.
-                </p>
+                <ul>
+                    <li>삽입 순서 50, 30, 70, 20, 40, 60으로 만든 BST 위에서 <strong>중위 순회(왼쪽 → 자신 → 오른쪽)</strong>가 진행되는 모습을 단계별로 관찰</li>
+                    <li><strong>다음 단계 ▶</strong> 버튼으로 한 단계씩 진행</li>
+                    <li>지금 방문 중인 노드는 <strong>파란색(현재)</strong>, 값이 출력된 노드는 <strong>초록색(완료)</strong>, 아래 배열에 출력 순서가 쌓임</li>
+                </ul>
                 <div id="viz-tree" aria-label="이진 탐색 트리 중위 순회 시각화"></div>
-                <p>
-                    방문(파란색)과 출력(초록색)의 시점이 다르다는 것에 주목하세요.
-                    50은 <strong>가장 먼저 방문</strong>하지만, 왼쪽 서브트리(30, 20, 40)의 출력이 모두 끝난 뒤에야
-                    <strong>4번째로 출력</strong>됩니다. "새 데이터" 버튼을 누르면 무작위 값 6개로 새 BST를 만들어
-                    같은 순회를 반복합니다 — <em>어떤 값이든 출력은 항상 오름차순입니다.</em>
-                </p>
+                <ul>
+                    <li>방문(파란색)과 출력(초록색)의 시점이 다름에 주목 —
+                        50은 <strong>가장 먼저 방문</strong>하지만, 왼쪽 서브트리(30, 20, 40)의 출력이 모두 끝난 뒤에야 <strong>4번째로 출력</strong></li>
+                    <li>"새 데이터" 버튼을 누르면 무작위 값 6개로 새 BST를 만들어 같은 순회를 반복 —
+                        <em>어떤 값이든 출력은 항상 오름차순</em></li>
+                </ul>
             </section>
 
             <!-- 8. 의사코드 -->
             <section class="lesson-section" id="sec-pseudo" aria-labelledby="h-pseudo">
                 <h2 id="h-pseudo" data-toc-label="의사코드"><span class="section-no">08</span>의사코드</h2>
-                <p>코드를 쓰기 전에, 손으로 한 절차를 언어 중립적인 의사코드로 정리합니다.</p>
+                <p class="lecture-lead">코드를 쓰기 전에, 손으로 한 절차를 언어 중립적인 의사코드로 정리합니다.</p>
 
                 <article class="code-card">
                     <header class="code-card__header">
@@ -361,24 +363,25 @@
         node의 오른쪽 자식이 있으면 큐에 넣는다(offer)</code></pre>
                 </article>
 
-                <p><em>재귀 순회는 "아래로 깊이" 내려가고, 큐를 쓰는 레벨 순회는 "옆으로 넓게" 퍼집니다.</em>
-                이 차이는 9강에서 DFS와 BFS라는 이름으로 다시 만납니다.</p>
+                <ul>
+                    <li><em>재귀 순회는 "아래로 깊이" 내려가고, 큐를 쓰는 레벨 순회는 "옆으로 넓게" 퍼짐</em></li>
+                    <li>이 차이는 9강에서 DFS와 BFS라는 이름으로 다시 만남</li>
+                </ul>
             </section>
 
             <!-- 9. 점진적 Java 구현 -->
             <section class="lesson-section" id="sec-impl" aria-labelledby="h-impl">
                 <h2 id="h-impl" data-toc-label="점진적 Java 구현"><span class="section-no">09</span>점진적 Java 구현</h2>
-                <p>
-                    한 번에 완성하지 않고 <strong>노드 만들기 → 삽입 판단 한 번 → 재귀 삽입 → 재귀 순회</strong>
-                    순서로 확장합니다. 각 단계의 코드는 모두 독립적으로 복사해서 실행할 수 있습니다.
-                </p>
+                <ul>
+                    <li>한 번에 완성하지 않고 <strong>노드 만들기 → 삽입 판단 한 번 → 재귀 삽입 → 재귀 순회</strong> 순서로 확장</li>
+                    <li>각 단계의 코드는 모두 독립적으로 복사해서 실행 가능</li>
+                </ul>
 
                 <h3>구현 1단계 — 노드 클래스를 만들고 손으로 연결하기</h3>
-                <p>
-                    트리의 재료는 <strong>노드</strong>입니다. 값 하나와, 왼쪽·오른쪽 자식을 가리키는 참조 두 개 —
-                    이게 전부입니다. 먼저 노드 3개를 만들어 <strong>참조 대입만으로</strong> 작은 트리를 조립해 봅니다.
-                    아직 알고리즘은 없습니다.
-                </p>
+                <ul>
+                    <li>트리의 재료는 <strong>노드</strong> — 값 하나와, 왼쪽·오른쪽 자식을 가리키는 참조 두 개가 전부</li>
+                    <li>먼저 노드 3개를 만들어 <strong>참조 대입만으로</strong> 작은 트리를 조립 (아직 알고리즘 없음)</li>
+                </ul>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -442,11 +445,10 @@
                 </div>
 
                 <h3>구현 2단계 — 삽입 판단을 한 번만 해 보기</h3>
-                <p>
-                    손 풀이 STEP 1에서 한 일을 코드로 옮깁니다: <strong>새 값을 현재 노드와 비교해서,
-                    작으면 왼쪽, 크거나 같으면 오른쪽에 붙인다.</strong>
-                    일부러 <strong>판단을 딱 한 번만</strong> 하는 메서드를 만들어, 어디까지 되고 어디서 막히는지 확인합니다.
-                </p>
+                <ul>
+                    <li>손 풀이 STEP 1을 코드로 옮김: <strong>새 값을 현재 노드와 비교해서, 작으면 왼쪽, 크거나 같으면 오른쪽에 붙인다</strong></li>
+                    <li>일부러 <strong>판단을 딱 한 번만</strong> 하는 메서드를 만들어, 어디까지 되고 어디서 막히는지 확인</li>
+                </ul>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -525,18 +527,17 @@
 현재 트리: 루트 50, 왼쪽 30, 오른쪽 70
 20은 아직 넣지 못했습니다 → 반복해서 내려가는 구조(재귀)가 필요합니다.</code></pre>
                 </article>
-                <p>
-                    판단 한 번으로는 깊이 1까지만 넣을 수 있습니다. 20을 넣으려면 "30에서 <strong>같은 판단을 또</strong>"
-                    해야 합니다 — <em>같은 일을 더 작은 대상(서브트리)에 반복하는 것, 바로 7강의 <strong>재귀</strong>입니다.</em>
+                <p class="lecture-lead">
+                    판단 한 번으로는 깊이 1까지만 삽입 가능. 20을 넣으려면 "30에서 <strong>같은 판단을 또</strong>" 해야 함 —
+                    <em>같은 일을 더 작은 대상(서브트리)에 반복하는 것, 바로 7강의 <strong>재귀</strong></em>.
                 </p>
 
                 <h3>구현 3단계 — 재귀 삽입 완성</h3>
-                <p>
-                    재귀 삽입 메서드의 약속을 이렇게 정합니다:
-                    <strong>"node를 루트로 하는 서브트리에 value를 넣고, 그 서브트리의 루트를 돌려준다."</strong>
-                    빈자리(<code>null</code>)에 도착하면 새 노드를 만들어 돌려주는 것이 종료 조건입니다.
-                    반환값을 <code>node.left</code>나 <code>node.right</code>에 다시 대입하는 부분이 핵심입니다.
-                </p>
+                <ul>
+                    <li>재귀 삽입 메서드의 약속: <strong>"node를 루트로 하는 서브트리에 value를 넣고, 그 서브트리의 루트를 돌려준다"</strong></li>
+                    <li>빈자리(<code>null</code>)에 도착하면 새 노드를 만들어 돌려주는 것이 종료 조건</li>
+                    <li>반환값을 <code>node.left</code>나 <code>node.right</code>에 다시 대입하는 부분이 핵심</li>
+                </ul>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -621,18 +622,16 @@
     30
         20</code></pre>
                 </article>
-                <p>
-                    출력을 시계 방향으로 90도 돌려 보세요 — 손 풀이 STEP 2에서 그린 트리와 같은 모양입니다.
-                    (맨 왼쪽 줄이 루트 50, 위쪽이 오른쪽 서브트리 70·60, 아래쪽이 왼쪽 서브트리 30·20·40)
+                <p class="lecture-lead">
+                    출력을 시계 방향으로 90도 돌려 보면 손 풀이 STEP 2에서 그린 트리와 같은 모양
+                    (맨 왼쪽 줄이 루트 50, 위쪽이 오른쪽 서브트리 70·60, 아래쪽이 왼쪽 서브트리 30·20·40).
                 </p>
 
                 <h3>구현 4단계 — 중위 순회로 전체 방문</h3>
-                <p>
-                    트리가 완성되었으니 모든 노드를 방문해 봅니다. 중위 순회는 딱 세 줄입니다:
-                    <strong>왼쪽 재귀 → 자신 출력 → 오른쪽 재귀.</strong>
-                    종료 조건 <code>if (node == null) return;</code>이 없으면 어떻게 되는지는
-                    13번 오류 찾기 섹션에서 확인합니다.
-                </p>
+                <ul>
+                    <li>트리가 완성되었으니 모든 노드를 방문 — 중위 순회는 딱 세 줄: <strong>왼쪽 재귀 → 자신 출력 → 오른쪽 재귀</strong></li>
+                    <li>종료 조건 <code>if (node == null) return;</code>이 없으면 어떻게 되는지는 13번 오류 찾기 섹션에서 확인</li>
+                </ul>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -705,22 +704,23 @@
                 </article>
                 <div class="note-box note-box--tip">
                     <span class="note-box__title">관찰</span>
-                    <p>뒤죽박죽 순서(50, 30, 70, …)로 넣었는데 오름차순으로 나왔습니다.
-                    <em><strong>정렬을 한 적이 없는데 정렬된 결과</strong>가 나오는 이유는,
-                    삽입할 때마다 "작으면 왼쪽, 크면 오른쪽" 규칙이 자리를 정해 두었기 때문입니다.</em>
-                    7번 섹션의 시각화가 바로 이 코드의 동작입니다.</p>
+                    <ul>
+                        <li>뒤죽박죽 순서(50, 30, 70, …)로 넣었는데 오름차순으로 나옴</li>
+                        <li><em><strong>정렬을 한 적이 없는데 정렬된 결과</strong>가 나오는 이유는,
+                            삽입할 때마다 "작으면 왼쪽, 크면 오른쪽" 규칙이 자리를 정해 두었기 때문</em></li>
+                        <li>7번 섹션의 시각화가 바로 이 코드의 동작</li>
+                    </ul>
                 </div>
             </section>
 
             <!-- 10. 완성 Java 코드 -->
             <section class="lesson-section" id="sec-complete" aria-labelledby="h-complete">
                 <h2 id="h-complete" data-toc-label="완성 Java 코드"><span class="section-no">10</span>완성 Java 코드</h2>
-                <p>
-                    지금까지의 조각을 모아 완성합니다. 재귀 삽입에 <strong>재귀 검색</strong>과
-                    <strong>순회 4종 세트</strong>(전위·중위·후위·레벨)를 더했습니다.
-                    검색은 지나간 노드를 화면에 남겨 "절반 버리기" 경로를 눈으로 확인할 수 있게 했고,
-                    레벨 순회는 6강의 <code>ArrayDeque</code> 큐를 그대로 재사용합니다.
-                </p>
+                <ul>
+                    <li>지금까지의 조각을 모아 완성 — 재귀 삽입에 <strong>재귀 검색</strong>과 <strong>순회 4종 세트</strong>(전위·중위·후위·레벨)를 더함</li>
+                    <li>검색은 지나간 노드를 화면에 남겨 "절반 버리기" 경로를 눈으로 확인할 수 있게 함</li>
+                    <li>레벨 순회는 6강의 <code>ArrayDeque</code> 큐를 그대로 재사용</li>
+                </ul>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -876,10 +876,10 @@ public class BstComplete {
             <!-- 11. 실행 과정 추적 -->
             <section class="lesson-section" id="sec-trace" aria-labelledby="h-trace">
                 <h2 id="h-trace" data-toc-label="실행 과정 추적"><span class="section-no">11</span>실행 과정 추적</h2>
-                <p>
-                    중위 순회의 재귀가 실제로 어떤 순서로 호출되고 되돌아오는지, 작은 트리(50, 30, 70, 20)로 추적합니다.
-                    들여쓰기 한 칸이 재귀 깊이 한 층 — 7강에서 본 <strong>호출 스택이 쌓이는 모양</strong> 그대로입니다.
-                </p>
+                <ul>
+                    <li>중위 순회의 재귀가 실제로 어떤 순서로 호출되고 되돌아오는지, 작은 트리(50, 30, 70, 20)로 추적</li>
+                    <li>들여쓰기 한 칸이 재귀 깊이 한 층 — 7강에서 본 <strong>호출 스택이 쌓이는 모양</strong> 그대로</li>
+                </ul>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -979,17 +979,17 @@ public class BstComplete {
 
 중위 순회 최종 출력: 20 30 50 70</code></pre>
                 </article>
-                <p>
-                    <code>inorder(50)</code>이 <strong>가장 먼저 호출</strong>되지만 출력은 <strong>3번째</strong>입니다.
-                    <em>왼쪽으로 내려간 호출들(30 → 20)이 모두 끝나고 복귀한 뒤에야 자기 차례가 오기 때문입니다.</em>
-                    손 풀이 STEP 3 = 7번 섹션의 시각화 = 이 추적 출력이 모두 같은 절차임을 확인했습니다.
-                </p>
+                <ul>
+                    <li><code>inorder(50)</code>이 <strong>가장 먼저 호출</strong>되지만 출력은 <strong>3번째</strong> —
+                        <em>왼쪽으로 내려간 호출들(30 → 20)이 모두 끝나고 복귀한 뒤에야 자기 차례가 오기 때문</em></li>
+                    <li>손 풀이 STEP 3 = 7번 섹션의 시각화 = 이 추적 출력, 모두 같은 절차</li>
+                </ul>
             </section>
 
             <!-- 12. 잘못된 코드와 오류 찾기 -->
             <section class="lesson-section" id="sec-bugs" aria-labelledby="h-bugs">
                 <h2 id="h-bugs" data-toc-label="잘못된 코드와 오류 찾기"><span class="section-no">12</span>잘못된 코드와 오류 찾기</h2>
-                <p>트리 코드에서 초보자가 가장 자주 만드는 오류 두 가지입니다. 코드를 먼저 읽고 무엇이 잘못됐는지 생각한 뒤 해설을 여세요.</p>
+                <p class="lecture-lead">트리 코드에서 초보자가 가장 자주 만드는 오류 두 가지 — 코드를 먼저 읽고 무엇이 잘못됐는지 생각한 뒤 해설을 여세요.</p>
 
                 <article class="bug-card">
                     <h3 class="bug-card__title">오류 1 — 삽입 결과를 버려서 트리가 자라지 않음</h3>
@@ -1051,22 +1051,29 @@ public class BstComplete {
                         <details class="answer-box" data-locked-until-complete>
                             <summary>발생하는 문제와 수정 방법 확인</summary>
                             <div class="answer-box__content">
-                                <p><strong>발생하는 문제:</strong> 실행하면 중위 순회가 아무것도 출력하지 않고,
-                                마지막 줄에 <code>root == null ? true</code>가 나옵니다. 트리가 전혀 만들어지지 않았습니다.</p>
+                                <ul>
+                                    <li><strong>발생하는 문제:</strong> 실행하면 중위 순회가 아무것도 출력하지 않고,
+                                        마지막 줄에 <code>root == null ? true</code>가 나옴 — 트리가 전혀 만들어지지 않음</li>
+                                </ul>
                                 <pre class="quiz-code">중위 순회 결과:
 root == null ? true</pre>
-                                <p><strong>원인:</strong> <code>insert</code>는 "완성된 서브트리의 루트"를 <strong>반환</strong>하는 방식인데,
-                                호출하면서 반환값을 버렸습니다. <code>root</code>가 <code>null</code>인 채로 호출하면
-                                메서드 안에서 새 노드를 만들어 <strong>돌려주기만</strong> 할 뿐, 바깥의 <code>root</code> 변수는
-                                여전히 <code>null</code>입니다. Java의 참조는 값으로 전달되므로 매개변수에 대입해도
-                                호출한 쪽 변수는 바뀌지 않습니다. 만들어진 노드 6개는 아무도 가리키지 않아 전부 버려집니다.</p>
-                                <p><strong>수정 방법:</strong> 반환값을 반드시 다시 저장합니다.</p>
+                                <ul>
+                                    <li><strong>원인:</strong> <code>insert</code>는 "완성된 서브트리의 루트"를 <strong>반환</strong>하는 방식인데,
+                                        호출하면서 반환값을 버림</li>
+                                    <li><code>root</code>가 <code>null</code>인 채로 호출하면 메서드 안에서 새 노드를 만들어
+                                        <strong>돌려주기만</strong> 할 뿐, 바깥의 <code>root</code> 변수는 여전히 <code>null</code></li>
+                                    <li>Java의 참조는 값으로 전달되므로 매개변수에 대입해도 호출한 쪽 변수는 바뀌지 않음 —
+                                        만들어진 노드 6개는 아무도 가리키지 않아 전부 버려짐</li>
+                                    <li><strong>수정 방법:</strong> 반환값을 반드시 다시 저장</li>
+                                </ul>
                                 <pre class="quiz-code">for (int value : values) {
     root = insert(root, value);   // 반환값을 root에 다시 연결!
 }</pre>
-                                <p>수정 후 출력: <code>중위 순회 결과: 20 30 40 50 60 70</code>.
-                                재귀 안에서 <code>node.left = insert(node.left, value)</code>로 반환값을 되돌려 연결하는 것과
-                                정확히 같은 원리입니다 — <em><strong>"insert의 결과는 항상 왼쪽/오른쪽/루트 중 한 자리에 다시 대입한다"</strong>고 기억하세요.</em></p>
+                                <ul>
+                                    <li>수정 후 출력: <code>중위 순회 결과: 20 30 40 50 60 70</code></li>
+                                    <li>재귀 안에서 <code>node.left = insert(node.left, value)</code>로 반환값을 되돌려 연결하는 것과 정확히 같은 원리 —
+                                        <em><strong>"insert의 결과는 항상 왼쪽/오른쪽/루트 중 한 자리에 다시 대입한다"</strong>고 기억</em></li>
+                                </ul>
                             </div>
                         </details>
                     </div>
@@ -1114,18 +1121,21 @@ root == null ? true</pre>
                         <details class="answer-box" data-locked-until-complete>
                             <summary>발생하는 문제와 수정 방법 확인</summary>
                             <div class="answer-box__content">
-                                <p><strong>발생하는 문제:</strong> 아무것도 출력하지 못하고 즉시 예외로 죽습니다.</p>
+                                <ul>
+                                    <li><strong>발생하는 문제:</strong> 아무것도 출력하지 못하고 즉시 예외로 죽음</li>
+                                </ul>
                                 <pre class="quiz-code">Exception in thread "main" java.lang.NullPointerException: Cannot read field "left" because "&lt;parameter1&gt;" is null
 	at BuggyInorderNoBase.inorder(BuggyInorderNoBase.java:15)
 	at BuggyInorderNoBase.inorder(BuggyInorderNoBase.java:15)
 	at BuggyInorderNoBase.inorder(BuggyInorderNoBase.java:15)
 	at BuggyInorderNoBase.main(BuggyInorderNoBase.java:25)</pre>
-                                <p><strong>원인:</strong> 7강에서 배운 규칙 — <strong>재귀에는 반드시 종료 조건이 필요하다</strong> — 를 어겼습니다.
-                                <code>inorder(50)</code> → <code>inorder(30)</code> → <code>inorder(null)</code>까지 내려갔을 때,
-                                <code>null</code>인 <code>node</code>의 <code>node.left</code>를 읽으려다
-                                <code>NullPointerException</code>이 발생합니다.
-                                리프 노드의 자식은 항상 <code>null</code>이므로, 트리 재귀는 <strong>언젠가 반드시 null을 만납니다</strong>.</p>
-                                <p><strong>수정 방법:</strong> 메서드 첫 줄에 종료 조건을 넣습니다.</p>
+                                <ul>
+                                    <li><strong>원인:</strong> 7강에서 배운 규칙 — <strong>재귀에는 반드시 종료 조건이 필요하다</strong> — 를 어김</li>
+                                    <li><code>inorder(50)</code> → <code>inorder(30)</code> → <code>inorder(null)</code>까지 내려갔을 때,
+                                        <code>null</code>인 <code>node</code>의 <code>node.left</code>를 읽으려다 <code>NullPointerException</code> 발생</li>
+                                    <li>리프 노드의 자식은 항상 <code>null</code>이므로, 트리 재귀는 <strong>언젠가 반드시 null을 만남</strong></li>
+                                    <li><strong>수정 방법:</strong> 메서드 첫 줄에 종료 조건을 넣음</li>
+                                </ul>
                                 <pre class="quiz-code">static void inorder(Node node) {
     if (node == null) {
         return;              // 빈 자리에 도착하면 되돌아간다
@@ -1134,8 +1144,10 @@ root == null ? true</pre>
     System.out.print(node.value + " ");
     inorder(node.right);
 }</pre>
-                                <p>수정 후 출력: <code>30 50 70 </code>.
-                                <em>트리 재귀 메서드를 쓸 때는 <strong>"첫 줄은 무조건 null 검사"</strong>를 습관으로 만드세요.</em></p>
+                                <ul>
+                                    <li>수정 후 출력: <code>30 50 70 </code></li>
+                                    <li><em>트리 재귀 메서드를 쓸 때는 <strong>"첫 줄은 무조건 null 검사"</strong>를 습관으로 만들 것</em></li>
+                                </ul>
                             </div>
                         </details>
                     </div>
@@ -1147,14 +1159,14 @@ root == null ? true</pre>
                 <h2 id="h-complexity" data-toc-label="복잡도 및 특성 분석"><span class="section-no">13</span>복잡도 및 특성 분석</h2>
 
                 <h3>입력 크기</h3>
-                <p>
-                    트리에서는 두 가지 크기가 중요합니다. <strong>노드 수 n</strong>과 <strong>높이 h</strong>입니다.
-                    같은 n이라도 트리 모양에 따라 h는 크게 달라집니다 —
-                    균형이 잘 잡히면 h ≈ log₂n, 한쪽으로만 자라면 h = n − 1입니다.
-                </p>
+                <ul>
+                    <li>트리에서는 두 가지 크기가 중요 — <strong>노드 수 n</strong>과 <strong>높이 h</strong></li>
+                    <li>같은 n이라도 트리 모양에 따라 h는 크게 달라짐 —
+                        균형이 잘 잡히면 h ≈ log₂n, 한쪽으로만 자라면 h = n − 1</li>
+                </ul>
 
                 <h3>주요 연산</h3>
-                <p>순회의 핵심 연산은 <strong>노드 방문(출력)</strong>, 삽입·검색의 핵심 연산은 <strong>값 비교</strong>입니다.</p>
+                <p class="lecture-lead">순회의 핵심 연산은 <strong>노드 방문(출력)</strong>, 삽입·검색의 핵심 연산은 <strong>값 비교</strong>입니다.</p>
 
                 <h3>시간 복잡도</h3>
                 <div class="table-scroll">
@@ -1169,11 +1181,11 @@ root == null ? true</pre>
                         </tbody>
                     </table>
                 </div>
-                <p>
-                    <em>검색·삽입의 일의 양은 정확히 <strong>"루트에서 몇 층 내려가는가"</strong>, 즉 높이 h에 비례합니다.</em>
-                    노드 6개짜리 예제 트리는 높이 2라서 어떤 값도 비교 3번 안에 찾거나 "없음"을 확정했습니다.
-                    n이 100만이어도 균형이 잡혀 있으면 약 20번 비교면 충분합니다 — 5강 이진 탐색과 같은 숫자입니다.
-                </p>
+                <ul>
+                    <li><em>검색·삽입의 일의 양은 정확히 <strong>"루트에서 몇 층 내려가는가"</strong>, 즉 높이 h에 비례</em></li>
+                    <li>노드 6개짜리 예제 트리는 높이 2라서 어떤 값도 비교 3번 안에 찾거나 "없음"을 확정</li>
+                    <li>n이 100만이어도 균형이 잡혀 있으면 약 20번 비교면 충분 — 5강 이진 탐색과 같은 숫자</li>
+                </ul>
 
                 <h3>공간 복잡도</h3>
                 <ul>
@@ -1200,12 +1212,12 @@ root == null ? true</pre>
                 <h2 id="h-application" data-toc-label="실제 데이터 응용 예제"><span class="section-no">14</span>실제 데이터 응용 예제</h2>
 
                 <h3>문제 상황</h3>
-                <p>
-                    4번 섹션의 조직도 문제로 돌아갑니다. 대표이사실 아래 본부 3개, 그 아래 팀 7개 —
-                    부서마다 하위 부서 수가 다르므로 left/right 두 자리로는 부족합니다.
-                    자식들을 <code>List</code>에 담는 <strong>일반 트리</strong>로 조직도를 만들고,
-                    구조 출력(전위 순회), 부서 검색(재귀), 인원 합산(서브트리 집계) 세 기능을 구현합니다.
-                </p>
+                <ul>
+                    <li>4번 섹션의 조직도 문제로 복귀 — 대표이사실 아래 본부 3개, 그 아래 팀 7개</li>
+                    <li>부서마다 하위 부서 수가 다르므로 left/right 두 자리로는 부족 →
+                        자식들을 <code>List</code>에 담는 <strong>일반 트리</strong>로 조직도를 구성</li>
+                    <li>구조 출력(전위 순회), 부서 검색(재귀), 인원 합산(서브트리 집계) 세 기능을 구현</li>
+                </ul>
 
                 <h3>데이터 모델과 알고리즘 적용 기준</h3>
                 <ul>

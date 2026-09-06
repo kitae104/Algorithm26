@@ -10,11 +10,19 @@
     margin: 0 auto;
     padding: 28px 20px 80px;
     align-items: start;
+    transition: grid-template-columns 0.15s ease;
 }
 
 @media (max-width: 980px) {
     .lesson-layout {
         grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/* 목차를 접으면 사이드바를 얇은 여백으로 줄이고 본문에 폭을 돌려준다 */
+@media (min-width: 981px) {
+    .lesson-layout--toc-collapsed {
+        grid-template-columns: 44px minmax(0, 1fr);
     }
 }
 
@@ -523,6 +531,33 @@
     padding: 14px;
 }
 
+/* 접기 버튼 — 펼쳤을 땐 제목 오른쪽, 접었을 땐 얇은 세로 여백 한가운데 */
+.lesson-toc__toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    margin: 0 0 8px auto;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-s);
+    background: var(--surface-2);
+    color: var(--ink-soft);
+    font-size: 0.9rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.lesson-toc__toggle:hover {
+    background: var(--brand-soft);
+    color: var(--brand);
+}
+
+.lesson-toc__toggle-icon {
+    display: inline-block;
+    transition: transform 0.15s ease;
+}
+
 .lesson-toc__title {
     font-size: 0.82rem;
     font-weight: 800;
@@ -531,6 +566,25 @@
     margin: 0 0 8px 6px;
     text-transform: uppercase;
     font-family: var(--font-mono);
+}
+
+/* 접힌 상태 — 본문 폭을 넓히기 위해 목차 내용을 숨기고 얇은 토글 레일만 남긴다 */
+.lesson-layout--toc-collapsed .lesson-toc {
+    display: flex;
+    justify-content: center;
+    padding: 10px 4px;
+}
+
+.lesson-layout--toc-collapsed .lesson-toc__body {
+    display: none;
+}
+
+.lesson-layout--toc-collapsed .lesson-toc__toggle {
+    margin: 0;
+}
+
+.lesson-layout--toc-collapsed .lesson-toc__toggle-icon {
+    transform: rotate(180deg);
 }
 
 .lesson-toc ol {
@@ -680,6 +734,12 @@
 .lesson-section p,
 .lesson-section li {
     color: var(--ink-soft);
+}
+
+/* 강의용 압축 리드 문장 — 긴 설명 대신 한두 줄로 핵심만 짚고 넘어가는 문단 */
+.lesson-section p.lecture-lead {
+    font-weight: 600;
+    color: var(--ink);
 }
 
 .lesson-section strong {

@@ -45,8 +45,13 @@
 
         <!-- 내부 목차 (common.js가 자동 생성) -->
         <nav class="lesson-toc" aria-label="이 강의의 목차">
-            <p class="lesson-toc__title">이 강의의 목차</p>
-            <ol id="lesson-toc-list"></ol>
+            <button type="button" class="lesson-toc__toggle" id="lesson-toc-toggle" aria-expanded="true" aria-controls="lesson-toc-body" aria-label="목차 접기">
+                <span class="lesson-toc__toggle-icon" aria-hidden="true">&#8249;</span>
+            </button>
+            <div class="lesson-toc__body" id="lesson-toc-body">
+                <p class="lesson-toc__title">이 강의의 목차</p>
+                <ol id="lesson-toc-list"></ol>
+            </div>
         </nav>
 
         <div class="lesson-body">
@@ -54,22 +59,19 @@
             <!-- 1. 강의 소개 -->
             <section class="lesson-section" id="sec-intro" aria-labelledby="h-intro">
                 <h2 id="h-intro" data-toc-label="강의 소개"><span class="section-no">01</span>강의 소개</h2>
-                <p>
-                    문제를 만났을 때 아무 아이디어도 떠오르지 않는다면, 가장 먼저 던져야 할 질문이 있습니다.
-                    <strong>"가능한 모든 경우를 하나씩 다 확인하면 어떻게 될까?"</strong>
-                    이렇게 모든 경우를 빠짐없이 검사하는 전략을 <strong>완전 탐색(brute force)</strong>이라고 부릅니다.
-                    완전 탐색은 느릴 수는 있어도 틀리지 않습니다 — 그래서 모든 알고리즘 설계의 출발점이 됩니다.
-                </p>
-                <p>
-                    이번 강의에서는 완전 탐색을 <strong>문자열 데이터</strong>에 적용합니다.
-                    문자열을 한 글자씩 순회하는 <code>charAt</code>, 문자열을 올바르게 비교하는 <code>equals</code>,
-                    앞뒤가 똑같은 <strong>회문(팰린드롬)</strong> 판별,
-                    그리고 완전 탐색의 대표 패턴인 <strong>중첩 반복문으로 모든 쌍 비교하기</strong>를 차례로 배웁니다.
-                    후반부에는 같은 문제를 <strong>HashMap과 HashSet</strong>으로 다시 풀어,
-                    비교 횟수가 n(n-1)/2번에서 n번으로 줄어드는 것을 1강에서 배운 <strong>연산 카운터</strong>로 직접 셉니다.
-                    마지막에는 게시글의 단어 빈도, 중복 단어, 최다 등장 단어를 분석하는
-                    <strong>단어 분석 프로그램</strong>을 완성합니다.
-                </p>
+                <p class="lecture-lead">오늘의 질문: <strong>"가능한 모든 경우를 하나씩 다 확인하면 어떻게 될까?"</strong> — 이것이 <strong>완전 탐색(brute force)</strong>입니다.</p>
+                <ul>
+                    <li>완전 탐색은 느릴 수는 있어도 틀리지 않음 — 모든 알고리즘 설계의 출발점</li>
+                    <li>이번 강의(문자열 데이터에 적용)에서 다루는 것
+                        <ul>
+                            <li>문자열을 한 글자씩 순회하는 <code>charAt</code>, 올바르게 비교하는 <code>equals</code></li>
+                            <li>앞뒤가 똑같은 <strong>회문(팰린드롬)</strong> 판별</li>
+                            <li>완전 탐색의 대표 패턴인 <strong>중첩 반복문으로 모든 쌍 비교하기</strong></li>
+                            <li>같은 문제를 <strong>HashMap·HashSet</strong>으로 다시 풀어, 비교 횟수가 n(n-1)/2번 → n번으로 줄어드는 것을 1강의 <strong>연산 카운터</strong>로 확인</li>
+                        </ul>
+                    </li>
+                    <li>마지막 실습: 게시글의 단어 빈도·중복 단어·최다 등장 단어를 분석하는 <strong>단어 분석 프로그램</strong></li>
+                </ul>
             </section>
 
             <!-- 2. 학습 목표 -->
@@ -89,7 +91,7 @@
             <!-- 3. 선수 지식 -->
             <section class="lesson-section" id="sec-prereq" aria-labelledby="h-prereq">
                 <h2 id="h-prereq" data-toc-label="선수 지식"><span class="section-no">03</span>선수 지식</h2>
-                <p>이 강의는 다음 내용을 이미 알고 있다고 가정합니다. 하나라도 낯설다면 1강·2강을 먼저 복습하세요.</p>
+                <p class="lecture-lead">다음 내용을 이미 안다고 가정합니다. 하나라도 낯설면 1강·2강을 먼저 복습하세요.</p>
                 <div class="table-scroll">
                     <table class="data-table">
                         <thead>
@@ -110,15 +112,12 @@
             <!-- 4. 실제 문제 상황 -->
             <section class="lesson-section" id="sec-problem" aria-labelledby="h-problem">
                 <h2 id="h-problem" data-toc-label="실제 문제 상황"><span class="section-no">04</span>실제 문제 상황</h2>
-                <p>
-                    여러분이 학과 커뮤니티 게시판의 운영을 맡게 되었다고 상상해 봅시다.
-                    최근 도배성 게시글이 늘어서, 운영진은 게시글에 <strong>같은 단어가 반복해서 등장하는지</strong>,
-                    <strong>어떤 단어가 가장 많이 쓰였는지</strong>를 자동으로 분석하고 싶어 합니다.
-                    처음에는 단어 수가 수십 개라 "모든 단어 쌍을 비교"하는 프로그램으로 충분했습니다.
-                    그런데 인기 게시글은 댓글까지 합치면 단어가 수만 개나 되고, 분석 시간이 눈에 띄게 길어졌습니다.
-                    선배가 힌트를 줍니다. <strong>"모든 쌍을 비교하면 n²이야. 해시를 쓰면 n에 끝나."</strong>
-                    <em>n²과 n의 차이가 무엇인지는 1강에서 배웠습니다 — 이제 그 차이를 만들어 내는 방법을 배울 차례입니다.</em>
-                </p>
+                <ul>
+                    <li>상황: 학과 커뮤니티 게시판 운영. 도배성 게시글이 늘어 <strong>같은 단어가 반복 등장하는지</strong>, <strong>어떤 단어가 가장 많이 쓰였는지</strong>를 자동 분석하고 싶음</li>
+                    <li>처음엔 단어 수십 개라 "모든 단어 쌍을 비교"하는 프로그램으로 충분 → 댓글까지 합쳐 단어가 수만 개가 되자 분석 시간이 눈에 띄게 길어짐</li>
+                    <li>선배 개발자: <strong>"모든 쌍을 비교하면 n²이야. 해시를 쓰면 n에 끝나."</strong></li>
+                    <li><em>n²과 n의 차이는 1강에서 배웠습니다 — 이제 그 차이를 만들어 내는 방법을 배울 차례입니다.</em></li>
+                </ul>
                 <div class="note-box">
                     <span class="note-box__title">오늘의 핵심 질문</span>
                     <p>모든 경우를 확인하는 <strong>완전 탐색</strong>은 언제나 옳다. 그런데 <strong>더 적게 확인하고도</strong> 같은 답을 얻을 수는 없을까?</p>
@@ -128,41 +127,39 @@
             <!-- 5. 사람이 직접 해결해 보기 -->
             <section class="lesson-section" id="sec-hand" aria-labelledby="h-hand">
                 <h2 id="h-hand" data-toc-label="사람이 직접 해결해 보기"><span class="section-no">05</span>사람이 직접 해결해 보기</h2>
-                <p>
-                    코드를 쓰기 전에, 작은 데이터로 문제를 손으로 풀어 봅니다.
-                    단어 5개가 적힌 카드가 있습니다: <strong>[사과, 포도, 사과, 배, 포도]</strong>.
-                    이 중에서 <strong>중복된 단어</strong>를 찾아봅시다.
-                </p>
+                <p class="lecture-lead">작은 데이터로 손으로 먼저 풀어 봅니다 — 카드 5장 <strong>[사과, 포도, 사과, 배, 포도]</strong>에서 <strong>중복된 단어</strong> 찾기.</p>
 
                 <h3>방법 A — 모든 쌍을 비교하기 (완전 탐색)</h3>
                 <div class="hand-step">
                     <span class="hand-step__label">STEP 1</span>
-                    <p>
-                        첫 번째 카드 "사과"를 들고, 뒤에 있는 카드들과 차례로 비교합니다.
-                        사과↔포도(다름), 사과↔사과(<strong>같음! 중복 발견</strong>), 사과↔배(다름), 사과↔포도(다름).
-                    </p>
+                    <ul>
+                        <li>첫 번째 카드 "사과"를 뒤 카드들과 차례로 비교: 포도(다름) → 사과(<strong>같음! 중복 발견</strong>) → 배(다름) → 포도(다름)</li>
+                    </ul>
                     <details class="reveal-box">
                         <summary>질문: 첫 번째 카드 하나를 확인하는 데 비교를 몇 번 했나요?</summary>
                         <div class="reveal-box__content">
-                            <p>4번입니다. 자기 자신을 제외한 나머지 카드 수, 즉 <strong>n - 1번</strong>입니다.
-                            카드가 100장이라면 첫 카드에만 99번의 비교가 필요합니다.</p>
+                            <ul>
+                                <li><strong>4번</strong> — 자기 자신을 제외한 나머지 카드 수, 즉 <strong>n - 1번</strong></li>
+                                <li>카드가 100장이라면 첫 카드에만 99번의 비교가 필요</li>
+                            </ul>
                         </div>
                     </details>
                 </div>
                 <div class="hand-step">
                     <span class="hand-step__label">STEP 2</span>
-                    <p>
-                        두 번째 카드 "포도"는 그 뒤의 3장과 비교합니다(포도↔사과, 포도↔배, 포도↔<strong>포도: 중복!</strong>).
-                        세 번째 카드는 2장과, 네 번째 카드는 1장과 비교합니다.
-                        앞 카드와의 비교는 이미 했으므로 다시 하지 않습니다.
-                    </p>
+                    <ul>
+                        <li>두 번째 카드 "포도"는 뒤의 3장과 비교: 사과(다름), 배(다름), <strong>포도(중복!)</strong></li>
+                        <li>세 번째 카드는 2장과, 네 번째 카드는 1장과 비교 — 앞 카드와의 비교는 이미 했으므로 다시 하지 않음</li>
+                    </ul>
                     <details class="reveal-box">
                         <summary>질문: 총 비교 횟수는 몇 번인가요? 카드가 100장이라면요?</summary>
                         <div class="reveal-box__content">
-                            <p>4 + 3 + 2 + 1 = <strong>10번</strong>입니다.
-                            일반화하면 (n-1) + (n-2) + … + 1 = <strong>n(n-1)/2</strong>번.
-                            카드가 100장이면 100 × 99 ÷ 2 = <strong>4,950번</strong>입니다.
-                            n이 10배가 되면 비교는 약 100배 — 1강에서 배운 <strong>O(n²)</strong>의 증가 방식입니다.</p>
+                            <ul>
+                                <li>4 + 3 + 2 + 1 = <strong>10번</strong></li>
+                                <li>일반화하면 (n-1) + (n-2) + … + 1 = <strong>n(n-1)/2</strong>번</li>
+                                <li>카드 100장이면 100 × 99 ÷ 2 = <strong>4,950번</strong></li>
+                                <li>n이 10배가 되면 비교는 약 100배 — 1강에서 배운 <strong>O(n²)</strong>의 증가 방식</li>
+                            </ul>
                         </div>
                     </details>
                 </div>
@@ -170,35 +167,35 @@
                 <h3>방법 B — 명단에 적어 가며 한 번만 훑기</h3>
                 <div class="hand-step">
                     <span class="hand-step__label">STEP 3</span>
-                    <p>
-                        이번에는 빈 종이(명단)를 준비하고 카드를 한 장씩 봅니다.
-                        "사과" → 명단에 없음, 적는다. "포도" → 없음, 적는다. "사과" → <strong>명단에 이미 있음! 중복</strong>.
-                        "배" → 없음, 적는다. "포도" → <strong>이미 있음! 중복</strong>. 끝.
-                    </p>
+                    <ul>
+                        <li>빈 종이(명단)를 준비하고 카드를 한 장씩 확인</li>
+                        <li>"사과"→없음, 적는다 / "포도"→없음, 적는다 / "사과"→<strong>이미 있음! 중복</strong> / "배"→없음, 적는다 / "포도"→<strong>이미 있음! 중복</strong></li>
+                    </ul>
                     <details class="reveal-box">
                         <summary>질문: 카드를 몇 번 확인했나요? 이 방법의 핵심 아이디어는 무엇인가요?</summary>
                         <div class="reveal-box__content">
-                            <p>카드 수만큼, 딱 <strong>5번</strong>입니다.
-                            핵심은 <strong>"지금까지 본 것"을 기억해 두는 것</strong>입니다.
-                            기억(명단) 덕분에 과거의 카드와 일일이 다시 비교할 필요가 없어집니다.
-                            이 명단 역할을 컴퓨터에서 하는 것이 바로 <strong>HashSet</strong>입니다.</p>
+                            <ul>
+                                <li>카드 수만큼, 딱 <strong>5번</strong></li>
+                                <li>핵심은 <strong>"지금까지 본 것"을 기억해 두는 것</strong> — 기억(명단) 덕분에 과거 카드와 다시 비교할 필요가 없음</li>
+                                <li>이 명단 역할을 컴퓨터에서 하는 것이 바로 <strong>HashSet</strong></li>
+                            </ul>
                         </div>
                     </details>
                 </div>
                 <div class="hand-step">
                     <span class="hand-step__label">STEP 4</span>
-                    <p>
-                        두 방법을 비교해 봅시다. 찾아낸 중복은 [사과, 포도]로 같습니다.
-                        하지만 확인 횟수는 방법 A가 10번, 방법 B가 5번입니다.
-                    </p>
+                    <ul>
+                        <li>두 방법 비교 — 찾아낸 중복은 [사과, 포도]로 같음</li>
+                        <li>확인 횟수는 방법 A가 10번, 방법 B가 5번</li>
+                    </ul>
                     <details class="reveal-box">
                         <summary>질문: 단어가 100,000개라면 두 방법의 확인 횟수는 각각 얼마일까요?</summary>
                         <div class="reveal-box__content">
-                            <p>방법 A는 100,000 × 99,999 ÷ 2 ≈ <strong>50억 번</strong>,
-                            방법 B는 <strong>100,000번</strong>입니다. 약 5만 배 차이입니다.
-                            단, 방법 B는 명단이라는 <strong>추가 메모리</strong>를 씁니다 —
-                            "메모리를 조금 쓰고 시간을 크게 아끼는" 교환이 일어난 것입니다.
-                            이 교환은 복잡도 섹션에서 다시 정리합니다.</p>
+                            <ul>
+                                <li>방법 A는 100,000 × 99,999 ÷ 2 ≈ <strong>50억 번</strong>, 방법 B는 <strong>100,000번</strong> — 약 5만 배 차이</li>
+                                <li>단, 방법 B는 명단이라는 <strong>추가 메모리</strong>를 씀 — "메모리를 조금 쓰고 시간을 크게 아끼는" 교환</li>
+                                <li>이 교환은 복잡도 섹션에서 다시 정리</li>
+                            </ul>
                         </div>
                     </details>
                 </div>
@@ -209,22 +206,19 @@
                 <h2 id="h-concepts" data-toc-label="핵심 개념"><span class="section-no">06</span>핵심 개념</h2>
 
                 <h3>완전 탐색(Brute Force)이란?</h3>
-                <p>
-                    완전 탐색은 <strong>가능한 모든 경우를 빠짐없이 확인</strong>하는 문제 해결 전략입니다.
-                    "후보를 하나도 놓치지 않는다"는 성질 덕분에, 구현이 올바르다면 <strong>답이 틀릴 수 없습니다</strong>.
-                    2강의 조건 검색(배열을 처음부터 끝까지 확인)도 사실 완전 탐색의 한 형태였습니다.
-                    문제는 속도입니다 — "모든 경우"의 수가 크면 그만큼 오래 걸립니다.
-                    그래서 알고리즘 설계는 보통 이렇게 진행됩니다:
-                    <strong>① 완전 탐색으로 일단 정확한 답을 얻는다 → ② 더 적게 확인하는 방법을 찾는다.</strong>
-                    오늘 강의가 정확히 이 두 단계를 밟습니다.
-                </p>
+                <ul>
+                    <li>완전 탐색 = <strong>가능한 모든 경우를 빠짐없이 확인</strong>하는 문제 해결 전략</li>
+                    <li>"후보를 하나도 놓치지 않는다" — 구현이 올바르다면 <strong>답이 틀릴 수 없음</strong> (2강의 조건 검색도 완전 탐색의 한 형태)</li>
+                    <li>문제는 속도 — "모든 경우"의 수가 크면 그만큼 오래 걸림</li>
+                    <li>알고리즘 설계의 일반적 순서: <strong>① 완전 탐색으로 일단 정확한 답을 얻는다 → ② 더 적게 확인하는 방법을 찾는다</strong> (오늘 강의가 정확히 이 두 단계)</li>
+                </ul>
 
                 <h3>중첩 반복문 — "모든 쌍"을 만드는 기계</h3>
-                <p>
-                    완전 탐색에서 가장 자주 쓰는 도구가 <strong>중첩 반복문</strong>(반복문 안의 반복문)입니다.
-                    바깥 반복문이 기준 <code>i</code>를 정하면, 안쪽 반복문이 비교 상대 <code>j</code>를 훑습니다.
-                    같은 쌍을 두 번 비교하지 않도록 안쪽을 <code>j = i + 1</code>부터 시작하는 것이 관례입니다.
-                </p>
+                <ul>
+                    <li>완전 탐색에서 가장 자주 쓰는 도구 = <strong>중첩 반복문</strong>(반복문 안의 반복문)</li>
+                    <li>바깥 반복문이 기준 <code>i</code>를 정하면, 안쪽 반복문이 비교 상대 <code>j</code>를 훑음</li>
+                    <li>같은 쌍을 두 번 비교하지 않도록 안쪽을 <code>j = i + 1</code>부터 시작하는 것이 관례</li>
+                </ul>
                 <div class="table-scroll">
                     <table class="data-table">
                         <thead>
@@ -236,17 +230,13 @@
                         </tbody>
                     </table>
                 </div>
-                <p>
-                    n=10이면 45번, n=1,000이면 499,500번, n=100,000이면 약 50억 번 —
-                    <em>중첩 반복문은 n이 커질수록 빠르게 무거워집니다.</em>
-                    참고로 이 "i를 고정하고 j를 훑는" 구조는 다음 강의(4강)에서 배울 선택 정렬·버블 정렬의 뼈대이기도 합니다.
-                </p>
+                <ul>
+                    <li>n=10이면 45번, n=1,000이면 499,500번, n=100,000이면 약 50억 번 — <em>중첩 반복문은 n이 커질수록 빠르게 무거워짐</em></li>
+                    <li>참고: 이 "i를 고정하고 j를 훑는" 구조는 4강에서 배울 선택 정렬·버블 정렬의 뼈대이기도 함</li>
+                </ul>
 
                 <h3>문자열 순회 — length()와 charAt(i)</h3>
-                <p>
-                    문자열은 "문자들이 순서대로 늘어선 데이터"라는 점에서 배열과 매우 닮았습니다.
-                    배열 순회 패턴을 그대로 옮기되, 문법이 조금 다릅니다.
-                </p>
+                <p class="lecture-lead">문자열은 "문자들이 순서대로 늘어선 데이터"라는 점에서 배열과 매우 닮음 — 순회 패턴은 그대로, 문법만 조금 다릅니다.</p>
                 <div class="table-scroll">
                     <table class="data-table">
                         <thead>
@@ -261,31 +251,22 @@
                 </div>
 
                 <h3>문자열 비교 — 반드시 equals!</h3>
-                <p>
-                    문자(<code>char</code>)는 숫자처럼 <code>==</code>로 비교합니다.
-                    하지만 문자열(<code>String</code>)은 <strong>객체</strong>라서,
-                    <code>==</code>는 "내용이 같은가"가 아니라 <strong>"같은 객체인가(같은 메모리를 가리키는가)"</strong>를 묻습니다.
-                    내용 비교는 반드시 <code>a.equals(b)</code>를 사용해야 합니다.
-                    <em><code>split</code>으로 만들어진 단어들은 전부 새 객체이므로, <code>==</code> 비교는 내용이 같아도 false가 됩니다</em> —
-                    오늘 오류 카드(12번 섹션)에서 실제로 이 사고를 재현해 봅니다.
-                </p>
+                <ul>
+                    <li>문자(<code>char</code>)는 숫자처럼 <code>==</code>로 비교</li>
+                    <li>문자열(<code>String</code>)은 <strong>객체</strong>라서 <code>==</code>는 "내용이 같은가"가 아니라 <strong>"같은 객체인가(같은 메모리를 가리키는가)"</strong>를 물음 — 내용 비교는 반드시 <code>a.equals(b)</code></li>
+                    <li><em><code>split</code>으로 만들어진 단어들은 전부 새 객체이므로, <code>==</code> 비교는 내용이 같아도 false</em> — 오늘 오류 카드(12번 섹션)에서 이 사고를 재현</li>
+                </ul>
 
                 <h3>회문(팰린드롬) 판별</h3>
-                <p>
-                    <strong>회문</strong>은 앞으로 읽어도 뒤로 읽어도 같은 문자열입니다: level, noon, 기러기, 토마토.
-                    판별 알고리즘은 <strong>양 끝에서 가운데로 좁혀 가는 두 포인터</strong>를 사용합니다.
-                    왼쪽 포인터 <code>left</code>와 오른쪽 포인터 <code>right</code>가 가리키는 문자를 비교하고,
-                    같으면 한 칸씩 안쪽으로 이동, 다르면 그 즉시 "회문 아님"으로 끝냅니다.
-                    문자열 길이가 L이면 비교는 최대 <strong>L/2번</strong> — 이것도 "확인해야 할 모든 쌍을 확인하는" 작은 완전 탐색입니다.
-                </p>
+                <ul>
+                    <li><strong>회문</strong> — 앞으로 읽어도 뒤로 읽어도 같은 문자열: level, noon, 기러기, 토마토</li>
+                    <li>판별 알고리즘 = <strong>양 끝에서 가운데로 좁혀 가는 두 포인터</strong></li>
+                    <li><code>left</code>·<code>right</code>가 가리키는 문자를 비교 — 같으면 한 칸씩 안쪽으로 이동, 다르면 그 즉시 "회문 아님"으로 종료</li>
+                    <li>문자열 길이가 L이면 비교는 최대 <strong>L/2번</strong> — "확인해야 할 모든 쌍을 확인하는" 작은 완전 탐색</li>
+                </ul>
 
                 <h3>빈도 계산과 HashMap</h3>
-                <p>
-                    2강에서 점수 빈도를 셀 때는 <code>count[점수]++</code>처럼 <strong>정수를 배열 인덱스로</strong> 썼습니다.
-                    그런데 "apple"이라는 단어는 배열 인덱스가 될 수 없습니다.
-                    이럴 때 쓰는 자료구조가 <strong>HashMap</strong>입니다 — <strong>키(key) → 값(value)</strong> 쌍을 저장하는 표라서,
-                    "단어 → 등장 횟수"를 자연스럽게 담을 수 있습니다.
-                </p>
+                <p class="lecture-lead">"apple" 같은 단어는 배열 인덱스가 될 수 없음 — 2강의 <code>count[점수]++</code> 대신 <strong>키(key) → 값(value)</strong> 쌍을 저장하는 <strong>HashMap</strong>을 씁니다.</p>
                 <ul>
                     <li><code>map.put(key, value)</code> — 키에 값을 저장(이미 있으면 덮어쓰기)</li>
                     <li><code>map.get(key)</code> — 키의 값을 꺼냄. <strong>키가 없으면 null!</strong></li>
@@ -293,27 +274,23 @@
                     <li><code>map.containsKey(key)</code> — 키가 있는지 확인</li>
                     <li><code>map.entrySet()</code> — (키, 값) 쌍 전체를 순회할 때 사용</li>
                 </ul>
-                <p>빈도 계산의 핵심 한 줄은 다음과 같습니다. "지금까지의 횟수(없으면 0)에 1을 더해 다시 저장한다."</p>
+                <p class="lecture-lead">빈도 계산의 핵심 한 줄: "지금까지의 횟수(없으면 0)에 1을 더해 다시 저장한다."</p>
                 <pre class="quiz-code">freq.put(word, freq.getOrDefault(word, 0) + 1);</pre>
 
                 <h3>중복 확인과 HashSet</h3>
-                <p>
-                    <strong>HashSet</strong>은 "값의 집합"입니다. 같은 값을 두 번 담을 수 없고,
-                    <code>add</code>가 그 사실을 알려 줍니다:
-                    <strong>처음 넣는 값이면 true, 이미 있던 값이면 false</strong>를 반환합니다.
-                    그래서 손 풀이의 "명단에 적어 가며 훑기"가 코드 세 줄이 됩니다 —
-                    <code>seen.add(word)</code>가 false를 돌려주는 순간이 곧 중복 발견입니다.
-                </p>
+                <ul>
+                    <li><strong>HashSet</strong> = "값의 집합" — 같은 값을 두 번 담을 수 없음</li>
+                    <li><code>add</code>가 그 사실을 알려 줌: <strong>처음 넣는 값이면 true, 이미 있던 값이면 false</strong></li>
+                    <li>그래서 손 풀이의 "명단에 적어 가며 훑기"가 코드 세 줄로 — <code>seen.add(word)</code>가 false를 돌려주는 순간이 곧 중복 발견</li>
+                </ul>
 
                 <h3>해시는 왜 빠른가?</h3>
-                <p>
-                    HashMap과 HashSet의 "Hash"는 <strong>해시 함수</strong>에서 온 이름입니다.
-                    해시 함수는 "apple" 같은 값을 받아 저장 위치(번호)를 계산합니다.
-                    덕분에 "apple이 있나?"라는 질문에 <strong>전체를 뒤지지 않고 계산된 위치만 확인</strong>하면 됩니다 —
-                    1강 응용 예제에서 "번호 = 인덱스 + 1" 규칙으로 O(1) 접근을 했던 것과 같은 원리를,
-                    해시 함수가 <strong>어떤 값에 대해서도</strong> 만들어 주는 셈입니다.
-                    <em>그래서 추가·확인이 평균 O(1)이고, n개를 순회하며 확인해도 전체가 평균 O(n)입니다.</em>
-                </p>
+                <ul>
+                    <li>HashMap·HashSet의 "Hash" = <strong>해시 함수</strong>에서 온 이름 — "apple" 같은 값을 받아 저장 위치(번호)를 계산</li>
+                    <li>덕분에 "apple이 있나?"라는 질문에 <strong>전체를 뒤지지 않고 계산된 위치만 확인</strong>하면 됨</li>
+                    <li>1강 응용 예제의 "번호 = 인덱스 + 1" 규칙으로 O(1) 접근했던 것과 같은 원리를, 해시 함수가 <strong>어떤 값에 대해서도</strong> 만들어 주는 셈</li>
+                    <li><em>그래서 추가·확인이 평균 O(1), n개를 순회해도 전체가 평균 O(n)</em></li>
+                </ul>
                 <div class="table-scroll">
                     <table class="data-table">
                         <thead>
@@ -333,25 +310,16 @@
             <!-- 7. 단계별 동작 과정 -->
             <section class="lesson-section" id="sec-steps" aria-labelledby="h-steps">
                 <h2 id="h-steps" data-toc-label="단계별 동작 과정"><span class="section-no">07</span>단계별 동작 과정</h2>
-                <p>
-                    손으로 풀었던 중복 검사를 시각화로 다시 봅니다.
-                    1부는 <strong>이중 반복문(모든 쌍 비교)</strong>, 2부는 <strong>같은 데이터를 HashSet</strong>으로 처리합니다.
-                    <strong>다음 단계 ▶</strong> 버튼으로 한 단계씩 진행하며 <strong>비교 횟수 카운터</strong>를 관찰하세요.
-                    기준 단어 i는 <strong>파란색(현재)</strong>, 비교 상대 j는 <strong>앰버색(비교 중)</strong>,
-                    중복으로 확정된 단어는 <strong>초록색(확정)</strong>으로 표시됩니다.
-                </p>
+                <p class="lecture-lead">손으로 풀었던 중복 검사를 시각화로 다시 봅니다. 1부는 <strong>이중 반복문(모든 쌍 비교)</strong>, 2부는 <strong>같은 데이터를 HashSet</strong>으로 처리.
+                    <strong>다음 단계 ▶</strong>로 한 단계씩 진행하며 <strong>비교 횟수 카운터</strong>를 관찰하세요 — 기준 단어 i는 <strong>파란색(현재)</strong>, 비교 상대 j는 <strong>앰버색(비교 중)</strong>, 중복 확정은 <strong>초록색(확정)</strong>.</p>
                 <div id="viz-duplicate" aria-label="중복 검사 — 이중 반복문과 HashSet 방식 비교 시각화"></div>
-                <p>
-                    마지막 단계에서 확인할 수 있듯, 단어 5개에 대해 이중 반복문은 <strong>10번</strong>,
-                    HashSet은 <strong>5번</strong>의 확인으로 같은 중복 [사과, 포도]를 찾아냅니다.
-                    <em>같은 답, 다른 일의 양 — 1강의 "반복문 vs 공식"에서 본 구도가 자료구조의 힘으로 다시 나타납니다.</em>
-                </p>
+                <p><em>단어 5개에 대해 이중 반복문은 <strong>10번</strong>, HashSet은 <strong>5번</strong>의 확인으로 같은 중복 [사과, 포도]를 찾아냅니다 — 같은 답, 다른 일의 양입니다.</em></p>
             </section>
 
             <!-- 8. 의사코드 -->
             <section class="lesson-section" id="sec-pseudo" aria-labelledby="h-pseudo">
                 <h2 id="h-pseudo" data-toc-label="의사코드"><span class="section-no">08</span>의사코드</h2>
-                <p>코드를 쓰기 전에, 시각화에서 본 절차를 언어 중립적인 의사코드로 정리합니다.</p>
+                <p class="lecture-lead">코드를 쓰기 전에, 시각화에서 본 절차를 언어 중립적인 의사코드로 정리합니다.</p>
 
                 <article class="code-card">
                     <header class="code-card__header">
@@ -406,27 +374,21 @@
     "회문"을 반환한다</code></pre>
                 </article>
 
-                <p>
-                    방법 A의 절차에는 고리(loop) 안에 또 고리가 있고 — 이것이 O(n²)의 모양입니다.
-                    방법 B는 고리가 하나뿐이지만, 대신 <strong>집합이라는 기억 장치</strong>가 추가됐습니다.
-                    시간을 줄이는 대가로 공간을 쓰는 이 교환을 코드로 확인하러 갑시다.
-                </p>
+                <ul>
+                    <li>방법 A의 절차에는 고리(loop) 안에 또 고리가 있음 — 이것이 <strong>O(n²)</strong>의 모양</li>
+                    <li>방법 B는 고리가 하나뿐이지만, 대신 <strong>집합이라는 기억 장치</strong>가 추가됨</li>
+                    <li>시간을 줄이는 대가로 공간을 쓰는 이 교환을 코드로 확인</li>
+                </ul>
             </section>
 
             <!-- 9. 점진적 Java 구현 -->
             <section class="lesson-section" id="sec-impl" aria-labelledby="h-impl">
                 <h2 id="h-impl" data-toc-label="점진적 Java 구현"><span class="section-no">09</span>점진적 Java 구현</h2>
-                <p>
-                    이제 Java로 옮깁니다. 완성 코드를 한 번에 쓰지 않고,
-                    <strong>데이터 준비 → 문자 하나 확인 → 단일 루프 빈도 → 이중 루프 중복 검사</strong> 순서로 확장합니다.
-                    각 단계의 코드는 모두 독립적으로 복사해서 실행할 수 있습니다.
-                </p>
+                <p class="lecture-lead">이제 Java로 옮깁니다. 완성 코드를 한 번에 쓰지 않고
+                    <strong>데이터 준비 → 문자 하나 확인 → 단일 루프 빈도 → 이중 루프 중복 검사</strong> 순서로 확장 — 각 단계는 독립적으로 실행 가능.</p>
 
                 <h3>구현 1단계 — 문장을 단어 배열로 준비하기</h3>
-                <p>
-                    먼저 처리할 데이터를 준비합니다. 문장 하나를 <code>split(" ")</code>으로 잘라 단어 배열을 만들고,
-                    2강의 배열 순회 패턴으로 내용을 눈으로 확인합니다.
-                </p>
+                <p class="lecture-lead">처리할 데이터를 준비 — 문장 하나를 <code>split(" ")</code>으로 잘라 단어 배열을 만들고, 2강의 배열 순회 패턴으로 내용을 눈으로 확인합니다.</p>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -480,11 +442,7 @@ words[5] = apple</code></pre>
                 </div>
 
                 <h3>구현 2단계 — 문자 하나 확인(charAt)과 두 값 비교</h3>
-                <p>
-                    이번에는 문자열 <strong>안</strong>으로 들어갑니다. <code>charAt(i)</code>로 문자를 하나 꺼내 보고,
-                    문자는 <code>==</code>로, 문자열은 <code>equals</code>로 비교한다는 규칙을 확인합니다.
-                    마지막 줄의 <code>a == c</code>가 false인 것이 <strong>오늘 가장 중요한 함정 예방 주사</strong>입니다.
-                </p>
+                <p class="lecture-lead">문자열 <strong>안</strong>으로 들어갑니다. <code>charAt(i)</code>로 문자를 하나 꺼내고, 문자는 <code>==</code>·문자열은 <code>equals</code>로 비교하는 규칙을 확인 — 마지막 줄 <code>a == c</code> = false가 <strong>오늘 가장 중요한 함정 예방 주사</strong>입니다.</p>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -537,11 +495,7 @@ a.equals(c) = true
                 </article>
 
                 <h3>구현 3단계 — 한 단어의 빈도 세기 (단일 루프)</h3>
-                <p>
-                    이제 핵심 연산을 반복에 태웁니다. 단어 배열을 <strong>한 번 순회</strong>하며
-                    특정 단어(target)와 <code>equals</code>로 비교하고, 같을 때마다 세면 그 단어의 <strong>빈도</strong>가 됩니다.
-                    1강의 연산 카운터도 함께 붙여, 비교가 정확히 n번 일어남을 확인합니다.
-                </p>
+                <p class="lecture-lead">핵심 연산을 반복에 태웁니다. 단어 배열을 <strong>한 번 순회</strong>하며 target과 <code>equals</code>로 비교, 같을 때마다 세면 <strong>빈도</strong> — 1강의 연산 카운터로 비교가 정확히 n번 일어남을 확인.</p>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -585,18 +539,15 @@ a.equals(c) = true
                 </article>
                 <div class="note-box note-box--tip">
                     <span class="note-box__title">2강과의 연결</span>
-                    <p>2강의 "특정 점수 학생 수 세기"와 완전히 같은 구조입니다.
-                    바뀐 것은 <code>data[i] == target</code>이 <code>words[i].equals(target)</code>이 된 것뿐 —
-                    <strong>정수 빈도가 문자열 빈도로 확장</strong>되었습니다.
-                    단, 이 방법은 단어 한 종류에 n번의 비교가 필요합니다. 모든 단어의 빈도가 필요하면? 잠시 뒤 HashMap이 해결합니다.</p>
+                    <ul>
+                        <li>2강의 "특정 점수 학생 수 세기"와 완전히 같은 구조 — <code>data[i] == target</code>이 <code>words[i].equals(target)</code>이 된 것뿐</li>
+                        <li><strong>정수 빈도가 문자열 빈도로 확장</strong></li>
+                        <li>단, 이 방법은 단어 한 종류에 n번의 비교가 필요 — 모든 단어의 빈도가 필요하면? 잠시 뒤 HashMap이 해결</li>
+                    </ul>
                 </div>
 
                 <h3>구현 4단계 — 이중 반복문으로 모든 쌍 중복 확인</h3>
-                <p>
-                    드디어 완전 탐색의 본체입니다. 바깥 루프 <code>i</code>가 기준 단어를 정하고,
-                    안쪽 루프 <code>j = i + 1</code>이 뒤쪽 단어들과 비교합니다.
-                    카운터로 비교 횟수를 세어, 손 풀이에서 계산한 <strong>n(n-1)/2</strong>와 일치하는지 확인합니다.
-                </p>
+                <p class="lecture-lead">드디어 완전 탐색의 본체 — 바깥 루프 <code>i</code>가 기준 단어를 정하고, 안쪽 루프 <code>j = i + 1</code>이 뒤쪽 단어들과 비교. 카운터로 비교 횟수를 세어 손 풀이의 <strong>n(n-1)/2</strong>와 일치하는지 확인.</p>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -654,12 +605,7 @@ a.equals(c) = true
             <!-- 10. 완성 Java 코드 -->
             <section class="lesson-section" id="sec-complete" aria-labelledby="h-complete">
                 <h2 id="h-complete" data-toc-label="완성 Java 코드"><span class="section-no">10</span>완성 Java 코드</h2>
-                <p>
-                    지금까지의 조각을 모아 <strong>"같은 문제, 두 가지 알고리즘"</strong> 비교 프로그램을 완성합니다.
-                    직접 구현한 이중 반복문(방법 A)과 HashSet(방법 B)으로 각각 중복 단어를 찾아
-                    결과가 같은지 검증하고, 확인 횟수를 비교합니다.
-                    마지막에는 HashMap의 <code>getOrDefault</code>로 <strong>모든 단어의 빈도를 단 한 번의 순회로</strong> 계산합니다.
-                </p>
+                <p class="lecture-lead">지금까지의 조각을 모아 <strong>"같은 문제, 두 가지 알고리즘"</strong> 비교 프로그램을 완성 — 이중 반복문(방법 A)과 HashSet(방법 B)으로 각각 중복 단어를 찾아 결과·확인 횟수를 비교하고, 마지막엔 HashMap의 <code>getOrDefault</code>로 <strong>모든 단어의 빈도를 단 한 번의 순회로</strong> 계산합니다.</p>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -785,21 +731,18 @@ n = 10일 때: 완전 탐색은 45번, 해시는 10번. n이 커질수록 차이
                 </article>
                 <div class="note-box note-box--warn">
                     <span class="note-box__title">HashMap의 출력 순서에 주의</span>
-                    <p>HashMap과 HashSet은 <strong>넣은 순서를 기억하지 않습니다</strong>.
-                    <code>freq</code>를 그대로 출력하면 순서가 뒤죽박죽으로 보일 수 있습니다.
-                    그래서 위 코드는 원본 배열을 다시 순회하며 <strong>첫 등장 순서</strong>로 출력했습니다.
-                    <em>"해시는 빠른 대신 순서가 없다" — 자료구조를 고를 때 기억해야 할 특성입니다.</em></p>
+                    <ul>
+                        <li>HashMap과 HashSet은 <strong>넣은 순서를 기억하지 않음</strong> — <code>freq</code>를 그대로 출력하면 뒤죽박죽으로 보일 수 있음</li>
+                        <li>그래서 위 코드는 원본 배열을 다시 순회하며 <strong>첫 등장 순서</strong>로 출력</li>
+                        <li><em>"해시는 빠른 대신 순서가 없다" — 자료구조를 고를 때 기억해야 할 특성</em></li>
+                    </ul>
                 </div>
             </section>
 
             <!-- 11. 실행 과정 추적 -->
             <section class="lesson-section" id="sec-trace" aria-labelledby="h-trace">
                 <h2 id="h-trace" data-toc-label="실행 과정 추적"><span class="section-no">11</span>실행 과정 추적</h2>
-                <p>
-                    이번에는 문자열 순회의 대표 문제, <strong>회문 판별</strong>의 내부를 추적합니다.
-                    left·right 포인터가 매 회차 어느 위치의 어떤 문자를 비교하는지 표로 출력해,
-                    의사코드(8번 섹션)의 절차와 정확히 일치하는지 확인합니다.
-                </p>
+                <p class="lecture-lead">문자열 순회의 대표 문제, <strong>회문 판별</strong>의 내부를 추적 — left·right 포인터가 매 회차 어느 위치의 어떤 문자를 비교하는지 표로 출력해 의사코드(8번 섹션)의 절차와 일치하는지 확인합니다.</p>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -881,19 +824,18 @@ left | right | charAt(left) | charAt(right) | 일치
    0 |     2 |            기 |             기 | O
 =&gt; "기러기" 은(는) 회문인가? true</code></pre>
                 </article>
-                <p>
-                    "level"(길이 5)은 비교 2번, "noon"(길이 4)도 비교 2번 — 길이 L에 대해 최대 <strong>L/2번</strong>입니다.
-                    "banana"는 첫 비교(b vs a)에서 바로 실패해 <strong>1번 만에 조기 중단</strong>됩니다.
-                    <em>1강의 "조기 중단" 아이디어가 여기서도 비교 횟수를 아껴 주고 있습니다.</em>
-                    또한 홀수 길이("level", "기러기")는 가운데 문자를 비교하지 않는다는 것도 표에서 확인할 수 있습니다 —
-                    가운데 글자는 뒤집어도 자기 자신이므로 확인할 필요가 없기 때문입니다.
-                </p>
+                <ul>
+                    <li>"level"(길이 5)은 비교 2번, "noon"(길이 4)도 비교 2번 — 길이 L에 대해 최대 <strong>L/2번</strong></li>
+                    <li>"banana"는 첫 비교(b vs a)에서 바로 실패해 <strong>1번 만에 조기 중단</strong></li>
+                    <li><em>1강의 "조기 중단" 아이디어가 여기서도 비교 횟수를 아껴 줌</em></li>
+                    <li>홀수 길이("level", "기러기")는 가운데 문자를 비교하지 않음 — 뒤집어도 자기 자신이므로 확인할 필요가 없기 때문</li>
+                </ul>
             </section>
 
             <!-- 12. 잘못된 코드와 오류 찾기 -->
             <section class="lesson-section" id="sec-bugs" aria-labelledby="h-bugs">
                 <h2 id="h-bugs" data-toc-label="잘못된 코드와 오류 찾기"><span class="section-no">12</span>잘못된 코드와 오류 찾기</h2>
-                <p>초보자가 문자열·해시 처리에서 가장 자주 만드는 오류 두 가지입니다. 먼저 코드를 읽고 무엇이 잘못됐는지 생각한 뒤 해설을 여세요.</p>
+                <p class="lecture-lead">초보자가 문자열·해시 처리에서 가장 자주 만드는 오류 두 가지. 먼저 코드를 읽고 무엇이 잘못됐는지 생각한 뒤 해설을 여세요.</p>
 
                 <article class="bug-card">
                     <h3 class="bug-card__title">오류 1 — ==로 문자열을 비교해서 빈도가 0이 되는 코드</h3>
@@ -926,15 +868,12 @@ left | right | charAt(left) | charAt(right) | 일치
                         <details class="answer-box" data-locked-until-complete>
                             <summary>발생하는 문제와 수정 방법 확인</summary>
                             <div class="answer-box__content">
-                                <p><strong>발생하는 문제:</strong> 출력이 <code>단어 "apple"의 등장 횟수 = 0</code>으로,
-                                "apple"이 3번 있는데도 0이 나옵니다. 컴파일 오류도, 실행 중 예외도 없어서 더 위험합니다.</p>
-                                <p><strong>오류가 나타나는 입력:</strong> <code>split</code>처럼 <strong>실행 중에 새로 만들어진 문자열</strong>과
-                                비교하는 모든 경우. (직접 쓴 리터럴끼리 비교하면 우연히 true가 나와 테스트를 통과한 것처럼 보이기도 합니다 — 함정!)</p>
-                                <p><strong>원인:</strong> <code>==</code>는 문자열의 <strong>내용</strong>이 아니라
-                                <strong>"같은 객체인가"</strong>를 비교합니다.
-                                <code>split(" ")</code>이 만든 "apple"은 리터럴 <code>target</code>과 내용만 같은 <strong>다른 객체</strong>라서
-                                <code>==</code> 비교가 전부 false가 됩니다. (구현 2단계의 <code>a == c → false</code>와 같은 현상입니다.)</p>
-                                <p><strong>수정 방법:</strong> 내용 비교는 <code>equals</code>를 사용합니다.</p>
+                                <ul>
+                                    <li><strong>발생하는 문제:</strong> 출력이 <code>단어 "apple"의 등장 횟수 = 0</code> — "apple"이 3번 있는데도 0. 컴파일 오류도 예외도 없어 더 위험</li>
+                                    <li><strong>오류가 나타나는 입력:</strong> <code>split</code>처럼 <strong>실행 중에 새로 만들어진 문자열</strong>과 비교하는 모든 경우 (직접 쓴 리터럴끼리 비교하면 우연히 true가 나와 테스트를 통과한 것처럼 보이기도 하는 함정)</li>
+                                    <li><strong>원인:</strong> <code>==</code>는 문자열의 <strong>내용</strong>이 아니라 <strong>"같은 객체인가"</strong>를 비교 — <code>split(" ")</code>이 만든 "apple"은 리터럴 <code>target</code>과 내용만 같은 <strong>다른 객체</strong>라서 <code>==</code> 비교가 전부 false (구현 2단계의 <code>a == c → false</code>와 같은 현상)</li>
+                                    <li><strong>수정 방법:</strong> 내용 비교는 <code>equals</code>를 사용</li>
+                                </ul>
                                 <pre class="quiz-code">if (words[i].equals(target)) {
     count++;
 }</pre>
@@ -975,15 +914,16 @@ public class BuggyNullCounter {
                         <details class="answer-box" data-locked-until-complete>
                             <summary>발생하는 문제와 수정 방법 확인</summary>
                             <div class="answer-box__content">
-                                <p><strong>발생하는 문제:</strong> 첫 단어를 처리하는 순간 프로그램이 예외로 중단됩니다.</p>
+                                <ul>
+                                    <li><strong>발생하는 문제:</strong> 첫 단어를 처리하는 순간 프로그램이 예외로 중단</li>
+                                </ul>
                                 <pre class="quiz-code">Exception in thread "main" java.lang.NullPointerException: Cannot invoke "java.lang.Integer.intValue()" because the return value of "java.util.Map.get(Object)" is null
 	at BuggyNullCounter.main(BuggyNullCounter.java:10)</pre>
-                                <p><strong>오류가 나타나는 입력:</strong> 맵에 <strong>아직 없는 키</strong>가 하나라도 등장하는 모든 입력.
-                                즉 빈도 계산에서는 사실상 항상(모든 단어가 처음엔 "처음 보는 단어"이므로) 터집니다.</p>
-                                <p><strong>원인:</strong> <code>freq.get("apple")</code>은 키가 없으면 <strong>null</strong>을 돌려줍니다.
-                                거기에 <code>+ 1</code>을 하려면 Java가 null을 int로 바꿔야 하는데(언박싱), null은 숫자가 아니므로
-                                <strong>NullPointerException</strong>이 발생합니다.</p>
-                                <p><strong>수정 방법:</strong> "없으면 0"을 돌려주는 <code>getOrDefault</code>를 사용합니다.</p>
+                                <ul>
+                                    <li><strong>오류가 나타나는 입력:</strong> 맵에 <strong>아직 없는 키</strong>가 하나라도 등장하는 모든 입력 — 빈도 계산에서는 사실상 항상(모든 단어가 처음엔 "처음 보는 단어") 터짐</li>
+                                    <li><strong>원인:</strong> <code>freq.get("apple")</code>은 키가 없으면 <strong>null</strong>을 반환 — 거기에 <code>+ 1</code>을 하려면 언박싱해야 하는데 null은 숫자가 아니므로 <strong>NullPointerException</strong> 발생</li>
+                                    <li><strong>수정 방법:</strong> "없으면 0"을 돌려주는 <code>getOrDefault</code>를 사용</li>
+                                </ul>
                                 <pre class="quiz-code">freq.put(word, freq.getOrDefault(word, 0) + 1);</pre>
                                 <p>수정 후 출력: <code>apple = 2회</code>.
                                 <em>맵에서 값을 꺼내 계산에 쓸 때는 항상 <strong>"이 키가 없을 수도 있다"</strong>를 먼저 생각하세요.</em>
@@ -999,17 +939,10 @@ public class BuggyNullCounter {
                 <h2 id="h-complexity" data-toc-label="복잡도 및 특성 분석"><span class="section-no">13</span>복잡도 및 특성 분석</h2>
 
                 <h3>입력 크기</h3>
-                <p>
-                    오늘은 입력 크기가 두 종류입니다. 단어 관련 알고리즘은 <strong>단어 수 n</strong>,
-                    회문 판별은 <strong>문자열 길이 L</strong>을 기준으로 일의 양을 표현합니다.
-                </p>
+                <p>오늘은 입력 크기가 두 종류 — 단어 관련 알고리즘은 <strong>단어 수 n</strong>, 회문 판별은 <strong>문자열 길이 L</strong>을 기준으로 일의 양을 표현합니다.</p>
 
                 <h3>주요 연산</h3>
-                <p>
-                    이중 반복문의 핵심 연산은 <strong>문자열 비교</strong> <code>equals</code>,
-                    해시 방식의 핵심 연산은 <strong>집합 검사</strong> <code>add</code>·<strong>맵 갱신</strong> <code>put</code>,
-                    회문 판별의 핵심 연산은 <strong>문자 비교</strong> <code>charAt(left) == charAt(right)</code>입니다.
-                </p>
+                <p>이중 반복문의 핵심 연산은 <strong>문자열 비교</strong> <code>equals</code> / 해시는 <strong>집합 검사</strong> <code>add</code>·<strong>맵 갱신</strong> <code>put</code> / 회문 판별은 <strong>문자 비교</strong> <code>charAt(left) == charAt(right)</code>.</p>
 
                 <h3>시간 복잡도</h3>
                 <div class="table-scroll">
@@ -1025,23 +958,14 @@ public class BuggyNullCounter {
                         </tbody>
                     </table>
                 </div>
-                <p>
-                    이중 반복문은 중복을 일찍 찾아도 모든 쌍을 끝까지 확인하므로 최선과 최악이 같습니다.
-                    반면 회문 판별은 1강의 조기 중단처럼, <strong>회문이 아닐수록 빨리 끝나는</strong> 특이한 구조입니다.
-                    해시의 검사 1회는 "평균 O(1)"입니다 — 아주 드물게 느려질 수 있지만,
-                    실무에서는 평균으로 생각해도 충분합니다.
-                </p>
+                <p><em>이중 반복문은 중복을 일찍 찾아도 모든 쌍을 끝까지 확인하므로 최선과 최악이 같습니다.</em> 반면 회문 판별은 1강의 조기 중단처럼 <strong>회문이 아닐수록 빨리 끝나는</strong> 구조이고, 해시의 검사 1회는 "평균 O(1)" — 드물게 느려질 수 있지만 실무에서는 평균으로 생각해도 충분합니다.</p>
 
                 <h3>공간 복잡도</h3>
                 <ul>
                     <li><strong>이중 반복문:</strong> 카운터와 인덱스 변수 몇 개 — <code>O(1)</code></li>
                     <li><strong>HashSet·HashMap:</strong> 서로 다른 단어를 모두 저장 — <code>O(n)</code></li>
                 </ul>
-                <p>
-                    즉 해시는 <strong>공간 O(n)을 내주고 시간을 O(n²) → O(n)으로 사는</strong> 교환입니다.
-                    메모리가 넉넉한 요즘 환경에서는 대부분 남는 장사지만,
-                    "빠름에는 공짜가 없다"는 사실은 기억해 두세요.
-                </p>
+                <p>즉 해시는 <strong>공간 O(n)을 내주고 시간을 O(n²) → O(n)으로 사는</strong> 교환 — 메모리가 넉넉한 요즘 환경에서는 대부분 남는 장사지만, "빠름에는 공짜가 없다"는 사실은 기억해 두세요.</p>
 
                 <h3>알고리즘 특성</h3>
                 <ul>
@@ -1061,13 +985,10 @@ public class BuggyNullCounter {
                 <h2 id="h-application" data-toc-label="실제 데이터 응용 예제"><span class="section-no">14</span>실제 데이터 응용 예제</h2>
 
                 <h3>문제 상황</h3>
-                <p>
-                    학과 사무실에서 공지사항 게시판을 분석해 달라는 요청이 왔습니다.
-                    "공지 문장에서 <strong>가장 자주 쓰인 단어 상위 3개</strong>를 뽑아 주세요.
-                    그리고 회원 아이디 중에 <strong>앞뒤가 똑같은 회문 아이디</strong>가 있는지도 찾아 주세요."
-                    오늘 배운 도구가 전부 등장하는 요청입니다 — 단어 분리(split), 빈도(HashMap),
-                    entrySet 순회, 그리고 회문 판별(두 포인터)까지.
-                </p>
+                <ul>
+                    <li>학과 사무실 요청: "공지 문장에서 <strong>가장 자주 쓰인 단어 상위 3개</strong>를 뽑아 주세요. 회원 아이디 중 <strong>앞뒤가 똑같은 회문 아이디</strong>가 있는지도 찾아 주세요."</li>
+                    <li>오늘 배운 도구가 전부 등장 — 단어 분리(split), 빈도(HashMap), entrySet 순회, 회문 판별(두 포인터)</li>
+                </ul>
 
                 <h3>데이터 모델과 알고리즘 적용 기준</h3>
                 <ul>
@@ -1231,28 +1152,18 @@ public class NoticeAnalysisApplication {
             <!-- 15. 람다·스트림 수정 문제 -->
             <section class="lesson-section" id="sec-modernize" aria-labelledby="h-modernize">
                 <h2 id="h-modernize" data-toc-label="람다·스트림 수정 문제"><span class="section-no">15</span>람다·스트림 수정 문제</h2>
-                <p>
-                    지금까지 쓴 코드를 <strong>같은 결과를 내는 다른 문법</strong>으로 고쳐 보는 문제입니다.
-                    필요한 문법은 추가 정보의
-                    <a href="../supplements/java-streams.html">자바 스트림</a> 문서에 모두 있습니다.
-                    먼저 스스로 고쳐 본 뒤 정답을 펼치세요.
-                </p>
+                <p class="lecture-lead">지금까지 쓴 코드를 <strong>같은 결과를 내는 다른 문법</strong>으로 고쳐 보는 문제입니다. 필요한 문법은 추가 정보의 <a href="../supplements/java-streams.html">자바 스트림</a> 문서에 모두 있습니다. 먼저 스스로 고쳐 본 뒤 정답을 펼치세요.</p>
                 <div class="note-box note-box--warn">
                     <span class="note-box__title">이 강의의 성과는 문법이 아니라 해시다</span>
-                    <p>
-                        빈도 계산이 O(n)인 것은 <strong>해시</strong> 덕분이지 문법 덕분이 아닙니다.
-                        3강의 성과는 이중 반복문 <strong>O(n²)</strong>을 해시 <strong>O(n)</strong>으로
-                        바꾼 것이고, 그 성과는 스트림으로 쓰든 반복문으로 쓰든 그대로입니다.
-                        아래 문제로 바뀌는 것은 <strong>읽기 쉬움</strong>뿐입니다.
-                    </p>
+                    <ul>
+                        <li>빈도 계산이 O(n)인 것은 <strong>해시</strong> 덕분이지 문법 덕분이 아님</li>
+                        <li>3강의 성과는 이중 반복문 <strong>O(n²)</strong>을 해시 <strong>O(n)</strong>으로 바꾼 것 — 스트림으로 쓰든 반복문으로 쓰든 그대로</li>
+                        <li>아래 문제로 바뀌는 것은 <strong>읽기 쉬움</strong>뿐</li>
+                    </ul>
                 </div>
 
                 <h3>수정 문제 ① — getOrDefault 누적을 한 줄로</h3>
-                <p>
-                    <code>WordAnalysisComplete.java</code>의 <code>countFrequencies</code>는
-                    <code>HashMap</code>을 직접 만들고 <strong>"없으면 0에서, 있으면 지금 값에서 +1"</strong>을
-                    손으로 적습니다. 이 패턴은 자주 나오므로 표준 도구가 준비되어 있습니다.
-                </p>
+                <p class="lecture-lead"><code>WordAnalysisComplete.java</code>의 <code>countFrequencies</code>는 <code>HashMap</code>을 직접 만들고 <strong>"없으면 0에서, 있으면 지금 값에서 +1"</strong>을 손으로 적습니다 — 자주 나오는 패턴이라 표준 도구가 준비되어 있습니다.</p>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -1293,25 +1204,14 @@ public class NoticeAnalysisApplication {
 
 // groupingBy(무엇으로 묶을까, 묶은 것을 어떻게 셀까)</code></pre>
                     </article>
-                    <p>
-                        <em><strong>값의 타입이 <code>Integer</code>가 아니라 <code>Long</code>으로 바뀌는 것</strong>에
-                        주의하세요.</em> <code>counting()</code>은 원소 수를 <code>long</code>으로 셉니다.
-                        기존 코드와 이어 붙일 때 <code>freq.get(w) == 2</code> 같은 비교가
-                        조용히 어긋날 수 있는 자리입니다.
-                    </p>
-                    <p>
-                        <code>groupingBy(w -&gt; w, ...)</code>의 <code>w -&gt; w</code>가 어색해 보인다면
-                        제대로 읽은 것입니다. "단어 자신을 기준으로 묶어라"는 뜻입니다.
-                        묶는 기준이 원소 자체일 때 쓰는 관용구입니다.
-                    </p>
+                    <ul>
+                        <li><em><strong>값의 타입이 <code>Integer</code>가 아니라 <code>Long</code>으로 바뀌는 것</strong>에 주의</em> — <code>counting()</code>은 원소 수를 <code>long</code>으로 세므로, 기존 코드와 이어 붙일 때 <code>freq.get(w) == 2</code> 같은 비교가 조용히 어긋날 수 있음</li>
+                        <li><code>groupingBy(w -&gt; w, ...)</code>의 <code>w -&gt; w</code>는 "단어 자신을 기준으로 묶어라"는 뜻 — 묶는 기준이 원소 자체일 때 쓰는 관용구</li>
+                    </ul>
                 </details>
 
                 <h3>수정 문제 ② — 최빈 단어와 "2회 이상" 목록</h3>
-                <p>
-                    빈도표를 얻은 다음에는 대개 <strong>정렬</strong>이 따라옵니다.
-                    아래 반복문은 최빈 단어를 찾고, 2회 이상 나온 단어를
-                    빈도 내림차순·동점이면 사전순으로 늘어놓습니다 (4강 삽입 정렬).
-                </p>
+                <p class="lecture-lead">빈도표를 얻은 다음에는 대개 <strong>정렬</strong>이 따라옵니다. 아래 반복문은 최빈 단어를 찾고, 2회 이상 나온 단어를 빈도 내림차순·동점이면 사전순으로 늘어놓습니다 (4강 삽입 정렬).</p>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -1379,33 +1279,14 @@ List&lt;String&gt; repeated = freq.entrySet().stream()
         .map(Map.Entry::getKey)
         .toList();</code></pre>
                     </article>
-                    <p>
-                        <code>Map.Entry.&lt;String, Long&gt;comparingByValue()</code>처럼
-                        <strong>타입을 직접 적어 준 이유</strong>가 있습니다.
-                        <code>comparingByValue()</code>만 보고는 컴파일러가 무엇을 비교하는지 알 수 없기 때문입니다.
-                        람다식 문서의 "타입은 추론할 근거가 있을 때만 생략한다"가 여기에 그대로 적용됩니다.
-                    </p>
-                    <p>
-                        <strong>동점 처리를 반드시 적어야 하는 이유</strong>도 짚어 두세요.
-                        <code>HashMap</code>은 순서를 보장하지 않으므로,
-                        <code>thenComparing</code>을 빼면 banana·kiwi·orange 세 단어(모두 2회)의 순서가
-                        실행할 때마다 달라질 수 있습니다. 3강에서 배운
-                        <strong>"HashMap의 출력 순서에 주의"</strong>라는 함정이 스트림에도 똑같이 있습니다.
-                    </p>
-                    <p>
-                        <code>max</code>도 마찬가지입니다. 최빈 단어가 여럿이면
-                        반복문 버전은 <strong>문장에서 먼저 나온 단어</strong>를, 스트림 버전은
-                        <strong>맵을 훑다가 먼저 만난 단어</strong>를 고릅니다. 이번 예문은 apple(3회)이
-                        유일한 최빈이라 결과가 같지만, 동점이 생기면 갈릴 수 있습니다.
-                        <em><strong>"같은 결과"를 원한다면 동점 규칙까지 적어야 합니다.</strong></em>
-                    </p>
+                    <ul>
+                        <li><code>Map.Entry.&lt;String, Long&gt;comparingByValue()</code>처럼 <strong>타입을 직접 적어 준 이유</strong>가 있음 — <code>comparingByValue()</code>만 보고는 컴파일러가 무엇을 비교하는지 알 수 없기 때문 (람다식 문서의 "타입은 추론할 근거가 있을 때만 생략한다"가 여기에 적용)</li>
+                        <li><strong>동점 처리를 반드시 적어야 하는 이유</strong> — <code>HashMap</code>은 순서를 보장하지 않으므로 <code>thenComparing</code>을 빼면 banana·kiwi·orange 세 단어(모두 2회)의 순서가 실행할 때마다 달라질 수 있음 (3강의 <strong>"HashMap의 출력 순서에 주의"</strong> 함정이 스트림에도 똑같이 있음)</li>
+                        <li><code>max</code>도 마찬가지 — 최빈 단어가 여럿이면 반복문 버전은 <strong>문장에서 먼저 나온 단어</strong>를, 스트림 버전은 <strong>맵을 훑다가 먼저 만난 단어</strong>를 고름. 이번 예문은 apple(3회)이 유일한 최빈이라 결과가 같지만, 동점이 생기면 갈릴 수 있음. <em><strong>"같은 결과"를 원한다면 동점 규칙까지 적어야 합니다.</strong></em></li>
+                    </ul>
                 </details>
 
-                <p>
-                    정답 전체와 "반복문 결과와 같은지" 확인하는 코드는
-                    <code>examples/java/03-brute-force-string-hash/ModernizeSolution.java</code>에 있습니다.
-                    직접 실행해 모든 비교가 <code>true</code>로 나오는지 확인하세요.
-                </p>
+                <p class="lecture-lead">정답 전체와 "반복문 결과와 같은지" 확인하는 코드는 <code>examples/java/03-brute-force-string-hash/ModernizeSolution.java</code>에 있습니다. 직접 실행해 모든 비교가 <code>true</code>로 나오는지 확인하세요.</p>
             </section>
 
             <!-- 16. 확인 퀴즈 -->

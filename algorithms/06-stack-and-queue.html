@@ -44,8 +44,13 @@
 
         <!-- 내부 목차 (common.js가 자동 생성) -->
         <nav class="lesson-toc" aria-label="이 강의의 목차">
-            <p class="lesson-toc__title">이 강의의 목차</p>
-            <ol id="lesson-toc-list"></ol>
+            <button type="button" class="lesson-toc__toggle" id="lesson-toc-toggle" aria-expanded="true" aria-controls="lesson-toc-body" aria-label="목차 접기">
+                <span class="lesson-toc__toggle-icon" aria-hidden="true">&#8249;</span>
+            </button>
+            <div class="lesson-toc__body" id="lesson-toc-body">
+                <p class="lesson-toc__title">이 강의의 목차</p>
+                <ol id="lesson-toc-list"></ol>
+            </div>
         </nav>
 
         <div class="lesson-body">
@@ -53,23 +58,20 @@
             <!-- 1. 강의 소개 -->
             <section class="lesson-section" id="sec-intro" aria-labelledby="h-intro">
                 <h2 id="h-intro" data-toc-label="강의 소개"><span class="section-no">01</span>강의 소개</h2>
-                <p>
-                    지금까지 우리는 배열에 데이터를 담고(2강), 순회하고(2·3강), 정렬하고(4강), 탐색했습니다(5강).
-                    그런데 실제 프로그램에는 "무엇을 저장하느냐"만큼이나
-                    <strong>"어떤 순서로 넣고 꺼내느냐"</strong>가 중요한 작업이 많습니다.
-                    문서 편집기의 실행 취소(Ctrl+Z)는 <strong>가장 최근 작업부터</strong> 되돌리고,
-                    프린터 대기열은 <strong>먼저 보낸 문서부터</strong> 인쇄합니다.
-                </p>
-                <p>
-                    <em>이 두 가지 "꺼내는 순서 규칙"이 바로 오늘의 주인공입니다.</em>
-                    나중에 넣은 것을 먼저 꺼내는 <strong>스택(Stack, LIFO)</strong>과
-                    먼저 넣은 것을 먼저 꺼내는 <strong>큐(Queue, FIFO)</strong>를
-                    2강에서 배운 배열 위에 직접 구현합니다.
-                    스택으로는 <strong>괄호 짝 검사기</strong>를, 큐로는 <strong>주문·고객 대기열 처리</strong>를 만들고,
-                    마지막에는 실행 취소와 대기열 기능을 모두 갖춘 <strong>미니 작업 관리기</strong>를 완성합니다.
-                    표준 라이브러리 <code>ArrayDeque</code>와, "먼저 온 순서" 대신 "중요한 순서"로 꺼내는
-                    <strong>우선순위 큐(PriorityQueue)</strong>도 맛보기로 소개합니다.
-                </p>
+                <p class="lecture-lead">오늘의 질문: 데이터를 <strong>"어떤 순서로 넣고 꺼내느냐"</strong>가 왜 중요할까요?</p>
+                <ul>
+                    <li>지금까지: 배열에 담고(2강), 순회하고(2·3강), 정렬하고(4강), 탐색(5강)</li>
+                    <li>예: 문서 편집기 실행 취소(Ctrl+Z)는 <strong>가장 최근 작업부터</strong>, 프린터 대기열은 <strong>먼저 보낸 문서부터</strong></li>
+                    <li>오늘 배울 두 가지 "꺼내는 순서 규칙"
+                        <ul>
+                            <li><strong>스택(Stack, LIFO)</strong> — 나중에 넣은 것을 먼저 꺼냄</li>
+                            <li><strong>큐(Queue, FIFO)</strong> — 먼저 넣은 것을 먼저 꺼냄</li>
+                        </ul>
+                        2강에서 배운 배열 위에 직접 구현
+                    </li>
+                    <li>실습: 스택으로 <strong>괄호 짝 검사기</strong>, 큐로 <strong>주문·고객 대기열 처리</strong>를 만들고, 마지막에 둘을 합친 <strong>미니 작업 관리기</strong> 완성</li>
+                    <li>맛보기: 표준 라이브러리 <code>ArrayDeque</code>, "중요한 순서"로 꺼내는 <strong>우선순위 큐(PriorityQueue)</strong></li>
+                </ul>
             </section>
 
             <!-- 2. 학습 목표 -->
@@ -89,7 +91,7 @@
             <!-- 3. 선수 지식 -->
             <section class="lesson-section" id="sec-prereq" aria-labelledby="h-prereq">
                 <h2 id="h-prereq" data-toc-label="선수 지식"><span class="section-no">03</span>선수 지식</h2>
-                <p>이 강의는 다음 내용을 이미 알고 있다고 가정합니다. 하나라도 낯설다면 해당 강의를 먼저 복습하세요.</p>
+                <p class="lecture-lead">다음 내용을 이미 안다고 가정합니다. 하나라도 낯설면 해당 강의부터 복습하세요.</p>
                 <div class="table-scroll">
                     <table class="data-table">
                         <thead>
@@ -109,15 +111,14 @@
             <!-- 4. 실제 문제 상황 -->
             <section class="lesson-section" id="sec-problem" aria-labelledby="h-problem">
                 <h2 id="h-problem" data-toc-label="실제 문제 상황"><span class="section-no">04</span>실제 문제 상황</h2>
-                <p>
-                    여러분이 작은 메모 앱을 만드는 개발팀에 합류했다고 상상해 봅시다.
-                    첫 출근 날 세 가지 기능 요청이 기다립니다 —
-                    사용자 입력을 "가장 최근 것부터" 되돌리는 <strong>실행 취소(Ctrl+Z)</strong>,
-                    문의 고객을 "먼저 등록한 순서대로" 응대하는 <strong>고객 문의 대기열</strong>,
-                    그리고 팀장이 얹은 <strong>괄호 짝이 안 맞으면 경고</strong>해 주는 기능까지.
-                    세 기능 모두 배열만으로 짜려니 "어디에 넣고 어디서 꺼낼지"가 매번 헷갈립니다.
-                    <em>필요한 것은 <strong>꺼내는 순서를 규칙으로 보장하는 데이터 보관함</strong>입니다.</em>
-                </p>
+                <ul>
+                    <li>상황: 작은 메모 앱 개발팀에 합류. 첫 출근 날 세 가지 기능 요청</li>
+                    <li>사용자 입력을 "가장 최근 것부터" 되돌리는 <strong>실행 취소(Ctrl+Z)</strong></li>
+                    <li>문의 고객을 "먼저 등록한 순서대로" 응대하는 <strong>고객 문의 대기열</strong></li>
+                    <li>팀장이 얹은 <strong>괄호 짝이 안 맞으면 경고</strong>해 주는 기능</li>
+                    <li>세 기능 모두 배열만으로 짜려니 "어디에 넣고 어디서 꺼낼지"가 매번 헷갈림</li>
+                    <li><em>필요한 것은 <strong>꺼내는 순서를 규칙으로 보장하는 데이터 보관함</strong></em></li>
+                </ul>
                 <div class="note-box">
                     <span class="note-box__title">오늘의 핵심 질문</span>
                     <p>데이터를 보관했다가 꺼낼 때, <strong>"나중에 넣은 것부터"</strong>와 <strong>"먼저 넣은 것부터"</strong> —
@@ -128,89 +129,92 @@
             <!-- 5. 사람이 직접 해결해 보기 -->
             <section class="lesson-section" id="sec-hand" aria-labelledby="h-hand">
                 <h2 id="h-hand" data-toc-label="사람이 직접 해결해 보기"><span class="section-no">05</span>사람이 직접 해결해 보기</h2>
-                <p>
-                    코드를 쓰기 전에, 작은 데이터로 두 가지 작업을 손으로 해 봅니다.
-                    먼저 괄호 검사입니다. 문자열 <strong>"([()])"</strong>의 괄호 짝이 맞는지,
-                    종이에 괄호를 <strong>접시 쌓듯</strong> 쌓아 가며 확인해 봅시다.
-                </p>
+                <p class="lecture-lead">코드를 쓰기 전에 손으로 먼저 풀어봅니다 — 문자열 <strong>"([()])"</strong>의 괄호 짝을 종이에 <strong>접시 쌓듯</strong> 쌓아 가며 확인합니다.</p>
 
                 <h3>작업 1 — 괄호 짝 검사를 손으로</h3>
                 <div class="hand-step">
                     <span class="hand-step__label">STEP 1</span>
-                    <p>
-                        왼쪽부터 한 글자씩 읽습니다. <strong>여는 괄호</strong>를 만나면 접시 더미 위에 올려놓습니다.
-                        '(' → 더미: <code>(</code>. '[' → 더미: <code>( [</code>. '(' → 더미: <code>( [ (</code>.
-                    </p>
+                    <ul>
+                        <li>왼쪽부터 한 글자씩 읽기. <strong>여는 괄호</strong>를 만나면 접시 더미 위에 올려놓음</li>
+                        <li>'(' → 더미: <code>(</code></li>
+                        <li>'[' → 더미: <code>( [</code></li>
+                        <li>'(' → 더미: <code>( [ (</code></li>
+                    </ul>
                     <details class="reveal-box">
                         <summary>질문: 왜 여는 괄호를 "위에 쌓아" 두는 걸까요?</summary>
                         <div class="reveal-box__content">
-                            <p>닫는 괄호가 나타났을 때 <strong>"가장 최근에 열린 괄호"</strong>와 짝을 맞춰야 하기 때문입니다.
-                            "([()])"에서 첫 ')'의 짝은 처음의 '('가 아니라 <strong>가장 나중에 열린</strong> 세 번째 '('입니다.
-                            <em>"가장 최근 것"이 항상 맨 위에 있도록 쌓아 두면, 비교할 대상을 꺼내는 일이 "맨 위 접시 들기"만큼 쉬워집니다.</em></p>
+                            <ul>
+                                <li>닫는 괄호가 나타났을 때 <strong>"가장 최근에 열린 괄호"</strong>와 짝을 맞춰야 하기 때문</li>
+                                <li>"([()])"에서 첫 ')'의 짝은 처음의 '('가 아니라 <strong>가장 나중에 열린</strong> 세 번째 '('</li>
+                                <li><em>"가장 최근 것"이 항상 맨 위에 있도록 쌓아 두면, 비교할 대상을 꺼내는 일이 "맨 위 접시 들기"만큼 쉬워짐</em></li>
+                            </ul>
                         </div>
                     </details>
                 </div>
                 <div class="hand-step">
                     <span class="hand-step__label">STEP 2</span>
-                    <p>
-                        네 번째 글자 ')'는 <strong>닫는 괄호</strong>입니다. 더미 맨 위의 '('를 내려서 짝인지 확인합니다.
-                        '('와 ')'는 짝 → 통과. 더미: <code>( [</code>.
-                        다섯 번째 ']'도 맨 위 '['와 짝 → 통과. 더미: <code>(</code>.
-                        여섯 번째 ')'도 맨 위 '('와 짝 → 통과. 더미: <code>(비어 있음)</code>.
-                    </p>
+                    <ul>
+                        <li>네 번째 글자 ')' = <strong>닫는 괄호</strong> → 더미 맨 위의 '('를 내려 짝인지 확인</li>
+                        <li>4번째 ')': '('와 짝 → 통과. 더미: <code>( [</code></li>
+                        <li>5번째 ']': 맨 위 '['와 짝 → 통과. 더미: <code>(</code></li>
+                        <li>6번째 ')': 맨 위 '('와 짝 → 통과. 더미: <code>(비어 있음)</code></li>
+                    </ul>
                     <details class="reveal-box">
                         <summary>질문: 문자열을 다 읽었을 때 더미가 비어 있다는 것은 무엇을 뜻하나요?</summary>
                         <div class="reveal-box__content">
-                            <p>열린 괄호가 <strong>모두 짝을 만나 닫혔다</strong>는 뜻입니다. 그래서 "([()])"는 유효합니다.
-                            반대로 "((("처럼 더미에 여는 괄호가 남아 있으면, 끝내 닫히지 못한 괄호가 있다는 뜻이므로 무효입니다.</p>
+                            <ul>
+                                <li>열린 괄호가 <strong>모두 짝을 만나 닫혔다</strong>는 뜻 → "([()])"는 유효</li>
+                                <li>반대로 "((("처럼 더미에 여는 괄호가 남아 있으면, 끝내 닫히지 못한 괄호가 있다는 뜻 → 무효</li>
+                            </ul>
                         </div>
                     </details>
                 </div>
                 <div class="hand-step">
                     <span class="hand-step__label">STEP 3</span>
-                    <p>실패하는 경우도 손으로 확인해 봅시다. "())"를 같은 방법으로 검사해 보세요.</p>
+                    <p class="lecture-lead">실패하는 경우도 확인해 봅니다 — "())"를 같은 방법으로 검사해 보세요.</p>
                     <details class="reveal-box">
                         <summary>질문: "())"는 몇 번째 글자에서, 왜 실패하나요?</summary>
                         <div class="reveal-box__content">
-                            <p>'(' 쌓기 → ')'가 맨 위 '('와 짝 → 더미가 비었습니다.
-                            그런데 세 번째 ')'가 왔을 때 <strong>더미가 비어 있어 내릴 접시가 없습니다</strong>.
-                            짝 없는 닫는 괄호 — 즉시 무효 판정입니다.
-                            코드로 옮길 때 이 "빈 더미에서 꺼내려는 시도"를 반드시 검사해야 한다는 것을 기억해 두세요.</p>
+                            <ul>
+                                <li>'(' 쌓기 → ')'가 맨 위 '('와 짝 → 더미가 비었음</li>
+                                <li>세 번째 ')'가 왔을 때 <strong>더미가 비어 있어 내릴 접시가 없음</strong> → 짝 없는 닫는 괄호, 즉시 무효 판정</li>
+                                <li>코드로 옮길 때 이 "빈 더미에서 꺼내려는 시도"를 반드시 검사해야 함</li>
+                            </ul>
                         </div>
                     </details>
                 </div>
-                <p>
-                    방금 사용한 접시 더미가 바로 <strong>스택</strong>입니다.
-                    올려놓기가 push, 내리기가 pop — 항상 <strong>맨 위에서만</strong> 넣고 꺼냈습니다.
-                </p>
+                <p><em>방금 사용한 접시 더미가 바로 <strong>스택</strong> — 올려놓기가 push, 내리기가 pop, 항상 <strong>맨 위에서만</strong> 넣고 꺼냈습니다.</em></p>
 
                 <h3>작업 2 — 대기열 처리를 손으로</h3>
                 <div class="hand-step">
                     <span class="hand-step__label">STEP 4</span>
-                    <p>
-                        이번에는 카페 주문 줄입니다. 김하늘, 이준호가 차례로 줄을 섭니다.
-                        한 명을 처리한 뒤 박서연이 도착합니다. 줄: 이준호, 박서연.
-                    </p>
+                    <ul>
+                        <li>카페 주문 줄: 김하늘, 이준호가 차례로 줄을 섬</li>
+                        <li>한 명을 처리한 뒤 박서연이 도착 → 줄: 이준호, 박서연</li>
+                    </ul>
                     <details class="reveal-box">
                         <summary>질문: 방금 처리된 사람은 누구이고, 박서연은 줄의 어디에 섰나요?</summary>
                         <div class="reveal-box__content">
-                            <p>처리된 사람은 <strong>가장 먼저 온 김하늘</strong>이고, 박서연은 <strong>줄의 맨 뒤</strong>에 섰습니다.
-                            넣는 곳(맨 뒤)과 꺼내는 곳(맨 앞)이 <strong>서로 다른 쪽 끝</strong>이라는 것 —
-                            이것이 스택과의 결정적 차이입니다. 이 구조가 <strong>큐</strong>이고,
-                            줄 서기가 enqueue, 맨 앞 사람 처리가 dequeue입니다.</p>
+                            <ul>
+                                <li>처리된 사람은 <strong>가장 먼저 온 김하늘</strong>, 박서연은 <strong>줄의 맨 뒤</strong>에 섬</li>
+                                <li>넣는 곳(맨 뒤)과 꺼내는 곳(맨 앞)이 <strong>서로 다른 쪽 끝</strong> — 스택과의 결정적 차이</li>
+                                <li>이 구조가 <strong>큐</strong> — 줄 서기가 enqueue, 맨 앞 사람 처리가 dequeue</li>
+                            </ul>
                         </div>
                     </details>
                 </div>
                 <div class="hand-step">
                     <span class="hand-step__label">STEP 5</span>
-                    <p>같은 데이터로 두 규칙을 비교해 봅시다. 김하늘 → 이준호 → 박서연 순서로 넣고, 셋을 모두 꺼냅니다.</p>
+                    <p class="lecture-lead">같은 데이터로 두 규칙을 비교합니다 — 김하늘 → 이준호 → 박서연 순서로 넣고, 셋을 모두 꺼냅니다.</p>
                     <details class="reveal-box">
                         <summary>질문: 스택으로 꺼내면 어떤 순서, 큐로 꺼내면 어떤 순서인가요?</summary>
                         <div class="reveal-box__content">
-                            <p>스택(LIFO): <strong>박서연 → 이준호 → 김하늘</strong> (나중에 넣은 사람부터).
-                            큐(FIFO): <strong>김하늘 → 이준호 → 박서연</strong> (먼저 넣은 사람부터).
-                            <em>저장하는 데이터는 같아도 <strong>꺼내는 규칙이 결과 순서를 완전히 바꿉니다</strong>.</em>
-                            실행 취소에는 스택이, 대기열에는 큐가 맞는 이유입니다.</p>
+                            <ul>
+                                <li>스택(LIFO): <strong>박서연 → 이준호 → 김하늘</strong> (나중에 넣은 사람부터)</li>
+                                <li>큐(FIFO): <strong>김하늘 → 이준호 → 박서연</strong> (먼저 넣은 사람부터)</li>
+                                <li><em>저장하는 데이터는 같아도 <strong>꺼내는 규칙이 결과 순서를 완전히 바꿈</strong></em></li>
+                                <li>실행 취소에는 스택이, 대기열에는 큐가 맞는 이유</li>
+                            </ul>
                         </div>
                     </details>
                 </div>
@@ -221,19 +225,19 @@
                 <h2 id="h-concepts" data-toc-label="핵심 개념"><span class="section-no">06</span>핵심 개념</h2>
 
                 <h3>자료구조 = 데이터 + 규칙</h3>
-                <p>
-                    <strong>자료구조</strong>는 데이터를 담는 그릇과, 그 그릇을 다루는 <strong>규칙</strong>의 묶음입니다.
-                    스택과 큐는 저장 공간으로 똑같이 배열을 쓸 수 있습니다. 다른 것은 규칙뿐입니다 —
-                    <strong>어디에 넣고, 어디서 꺼내는가</strong>.
-                    <em>규칙을 좁게 제한한 대가로, 남은 연산들은 전부 O(1)로 빨라지고 코드의 의도가 분명해집니다.</em>
-                </p>
+                <ul>
+                    <li><strong>자료구조</strong> = 데이터를 담는 그릇 + 그 그릇을 다루는 <strong>규칙</strong>의 묶음</li>
+                    <li>스택과 큐는 저장 공간으로 똑같이 배열을 쓸 수 있음. 다른 것은 규칙뿐 —
+                        <strong>어디에 넣고, 어디서 꺼내는가</strong></li>
+                    <li><em>규칙을 좁게 제한한 대가로, 남은 연산들은 전부 O(1)로 빨라지고 코드의 의도가 분명해짐</em></li>
+                </ul>
 
                 <h3>스택 (Stack) — LIFO</h3>
-                <p>
-                    스택은 <strong>한쪽 끝(맨 위, top)에서만 넣고 꺼내는</strong> 구조입니다.
-                    나중에 들어간 데이터가 먼저 나오므로 <strong>LIFO(Last-In, First-Out, 후입선출)</strong>라고 부릅니다.
-                    접시 더미, 브라우저 뒤로 가기, 실행 취소, 그리고 7강에서 배울 메서드 호출 스택이 모두 스택입니다.
-                </p>
+                <ul>
+                    <li>스택 = <strong>한쪽 끝(맨 위, top)에서만 넣고 꺼내는</strong> 구조</li>
+                    <li>나중에 들어간 데이터가 먼저 나옴 → <strong>LIFO(Last-In, First-Out, 후입선출)</strong></li>
+                    <li>예: 접시 더미, 브라우저 뒤로 가기, 실행 취소, 7강에서 배울 메서드 호출 스택</li>
+                </ul>
                 <div class="table-scroll">
                     <table class="data-table">
                         <thead>
@@ -247,18 +251,18 @@
                         </tbody>
                     </table>
                 </div>
-                <p>
-                    <code>top</code>은 "맨 위 칸의 인덱스"입니다. 비어 있을 때는 가리킬 칸이 없으므로
-                    <strong><code>top = -1</code>을 "비어 있음"의 약속</strong>으로 정합니다.
-                    쌓인 개수는 언제나 <code>top + 1</code>입니다.
-                </p>
+                <ul>
+                    <li><code>top</code> = "맨 위 칸의 인덱스"</li>
+                    <li>비어 있을 때는 가리킬 칸이 없음 → <strong><code>top = -1</code>을 "비어 있음"의 약속</strong>으로 정함</li>
+                    <li>쌓인 개수는 언제나 <code>top + 1</code></li>
+                </ul>
 
                 <h3>큐 (Queue) — FIFO</h3>
-                <p>
-                    큐는 <strong>뒤(rear)로 넣고 앞(front)에서 꺼내는</strong> 구조입니다.
-                    먼저 들어간 데이터가 먼저 나오므로 <strong>FIFO(First-In, First-Out, 선입선출)</strong>라고 부릅니다.
-                    카페 주문 줄, 프린터 대기열, 고객센터 상담 순번, 그리고 8·9강에서 배울 레벨 순회·BFS가 모두 큐를 사용합니다.
-                </p>
+                <ul>
+                    <li>큐 = <strong>뒤(rear)로 넣고 앞(front)에서 꺼내는</strong> 구조</li>
+                    <li>먼저 들어간 데이터가 먼저 나옴 → <strong>FIFO(First-In, First-Out, 선입선출)</strong></li>
+                    <li>예: 카페 주문 줄, 프린터 대기열, 고객센터 상담 순번, 8·9강에서 배울 레벨 순회·BFS</li>
+                </ul>
                 <div class="table-scroll">
                     <table class="data-table">
                         <thead>
@@ -272,11 +276,11 @@
                         </tbody>
                     </table>
                 </div>
-                <p>
-                    <code>front</code>는 "다음에 꺼낼 자리", <code>rear</code>는 "다음에 넣을 자리"입니다.
-                    두 값이 같으면 꺼낼 것이 없다는 뜻 — <strong><code>front == rear</code>가 "비어 있음"의 약속</strong>이고,
-                    대기 중인 개수는 <code>rear - front</code>입니다.
-                </p>
+                <ul>
+                    <li><code>front</code> = "다음에 꺼낼 자리", <code>rear</code> = "다음에 넣을 자리"</li>
+                    <li>두 값이 같으면 꺼낼 것이 없다는 뜻 → <strong><code>front == rear</code>가 "비어 있음"의 약속</strong></li>
+                    <li>대기 중인 개수는 <code>rear - front</code></li>
+                </ul>
 
                 <h3>스택 vs 큐 — 한눈에 비교</h3>
                 <div class="table-scroll">
@@ -295,70 +299,53 @@
                 </div>
 
                 <h3>표준 라이브러리는? — Deque와 ArrayDeque (비교 소개)</h3>
-                <p>
-                    실무 Java에서는 스택과 큐 둘 다 <code>java.util.Deque</code> 인터페이스의 구현체
-                    <code>ArrayDeque</code>를 주로 씁니다. Deque(덱)는 양쪽 끝에서 넣고 꺼낼 수 있는 구조라
-                    한쪽만 쓰면 스택, 반대쪽으로 흘리면 큐가 됩니다.
-                </p>
                 <ul>
+                    <li>실무 Java에서는 스택·큐 둘 다 <code>java.util.Deque</code> 인터페이스의 구현체 <code>ArrayDeque</code>를 주로 씀 —
+                        Deque(덱)는 양쪽 끝에서 넣고 꺼낼 수 있어 한쪽만 쓰면 스택, 반대쪽으로 흘리면 큐가 됨</li>
                     <li>스택처럼: <code>push(v)</code> / <code>pop()</code> / <code>peek()</code></li>
                     <li>큐처럼: <code>offer(v)</code>(뒤에 넣기) / <code>poll()</code>(앞에서 꺼내기) / <code>peek()</code></li>
-                    <li><code>pop()</code>은 비어 있으면 <strong>예외를 던지고</strong>, <code>poll()</code>은 <strong>null을 반환합니다</strong>.</li>
+                    <li><code>pop()</code>은 비어 있으면 <strong>예외를 던지고</strong>, <code>poll()</code>은 <strong>null을 반환</strong></li>
                     <li><em>옛날 클래스 <code>java.util.Stack</code>도 있지만, 불필요한 동기화 비용 때문에
-                        공식 문서도 <code>ArrayDeque</code> 사용을 권장합니다.</em></li>
+                        공식 문서도 <code>ArrayDeque</code> 사용을 권장</em></li>
+                    <li>오늘은 원리 이해를 위해 <strong>배열로 직접 구현</strong>하고, 완성 코드에서 직접 구현과
+                        <code>ArrayDeque</code>의 결과가 같은지 비교만 함</li>
                 </ul>
-                <p>
-                    오늘은 동작 원리를 이해하기 위해 <strong>배열로 직접 구현</strong>하고,
-                    완성 코드에서 직접 구현과 <code>ArrayDeque</code>의 결과가 같은지 비교만 합니다.
-                </p>
 
                 <h3>우선순위 큐 (PriorityQueue) 기초 — 세 번째 규칙 맛보기</h3>
-                <p>
-                    "먼저 온 순서"도 "나중에 온 순서"도 아닌 <strong>"중요한 순서"</strong>로 꺼내야 할 때가 있습니다.
-                    응급실은 도착 순서가 아니라 위급한 환자부터 진료합니다.
-                    <code>java.util.PriorityQueue</code>는 <code>offer</code>로 넣고 <code>poll</code>로 꺼내는 모양은 큐와 같지만,
-                    <em><strong>poll이 항상 우선순위가 가장 높은 값</strong>을 돌려줍니다.</em>
-                    내부적으로 힙(heap)이라는 구조를 써서 넣고 꺼내기가 각각 <strong>O(log n)</strong>입니다.
-                    오늘은 응용 예제에서 맛만 보고, <strong>10강 그리디</strong>와 <strong>12강 최단 경로</strong>에서 핵심 도구로 다시 만납니다.
-                </p>
+                <ul>
+                    <li>"먼저 온 순서"도 "나중에 온 순서"도 아닌 <strong>"중요한 순서"</strong>로 꺼내야 할 때가 있음
+                        (예: 응급실은 도착 순서가 아니라 위급한 환자부터 진료)</li>
+                    <li><code>java.util.PriorityQueue</code>는 <code>offer</code>/<code>poll</code> 모양은 큐와 같지만,
+                        <em><strong>poll이 항상 우선순위가 가장 높은 값</strong>을 돌려줌</em></li>
+                    <li>내부적으로 힙(heap) 구조를 써서 넣고 꺼내기가 각각 <strong>O(log n)</strong></li>
+                    <li>오늘은 응용 예제에서 맛만 보고, <strong>10강 그리디</strong>와 <strong>12강 최단 경로</strong>에서 핵심 도구로 다시 만남</li>
+                </ul>
             </section>
 
             <!-- 7. 단계별 동작 과정 -->
             <section class="lesson-section" id="sec-steps" aria-labelledby="h-steps">
                 <h2 id="h-steps" data-toc-label="단계별 동작 과정"><span class="section-no">07</span>단계별 동작 과정</h2>
-                <p>
-                    손으로 했던 두 작업을 시각화로 다시 확인합니다.
-                    <strong>다음 단계 ▶</strong> 버튼으로 한 단계씩 진행하며,
-                    스택·큐의 내용이 언제 늘고 줄어드는지 관찰하세요.
-                    현재 처리 중인 문자·데이터는 <strong>파란색(현재)</strong>, 처리를 마친 문자는 <strong>초록색(완료)</strong>,
-                    검사가 실패하는 지점은 <strong>붉은색(오류)</strong>으로 표시됩니다.
-                </p>
+                <p class="lecture-lead">손으로 했던 두 작업을 시각화로 다시 확인합니다.
+                    <strong>다음 단계 ▶</strong>로 한 단계씩 진행하며 스택·큐 내용이 언제 늘고 줄어드는지 관찰하세요.
+                    현재 = <strong>파란색</strong>, 완료 = <strong>초록색</strong>, 실패 지점 = <strong>붉은색</strong>.</p>
 
                 <h3>시각화 1 — 스택으로 괄호 짝 검사</h3>
-                <p>
-                    여는 괄호는 push, 닫는 괄호는 pop해서 짝을 비교합니다.
-                    "새 데이터" 버튼을 누르면 실패 사례("([)]", "(()", "())")도 만날 수 있습니다 —
-                    어느 지점에서 왜 무효 판정이 나는지 확인해 보세요.
-                </p>
+                <p class="lecture-lead">여는 괄호는 push, 닫는 괄호는 pop해서 짝을 비교합니다.
+                    "새 데이터" 버튼으로 실패 사례("([)]", "(()", "())")도 만날 수 있습니다 — 어느 지점에서 왜 무효 판정이 나는지 확인해 보세요.</p>
                 <div id="viz-bracket" aria-label="스택으로 괄호 짝 검사 시각화"></div>
 
                 <h3>시각화 2 — 큐로 주문 대기열 처리</h3>
-                <p>
-                    enqueue는 항상 <strong>뒤(rear)</strong>에, dequeue는 항상 <strong>앞(front)</strong>에서 일어납니다.
-                    중간에 새 손님이 와도(enqueue) 처리 순서는 온 순서 그대로임을 확인하세요.
-                </p>
+                <p class="lecture-lead">enqueue는 항상 <strong>뒤(rear)</strong>에, dequeue는 항상 <strong>앞(front)</strong>에서 일어납니다.
+                    중간에 새 손님이 와도(enqueue) 처리 순서는 온 순서 그대로임을 확인하세요.</p>
                 <div id="viz-queue" aria-label="큐로 주문 대기열 처리 시각화"></div>
-                <p>
-                    두 시각화 모두 각 단계에서 <strong>연산 횟수</strong>를 함께 셉니다.
-                    <em>문자·손님 하나당 push/pop 또는 enqueue/dequeue가 최대 1번씩 —
-                    데이터가 n개면 전체 작업이 O(n)이라는 것을 눈으로 확인할 수 있습니다.</em>
-                </p>
+                <p><em>두 시각화 모두 각 단계에서 <strong>연산 횟수</strong>를 함께 셉니다 —
+                    문자·손님 하나당 push/pop 또는 enqueue/dequeue가 최대 1번씩, 데이터가 n개면 전체 작업이 O(n)이라는 것을 눈으로 확인할 수 있습니다.</em></p>
             </section>
 
             <!-- 8. 의사코드 -->
             <section class="lesson-section" id="sec-pseudo" aria-labelledby="h-pseudo">
                 <h2 id="h-pseudo" data-toc-label="의사코드"><span class="section-no">08</span>의사코드</h2>
-                <p>코드를 쓰기 전에, 배열 위의 두 규칙과 괄호 검사 절차를 언어 중립적인 의사코드로 정리합니다.</p>
+                <p class="lecture-lead">코드를 쓰기 전에, 배열 위의 두 규칙과 괄호 검사 절차를 언어 중립적인 의사코드로 정리합니다.</p>
 
                 <article class="code-card">
                     <header class="code-card__header">
@@ -438,29 +425,27 @@ isEmpty():
         S가 비어 있으면 "유효", 아니면 "무효"를 반환한다  // 여는 괄호가 남음</code></pre>
                 </article>
 
-                <p>
-                    괄호 검사에는 무효 판정 경로가 <strong>세 갈래</strong> 있다는 점에 주목하세요 —
-                    (1) 빈 스택에서 닫는 괄호를 만남, (2) 종류가 다른 괄호끼리 만남, (3) 끝났는데 여는 괄호가 남음.
-                    <em>세 경우 모두 손 풀이 STEP 3과 시각화에서 이미 확인한 상황입니다.</em>
-                </p>
+                <ul>
+                    <li>괄호 검사의 무효 판정 경로는 <strong>세 갈래</strong>
+                        <ul>
+                            <li>(1) 빈 스택에서 닫는 괄호를 만남</li>
+                            <li>(2) 종류가 다른 괄호끼리 만남</li>
+                            <li>(3) 끝났는데 여는 괄호가 남음</li>
+                        </ul>
+                    </li>
+                    <li><em>세 경우 모두 손 풀이 STEP 3과 시각화에서 이미 확인한 상황</em></li>
+                </ul>
             </section>
 
             <!-- 9. 점진적 Java 구현 -->
             <section class="lesson-section" id="sec-impl" aria-labelledby="h-impl">
                 <h2 id="h-impl" data-toc-label="점진적 Java 구현"><span class="section-no">09</span>점진적 Java 구현</h2>
-                <p>
-                    이제 의사코드를 Java로 옮깁니다. 완성 코드를 한 번에 쓰지 않고
+                <p class="lecture-lead">의사코드를 Java로 옮깁니다.
                     <strong>스택의 재료 → push → pop·peek와 예외 처리 → 괄호 검사 응용</strong>,
-                    이어서 <strong>큐의 재료와 enqueue → dequeue와 빈 큐 검사</strong> 순서로 확장합니다.
-                    각 단계의 코드는 모두 독립적으로 복사해서 실행할 수 있습니다.
-                </p>
+                    이어서 <strong>큐의 재료와 enqueue → dequeue와 빈 큐 검사</strong> 순서로 확장. 각 단계는 독립적으로 실행 가능.</p>
 
                 <h3>구현 1단계 — 스택의 재료: 배열과 top 변수</h3>
-                <p>
-                    스택의 재료는 단 두 가지입니다. 값을 담을 <strong>배열</strong>과,
-                    맨 위 칸의 위치를 기억하는 <strong>top 변수</strong>.
-                    아직 아무것도 넣지 않았으므로 top은 "가리킬 칸 없음"을 뜻하는 -1로 시작합니다.
-                </p>
+                <p class="lecture-lead">스택의 재료는 값을 담을 <strong>배열</strong>과 맨 위 칸의 위치를 기억하는 <strong>top 변수</strong> 둘뿐 — 아직 아무것도 안 넣었으니 top은 "가리킬 칸 없음"을 뜻하는 -1로 시작합니다.</p>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -498,11 +483,11 @@ top = -1
                 </article>
 
                 <h3>구현 2단계 — push 하나 구현</h3>
-                <p>
-                    핵심 연산 push는 딱 두 줄입니다: <strong>top을 한 칸 올리고, 그 자리에 값을 넣는다</strong>.
-                    괄호 세 개를 push하면서 top과 개수가 어떻게 변하는지 관찰합니다.
-                    2강의 배열 순회로 바닥부터 꼭대기까지의 내용도 확인합니다.
-                </p>
+                <ul>
+                    <li>핵심 연산 push는 딱 두 줄: <strong>top을 한 칸 올리고, 그 자리에 값을 넣는다</strong></li>
+                    <li>괄호 세 개를 push하면서 top과 개수가 어떻게 변하는지 관찰</li>
+                    <li>2강의 배열 순회로 바닥부터 꼭대기까지의 내용도 확인</li>
+                </ul>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -559,18 +544,15 @@ push '[' -&gt; top = 2, 개수 = 3
                 </article>
                 <div class="note-box note-box--tip">
                     <span class="note-box__title">관찰</span>
-                    <p>push할 때마다 top이 -1 → 0 → 1 → 2로 오르고, 개수는 항상 <code>top + 1</code>입니다.
-                    <em>가장 나중에 push한 '['가 맨 위(top) 자리에 있습니다 — 다음 단계에서 꺼낼 때 이 값이 먼저 나옵니다.</em></p>
+                    <p class="lecture-lead">push할 때마다 top이 -1 → 0 → 1 → 2로 오르고, 개수는 항상 <code>top + 1</code> — <em>가장 나중에 push한 '['가 맨 위(top) 자리에 있어, 다음 단계에서 꺼낼 때 이 값이 먼저 나옵니다.</em></p>
                 </div>
 
                 <h3>구현 3단계 — pop과 peek, 그리고 예외 처리</h3>
-                <p>
-                    꺼내는 연산을 추가합니다. pop은 <strong>맨 위 값을 읽고 top을 한 칸 내리고</strong>,
-                    peek는 <strong>읽기만 하고 top을 그대로</strong> 둡니다.
-                    중요한 것은 <strong>빈 스택 검사</strong>입니다 — top이 -1인데 <code>stack[top]</code>을 읽으면
-                    프로그램이 예외로 죽습니다. 손 풀이 STEP 3의 "빈 더미에서 접시 내리기" 상황을
-                    <code>isEmpty()</code> 검사로 막습니다.
-                </p>
+                <ul>
+                    <li>pop은 <strong>맨 위 값을 읽고 top을 한 칸 내리고</strong>, peek는 <strong>읽기만 하고 top을 그대로</strong> 둠</li>
+                    <li>중요한 것은 <strong>빈 스택 검사</strong> — top이 -1인데 <code>stack[top]</code>을 읽으면 프로그램이 예외로 죽음</li>
+                    <li>손 풀이 STEP 3의 "빈 더미에서 접시 내리기" 상황을 <code>isEmpty()</code> 검사로 막음</li>
+                </ul>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -647,18 +629,14 @@ pop()  = ?</code></pre>
                 </article>
                 <div class="note-box note-box--tip">
                     <span class="note-box__title">관찰 — LIFO가 코드로 증명됩니다</span>
-                    <p>'(' 다음에 '['를 push했는데, pop은 '[' → '(' 순서로 나왔습니다.
-                    <em><strong>나중에 넣은 것이 먼저 나온다(LIFO)</strong> — 규칙이 저절로 지켜지는 이유는
-                    넣는 곳과 꺼내는 곳이 <strong>같은 자리(top)</strong>이기 때문입니다.</em></p>
+                    <p class="lecture-lead">'(' 다음에 '['를 push했는데 pop은 '[' → '(' 순서로 나옴 — <em><strong>나중에 넣은 것이 먼저 나온다(LIFO)</strong>. 규칙이 저절로 지켜지는 이유는 넣는 곳과 꺼내는 곳이 <strong>같은 자리(top)</strong>이기 때문</em></p>
                 </div>
 
                 <h3>구현 4단계 — 스택 응용 완성: 괄호 짝 검사</h3>
-                <p>
-                    이제 스택을 실전에 투입합니다. 3강의 문자열 순회로 한 글자씩 읽으며,
-                    여는 괄호면 push, 닫는 괄호면 pop해서 짝을 비교합니다.
-                    의사코드의 <strong>무효 판정 세 갈래</strong>가 코드의 <code>return false</code> 두 곳과
-                    마지막 <code>return isEmpty()</code>에 그대로 대응합니다.
-                </p>
+                <ul>
+                    <li>스택을 실전에 투입 — 3강의 문자열 순회로 한 글자씩 읽으며, 여는 괄호면 push, 닫는 괄호면 pop해서 짝을 비교</li>
+                    <li>의사코드의 <strong>무효 판정 세 갈래</strong>가 코드의 <code>return false</code> 두 곳과 마지막 <code>return isEmpty()</code>에 그대로 대응</li>
+                </ul>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -730,19 +708,20 @@ pop()  = ?</code></pre>
                 </article>
                 <div class="note-box note-box--warn">
                     <span class="note-box__title">++top과 top-- 를 한 줄로 줄였습니다</span>
-                    <p><code>stack[++top] = value</code>는 "top을 먼저 1 올린 뒤 그 자리에 넣기",
-                    <code>stack[top--]</code>는 "지금 top 자리를 읽은 뒤 top을 1 내리기"입니다.
-                    2·3단계의 두 줄짜리 push/pop과 완전히 같은 동작을 한 줄로 쓴 것입니다.
-                    <em>순서를 바꿔 <code>stack[top++]</code>로 쓰면 엉뚱한 칸에 넣게 되니 주의하세요.</em></p>
+                    <ul>
+                        <li><code>stack[++top] = value</code>는 "top을 먼저 1 올린 뒤 그 자리에 넣기"</li>
+                        <li><code>stack[top--]</code>는 "지금 top 자리를 읽은 뒤 top을 1 내리기"</li>
+                        <li>2·3단계의 두 줄짜리 push/pop과 완전히 같은 동작을 한 줄로 쓴 것</li>
+                        <li><em>순서를 바꿔 <code>stack[top++]</code>로 쓰면 엉뚱한 칸에 넣게 되니 주의</em></li>
+                    </ul>
                 </div>
 
                 <h3>구현 5단계 — 큐의 재료와 enqueue</h3>
-                <p>
-                    이번에는 큐입니다. 재료는 배열 하나와 <strong>변수 둘</strong> —
-                    다음에 꺼낼 자리 <code>front</code>, 다음에 넣을 자리 <code>rear</code>.
-                    스택은 top 하나로 충분했지만, 큐는 넣는 곳과 꺼내는 곳이 다르므로 둘 다 필요합니다.
-                    enqueue는 push와 닮았지만 <strong>rear 쪽에서만</strong> 일어납니다.
-                </p>
+                <ul>
+                    <li>큐의 재료는 배열 하나와 <strong>변수 둘</strong> — 다음에 꺼낼 자리 <code>front</code>, 다음에 넣을 자리 <code>rear</code></li>
+                    <li>스택은 top 하나로 충분했지만, 큐는 넣는 곳과 꺼내는 곳이 다르므로 둘 다 필요</li>
+                    <li>enqueue는 push와 닮았지만 <strong>rear 쪽에서만</strong> 일어남</li>
+                </ul>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -800,17 +779,14 @@ enqueue "박서연" -&gt; front = 0, rear = 3, 대기 3명
                 </article>
                 <div class="note-box note-box--tip">
                     <span class="note-box__title">관찰</span>
-                    <p>enqueue를 해도 <strong>front는 0에서 움직이지 않습니다</strong>.
-                    줄이 길어져도 맨 앞 사람은 그대로인 것과 같습니다.
-                    대기 인원은 항상 <code>rear - front</code>입니다.</p>
+                    <p class="lecture-lead">enqueue를 해도 <strong>front는 0에서 움직이지 않습니다</strong> — 줄이 길어져도 맨 앞 사람은 그대로인 것과 같고, 대기 인원은 항상 <code>rear - front</code>입니다.</p>
                 </div>
 
                 <h3>구현 6단계 — dequeue와 빈 큐 검사</h3>
-                <p>
-                    꺼내는 연산 dequeue를 추가해 큐를 완성합니다.
-                    <strong>맨 앞(front) 값을 읽고 front를 한 칸 뒤로</strong> 옮깁니다.
-                    스택의 3단계와 똑같이, 꺼내기 전에 <code>isEmpty()</code>(<code>front == rear</code>) 검사가 필수입니다.
-                </p>
+                <ul>
+                    <li>꺼내는 연산 dequeue를 추가해 큐를 완성 — <strong>맨 앞(front) 값을 읽고 front를 한 칸 뒤로</strong> 옮김</li>
+                    <li>스택의 3단계와 똑같이, 꺼내기 전에 <code>isEmpty()</code>(<code>front == rear</code>) 검사가 필수</li>
+                </ul>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -891,25 +867,26 @@ dequeue() = ?</code></pre>
                 </article>
                 <div class="note-box note-box--warn">
                     <span class="note-box__title">단순 배열 큐의 한계 — 앞 공간의 낭비</span>
-                    <p>dequeue를 하면 front만 뒤로 이동하고, <code>queue[0]</code>, <code>queue[1]</code> 같은
-                    앞 칸은 다시 쓰이지 않습니다. <em>데이터가 많으면 배열 앞쪽이 계속 버려지는 셈입니다.</em>
-                    실무에서는 인덱스가 끝에 닿으면 처음으로 되돌아가는 <strong>원형 큐</strong>로 해결하며
-                    (<code>rear = (rear + 1) % 용량</code>), <code>ArrayDeque</code>가 내부적으로 이 방식을 씁니다.
-                    오늘은 원리 이해를 위해 단순 버전을 유지합니다.</p>
+                    <ul>
+                        <li>dequeue를 하면 front만 뒤로 이동하고, <code>queue[0]</code>, <code>queue[1]</code> 같은 앞 칸은 다시 쓰이지 않음</li>
+                        <li><em>데이터가 많으면 배열 앞쪽이 계속 버려지는 셈</em></li>
+                        <li>실무에서는 인덱스가 끝에 닿으면 처음으로 되돌아가는 <strong>원형 큐</strong>로 해결
+                            (<code>rear = (rear + 1) % 용량</code>) — <code>ArrayDeque</code>가 내부적으로 이 방식을 씀</li>
+                        <li>오늘은 원리 이해를 위해 단순 버전을 유지</li>
+                    </ul>
                 </div>
             </section>
 
             <!-- 10. 완성 Java 코드 -->
             <section class="lesson-section" id="sec-complete" aria-labelledby="h-complete">
                 <h2 id="h-complete" data-toc-label="완성 Java 코드"><span class="section-no">10</span>완성 Java 코드</h2>
-                <p>
-                    지금까지의 조각을 모아 하나의 프로그램으로 완성합니다.
-                    스택과 큐를 각각 <strong>독립된 클래스</strong>(<code>ArrayCharStack</code>, <code>ArrayStringQueue</code>)로 묶고,
-                    3단계의 "경고 출력" 대신 <strong>예외를 던지는 방식</strong>으로 바꿔 라이브러리처럼 만들었습니다.
-                    괄호 검사는 직접 구현한 스택과 표준 라이브러리 <code>ArrayDeque</code> 두 방식으로 풀어
-                    결과가 항상 같은지 검증하고, 주문 대기열은 직접 구현한 배열 큐로 처리한 뒤
-                    같은 작업을 <code>ArrayDeque</code>로도 해 봅니다.
-                </p>
+                <ul>
+                    <li>지금까지의 조각을 모아 하나의 프로그램으로 완성</li>
+                    <li>스택과 큐를 각각 <strong>독립된 클래스</strong>(<code>ArrayCharStack</code>, <code>ArrayStringQueue</code>)로 묶고,
+                        3단계의 "경고 출력" 대신 <strong>예외를 던지는 방식</strong>으로 바꿔 라이브러리처럼 구성</li>
+                    <li>괄호 검사는 직접 구현한 스택과 표준 라이브러리 <code>ArrayDeque</code> 두 방식으로 풀어 결과가 항상 같은지 검증</li>
+                    <li>주문 대기열은 직접 구현한 배열 큐로 처리한 뒤, 같은 작업을 <code>ArrayDeque</code>로도 수행</li>
+                </ul>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -1122,22 +1099,18 @@ public class StackQueueComplete {
                 </article>
                 <div class="note-box">
                     <span class="note-box__title">경고 출력 대신 예외를 던지는 이유</span>
-                    <p>3단계의 <code>pop</code>은 빈 스택이면 <code>'?'</code>를 돌려줬습니다. 배우기에는 좋지만,
-                    호출한 쪽이 '?'가 실제 데이터인지 오류 표시인지 구분할 수 없습니다.
-                    <em>완성 코드는 <code>IllegalStateException</code>을 던져 <strong>잘못된 사용을 즉시, 명확하게</strong> 알립니다.</em>
-                    반면 <code>ArrayDeque.poll()</code>은 null을 돌려주는 관대한 방식입니다 —
-                    출력 마지막 줄에서 두 철학의 차이를 확인하세요.</p>
+                    <ul>
+                        <li>3단계의 <code>pop</code>은 빈 스택이면 <code>'?'</code>를 돌려줬음 — 배우기에는 좋지만, 호출한 쪽이 '?'가 실제 데이터인지 오류 표시인지 구분할 수 없음</li>
+                        <li><em>완성 코드는 <code>IllegalStateException</code>을 던져 <strong>잘못된 사용을 즉시, 명확하게</strong> 알림</em></li>
+                        <li>반면 <code>ArrayDeque.poll()</code>은 null을 돌려주는 관대한 방식 — 출력 마지막 줄에서 두 철학의 차이를 확인</li>
+                    </ul>
                 </div>
             </section>
 
             <!-- 11. 실행 과정 추적 -->
             <section class="lesson-section" id="sec-trace" aria-labelledby="h-trace">
                 <h2 id="h-trace" data-toc-label="실행 과정 추적"><span class="section-no">11</span>실행 과정 추적</h2>
-                <p>
-                    괄호 검사가 정말 시각화(7번 섹션)와 똑같이 동작하는지,
-                    문자 하나를 처리할 때마다 <strong>(문자, 동작, 스택 상태)</strong>를 출력해 확인합니다.
-                    손으로 풀었던 "([()])"와, 실패의 두 갈래인 "(()", "())"를 추적합니다.
-                </p>
+                <p class="lecture-lead">괄호 검사가 정말 시각화(7번 섹션)와 똑같이 동작하는지, 문자 하나를 처리할 때마다 <strong>(문자, 동작, 스택 상태)</strong>를 출력해 확인 — 손으로 풀었던 "([()])"와 실패의 두 갈래("(()", "())")를 추적합니다.</p>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -1249,18 +1222,18 @@ public class BracketCheckTrace {
   2번째 문자 ')' : 실패! 짝이 없는 닫는 괄호 -&gt; 스택: (비어 있음)
   검사 중단 -&gt; 무효한 괄호</code></pre>
                 </article>
-                <p>
-                    "([()])"의 스택 상태 변화 <code>(</code> → <code>( [</code> → <code>( [ (</code> → <code>( [</code> →
-                    <code>(</code> → <code>(비어 있음)</code>이 손 풀이 STEP 1~2, 시각화 1과 정확히 일치합니다.
-                    "(()"는 끝났는데 '('가 남아 무효, "())"는 빈 스택에서 닫는 괄호를 만나 즉시 중단 —
-                    <em><strong>손 풀이 = 시각화 = 코드</strong>가 같은 절차임을 확인했습니다.</em>
-                </p>
+                <ul>
+                    <li>"([()])"의 스택 상태 변화 <code>(</code> → <code>( [</code> → <code>( [ (</code> → <code>( [</code> →
+                        <code>(</code> → <code>(비어 있음)</code>이 손 풀이 STEP 1~2, 시각화 1과 정확히 일치</li>
+                    <li>"(()"는 끝났는데 '('가 남아 무효, "())"는 빈 스택에서 닫는 괄호를 만나 즉시 중단</li>
+                    <li><em><strong>손 풀이 = 시각화 = 코드</strong>가 같은 절차임을 확인</em></li>
+                </ul>
             </section>
 
             <!-- 12. 잘못된 코드와 오류 찾기 -->
             <section class="lesson-section" id="sec-bugs" aria-labelledby="h-bugs">
                 <h2 id="h-bugs" data-toc-label="잘못된 코드와 오류 찾기"><span class="section-no">12</span>잘못된 코드와 오류 찾기</h2>
-                <p>초보자가 스택·큐에서 자주 만드는 오류 두 가지를 직접 찾아봅시다. 먼저 코드를 읽고 무엇이 잘못됐는지 생각한 뒤 해설을 여세요.</p>
+                <p class="lecture-lead">초보자가 스택·큐에서 자주 만드는 오류 두 가지. 먼저 코드를 읽고 무엇이 잘못됐는지 생각한 뒤 해설을 여세요.</p>
 
                 <article class="bug-card">
                     <h3 class="bug-card__title">오류 1 — 빈 스택 검사 없이 pop하는 괄호 검사</h3>
@@ -1312,20 +1285,24 @@ public class BracketCheckTrace {
                         <details class="answer-box" data-locked-until-complete>
                             <summary>발생하는 문제와 수정 방법 확인</summary>
                             <div class="answer-box__content">
-                                <p><strong>발생하는 문제:</strong> "()"까지는 잘 동작하지만, "())"를 검사하는 순간 프로그램이 예외로 죽습니다.</p>
+                                <ul>
+                                    <li><strong>발생하는 문제:</strong> "()"까지는 잘 동작하지만, "())"를 검사하는 순간 프로그램이 예외로 죽음</li>
+                                </ul>
                                 <pre class="quiz-code">() -&gt; true
 Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: Index -1 out of bounds for length 100
 	at BuggyBracketPop.pop(BuggyBracketPop.java:7)
 	at BuggyBracketPop.isValid(BuggyBracketPop.java:23)
 	at BuggyBracketPop.main(BuggyBracketPop.java:33)
 </pre>
-                                <p><strong>오류가 나타나는 입력:</strong> "())", ")("처럼 <strong>짝 없는 닫는 괄호</strong>가 있는 모든 문자열.
-                                유효한 문자열만 테스트하면 통과한 것처럼 보이는 것이 함정입니다.</p>
-                                <p><strong>원인:</strong> 닫는 괄호를 만났을 때 <strong>스택이 비었는지 확인하지 않고</strong> 바로
-                                <code>pop()</code>을 호출했습니다. top이 -1인 상태에서 <code>stack[top--]</code>은
-                                <code>stack[-1]</code>을 읽으므로 <code>ArrayIndexOutOfBoundsException</code>이 발생합니다.
-                                손 풀이 STEP 3의 "빈 더미에서 접시 내리기"가 바로 이 상황입니다.</p>
-                                <p><strong>수정 방법:</strong> pop 전에 빈 스택이면 "무효"로 판정하고 반환합니다.</p>
+                                <ul>
+                                    <li><strong>오류가 나타나는 입력:</strong> "())", ")("처럼 <strong>짝 없는 닫는 괄호</strong>가 있는 모든 문자열 —
+                                        유효한 문자열만 테스트하면 통과한 것처럼 보이는 것이 함정</li>
+                                    <li><strong>원인:</strong> 닫는 괄호를 만났을 때 <strong>스택이 비었는지 확인하지 않고</strong> 바로
+                                        <code>pop()</code>을 호출 — top이 -1인 상태에서 <code>stack[top--]</code>은
+                                        <code>stack[-1]</code>을 읽으므로 <code>ArrayIndexOutOfBoundsException</code>이 발생
+                                        (손 풀이 STEP 3의 "빈 더미에서 접시 내리기"가 바로 이 상황)</li>
+                                    <li><strong>수정 방법:</strong> pop 전에 빈 스택이면 "무효"로 판정하고 반환</li>
+                                </ul>
                                 <pre class="quiz-code">} else if (ch == ')' || ch == ']' || ch == '}') {
     if (top == -1) {          // 빈 스택 검사가 pop보다 먼저!
         return false;         // 짝 없는 닫는 괄호 → 무효
@@ -1334,8 +1311,10 @@ Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: Index -1 ou
         return false;
     }
 }</pre>
-                                <p>수정 후 "())"는 예외 없이 <code>false</code>(무효)로 판정됩니다.
-                                <em><strong>꺼내는 연산 앞에는 반드시 빈 검사</strong> — 스택과 큐 공통의 철칙입니다.</em></p>
+                                <ul>
+                                    <li>수정 후 "())"는 예외 없이 <code>false</code>(무효)로 판정됨</li>
+                                    <li><em><strong>꺼내는 연산 앞에는 반드시 빈 검사</strong> — 스택과 큐 공통의 철칙</em></li>
+                                </ul>
                             </div>
                         </details>
                     </div>
@@ -1380,19 +1359,22 @@ Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: Index -1 ou
                         <details class="answer-box" data-locked-until-complete>
                             <summary>발생하는 문제와 수정 방법 확인</summary>
                             <div class="answer-box__content">
-                                <p><strong>발생하는 문제:</strong> 세 명을 처리했는데 전부 같은 사람이고, 대기 인원도 줄지 않습니다.</p>
+                                <ul>
+                                    <li><strong>발생하는 문제:</strong> 세 명을 처리했는데 전부 같은 사람이고, 대기 인원도 줄지 않음</li>
+                                </ul>
                                 <pre class="quiz-code">1번째 처리: 김하늘
 2번째 처리: 김하늘
 3번째 처리: 김하늘
 남은 대기 인원 = 3
 </pre>
-                                <p><strong>오류가 나타나는 입력:</strong> dequeue를 2번 이상 호출하는 모든 경우.
-                                예외가 나지 않고 <strong>조용히 틀린 결과</strong>가 나오므로 오류 1보다 발견하기 어렵습니다.</p>
-                                <p><strong>원인:</strong> <code>dequeue()</code>가 <code>queue[front]</code> 값을 돌려주기만 하고
-                                <strong><code>front</code>를 한 칸 뒤로 옮기지 않았습니다</strong>.
-                                "꺼낸다"는 것은 값 읽기 + 자리 이동, 두 동작의 묶음입니다.
-                                줄 맨 앞 손님이 주문만 하고 비켜 주지 않는 것과 같습니다.</p>
-                                <p><strong>수정 방법:</strong> 값을 읽은 뒤 front를 이동합니다 (빈 큐 검사도 함께).</p>
+                                <ul>
+                                    <li><strong>오류가 나타나는 입력:</strong> dequeue를 2번 이상 호출하는 모든 경우 —
+                                        예외가 나지 않고 <strong>조용히 틀린 결과</strong>가 나오므로 오류 1보다 발견하기 어려움</li>
+                                    <li><strong>원인:</strong> <code>dequeue()</code>가 <code>queue[front]</code> 값을 돌려주기만 하고
+                                        <strong><code>front</code>를 한 칸 뒤로 옮기지 않음</strong> — "꺼낸다"는 것은 값 읽기 + 자리 이동, 두 동작의 묶음
+                                        (줄 맨 앞 손님이 주문만 하고 비켜 주지 않는 것과 같음)</li>
+                                    <li><strong>수정 방법:</strong> 값을 읽은 뒤 front를 이동 (빈 큐 검사도 함께)</li>
+                                </ul>
                                 <pre class="quiz-code">static String dequeue() {
     if (front == rear) {
         System.out.println("경고: 빈 큐는 dequeue할 수 없습니다.");
@@ -1402,8 +1384,10 @@ Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: Index -1 ou
     front++;                  // 맨 앞 자리를 한 칸 뒤로 — 이 줄이 핵심!
     return value;
 }</pre>
-                                <p>수정 후 출력은 김하늘 → 이준호 → 박서연 순서가 되고, 남은 대기 인원은 0명이 됩니다.
-                                <em>스택에서 <code>top--</code>를 빼먹는 실수도 완전히 같은 유형입니다.</em></p>
+                                <ul>
+                                    <li>수정 후 출력은 김하늘 → 이준호 → 박서연 순서가 되고, 남은 대기 인원은 0명이 됨</li>
+                                    <li><em>스택에서 <code>top--</code>를 빼먹는 실수도 완전히 같은 유형</em></li>
+                                </ul>
                             </div>
                         </details>
                     </div>
@@ -1437,18 +1421,18 @@ Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: Index -1 ou
                         </tbody>
                     </table>
                 </div>
-                <p>
-                    * 괄호 검사의 최선은 첫 글자가 닫는 괄호인 경우("()"의 짝이 없는 ")(" 등) —
-                    빈 스택 검사에서 <strong>즉시 무효로 조기 중단</strong>합니다. 1강에서 본 조기 중단 패턴 그대로입니다.
-                    유효한 문자열은 항상 끝까지 읽어야 하므로 n번 처리합니다.
-                </p>
+                <ul>
+                    <li>괄호 검사의 최선은 첫 글자가 닫는 괄호인 경우("()"의 짝이 없는 ")(" 등) —
+                        빈 스택 검사에서 <strong>즉시 무효로 조기 중단</strong> (1강에서 본 조기 중단 패턴 그대로)</li>
+                    <li>유효한 문자열은 항상 끝까지 읽어야 하므로 n번 처리</li>
+                </ul>
 
                 <h3>공간 복잡도</h3>
-                <p>
-                    괄호 검사의 스택은 최악의 경우("((((...") 문자열의 모든 글자를 담을 수 있어야 하므로 <strong>O(n)</strong>,
-                    대기열도 n명이 모두 줄을 서면 <strong>O(n)</strong>입니다.
-                    top, front, rear 같은 관리 변수는 O(1)입니다.
-                </p>
+                <ul>
+                    <li>괄호 검사의 스택은 최악의 경우("((((...") 문자열의 모든 글자를 담을 수 있어야 하므로 <strong>O(n)</strong></li>
+                    <li>대기열도 n명이 모두 줄을 서면 <strong>O(n)</strong></li>
+                    <li>top, front, rear 같은 관리 변수는 O(1)</li>
+                </ul>
 
                 <h3>알고리즘 특성</h3>
                 <ul>
@@ -1468,12 +1452,11 @@ Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: Index -1 ou
                 <h2 id="h-application" data-toc-label="실제 데이터 응용 예제"><span class="section-no">14</span>실제 데이터 응용 예제</h2>
 
                 <h3>문제 상황</h3>
-                <p>
-                    은행 지점의 창구 호출 시스템을 만듭니다. 고객은 접수 번호를 받아 대기열에 등록되고,
-                    창구는 기본적으로 <strong>도착 순서대로(FIFO)</strong> 한 명씩 호출합니다.
-                    그런데 지점장이 요구를 추가했습니다 — "VIP 고객을 먼저, 같은 등급이면 접수 번호 순으로."
-                    <em>도착 순서가 아니라 <strong>우선순위</strong>가 기준이 되는 순간, 일반 큐로는 부족해집니다.</em>
-                </p>
+                <ul>
+                    <li>은행 지점의 창구 호출 시스템 — 고객은 접수 번호를 받아 대기열에 등록되고, 창구는 기본적으로 <strong>도착 순서대로(FIFO)</strong> 한 명씩 호출</li>
+                    <li>지점장의 추가 요구: "VIP 고객을 먼저, 같은 등급이면 접수 번호 순으로"</li>
+                    <li><em>도착 순서가 아니라 <strong>우선순위</strong>가 기준이 되는 순간, 일반 큐로는 부족해짐</em></li>
+                </ul>
 
                 <h3>데이터 모델과 자료구조 선택 기준</h3>
                 <ul>
