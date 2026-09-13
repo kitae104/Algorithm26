@@ -75,10 +75,12 @@ for (const item of supplements) {
 }
 
 /* ---------- 2. 강의 HTML 구조 ---------- */
+/* 13개 강의 전부가 공유하는 18개 필수 섹션.
+   (점진적 Java 구현·실행 과정 추적은 실습 코드 절로 흡수되어 더 이상 별도 섹션이 아니다) */
 const REQUIRED_SECTIONS = [
     "sec-intro", "sec-objectives", "sec-prereq", "sec-problem",
-    "sec-hand", "sec-concepts", "sec-steps", "sec-pseudo", "sec-impl",
-    "sec-complete", "sec-trace", "sec-bugs", "sec-complexity",
+    "sec-hand", "sec-concepts", "sec-steps", "sec-pseudo",
+    "sec-complete", "sec-bugs", "sec-complexity",
     "sec-application", "sec-quiz", "sec-practice", "sec-final",
     "sec-summary", "sec-next"
 ];
@@ -145,7 +147,7 @@ for (const lesson of lessons) {
         if (!existsSync(target)) fail(`${lesson.path}: 깨진 링크 — ${ref}`);
     }
 
-    /* 20개 섹션 순서 검증 */
+    /* 섹션 순서 검증 */
     let lastIndex = -1;
     for (const id of REQUIRED_SECTIONS) {
         const idx = html.indexOf(`id="${id}"`);

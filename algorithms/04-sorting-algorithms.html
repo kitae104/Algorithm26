@@ -285,7 +285,7 @@ arr[j] = temp;       // 3) 보관해 둔 값을 넣기</pre>
                 <p class="lecture-lead">이번에는 같은 배열을 <strong>삽입 정렬</strong>이 어떻게 처리하는지 봅시다 — 왼쪽의 초록색 영역(정렬된 영역)이 한 칸씩 넓어지고, 파란색 칸(끼워 넣을 값 key)이 자기 자리를 찾아 들어가는 모습에 주목하세요.</p>
                 <div id="viz-insertion-sort" aria-label="삽입 정렬 단계별 실행 시각화"></div>
                 <p>삽입 정렬은 key보다 작은 값을 만나는 순간 비교를 멈춥니다.
-                    <em>그래서 <strong>거의 정렬된 데이터에서는 비교가 확 줄어듭니다</strong></em> — 11번 완성 코드의 실험에서 숫자로 확인합니다.</p>
+                    <em>그래서 <strong>거의 정렬된 데이터에서는 비교가 확 줄어듭니다</strong></em> — 9번 실습 코드의 실험에서 숫자로 확인합니다.</p>
             </section>
 
             <!-- 8. 의사코드 -->
@@ -338,261 +338,15 @@ arr[j] = temp;       // 3) 보관해 둔 값을 넣기</pre>
                 </ul>
             </section>
 
-            <!-- 9. 점진적 Java 구현 -->
-            <section class="lesson-section" id="sec-impl" aria-labelledby="h-impl">
-                <h2 id="h-impl" data-toc-label="점진적 Java 구현"><span class="section-no">09</span>점진적 Java 구현</h2>
-                <p class="lecture-lead">선택 정렬을 한 번에 쓰지 않고 <strong>데이터 준비 → 비교와 교환 → 한 회전(최솟값 찾기 + 자리 확정) → 반복으로 전체 정렬</strong> 순서로 조립합니다. 각 단계의 코드는 모두 독립적으로 복사해서 실행할 수 있습니다.</p>
-
-                <h3>구현 1단계 — 입력 데이터 준비</h3>
-                <p class="lecture-lead">정렬할 상품 <strong>가격 5개</strong>를 준비하고, 정렬 전 상태를 눈으로 확인합니다.</p>
-                <article class="code-card">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">Java</span>
-                            <strong class="code-card__filename">Step1PriceData.java</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="code-step1" aria-label="Step1PriceData.java 코드 복사">코드 복사</button>
-                    </header>
-                    <pre><code id="code-step1" class="language-java">public class Step1PriceData {
-    public static void main(String[] args) {
-        // 상품 5개의 가격 (단위: 천 원) — 오늘 정렬할 입력 데이터
-        int[] prices = {26, 15, 38, 12, 21};
-
-        System.out.println("상품 개수: " + prices.length);
-
-        // 정렬 전 상태를 [26, 15, 38, 12, 21] 형태로 출력한다
-        System.out.print("정렬 전 가격: [");
-        for (int i = 0; i &lt; prices.length; i++) {
-            System.out.print(prices[i]);
-            if (i &lt; prices.length - 1) {
-                System.out.print(", ");
-            }
-        }
-        System.out.println("]");
-    }
-}</code></pre>
-                </article>
-                <article class="code-card code-card--output">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">출력</span>
-                            <strong class="code-card__filename">실행 결과</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="out-step1" aria-label="Step1 실행 결과 복사">복사</button>
-                    </header>
-                    <pre><code id="out-step1">상품 개수: 5
-정렬 전 가격: [26, 15, 38, 12, 21]</code></pre>
-                </article>
-
-                <h3>구현 2단계 — 핵심 연산: 비교와 교환</h3>
-                <p class="lecture-lead">정렬의 두 가지 핵심 연산 — <strong>비교</strong>(앞이 뒤보다 큰가?)와 <strong>교환</strong>(임시 변수로 맞바꾸기) — 을 반복문 없이 딱 한 번만 수행. <code>swap</code> 메서드는 오늘 강의 전체에서 계속 재사용됩니다.</p>
-                <article class="code-card">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">Java</span>
-                            <strong class="code-card__filename">Step2CompareSwap.java</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="code-step2" aria-label="Step2CompareSwap.java 코드 복사">코드 복사</button>
-                    </header>
-                    <pre><code id="code-step2" class="language-java">public class Step2CompareSwap {
-
-    /** 배열의 i번 칸과 j번 칸의 값을 맞바꾼다. 임시 변수가 반드시 필요하다. */
-    static void swap(int[] arr, int i, int j) {
-        int temp = arr[i];   // 1) 한쪽 값을 임시 변수에 보관하고
-        arr[i] = arr[j];     // 2) i번 칸에 j번 값을 덮어쓴 뒤
-        arr[j] = temp;       // 3) 보관해 둔 값을 j번 칸에 넣는다
-    }
-
-    public static void main(String[] args) {
-        int[] prices = {26, 15, 38, 12, 21};
-
-        System.out.println("교환 전: prices[0] = " + prices[0]
-                + ", prices[1] = " + prices[1]);
-
-        // 비교: 앞의 값이 뒤의 값보다 크면 오름차순에 어긋난다
-        if (prices[0] &gt; prices[1]) {
-            System.out.println("prices[0] &gt; prices[1] 이므로 두 값을 교환합니다.");
-            swap(prices, 0, 1);
-        }
-
-        System.out.println("교환 후: prices[0] = " + prices[0]
-                + ", prices[1] = " + prices[1]);
-    }
-}</code></pre>
-                </article>
-                <article class="code-card code-card--output">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">출력</span>
-                            <strong class="code-card__filename">실행 결과</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="out-step2" aria-label="Step2 실행 결과 복사">복사</button>
-                    </header>
-                    <pre><code id="out-step2">교환 전: prices[0] = 26, prices[1] = 15
-prices[0] &gt; prices[1] 이므로 두 값을 교환합니다.
-교환 후: prices[0] = 15, prices[1] = 26</code></pre>
-                </article>
-
-                <h3>구현 3단계 — 한 회전: 최솟값 위치 찾기 + 자리 확정</h3>
-                <p class="lecture-lead">2강의 최솟값 찾기를 가져오되 <strong>값 대신 위치(minIndex)를 기억</strong>하도록 바꿉니다. 찾은 최솟값을 0번 칸과 교환하면 — 손 풀이의 STEP 1과 똑같이 — <strong>한 회전으로 한 자리가 확정</strong>됩니다.</p>
-                <article class="code-card">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">Java</span>
-                            <strong class="code-card__filename">Step3FirstPass.java</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="code-step3" aria-label="Step3FirstPass.java 코드 복사">코드 복사</button>
-                    </header>
-                    <pre><code id="code-step3" class="language-java">public class Step3FirstPass {
-
-    static void swap(int[] arr, int i, int j) {
-        int temp = arr[i];
-        arr[i] = arr[j];
-        arr[j] = temp;
-    }
-
-    /** 배열 상태를 [26, 15, 38, 12, 21] 형태의 문자열로 만든다. */
-    static String toText(int[] arr) {
-        StringBuilder sb = new StringBuilder("[");
-        for (int i = 0; i &lt; arr.length; i++) {
-            sb.append(arr[i]);
-            if (i &lt; arr.length - 1) {
-                sb.append(", ");
-            }
-        }
-        return sb.append("]").toString();
-    }
-
-    public static void main(String[] args) {
-        int[] prices = {26, 15, 38, 12, 21};
-
-        System.out.println("시작 상태: " + toText(prices));
-
-        // 2강에서 배운 "최솟값 찾기" — 단, 값이 아니라 위치(minIndex)를 기억한다
-        int minIndex = 0;
-        for (int j = 1; j &lt; prices.length; j++) {
-            if (prices[j] &lt; prices[minIndex]) {
-                minIndex = j;
-                System.out.println("  새로운 최솟값 후보: prices[" + j + "] = " + prices[j]);
-            }
-        }
-
-        System.out.println("최솟값은 prices[" + minIndex + "] = " + prices[minIndex]
-                + " → 0번 칸과 교환합니다.");
-        swap(prices, 0, minIndex);
-
-        System.out.println("1회차 종료: " + toText(prices));
-        System.out.println("0번 칸(" + prices[0] + ")은 이제 확정 — 다시 볼 필요가 없습니다.");
-    }
-}</code></pre>
-                </article>
-                <article class="code-card code-card--output">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">출력</span>
-                            <strong class="code-card__filename">실행 결과</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="out-step3" aria-label="Step3 실행 결과 복사">복사</button>
-                    </header>
-                    <pre><code id="out-step3">시작 상태: [26, 15, 38, 12, 21]
-  새로운 최솟값 후보: prices[1] = 15
-  새로운 최솟값 후보: prices[3] = 12
-최솟값은 prices[3] = 12 → 0번 칸과 교환합니다.
-1회차 종료: [12, 15, 38, 26, 21]
-0번 칸(12)은 이제 확정 — 다시 볼 필요가 없습니다.</code></pre>
-                </article>
-                <div class="note-box note-box--tip">
-                    <span class="note-box__title">왜 값이 아니라 위치인가?</span>
-                    <p class="lecture-lead">최솟값이 12라는 사실만 알면 교환할 수 없습니다 — <strong>12가 3번 칸에 있다</strong>는 것을 알아야 <code>swap(prices, 0, 3)</code>이 가능합니다. <em>"값 찾기"를 "위치 찾기"로 바꾸는 것 — 이것이 2강 코드와 오늘 코드의 유일한 차이입니다.</em></p>
-                </div>
-
-                <h3>구현 4단계 — 반복으로 전체 정렬 + 연산 카운터</h3>
-                <p class="lecture-lead">3단계의 "한 회전"을 <strong>바깥 반복문으로 감싸</strong> 시작 위치 i를 0, 1, 2, …로 옮기면 선택 정렬 완성입니다 (<code>0</code>·<code>1</code>이던 자리가 <code>i</code>·<code>i + 1</code>로 바뀐 것에 주목). 1강의 연산 카운터로 비교·교환 횟수도 함께 셉니다.</p>
-                <article class="code-card">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">Java</span>
-                            <strong class="code-card__filename">Step4SelectionSort.java</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="code-step4" aria-label="Step4SelectionSort.java 코드 복사">코드 복사</button>
-                    </header>
-                    <pre><code id="code-step4" class="language-java">public class Step4SelectionSort {
-
-    static void swap(int[] arr, int i, int j) {
-        int temp = arr[i];
-        arr[i] = arr[j];
-        arr[j] = temp;
-    }
-
-    static String toText(int[] arr) {
-        StringBuilder sb = new StringBuilder("[");
-        for (int i = 0; i &lt; arr.length; i++) {
-            sb.append(arr[i]);
-            if (i &lt; arr.length - 1) {
-                sb.append(", ");
-            }
-        }
-        return sb.append("]").toString();
-    }
-
-    public static void main(String[] args) {
-        int[] prices = {26, 15, 38, 12, 21};
-        int compareCount = 0;   // 1강의 연산 카운터 — 비교가 일어날 때마다 +1
-        int swapCount = 0;      // 교환이 일어날 때마다 +1
-
-        System.out.println("정렬 전: " + toText(prices));
-
-        // 바깥 반복문: 기준 위치 i를 0부터 끝-1까지 옮긴다 (3강의 중첩 반복문 구조)
-        for (int i = 0; i &lt; prices.length - 1; i++) {
-            int minIndex = i;   // 남은 구간 [i..끝]의 최솟값 위치
-
-            // 안쪽 반복문: i 오른쪽에서 더 작은 값을 찾는다 (Step3의 한 회차)
-            for (int j = i + 1; j &lt; prices.length; j++) {
-                compareCount++;
-                if (prices[j] &lt; prices[minIndex]) {
-                    minIndex = j;
-                }
-            }
-
-            // 최솟값이 이미 제자리(i)에 있으면 교환하지 않는다
-            if (minIndex != i) {
-                swap(prices, i, minIndex);
-                swapCount++;
-            }
-        }
-
-        System.out.println("정렬 후: " + toText(prices));
-        System.out.println("비교 횟수 = " + compareCount + ", 교환 횟수 = " + swapCount);
-    }
-}</code></pre>
-                </article>
-                <article class="code-card code-card--output">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">출력</span>
-                            <strong class="code-card__filename">실행 결과</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="out-step4" aria-label="Step4 실행 결과 복사">복사</button>
-                    </header>
-                    <pre><code id="out-step4">정렬 전: [26, 15, 38, 12, 21]
-정렬 후: [12, 15, 21, 26, 38]
-비교 횟수 = 10, 교환 횟수 = 2</code></pre>
-                </article>
-                <div class="note-box note-box--tip">
-                    <span class="note-box__title">관찰</span>
-                    <ul>
-                        <li>비교 10번 = 4 + 3 + 2 + 1 = n(n-1)/2 — 손 풀이(STEP 4)와 시각화의 카운터와 정확히 일치</li>
-                        <li>교환은 2번뿐(12↔26, 21↔38)</li>
-                        <li><em>선택 정렬은 <strong>비교는 많지만 교환은 회전당 최대 1번</strong>입니다.</em></li>
-                    </ul>
-                </div>
-            </section>
-
-            <!-- 10. 완성 Java 코드 -->
+            <!-- 9. 실습 코드 -->
             <section class="lesson-section" id="sec-complete" aria-labelledby="h-complete">
-                <h2 id="h-complete" data-toc-label="완성 Java 코드"><span class="section-no">10</span>완성 Java 코드</h2>
+                <h2 id="h-complete" data-toc-label="실습 코드"><span class="section-no">09</span>실습 코드</h2>
+                <p class="lecture-lead">의사코드(08)를 실제 Java 프로그램으로 옮깁니다. 선택·버블·삽입 세 정렬을 <strong>비교와 교환을 세는 메서드</strong>로 각각 구현해 한 번에 비교합니다 —
+                    바깥 반복문은 06 핵심 개념의 <strong>중첩 반복문 패턴</strong>, <code>minIndex</code>·<code>key</code> 갱신은 08 의사코드의 "위치 후보 기억" 로직을 그대로 옮긴 것입니다.</p>
                 <ul>
-                    <li>선택 정렬을 조립했으니, 같은 재료(비교·교환·중첩 반복문)로 만드는 <strong>버블 정렬</strong>과 <strong>삽입 정렬</strong>을 더해 세 정렬 비교 프로그램을 완성</li>
+                    <li><code>selectionSort</code>는 남은 구간의 최솟값 <strong>위치</strong>를 찾아 앞으로 보내는 08 선택 정렬 의사코드를 그대로 옮긴 것</li>
+                    <li><code>bubbleSort</code>는 이웃끼리 비교·교환하며 큰 값을 뒤로 밀어내되, <code>swapped</code> 플래그로 06에서 배운 조기 종료를 더함</li>
+                    <li><code>insertionSort</code>는 <code>key</code>를 왼쪽 정렬 영역에 끼워 넣는 08 삽입 정렬 의사코드를 그대로 옮긴 것</li>
                     <li>1강의 Measurement 패턴처럼 결과와 연산 횟수를 <code>SortResult</code>에 담아, <strong>무작위·이미 정렬됨·역순</strong> 세 종류의 입력으로 실험</li>
                 </ul>
                 <article class="code-card">
@@ -731,7 +485,7 @@ public class SortingThreeComplete {
                             <span class="code-card__language">출력</span>
                             <strong class="code-card__filename">실행 결과</strong>
                         </div>
-                        <button type="button" class="copy-code-button" data-copy-target="out-complete" aria-label="완성 코드 실행 결과 복사">복사</button>
+                        <button type="button" class="copy-code-button" data-copy-target="out-complete" aria-label="실습 코드 실행 결과 복사">복사</button>
                     </header>
                     <pre><code id="out-complete">== 무작위 데이터: [26, 15, 38, 12, 21, 30, 8, 19] ==
 알고리즘  | 비교 횟수 | 교환·이동 | 정렬 결과
@@ -759,113 +513,14 @@ public class SortingThreeComplete {
                     <ul>
                         <li>선택 정렬의 비교는 입력이 무엇이든 <strong>항상 28번</strong>(= 8×7/2)</li>
                         <li>반면 버블(조기 종료)과 삽입은 <strong>이미 정렬된 입력에서 7번</strong>(= n-1)으로 끝남</li>
-                        <li><em>같은 O(n²) 가족이라도 "최선의 경우"는 이렇게 다릅니다</em> — 복잡도 표는 13번 섹션에서 정리</li>
+                        <li><em>같은 O(n²) 가족이라도 "최선의 경우"는 이렇게 다릅니다</em> — 복잡도 표는 11번 섹션에서 정리</li>
                     </ul>
                 </div>
             </section>
 
-            <!-- 11. 실행 과정 추적 -->
-            <section class="lesson-section" id="sec-trace" aria-labelledby="h-trace">
-                <h2 id="h-trace" data-toc-label="실행 과정 추적"><span class="section-no">11</span>실행 과정 추적</h2>
-                <p class="lecture-lead">완성한 선택 정렬이 정말 시각화(7번 섹션)·손 풀이(5번 섹션)와 똑같이 움직이는지, 매 회차의 <strong>배열 상태와 누적 카운터</strong>를 출력해 확인합니다.</p>
-                <article class="code-card">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">Java</span>
-                            <strong class="code-card__filename">SelectionSortTrace.java</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="code-trace" aria-label="SelectionSortTrace.java 코드 복사">코드 복사</button>
-                    </header>
-                    <pre><code id="code-trace" class="language-java">public class SelectionSortTrace {
-
-    static void swap(int[] arr, int i, int j) {
-        int temp = arr[i];
-        arr[i] = arr[j];
-        arr[j] = temp;
-    }
-
-    static String toText(int[] arr) {
-        StringBuilder sb = new StringBuilder("[");
-        for (int i = 0; i &lt; arr.length; i++) {
-            sb.append(arr[i]);
-            if (i &lt; arr.length - 1) {
-                sb.append(", ");
-            }
-        }
-        return sb.append("]").toString();
-    }
-
-    public static void main(String[] args) {
-        int[] prices = {26, 15, 38, 12, 21};
-        int compareCount = 0;
-        int swapCount = 0;
-
-        System.out.println("선택 정렬 실행 추적 — 시작 상태: " + toText(prices));
-        System.out.println();
-
-        for (int i = 0; i &lt; prices.length - 1; i++) {
-            int minIndex = i;
-
-            for (int j = i + 1; j &lt; prices.length; j++) {
-                compareCount++;
-                if (prices[j] &lt; prices[minIndex]) {
-                    minIndex = j;
-                }
-            }
-
-            if (minIndex != i) {
-                System.out.println("i=" + i + " 회차: 최솟값 " + prices[minIndex]
-                        + "(위치 " + minIndex + ")과 " + i + "번 칸의 "
-                        + prices[i] + "을(를) 교환");
-                swap(prices, i, minIndex);
-                swapCount++;
-            } else {
-                System.out.println("i=" + i + " 회차: 최솟값이 이미 " + i
-                        + "번 칸에 있음 — 교환 없음");
-            }
-
-            System.out.println("       배열 상태: " + toText(prices)
-                    + " | 비교 누적 " + compareCount
-                    + " | 교환 누적 " + swapCount);
-        }
-
-        System.out.println();
-        System.out.println("정렬 완료: " + toText(prices)
-                + " (비교 " + compareCount + "번, 교환 " + swapCount + "번)");
-    }
-}</code></pre>
-                </article>
-                <article class="code-card code-card--output">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">출력</span>
-                            <strong class="code-card__filename">실행 결과</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="out-trace" aria-label="추적 실행 결과 복사">복사</button>
-                    </header>
-                    <pre><code id="out-trace">선택 정렬 실행 추적 — 시작 상태: [26, 15, 38, 12, 21]
-
-i=0 회차: 최솟값 12(위치 3)과 0번 칸의 26을(를) 교환
-       배열 상태: [12, 15, 38, 26, 21] | 비교 누적 4 | 교환 누적 1
-i=1 회차: 최솟값이 이미 1번 칸에 있음 — 교환 없음
-       배열 상태: [12, 15, 38, 26, 21] | 비교 누적 7 | 교환 누적 1
-i=2 회차: 최솟값 21(위치 4)과 2번 칸의 38을(를) 교환
-       배열 상태: [12, 15, 21, 26, 38] | 비교 누적 9 | 교환 누적 2
-i=3 회차: 최솟값이 이미 3번 칸에 있음 — 교환 없음
-       배열 상태: [12, 15, 21, 26, 38] | 비교 누적 10 | 교환 누적 2
-
-정렬 완료: [12, 15, 21, 26, 38] (비교 10번, 교환 2번)</code></pre>
-                </article>
-                <ul>
-                    <li>회차별 상태 [12, 15, 38, 26, 21] → [12, 15, 21, 26, 38]이 손 풀이의 STEP 1~4와 정확히 일치</li>
-                    <li>비교 누적 4 → 7 → 9 → 10, 교환 2번도 시각화의 카운터와 일치</li>
-                    <li><em><strong>손 풀이 = 시각화 = 코드</strong>가 같은 절차임을 확인했습니다.</em></li>
-                </ul>
-            </section>
-
-            <!-- 12. 잘못된 코드와 오류 찾기 -->
+            <!-- 10. 잘못된 코드와 오류 찾기 -->
             <section class="lesson-section" id="sec-bugs" aria-labelledby="h-bugs">
-                <h2 id="h-bugs" data-toc-label="잘못된 코드와 오류 찾기"><span class="section-no">12</span>잘못된 코드와 오류 찾기</h2>
+                <h2 id="h-bugs" data-toc-label="잘못된 코드와 오류 찾기"><span class="section-no">10</span>잘못된 코드와 오류 찾기</h2>
                 <p class="lecture-lead">정렬을 처음 구현할 때 누구나 한 번은 만드는 오류 두 가지 — 코드를 먼저 읽고 무엇이 잘못됐는지 생각한 뒤 해설을 여세요.</p>
 
                 <article class="bug-card">
@@ -903,7 +558,7 @@ i=3 회차: 최솟값이 이미 3번 칸에 있음 — 교환 없음
 
         System.out.println("정렬 전: " + toText(prices));
 
-        // 선택 정렬 — 구조는 Step4SelectionSort와 완전히 같다
+        // 선택 정렬 — 반복 구조는 실습 코드의 selectionSort와 같다
         for (int i = 0; i &lt; prices.length - 1; i++) {
             int minIndex = i;
             for (int j = i + 1; j &lt; prices.length; j++) {
@@ -998,15 +653,15 @@ i=3 회차: 최솟값이 이미 3번 칸에 있음 — 교환 없음
                 </article>
             </section>
 
-            <!-- 13. 복잡도 및 특성 분석 -->
+            <!-- 11. 복잡도 및 특성 분석 -->
             <section class="lesson-section" id="sec-complexity" aria-labelledby="h-complexity">
-                <h2 id="h-complexity" data-toc-label="복잡도 및 특성 분석"><span class="section-no">13</span>복잡도 및 특성 분석</h2>
+                <h2 id="h-complexity" data-toc-label="복잡도 및 특성 분석"><span class="section-no">11</span>복잡도 및 특성 분석</h2>
 
                 <h3>입력 크기와 주요 연산</h3>
                 <ul>
                     <li>입력 크기 <code>n</code> = 정렬할 원소의 개수</li>
                     <li>주요 연산은 <strong>비교</strong>(두 값의 크기 판단)와 <strong>교환·이동</strong>(자리 바꾸기)</li>
-                    <li>10번 섹션의 실험(n=8)에서 잰 숫자가 아래 표의 근거</li>
+                    <li>9번 섹션의 실험(n=8)에서 잰 숫자가 아래 표의 근거</li>
                 </ul>
 
                 <h3>시간 복잡도</h3>
@@ -1030,7 +685,7 @@ i=3 회차: 최솟값이 이미 3번 칸에 있음 — 교환 없음
                 </ul>
 
                 <h3>공간 복잡도</h3>
-                <p class="lecture-lead">세 정렬 모두 배열 안에서 자리만 바꾸는 <strong>제자리 정렬(in-place)</strong>로, 임시 변수 몇 개만 쓰므로 <strong>공간 복잡도 O(1)</strong>입니다 (완성 코드의 <code>Arrays.copyOf</code>는 실험을 위한 원본 보존용이지 알고리즘의 일부가 아닙니다).</p>
+                <p class="lecture-lead">세 정렬 모두 배열 안에서 자리만 바꾸는 <strong>제자리 정렬(in-place)</strong>로, 임시 변수 몇 개만 쓰므로 <strong>공간 복잡도 O(1)</strong>입니다 (실습 코드의 <code>Arrays.copyOf</code>는 실험을 위한 원본 보존용이지 알고리즘의 일부가 아닙니다).</p>
 
                 <h3>알고리즘 특성</h3>
                 <ul>
@@ -1045,9 +700,9 @@ i=3 회차: 최솟값이 이미 3번 칸에 있음 — 교환 없음
                 </ul>
             </section>
 
-            <!-- 14. 실제 데이터 응용 예제 -->
+            <!-- 12. 실제 데이터 응용 예제 -->
             <section class="lesson-section" id="sec-application" aria-labelledby="h-application">
-                <h2 id="h-application" data-toc-label="실제 데이터 응용 예제"><span class="section-no">14</span>실제 데이터 응용 예제</h2>
+                <h2 id="h-application" data-toc-label="실제 데이터 응용 예제"><span class="section-no">12</span>실제 데이터 응용 예제</h2>
 
                 <h3>문제 상황</h3>
                 <ul>
@@ -1062,7 +717,7 @@ i=3 회차: 최솟값이 이미 3번 칸에 있음 — 교환 없음
                     <li><strong>데이터:</strong> <code>Product</code> 클래스 (이름 <code>name</code>, 가격 <code>price</code>, 평점 <code>rating</code>)</li>
                     <li><strong>기본 기준(Comparable):</strong> 상품의 기본 정렬은 가격 오름차순 — 클래스 안 <code>compareTo</code>에 정의</li>
                     <li><strong>교체 기준(Comparator):</strong> 평점 내림차순+이름순, 이름순 — 클래스 밖에서 만들어 정렬 메서드에 전달</li>
-                    <li><strong>정렬 알고리즘:</strong> 9~11번 섹션에서 직접 구현한 삽입 정렬 대신,
+                    <li><strong>정렬 알고리즘:</strong> 9번 섹션의 실습 코드에서 본 삽입 정렬 대신,
                         JDK 표준 라이브러리의 <code>Arrays.sort(T[], Comparator)</code>를 사용 —
                         내부의 <strong>TimSort는 안정 정렬</strong>이므로 동점 상품의 입력 순서가 그대로 유지됩니다</li>
                 </ul>
@@ -1188,7 +843,7 @@ Arrays.sort 호출은 세 번 다 똑같습니다. 바뀐 것은 Comparator뿐�
                 <h3>코드 해설과 복잡도 분석</h3>
                 <ul>
                     <li>세 번의 정렬 모두 <code>Arrays.sort(배열, Comparator)</code> 호출 한 줄입니다.
-                        9~11번 섹션에서 직접 구현한 삽입 정렬과 원리(비교하며 자리 찾기)는 같지만,
+                        9번 섹션에서 직접 구현한 삽입 정렬과 원리(비교하며 자리 찾기)는 같지만,
                         이번에는 그 구현 자체를 JDK가 대신합니다.</li>
                     <li>기준 2는 <code>Comparator.comparingDouble(...).reversed().thenComparing(...)</code> —
                         Java가 제공하는 <strong>기준 조립 도구</strong>입니다. "평점으로 비교 → 뒤집기 → 동점이면 이름으로"를 그대로 읽을 수 있습니다.</li>
@@ -1201,9 +856,9 @@ Arrays.sort 호출은 세 번 다 똑같습니다. 바뀐 것은 Comparator뿐�
                 </ul>
             </section>
 
-            <!-- 15. 람다·스트림 수정 문제 -->
+            <!-- 13. 람다·스트림 수정 문제 -->
             <section class="lesson-section" id="sec-modernize" aria-labelledby="h-modernize">
-                <h2 id="h-modernize" data-toc-label="람다·스트림 수정 문제"><span class="section-no">15</span>람다·스트림 수정 문제</h2>
+                <h2 id="h-modernize" data-toc-label="람다·스트림 수정 문제"><span class="section-no">13</span>람다·스트림 수정 문제</h2>
                 <ul>
                     <li>지금까지 쓴 코드를 <strong>같은 결과를 내는 다른 문법</strong>으로 고쳐 보는 문제</li>
                     <li>필요한 문법은 추가 정보의 <a href="../supplements/lambda-expressions.html">람다식</a> 문서에 모두 있음</li>
@@ -1350,9 +1005,9 @@ insertionSort(products, ratingDescThenName);</code></pre>
                     직접 실행해 모든 비교가 <code>true</code>로 나오는지 확인하세요.</p>
             </section>
 
-            <!-- 16. 확인 퀴즈 -->
+            <!-- 14. 확인 퀴즈 -->
             <section class="lesson-section lesson-section--quiz" id="sec-quiz" aria-labelledby="h-quiz">
-                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">16</span>확인 퀴즈</h2>
+                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">14</span>확인 퀴즈</h2>
                 <div id="quiz-root"></div>
             </section>
 
@@ -1361,9 +1016,9 @@ insertionSort(products, ratingDescThenName);</code></pre>
                 <p>지금까지 배운 내용을 직접 코드로 적용해 보는 과제입니다. 두 과제로 구성되며, 각 과제의 정답은 이 강의를 완료로 표시해야 열립니다.</p>
             </div>
 
-            <!-- 17. 따라 하기 실습 -->
+            <!-- 15. 따라 하기 실습 -->
             <section class="lesson-section lesson-section--assignment" id="sec-practice" aria-labelledby="h-practice">
-                <h2 id="h-practice" data-toc-label="따라 하기 실습"><span class="section-no">17</span>따라 하기 실습</h2>
+                <h2 id="h-practice" data-toc-label="따라 하기 실습"><span class="section-no">15</span>따라 하기 실습</h2>
 
                 <h3>실습 1 — 데이터 변경</h3>
                 <p>
@@ -1446,9 +1101,9 @@ insertionSort(products, ratingDescThenName);</code></pre>
                 </details>
             </section>
 
-            <!-- 18. 최종 프로그램 작성 문제 -->
+            <!-- 16. 최종 프로그램 작성 문제 -->
             <section class="lesson-section lesson-section--assignment" id="sec-final" aria-labelledby="h-final">
-                <h2 id="h-final" data-toc-label="최종 프로그램 작성 문제"><span class="section-no">18</span>최종 프로그램 작성 문제</h2>
+                <h2 id="h-final" data-toc-label="최종 프로그램 작성 문제"><span class="section-no">16</span>최종 프로그램 작성 문제</h2>
 
                 <h3>문제 제목 — 상품 정렬기 "ProductSorter"</h3>
 
@@ -1495,7 +1150,7 @@ USB 허브        15000원  평점 4.2
   4. 모니터 받침대 (23000원, 평점 4.7)
   5. 웹캠 (54000원, 평점 4.2)
   6. 기계식 키보드 (89000원, 평점 4.8)</pre>
-                <p>전체 출력은 17번 섹션의 정답 코드에서 확인할 수 있습니다.</p>
+                <p>전체 출력은 이 섹션 끝의 정답과 해설에서 확인할 수 있습니다.</p>
 
                 <h3>제한 조건</h3>
                 <ul>
@@ -1893,9 +1548,9 @@ Arrays.sort 결과와 일치(검증): true</code></pre>
                 </details>
             </section>
 
-            <!-- 19. 오늘의 핵심 정리 -->
+            <!-- 17. 오늘의 핵심 정리 -->
             <section class="lesson-section" id="sec-summary" aria-labelledby="h-summary">
-                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">19</span>오늘의 핵심 정리</h2>
+                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">17</span>오늘의 핵심 정리</h2>
                 <ul class="summary-list">
                     <li><strong>선택 정렬</strong> = 2강의 최솟값 찾기(값 대신 <strong>위치</strong> 기억) + 3강의 중첩 반복문.
                         한 회전마다 앞쪽에 한 자리가 확정된다.</li>
@@ -1912,9 +1567,9 @@ Arrays.sort 결과와 일치(검증): true</code></pre>
                 <div id="lesson-complete-slot"></div>
             </section>
 
-            <!-- 20. 다음 강의 연결 -->
+            <!-- 18. 다음 강의 연결 -->
             <section class="lesson-section" id="sec-next" aria-labelledby="h-next">
-                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">20</span>다음 강의 연결</h2>
+                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">18</span>다음 강의 연결</h2>
                 <p>
                     다음 강의는 <strong>5강. 순차 탐색과 이진 탐색</strong>입니다.
                     <em>오늘 만든 "정렬된 배열"이 그대로 다음 강의의 출발점이 됩니다.</em>
@@ -2182,19 +1837,19 @@ Arrays.sort 결과와 일치(검증): true</code></pre>
                 q: "원소 5개짜리 배열을 선택 정렬로 정렬할 때 비교 횟수는 몇 번인가요?",
                 choices: ["5번", "10번", "20번", "25번"],
                 answer: 1,
-                explain: "회전마다 4, 3, 2, 1번 비교하므로 4+3+2+1 = 10번 = n(n-1)/2입니다. 실행 추적(11번 섹션)에서도 비교 누적이 10이었습니다."
+                explain: "회전마다 4, 3, 2, 1번 비교하므로 4+3+2+1 = 10번 = n(n-1)/2입니다. examples/java/04-sorting-algorithms/SelectionSortTrace.java의 실행 추적에서도 비교 누적이 10이었습니다."
             },
             {
                 type: "tf",
                 q: "선택 정렬은 입력이 이미 정렬되어 있으면 비교 횟수가 줄어든다.",
                 answer: false,
-                explain: "선택 정렬은 최솟값을 확인하려면 남은 구간을 끝까지 봐야 하므로 입력과 무관하게 항상 n(n-1)/2번 비교합니다. 완성 코드 실험에서 세 입력 모두 28번(n=8)이었습니다."
+                explain: "선택 정렬은 최솟값을 확인하려면 남은 구간을 끝까지 봐야 하므로 입력과 무관하게 항상 n(n-1)/2번 비교합니다. 실습 코드 실험에서 세 입력 모두 28번(n=8)이었습니다."
             },
             {
                 type: "tf",
                 q: "삽입 정렬은 이미 정렬된 배열에서는 원소마다 비교 1번씩, 총 n-1번의 비교로 끝난다.",
                 answer: true,
-                explain: "각 key가 왼쪽 이웃과 한 번 비교하고 바로 제자리임을 확인합니다. 완성 코드 실험에서 n=8일 때 7번이었습니다. 이것이 삽입 정렬이 '거의 정렬된 데이터'에 강한 이유입니다."
+                explain: "각 key가 왼쪽 이웃과 한 번 비교하고 바로 제자리임을 확인합니다. 실습 코드 실험에서 n=8일 때 7번이었습니다. 이것이 삽입 정렬이 '거의 정렬된 데이터'에 강한 이유입니다."
             },
             {
                 type: "predict",

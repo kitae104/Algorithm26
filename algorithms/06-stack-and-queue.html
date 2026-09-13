@@ -307,7 +307,7 @@
                     <li><code>pop()</code>은 비어 있으면 <strong>예외를 던지고</strong>, <code>poll()</code>은 <strong>null을 반환</strong></li>
                     <li><em>옛날 클래스 <code>java.util.Stack</code>도 있지만, 불필요한 동기화 비용 때문에
                         공식 문서도 <code>ArrayDeque</code> 사용을 권장</em></li>
-                    <li>오늘은 원리 이해를 위해 <strong>배열로 직접 구현</strong>하고, 완성 코드에서 직접 구현과
+                    <li>오늘은 원리 이해를 위해 <strong>배열로 직접 구현</strong>하고, 실습 코드에서 직접 구현과
                         <code>ArrayDeque</code>의 결과가 같은지 비교만 함</li>
                 </ul>
 
@@ -437,454 +437,15 @@ isEmpty():
                 </ul>
             </section>
 
-            <!-- 9. 점진적 Java 구현 -->
-            <section class="lesson-section" id="sec-impl" aria-labelledby="h-impl">
-                <h2 id="h-impl" data-toc-label="점진적 Java 구현"><span class="section-no">09</span>점진적 Java 구현</h2>
-                <p class="lecture-lead">의사코드를 Java로 옮깁니다.
-                    <strong>스택의 재료 → push → pop·peek와 예외 처리 → 괄호 검사 응용</strong>,
-                    이어서 <strong>큐의 재료와 enqueue → dequeue와 빈 큐 검사</strong> 순서로 확장. 각 단계는 독립적으로 실행 가능.</p>
-
-                <h3>구현 1단계 — 스택의 재료: 배열과 top 변수</h3>
-                <p class="lecture-lead">스택의 재료는 값을 담을 <strong>배열</strong>과 맨 위 칸의 위치를 기억하는 <strong>top 변수</strong> 둘뿐 — 아직 아무것도 안 넣었으니 top은 "가리킬 칸 없음"을 뜻하는 -1로 시작합니다.</p>
-                <article class="code-card">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">Java</span>
-                            <strong class="code-card__filename">Step1StackData.java</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="code-step1" aria-label="Step1StackData.java 코드 복사">코드 복사</button>
-                    </header>
-                    <pre><code id="code-step1" class="language-java">public class Step1StackData {
-    public static void main(String[] args) {
-        // 스택 = "데이터(배열)" + "규칙(맨 위에서만 넣고 꺼낸다, LIFO)"
-        // 먼저 데이터를 담을 배열과, 맨 위 칸의 위치를 기억할 변수를 준비한다
-        char[] stack = new char[8];   // 괄호 문자를 담을 공간 (용량 8)
-        int top = -1;                 // 맨 위 칸의 인덱스. -1이면 "비어 있음"이라는 약속
-
-        System.out.println("스택 용량 = " + stack.length);
-        System.out.println("top = " + top);
-        System.out.println("비어 있는가? = " + (top == -1));
-        System.out.println("쌓여 있는 데이터 개수 = " + (top + 1));
-    }
-}</code></pre>
-                </article>
-                <article class="code-card code-card--output">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">출력</span>
-                            <strong class="code-card__filename">실행 결과</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="out-step1" aria-label="Step1 실행 결과 복사">복사</button>
-                    </header>
-                    <pre><code id="out-step1">스택 용량 = 8
-top = -1
-비어 있는가? = true
-쌓여 있는 데이터 개수 = 0</code></pre>
-                </article>
-
-                <h3>구현 2단계 — push 하나 구현</h3>
-                <ul>
-                    <li>핵심 연산 push는 딱 두 줄: <strong>top을 한 칸 올리고, 그 자리에 값을 넣는다</strong></li>
-                    <li>괄호 세 개를 push하면서 top과 개수가 어떻게 변하는지 관찰</li>
-                    <li>2강의 배열 순회로 바닥부터 꼭대기까지의 내용도 확인</li>
-                </ul>
-                <article class="code-card">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">Java</span>
-                            <strong class="code-card__filename">Step2StackPush.java</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="code-step2" aria-label="Step2StackPush.java 코드 복사">코드 복사</button>
-                    </header>
-                    <pre><code id="code-step2" class="language-java">public class Step2StackPush {
-
-    static char[] stack = new char[8];
-    static int top = -1;
-
-    /** push: top을 한 칸 올리고, 그 자리에 값을 넣는다 */
-    static void push(char value) {
-        top++;
-        stack[top] = value;
-        System.out.println("push '" + value + "' -&gt; top = " + top
-                + ", 개수 = " + (top + 1));
-    }
-
-    public static void main(String[] args) {
-        System.out.println("시작: top = " + top + " (비어 있음)");
-
-        push('(');
-        push('(');
-        push('[');
-
-        // 바닥(0번 칸)부터 꼭대기(top번 칸)까지 순서대로 확인한다
-        StringBuilder state = new StringBuilder();
-        for (int i = 0; i &lt;= top; i++) {
-            if (i &gt; 0) state.append(' ');
-            state.append(stack[i]);
-        }
-        System.out.println("스택 상태(바닥 -&gt; 꼭대기): " + state);
-        System.out.println("맨 위(top)의 값 = " + stack[top]);
-    }
-}</code></pre>
-                </article>
-                <article class="code-card code-card--output">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">출력</span>
-                            <strong class="code-card__filename">실행 결과</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="out-step2" aria-label="Step2 실행 결과 복사">복사</button>
-                    </header>
-                    <pre><code id="out-step2">시작: top = -1 (비어 있음)
-push '(' -&gt; top = 0, 개수 = 1
-push '(' -&gt; top = 1, 개수 = 2
-push '[' -&gt; top = 2, 개수 = 3
-스택 상태(바닥 -&gt; 꼭대기): ( ( [
-맨 위(top)의 값 = [</code></pre>
-                </article>
-                <div class="note-box note-box--tip">
-                    <span class="note-box__title">관찰</span>
-                    <p class="lecture-lead">push할 때마다 top이 -1 → 0 → 1 → 2로 오르고, 개수는 항상 <code>top + 1</code> — <em>가장 나중에 push한 '['가 맨 위(top) 자리에 있어, 다음 단계에서 꺼낼 때 이 값이 먼저 나옵니다.</em></p>
-                </div>
-
-                <h3>구현 3단계 — pop과 peek, 그리고 예외 처리</h3>
-                <ul>
-                    <li>pop은 <strong>맨 위 값을 읽고 top을 한 칸 내리고</strong>, peek는 <strong>읽기만 하고 top을 그대로</strong> 둠</li>
-                    <li>중요한 것은 <strong>빈 스택 검사</strong> — top이 -1인데 <code>stack[top]</code>을 읽으면 프로그램이 예외로 죽음</li>
-                    <li>손 풀이 STEP 3의 "빈 더미에서 접시 내리기" 상황을 <code>isEmpty()</code> 검사로 막음</li>
-                </ul>
-                <article class="code-card">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">Java</span>
-                            <strong class="code-card__filename">Step3StackPopPeek.java</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="code-step3" aria-label="Step3StackPopPeek.java 코드 복사">코드 복사</button>
-                    </header>
-                    <pre><code id="code-step3" class="language-java">public class Step3StackPopPeek {
-
-    static char[] stack = new char[8];
-    static int top = -1;
-
-    /** 비었는지 검사: pop과 peek 전에 반드시 필요하다 */
-    static boolean isEmpty() {
-        return top == -1;
-    }
-
-    static void push(char value) {
-        top++;
-        stack[top] = value;
-    }
-
-    /** peek: 맨 위 값을 "보기만" 한다. top은 그대로 유지된다. */
-    static char peek() {
-        if (isEmpty()) {
-            System.out.println("경고: 빈 스택은 peek할 수 없습니다.");
-            return '?';
-        }
-        return stack[top];
-    }
-
-    /** pop: 맨 위 값을 꺼내고 top을 한 칸 내린다. */
-    static char pop() {
-        if (isEmpty()) {
-            System.out.println("경고: 빈 스택은 pop할 수 없습니다.");
-            return '?';
-        }
-        char value = stack[top];
-        top--;
-        return value;
-    }
-
-    public static void main(String[] args) {
-        push('(');
-        push('[');
-        System.out.println("push 2번 후 개수 = " + (top + 1));
-
-        System.out.println("peek() = " + peek() + " (top은 그대로 " + top + ")");
-        System.out.println("pop()  = " + pop() + " (pop 후 top = " + top + ")");
-        System.out.println("pop()  = " + pop() + " (pop 후 top = " + top + ")");
-        System.out.println("비어 있는가? = " + isEmpty());
-
-        // 비어 있는데 또 pop하면? isEmpty 검사 덕분에 프로그램이 죽지 않는다
-        System.out.println("pop()  = " + pop());
-    }
-}</code></pre>
-                </article>
-                <article class="code-card code-card--output">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">출력</span>
-                            <strong class="code-card__filename">실행 결과</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="out-step3" aria-label="Step3 실행 결과 복사">복사</button>
-                    </header>
-                    <pre><code id="out-step3">push 2번 후 개수 = 2
-peek() = [ (top은 그대로 1)
-pop()  = [ (pop 후 top = 0)
-pop()  = ( (pop 후 top = -1)
-비어 있는가? = true
-경고: 빈 스택은 pop할 수 없습니다.
-pop()  = ?</code></pre>
-                </article>
-                <div class="note-box note-box--tip">
-                    <span class="note-box__title">관찰 — LIFO가 코드로 증명됩니다</span>
-                    <p class="lecture-lead">'(' 다음에 '['를 push했는데 pop은 '[' → '(' 순서로 나옴 — <em><strong>나중에 넣은 것이 먼저 나온다(LIFO)</strong>. 규칙이 저절로 지켜지는 이유는 넣는 곳과 꺼내는 곳이 <strong>같은 자리(top)</strong>이기 때문</em></p>
-                </div>
-
-                <h3>구현 4단계 — 스택 응용 완성: 괄호 짝 검사</h3>
-                <ul>
-                    <li>스택을 실전에 투입 — 3강의 문자열 순회로 한 글자씩 읽으며, 여는 괄호면 push, 닫는 괄호면 pop해서 짝을 비교</li>
-                    <li>의사코드의 <strong>무효 판정 세 갈래</strong>가 코드의 <code>return false</code> 두 곳과 마지막 <code>return isEmpty()</code>에 그대로 대응</li>
-                </ul>
-                <article class="code-card">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">Java</span>
-                            <strong class="code-card__filename">Step4BracketCheckLoop.java</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="code-step4" aria-label="Step4BracketCheckLoop.java 코드 복사">코드 복사</button>
-                    </header>
-                    <pre><code id="code-step4" class="language-java">public class Step4BracketCheckLoop {
-
-    static char[] stack = new char[100];
-    static int top = -1;
-
-    static boolean isEmpty() { return top == -1; }
-    static void push(char value) { stack[++top] = value; }
-    static char pop() { return stack[top--]; }
-
-    /** 여는 괄호 open과 닫는 괄호 close가 서로 짝인지 확인한다 */
-    static boolean isPair(char open, char close) {
-        return (open == '(' &amp;&amp; close == ')')
-                || (open == '[' &amp;&amp; close == ']')
-                || (open == '{' &amp;&amp; close == '}');
-    }
-
-    /** 괄호 문자열이 유효한지 검사한다 */
-    static boolean isValid(String text) {
-        top = -1;   // 검사를 시작하기 전에 스택을 비운다
-
-        for (int i = 0; i &lt; text.length(); i++) {
-            char ch = text.charAt(i);
-
-            if (ch == '(' || ch == '[' || ch == '{') {
-                push(ch);                     // 여는 괄호: 스택에 쌓는다
-            } else if (ch == ')' || ch == ']' || ch == '}') {
-                if (isEmpty()) {
-                    return false;             // 짝이 없는 닫는 괄호
-                }
-                if (!isPair(pop(), ch)) {
-                    return false;             // 종류가 다른 괄호끼리 만남
-                }
-            }
-        }
-        // 루프가 끝난 뒤 스택이 비어 있어야 진짜 유효 (여는 괄호가 남으면 무효)
-        return isEmpty();
-    }
-
-    public static void main(String[] args) {
-        String[] tests = {"()", "([])", "{[()]}", "(]", "())", "((("};
-        for (String t : tests) {
-            System.out.println(t + " -&gt; " + (isValid(t) ? "유효" : "무효"));
-        }
-    }
-}</code></pre>
-                </article>
-                <article class="code-card code-card--output">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">출력</span>
-                            <strong class="code-card__filename">실행 결과</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="out-step4" aria-label="Step4 실행 결과 복사">복사</button>
-                    </header>
-                    <pre><code id="out-step4">() -&gt; 유효
-([]) -&gt; 유효
-{[()]} -&gt; 유효
-(] -&gt; 무효
-()) -&gt; 무효
-((( -&gt; 무효</code></pre>
-                </article>
-                <div class="note-box note-box--warn">
-                    <span class="note-box__title">++top과 top-- 를 한 줄로 줄였습니다</span>
-                    <ul>
-                        <li><code>stack[++top] = value</code>는 "top을 먼저 1 올린 뒤 그 자리에 넣기"</li>
-                        <li><code>stack[top--]</code>는 "지금 top 자리를 읽은 뒤 top을 1 내리기"</li>
-                        <li>2·3단계의 두 줄짜리 push/pop과 완전히 같은 동작을 한 줄로 쓴 것</li>
-                        <li><em>순서를 바꿔 <code>stack[top++]</code>로 쓰면 엉뚱한 칸에 넣게 되니 주의</em></li>
-                    </ul>
-                </div>
-
-                <h3>구현 5단계 — 큐의 재료와 enqueue</h3>
-                <ul>
-                    <li>큐의 재료는 배열 하나와 <strong>변수 둘</strong> — 다음에 꺼낼 자리 <code>front</code>, 다음에 넣을 자리 <code>rear</code></li>
-                    <li>스택은 top 하나로 충분했지만, 큐는 넣는 곳과 꺼내는 곳이 다르므로 둘 다 필요</li>
-                    <li>enqueue는 push와 닮았지만 <strong>rear 쪽에서만</strong> 일어남</li>
-                </ul>
-                <article class="code-card">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">Java</span>
-                            <strong class="code-card__filename">Step5QueueEnqueue.java</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="code-step5" aria-label="Step5QueueEnqueue.java 코드 복사">코드 복사</button>
-                    </header>
-                    <pre><code id="code-step5" class="language-java">public class Step5QueueEnqueue {
-
-    static String[] queue = new String[8];   // 대기 이름을 담을 공간 (용량 8)
-    static int front = 0;                    // 다음에 꺼낼 자리 (맨 앞)
-    static int rear = 0;                     // 다음에 넣을 자리 (맨 뒤)
-
-    /** enqueue: rear 자리에 값을 넣고, rear를 한 칸 뒤로 옮긴다 */
-    static void enqueue(String name) {
-        queue[rear] = name;
-        rear++;
-        System.out.println("enqueue \"" + name + "\" -&gt; front = " + front
-                + ", rear = " + rear + ", 대기 " + (rear - front) + "명");
-    }
-
-    public static void main(String[] args) {
-        System.out.println("시작: front = " + front + ", rear = " + rear + " (비어 있음)");
-
-        enqueue("김하늘");
-        enqueue("이준호");
-        enqueue("박서연");
-
-        // 맨 앞(front)부터 맨 뒤(rear 직전)까지 순서대로 확인한다
-        StringBuilder state = new StringBuilder();
-        for (int i = front; i &lt; rear; i++) {
-            if (i &gt; front) state.append(' ');
-            state.append(queue[i]);
-        }
-        System.out.println("대기열 상태(앞 -&gt; 뒤): " + state);
-        System.out.println("맨 앞(front)의 값 = " + queue[front]);
-    }
-}</code></pre>
-                </article>
-                <article class="code-card code-card--output">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">출력</span>
-                            <strong class="code-card__filename">실행 결과</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="out-step5" aria-label="Step5 실행 결과 복사">복사</button>
-                    </header>
-                    <pre><code id="out-step5">시작: front = 0, rear = 0 (비어 있음)
-enqueue "김하늘" -&gt; front = 0, rear = 1, 대기 1명
-enqueue "이준호" -&gt; front = 0, rear = 2, 대기 2명
-enqueue "박서연" -&gt; front = 0, rear = 3, 대기 3명
-대기열 상태(앞 -&gt; 뒤): 김하늘 이준호 박서연
-맨 앞(front)의 값 = 김하늘</code></pre>
-                </article>
-                <div class="note-box note-box--tip">
-                    <span class="note-box__title">관찰</span>
-                    <p class="lecture-lead">enqueue를 해도 <strong>front는 0에서 움직이지 않습니다</strong> — 줄이 길어져도 맨 앞 사람은 그대로인 것과 같고, 대기 인원은 항상 <code>rear - front</code>입니다.</p>
-                </div>
-
-                <h3>구현 6단계 — dequeue와 빈 큐 검사</h3>
-                <ul>
-                    <li>꺼내는 연산 dequeue를 추가해 큐를 완성 — <strong>맨 앞(front) 값을 읽고 front를 한 칸 뒤로</strong> 옮김</li>
-                    <li>스택의 3단계와 똑같이, 꺼내기 전에 <code>isEmpty()</code>(<code>front == rear</code>) 검사가 필수</li>
-                </ul>
-                <article class="code-card">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">Java</span>
-                            <strong class="code-card__filename">Step6QueueDequeue.java</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="code-step6" aria-label="Step6QueueDequeue.java 코드 복사">코드 복사</button>
-                    </header>
-                    <pre><code id="code-step6" class="language-java">public class Step6QueueDequeue {
-
-    static String[] queue = new String[8];
-    static int front = 0;
-    static int rear = 0;
-
-    /** 비었는지 검사: front와 rear가 같으면 빈 큐다 */
-    static boolean isEmpty() {
-        return front == rear;
-    }
-
-    static void enqueue(String name) {
-        queue[rear] = name;
-        rear++;
-    }
-
-    /** peek: 맨 앞 값을 "보기만" 한다. front는 그대로 유지된다. */
-    static String peek() {
-        if (isEmpty()) {
-            System.out.println("경고: 빈 큐는 peek할 수 없습니다.");
-            return "?";
-        }
-        return queue[front];
-    }
-
-    /** dequeue: 맨 앞 값을 꺼내고 front를 한 칸 뒤로 옮긴다. */
-    static String dequeue() {
-        if (isEmpty()) {
-            System.out.println("경고: 빈 큐는 dequeue할 수 없습니다.");
-            return "?";
-        }
-        String value = queue[front];
-        front++;
-        return value;
-    }
-
-    public static void main(String[] args) {
-        enqueue("김하늘");
-        enqueue("이준호");
-        enqueue("박서연");
-        System.out.println("enqueue 3번 후 대기 인원 = " + (rear - front));
-
-        System.out.println("peek()    = " + peek() + " (front는 그대로 " + front + ")");
-        System.out.println("dequeue() = " + dequeue() + " (dequeue 후 front = " + front + ")");
-        System.out.println("dequeue() = " + dequeue() + " (dequeue 후 front = " + front + ")");
-        System.out.println("dequeue() = " + dequeue() + " (dequeue 후 front = " + front + ")");
-        System.out.println("비어 있는가? = " + isEmpty());
-
-        // 비어 있는데 또 dequeue하면? isEmpty 검사 덕분에 프로그램이 죽지 않는다
-        System.out.println("dequeue() = " + dequeue());
-    }
-}</code></pre>
-                </article>
-                <article class="code-card code-card--output">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">출력</span>
-                            <strong class="code-card__filename">실행 결과</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="out-step6" aria-label="Step6 실행 결과 복사">복사</button>
-                    </header>
-                    <pre><code id="out-step6">enqueue 3번 후 대기 인원 = 3
-peek()    = 김하늘 (front는 그대로 0)
-dequeue() = 김하늘 (dequeue 후 front = 1)
-dequeue() = 이준호 (dequeue 후 front = 2)
-dequeue() = 박서연 (dequeue 후 front = 3)
-비어 있는가? = true
-경고: 빈 큐는 dequeue할 수 없습니다.
-dequeue() = ?</code></pre>
-                </article>
-                <div class="note-box note-box--warn">
-                    <span class="note-box__title">단순 배열 큐의 한계 — 앞 공간의 낭비</span>
-                    <ul>
-                        <li>dequeue를 하면 front만 뒤로 이동하고, <code>queue[0]</code>, <code>queue[1]</code> 같은 앞 칸은 다시 쓰이지 않음</li>
-                        <li><em>데이터가 많으면 배열 앞쪽이 계속 버려지는 셈</em></li>
-                        <li>실무에서는 인덱스가 끝에 닿으면 처음으로 되돌아가는 <strong>원형 큐</strong>로 해결
-                            (<code>rear = (rear + 1) % 용량</code>) — <code>ArrayDeque</code>가 내부적으로 이 방식을 씀</li>
-                        <li>오늘은 원리 이해를 위해 단순 버전을 유지</li>
-                    </ul>
-                </div>
-            </section>
-
-            <!-- 10. 완성 Java 코드 -->
+            <!-- 9. 실습 코드 -->
             <section class="lesson-section" id="sec-complete" aria-labelledby="h-complete">
-                <h2 id="h-complete" data-toc-label="완성 Java 코드"><span class="section-no">10</span>완성 Java 코드</h2>
+                <h2 id="h-complete" data-toc-label="실습 코드"><span class="section-no">09</span>실습 코드</h2>
+                <p class="lecture-lead">의사코드(08)를 실제 Java 프로그램으로 옮깁니다. 스택과 큐를 각각 <strong>독립된 클래스</strong>(<code>ArrayCharStack</code>, <code>ArrayStringQueue</code>)로 묶어,
+                    06 핵심 개념에서 배운 "자료구조 = 데이터(배열) + 규칙(LIFO/FIFO)"을 그대로 클래스 하나로 구현했습니다.</p>
                 <ul>
-                    <li>지금까지의 조각을 모아 하나의 프로그램으로 완성</li>
-                    <li>스택과 큐를 각각 <strong>독립된 클래스</strong>(<code>ArrayCharStack</code>, <code>ArrayStringQueue</code>)로 묶고,
-                        3단계의 "경고 출력" 대신 <strong>예외를 던지는 방식</strong>으로 바꿔 라이브러리처럼 구성</li>
-                    <li>괄호 검사는 직접 구현한 스택과 표준 라이브러리 <code>ArrayDeque</code> 두 방식으로 풀어 결과가 항상 같은지 검증</li>
+                    <li><code>push</code>/<code>pop</code>/<code>peek</code>는 08 의사코드의 스택 네 연산을, <code>enqueue</code>/<code>dequeue</code>/<code>peek</code>는 큐의 네 연산을 그대로 옮긴 것 —
+                        차이는 잘못된 사용(빈 스택에서 pop 등)을 <strong>예외를 던지는 방식</strong>으로 알린다는 점뿐, 라이브러리처럼 구성</li>
+                    <li>괄호 검사는 08 의사코드의 <code>CheckBrackets</code> 절차를 직접 구현한 스택과 표준 라이브러리 <code>ArrayDeque</code> 두 방식으로 풀어 결과가 항상 같은지 검증</li>
                     <li>주문 대기열은 직접 구현한 배열 큐로 처리한 뒤, 같은 작업을 <code>ArrayDeque</code>로도 수행</li>
                 </ul>
                 <article class="code-card">
@@ -1073,7 +634,7 @@ public class StackQueueComplete {
                             <span class="code-card__language">출력</span>
                             <strong class="code-card__filename">실행 결과</strong>
                         </div>
-                        <button type="button" class="copy-code-button" data-copy-target="out-complete" aria-label="완성 코드 실행 결과 복사">복사</button>
+                        <button type="button" class="copy-code-button" data-copy-target="out-complete" aria-label="실습 코드 실행 결과 복사">복사</button>
                     </header>
                     <pre><code id="out-complete">== 1) 괄호 유효성 검사: 직접 구현 스택 vs ArrayDeque ==
 () -&gt; 유효 (두 방식 일치 = true)
@@ -1100,139 +661,16 @@ public class StackQueueComplete {
                 <div class="note-box">
                     <span class="note-box__title">경고 출력 대신 예외를 던지는 이유</span>
                     <ul>
-                        <li>3단계의 <code>pop</code>은 빈 스택이면 <code>'?'</code>를 돌려줬음 — 배우기에는 좋지만, 호출한 쪽이 '?'가 실제 데이터인지 오류 표시인지 구분할 수 없음</li>
-                        <li><em>완성 코드는 <code>IllegalStateException</code>을 던져 <strong>잘못된 사용을 즉시, 명확하게</strong> 알림</em></li>
+                        <li>빈 스택에서 <code>pop</code>한 값을 그냥 <code>'?'</code> 같은 특수 문자로 돌려주면, 호출한 쪽이 '?'가 실제 데이터인지 오류 표시인지 구분할 수 없음</li>
+                        <li><em>실습 코드는 <code>IllegalStateException</code>을 던져 <strong>잘못된 사용을 즉시, 명확하게</strong> 알림</em></li>
                         <li>반면 <code>ArrayDeque.poll()</code>은 null을 돌려주는 관대한 방식 — 출력 마지막 줄에서 두 철학의 차이를 확인</li>
                     </ul>
                 </div>
             </section>
 
-            <!-- 11. 실행 과정 추적 -->
-            <section class="lesson-section" id="sec-trace" aria-labelledby="h-trace">
-                <h2 id="h-trace" data-toc-label="실행 과정 추적"><span class="section-no">11</span>실행 과정 추적</h2>
-                <p class="lecture-lead">괄호 검사가 정말 시각화(7번 섹션)와 똑같이 동작하는지, 문자 하나를 처리할 때마다 <strong>(문자, 동작, 스택 상태)</strong>를 출력해 확인 — 손으로 풀었던 "([()])"와 실패의 두 갈래("(()", "())")를 추적합니다.</p>
-                <article class="code-card">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">Java</span>
-                            <strong class="code-card__filename">BracketCheckTrace.java</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="code-trace" aria-label="BracketCheckTrace.java 코드 복사">코드 복사</button>
-                    </header>
-                    <pre><code id="code-trace" class="language-java">import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.Iterator;
-
-public class BracketCheckTrace {
-
-    static boolean isPair(char open, char close) {
-        return (open == '(' &amp;&amp; close == ')')
-                || (open == '[' &amp;&amp; close == ']')
-                || (open == '{' &amp;&amp; close == '}');
-    }
-
-    /** 스택 내용을 바닥 -&gt; 꼭대기 순서의 문자열로 만든다 */
-    static String stackState(Deque&lt;Character&gt; stack) {
-        if (stack.isEmpty()) {
-            return "(비어 있음)";
-        }
-        // ArrayDeque의 push는 앞쪽에 쌓이므로, 바닥부터 보려면 거꾸로 순회한다
-        StringBuilder sb = new StringBuilder();
-        Iterator&lt;Character&gt; it = stack.descendingIterator();
-        while (it.hasNext()) {
-            sb.append(it.next());
-            if (it.hasNext()) sb.append(' ');
-        }
-        return sb.toString();
-    }
-
-    /** 한 문자씩 처리하며 (문자, 동작, 스택 상태)를 추적 출력한다 */
-    static void trace(String text) {
-        System.out.println("입력: \"" + text + "\"");
-        Deque&lt;Character&gt; stack = new ArrayDeque&lt;&gt;();
-        boolean failed = false;
-
-        for (int i = 0; i &lt; text.length() &amp;&amp; !failed; i++) {
-            char ch = text.charAt(i);
-            String action;
-
-            if (ch == '(' || ch == '[' || ch == '{') {
-                stack.push(ch);
-                action = "push '" + ch + "'";
-            } else if (stack.isEmpty()) {
-                action = "실패! 짝이 없는 닫는 괄호";
-                failed = true;
-            } else {
-                char open = stack.pop();
-                if (isPair(open, ch)) {
-                    action = "pop '" + open + "' (짝 맞음)";
-                } else {
-                    action = "실패! '" + open + "'와 짝이 아님";
-                    failed = true;
-                }
-            }
-            System.out.println("  " + i + "번째 문자 '" + ch + "' : " + action
-                    + " -&gt; 스택: " + stackState(stack));
-        }
-
-        if (failed) {
-            System.out.println("  검사 중단 -&gt; 무효한 괄호");
-        } else if (stack.isEmpty()) {
-            System.out.println("  검사 종료: 스택이 비어 있음 -&gt; 유효한 괄호");
-        } else {
-            System.out.println("  검사 종료: 스택에 " + stackState(stack)
-                    + " 남음 -&gt; 무효 (여는 괄호가 남음)");
-        }
-        System.out.println();
-    }
-
-    public static void main(String[] args) {
-        trace("([()])");   // 성공 사례
-        trace("(()");      // 실패 사례 1: 여는 괄호가 남는다
-        trace("())");      // 실패 사례 2: 닫는 괄호의 짝이 없다
-    }
-}</code></pre>
-                </article>
-                <article class="code-card code-card--output">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">출력</span>
-                            <strong class="code-card__filename">실행 결과</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="out-trace" aria-label="추적 실행 결과 복사">복사</button>
-                    </header>
-                    <pre><code id="out-trace">입력: "([()])"
-  0번째 문자 '(' : push '(' -&gt; 스택: (
-  1번째 문자 '[' : push '[' -&gt; 스택: ( [
-  2번째 문자 '(' : push '(' -&gt; 스택: ( [ (
-  3번째 문자 ')' : pop '(' (짝 맞음) -&gt; 스택: ( [
-  4번째 문자 ']' : pop '[' (짝 맞음) -&gt; 스택: (
-  5번째 문자 ')' : pop '(' (짝 맞음) -&gt; 스택: (비어 있음)
-  검사 종료: 스택이 비어 있음 -&gt; 유효한 괄호
-
-입력: "(()"
-  0번째 문자 '(' : push '(' -&gt; 스택: (
-  1번째 문자 '(' : push '(' -&gt; 스택: ( (
-  2번째 문자 ')' : pop '(' (짝 맞음) -&gt; 스택: (
-  검사 종료: 스택에 ( 남음 -&gt; 무효 (여는 괄호가 남음)
-
-입력: "())"
-  0번째 문자 '(' : push '(' -&gt; 스택: (
-  1번째 문자 ')' : pop '(' (짝 맞음) -&gt; 스택: (비어 있음)
-  2번째 문자 ')' : 실패! 짝이 없는 닫는 괄호 -&gt; 스택: (비어 있음)
-  검사 중단 -&gt; 무효한 괄호</code></pre>
-                </article>
-                <ul>
-                    <li>"([()])"의 스택 상태 변화 <code>(</code> → <code>( [</code> → <code>( [ (</code> → <code>( [</code> →
-                        <code>(</code> → <code>(비어 있음)</code>이 손 풀이 STEP 1~2, 시각화 1과 정확히 일치</li>
-                    <li>"(()"는 끝났는데 '('가 남아 무효, "())"는 빈 스택에서 닫는 괄호를 만나 즉시 중단</li>
-                    <li><em><strong>손 풀이 = 시각화 = 코드</strong>가 같은 절차임을 확인</em></li>
-                </ul>
-            </section>
-
-            <!-- 12. 잘못된 코드와 오류 찾기 -->
+            <!-- 10. 잘못된 코드와 오류 찾기 -->
             <section class="lesson-section" id="sec-bugs" aria-labelledby="h-bugs">
-                <h2 id="h-bugs" data-toc-label="잘못된 코드와 오류 찾기"><span class="section-no">12</span>잘못된 코드와 오류 찾기</h2>
+                <h2 id="h-bugs" data-toc-label="잘못된 코드와 오류 찾기"><span class="section-no">10</span>잘못된 코드와 오류 찾기</h2>
                 <p class="lecture-lead">초보자가 스택·큐에서 자주 만드는 오류 두 가지. 먼저 코드를 읽고 무엇이 잘못됐는지 생각한 뒤 해설을 여세요.</p>
 
                 <article class="bug-card">
@@ -1394,9 +832,9 @@ Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: Index -1 ou
                 </article>
             </section>
 
-            <!-- 13. 복잡도 및 특성 분석 -->
+            <!-- 11. 복잡도 및 특성 분석 -->
             <section class="lesson-section" id="sec-complexity" aria-labelledby="h-complexity">
-                <h2 id="h-complexity" data-toc-label="복잡도 및 특성 분석"><span class="section-no">13</span>복잡도 및 특성 분석</h2>
+                <h2 id="h-complexity" data-toc-label="복잡도 및 특성 분석"><span class="section-no">11</span>복잡도 및 특성 분석</h2>
 
                 <h3>입력 크기</h3>
                 <p>
@@ -1441,15 +879,15 @@ Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: Index -1 ou
                     <li><strong>단순 배열 큐의 공간 낭비:</strong> front가 지나간 앞 칸은 재사용되지 않습니다.
                         원형 큐(인덱스를 <code>% 용량</code>으로 순환)로 해결하며, <code>ArrayDeque</code>가 이 방식입니다.</li>
                     <li><strong>용량의 한계:</strong> 배열 기반이므로 가득 차면 push/enqueue가 실패합니다.
-                        완성 코드는 예외를 던지고, <code>ArrayDeque</code>는 내부 배열을 자동으로 키웁니다.</li>
+                        실습 코드는 예외를 던지고, <code>ArrayDeque</code>는 내부 배열을 자동으로 키웁니다.</li>
                     <li><strong>우선순위 큐와의 비교:</strong> <code>PriorityQueue</code>는 "중요한 순서"를 보장하는 대신
                         offer/poll이 O(log n)입니다. 순서 규칙이 복잡해질수록 연산 비용이 커지는 교환 관계입니다.</li>
                 </ul>
             </section>
 
-            <!-- 14. 실제 데이터 응용 예제 -->
+            <!-- 12. 실제 데이터 응용 예제 -->
             <section class="lesson-section" id="sec-application" aria-labelledby="h-application">
-                <h2 id="h-application" data-toc-label="실제 데이터 응용 예제"><span class="section-no">14</span>실제 데이터 응용 예제</h2>
+                <h2 id="h-application" data-toc-label="실제 데이터 응용 예제"><span class="section-no">12</span>실제 데이터 응용 예제</h2>
 
                 <h3>문제 상황</h3>
                 <ul>
@@ -1584,9 +1022,9 @@ public class BankQueueApplication {
                 </ul>
             </section>
 
-            <!-- 15. 확인 퀴즈 -->
+            <!-- 13. 확인 퀴즈 -->
             <section class="lesson-section lesson-section--quiz" id="sec-quiz" aria-labelledby="h-quiz">
-                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">15</span>확인 퀴즈</h2>
+                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">13</span>확인 퀴즈</h2>
                 <div id="quiz-root"></div>
             </section>
 
@@ -1595,13 +1033,13 @@ public class BankQueueApplication {
                 <p>지금까지 배운 내용을 직접 코드로 적용해 보는 과제입니다. 두 과제로 구성되며, 각 과제의 정답은 이 강의를 완료로 표시해야 열립니다.</p>
             </div>
 
-            <!-- 16. 따라 하기 실습 -->
+            <!-- 14. 따라 하기 실습 -->
             <section class="lesson-section lesson-section--assignment" id="sec-practice" aria-labelledby="h-practice">
-                <h2 id="h-practice" data-toc-label="따라 하기 실습"><span class="section-no">16</span>따라 하기 실습</h2>
+                <h2 id="h-practice" data-toc-label="따라 하기 실습"><span class="section-no">14</span>따라 하기 실습</h2>
 
                 <h3>실습 1 — 데이터 변경</h3>
                 <p>
-                    <code>Step4BracketCheckLoop.java</code>의 <code>tests</code> 배열에
+                    <code>examples/java/06-stack-and-queue/Step4BracketCheckLoop.java</code>의 <code>tests</code> 배열에
                     <code>"{[}]"</code>와 <code>"[]"</code>를 추가하고 실행하세요.
                     예상 결과: <code>{[}]</code>는 <strong>무효</strong>('['를 pop했는데 '}'와 짝이 아님),
                     <code>[]</code>는 <strong>유효</strong>. 실행해서 예상과 일치하는지 확인하세요.
@@ -1609,12 +1047,12 @@ public class BankQueueApplication {
 
                 <h3>실습 2 — 조건 변경</h3>
                 <p>
-                    <code>Step6QueueDequeue.java</code>의 <code>main</code>에서 dequeue를 2번만 하도록 줄이고,
+                    <code>examples/java/06-stack-and-queue/Step6QueueDequeue.java</code>의 <code>main</code>에서 dequeue를 2번만 하도록 줄이고,
                     그 뒤에 <code>enqueue("최민재")</code>를 추가한 다음
                     <code>front</code>, <code>rear</code>, 대기 인원을 출력해 보세요.
                     예상: front = 2, rear = 4, 대기 2명(박서연, 최민재).
                     이때 <code>queue[0]</code>, <code>queue[1]</code> 칸이 다시 쓰이지 않는 것 —
-                    이것이 6단계 노트에서 말한 단순 배열 큐의 공간 낭비입니다.
+                    단순 배열 큐가 갖는 공간 낭비 문제입니다.
                 </p>
 
                 <h3>실습 3 — 코드 완성: 스택으로 문자열 뒤집기</h3>
@@ -1685,9 +1123,9 @@ public class BankQueueApplication {
                 </details>
             </section>
 
-            <!-- 17. 최종 프로그램 작성 문제 -->
+            <!-- 15. 최종 프로그램 작성 문제 -->
             <section class="lesson-section lesson-section--assignment" id="sec-final" aria-labelledby="h-final">
-                <h2 id="h-final" data-toc-label="최종 프로그램 작성 문제"><span class="section-no">17</span>최종 프로그램 작성 문제</h2>
+                <h2 id="h-final" data-toc-label="최종 프로그램 작성 문제"><span class="section-no">15</span>최종 프로그램 작성 문제</h2>
 
                 <h3>문제 제목 — 미니 작업 관리기 "TaskFlow"</h3>
 
@@ -2073,9 +1511,9 @@ public class TaskManagerSolution {
                 </details>
             </section>
 
-            <!-- 18. 오늘의 핵심 정리 -->
+            <!-- 16. 오늘의 핵심 정리 -->
             <section class="lesson-section" id="sec-summary" aria-labelledby="h-summary">
-                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">18</span>오늘의 핵심 정리</h2>
+                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">16</span>오늘의 핵심 정리</h2>
                 <ul class="summary-list">
                     <li><strong>자료구조 = 데이터 + 규칙.</strong> 스택과 큐는 배열 위에 "넣고 꺼내는 규칙"을 얹은 것이다.</li>
                     <li><strong>스택은 LIFO</strong> — 맨 위(top)에서만 push/pop. <code>top = -1</code>이 빈 스택,
@@ -2092,9 +1530,9 @@ public class TaskManagerSolution {
                 <div id="lesson-complete-slot"></div>
             </section>
 
-            <!-- 19. 다음 강의 연결 -->
+            <!-- 17. 다음 강의 연결 -->
             <section class="lesson-section" id="sec-next" aria-labelledby="h-next">
-                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">19</span>다음 강의 연결</h2>
+                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">17</span>다음 강의 연결</h2>
                 <p>
                     다음 강의는 <strong>7강. 재귀와 백트래킹</strong>입니다.
                     오늘 배운 스택이 다음 강의의 문을 여는 열쇠입니다 —

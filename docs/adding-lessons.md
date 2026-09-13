@@ -28,10 +28,10 @@
   - `<section class="lesson-hero">` (eyebrow `LESSON NN / 13`, h1, 영문 제목, 배지, 소개)
     - 인쇄 버튼은 두지 않는다. 화면에서 인쇄 기능을 제공하지 않으며, `print.css`는 브라우저 자체 인쇄(Ctrl+P) 대비용으로만 남아 있다.
   - `<nav class="lesson-toc"><p class="lesson-toc__title">이 강의의 목차</p><ol id="lesson-toc-list"></ol></nav>` (목차는 자동 생성)
-  - `<div class="lesson-body">` 안에 19개 섹션
+  - `<div class="lesson-body">` 안에 17개 섹션
 - body 끝 스크립트(순서대로): `algorithms-data.js`, `progress.js`, `common.js`, `code-copy.js`, `visualization.js`, `quiz.js`, 그리고 인라인 `<script>`(시각화 + 퀴즈 초기화)
 
-### 19개 섹션 (id와 순서 고정)
+### 17개 섹션 (id와 순서 고정)
 
 각 섹션은 `<section class="lesson-section" id="..."><h2 data-toc-label="..."><span class="section-no">NN</span>제목</h2>` 형태.
 
@@ -45,18 +45,20 @@
 | 6 | `sec-concepts` | 핵심 개념 |
 | 7 | `sec-steps` | 단계별 동작 과정 — AlgoViz 시각화 마운트 `<div id="viz-..."></div>` |
 | 8 | `sec-pseudo` | 의사코드 (code-card, 언어 배지 `Pseudo`) |
-| 9 | `sec-impl` | 점진적 Java 구현 (구현 1~4단계, 각 단계 code-card + 출력 card) |
-| 10 | `sec-complete` | 완성 Java 코드 + 실행 결과 |
-| 11 | `sec-trace` | 실행 과정 추적 코드 + 실행 결과 |
-| 12 | `sec-bugs` | 잘못된 코드 2개 이상 (`article.bug-card`, 해설은 `details.answer-box`) |
-| 13 | `sec-complexity` | 복잡도 및 특성 (입력 크기·주요 연산·시간·공간·특성) |
-| 14 | `sec-application` | 실제 데이터 응용 예제 (문제 상황→데이터 모델→전체 코드→출력→해설→복잡도) |
-| — | `sec-modernize` | (2·3·4·5·10·13강만) 람다·스트림 수정 문제 — 있는 강의에서만 14번 다음에 끼어들어 이후 번호가 하나씩 밀린다 |
-| 15 | `sec-quiz` | `<div id="quiz-root"></div>` 만 두고 인라인 스크립트에서 초기화 |
-| 16 | `sec-practice` | **프로그램 실습 과제 ①** — 따라 하기 실습 2~3개 (실습3은 TODO 코드 + `details.answer-box` 정답). 확인 퀴즈 바로 뒤, `.assignment-banner` 안내 배너로 시작하며 `lesson-section--assignment` 클래스로 확인 퀴즈와 색상 구분 |
-| 17 | `sec-final` | **프로그램 실습 과제 ②** — 최종 프로그램 작성 문제(제목·배경 4~7문장·목표·필수 요구사항·입력·예상 출력·제한·구현 단계 안내·시작 코드·테스트 3종 표·자기 점검표 `ul.checklist`·추가 도전 2~3개) + 섹션 끝에 `<h3>정답과 해설</h3>`과 `details.answer-box`(정답 코드·예상 출력·구현 순서·핵심 적용부·복잡도·자주 나는 오류·다른 방법). `lesson-section--assignment` 클래스 |
-| 18 | `sec-summary` | 오늘의 핵심 정리 + `<div id="lesson-complete-slot"></div>` |
-| 19 | `sec-next` | 다음 강의 연결 + `<div id="lesson-pager"></div>` |
+| 9 | `sec-complete` | **실습 코드** — 의사코드를 옮긴 완성된 Java 프로그램을 곧바로 제시 + 실행 결과. 점진적 구현 단계 없이 첫 등장이므로, 도입부 설명(또는 `<ul>`)에서 각 메서드가 06 핵심 개념·08 의사코드의 어떤 패턴(누적/후보 비교/조건 검색/빈도 계산 등)을 옮긴 것인지 먼저 짚어 준다 |
+| 10 | `sec-bugs` | 잘못된 코드 2개 이상 (`article.bug-card`, 해설은 `details.answer-box`) |
+| 11 | `sec-complexity` | 복잡도 및 특성 (입력 크기·주요 연산·시간·공간·특성) |
+| 12 | `sec-application` | 실제 데이터 응용 예제 (문제 상황→데이터 모델→전체 코드→출력→해설→복잡도) |
+| — | `sec-modernize` | (2·3·4·5·10·13강만) 람다·스트림 수정 문제 — 있는 강의에서만 12번 다음에 끼어들어 이후 번호가 하나씩 밀린다 |
+| 13 | `sec-quiz` | `<div id="quiz-root"></div>` 만 두고 인라인 스크립트에서 초기화 |
+| 14 | `sec-practice` | **프로그램 실습 과제 ①** — 따라 하기 실습 2~3개 (실습3은 TODO 코드 + `details.answer-box` 정답). 확인 퀴즈 바로 뒤, `.assignment-banner` 안내 배너로 시작하며 `lesson-section--assignment` 클래스로 확인 퀴즈와 색상 구분 |
+| 15 | `sec-final` | **프로그램 실습 과제 ②** — 최종 프로그램 작성 문제(제목·배경 4~7문장·목표·필수 요구사항·입력·예상 출력·제한·구현 단계 안내·시작 코드·테스트 3종 표·자기 점검표 `ul.checklist`·추가 도전 2~3개) + 섹션 끝에 `<h3>정답과 해설</h3>`과 `details.answer-box`(정답 코드·예상 출력·구현 순서·핵심 적용부·복잡도·자주 나는 오류·다른 방법). `lesson-section--assignment` 클래스 |
+| 16 | `sec-summary` | 오늘의 핵심 정리 + `<div id="lesson-complete-slot"></div>` |
+| 17 | `sec-next` | 다음 강의 연결 + `<div id="lesson-pager"></div>` |
+
+과거에는 `sec-impl`(점진적 Java 구현, 구현 1~4단계)과 `sec-trace`(실행 과정 추적)가 의사코드와 완성 코드 사이·완성 코드 뒤에 따로 있었다.
+지금은 이 두 섹션을 없애고 `sec-complete`(실습 코드) 하나로 합쳤다 — 완성된 프로그램을 처음부터 바로 보여주되,
+그 프로그램이 어떤 개념의 조합인지는 06·08에서 이미 다룬 내용을 짚어 주는 것으로 대신한다.
 
 `sec-practice`, `sec-final` 두 섹션은 "프로그램 실습 과제"로 묶여 확인 퀴즈 뒤에 배치된다.
 안에 있는 `details.answer-box[data-locked-until-complete]`는 강의를 완료로 표시하기
@@ -102,7 +104,8 @@ fill의 `accept`는 허용 표기를 2~3개 넣어 관대하게.
 
 ## 3. Java 예제 규칙 (`examples/java/NN-강의id/`)
 
-- 파일 구성(권장): `Step1~4*.java`(점진 단계), `*Complete.java`(완성), `*Trace.java`(추적), `*Application.java`(실제 데이터 응용), `*Starter.java`(학생 시작 코드, **TODO 상태로도 컴파일 가능해야 함** — 스텁은 기본값 반환), `*Solution.java`(정답)
+- 파일 구성(권장): `*Complete.java`(실습 코드), `*Application.java`(실제 데이터 응용), `*Starter.java`(학생 시작 코드, **TODO 상태로도 컴파일 가능해야 함** — 스텁은 기본값 반환), `*Solution.java`(정답)
+  (과거 강의에 남아 있는 `Step1~4*.java`·`*Trace.java`는 더 이상 새 강의에 만들지 않지만, 기존 강의의 파일은 실습 문제가 참조할 수 있으므로 그대로 둔다)
 - **한 폴더의 모든 최상위 클래스 이름은 서로 달라야 한다** (`javac *.java`로 폴더 전체를 한 번에 컴파일하므로 보조 클래스는 `static` 중첩 클래스로)
 - Java 17 문법 범위, 필요한 import 포함, 클래스명 = 파일명, `main()` 포함, 의미 있는 변수명, 핵심 주석, 입력 데이터 포함
 - 검증: `javac -encoding UTF-8 *.java` 후 각 클래스 `java -Dfile.encoding=UTF-8 클래스명` 실행
@@ -147,6 +150,7 @@ fill의 `accept`는 허용 표기를 2~3개 넣어 관대하게.
 - 색상만으로 상태 구분 금지 (텍스트·아이콘 병행)
 - 버튼에 `aria-label`, 표에 `scope`, 접기에는 요약 텍스트
 - 정답·해설은 반드시 `details.answer-box` 안에 (바로 노출 금지)
-- 완성 코드를 처음부터 제시 금지 — 반드시 점진 단계(구현 1→4단계) 후 완성
+- 실습 코드(`sec-complete`)는 완성된 형태로 곧바로 제시한다 — 다만 각 메서드가 06 핵심 개념·08 의사코드의
+  어떤 패턴을 옮긴 것인지 도입부에서 먼저 짚어, 이 절이 처음 보여주는 코드도 앞서 배운 개념의 연장선임을 알 수 있게 한다
 - 핵심 알고리즘을 `Arrays.sort()` 등 라이브러리 호출로 대체 금지 (비교용으로 분리 제공은 허용)
 - 시각화의 동작과 실제 코드의 동작이 일치해야 함

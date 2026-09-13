@@ -305,7 +305,7 @@
                 <div id="viz-pipeline" aria-label="상품 관리 파이프라인 — 로드, 삽입 정렬, 이진 탐색, 카테고리 집계 시각화"></div>
                 <ul>
                     <li>시각화의 정렬 단계는 9번 섹션의 <code>insertionSort</code>, 탐색 단계는 <code>binarySearchByCode</code>, 집계 단계는 <code>printReport</code>와 정확히 같은 절차</li>
-                    <li>11번 섹션의 실행 추적 출력과 각 회차의 상태가 일치하는지 비교해 볼 것</li>
+                    <li><code>examples/java/13-algorithm-project/ProductManagerTrace.java</code>를 직접 실행해, 각 회차의 상태가 이 시각화와 일치하는지 비교해 볼 것</li>
                 </ul>
             </section>
 
@@ -357,488 +357,18 @@
                 </p>
             </section>
 
-            <!-- 9. 점진적 Java 구현 -->
-            <section class="lesson-section" id="sec-impl" aria-labelledby="h-impl">
-                <h2 id="h-impl" data-toc-label="점진적 Java 구현"><span class="section-no">09</span>점진적 Java 구현</h2>
-                <p class="lecture-lead">완성 프로그램을 한 번에 쓰지 않습니다. <strong>데이터 모델 → 정렬 모듈 → 탐색 모듈 → 집계 모듈</strong> 순서로,
-                    기능 하나를 만들 때마다 실행해 눈으로 확인하며 쌓아 올립니다. 각 단계의 코드는 모두 독립적으로 복사해서 실행할 수 있습니다.</p>
-
-                <h3>구현 1단계 — 데이터 모델과 로드</h3>
-                <p class="lecture-lead">개념 1에서 설계한 <code>Product</code> 클래스를 만들고, 상품 8종을 입고 순서 그대로 리스트에 담습니다.
-                    모든 출력에서 같은 형식을 쓰도록 <code>summary()</code> 메서드를 데이터 클래스에 둡니다.</p>
-                <article class="code-card">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">Java</span>
-                            <strong class="code-card__filename">Step1ProductData.java</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="code-step1" aria-label="Step1ProductData.java 코드 복사">코드 복사</button>
-                    </header>
-                    <pre><code id="code-step1" class="language-java">import java.util.ArrayList;
-import java.util.List;
-
-public class Step1ProductData {
-
-    /** 상품 1개의 정보를 담는 데이터 클래스 (요구사항의 "데이터"를 코드로 옮긴 것) */
-    static class Product {
-        int code;        // 상품 코드 (고유한 값 — 검색의 기준)
-        String name;     // 상품 이름
-        String category; // 카테고리 (분류의 기준)
-        int price;       // 가격(원)
-        int stock;       // 재고 수량 (경고의 기준)
-
-        Product(int code, String name, String category, int price, int stock) {
-            this.code = code;
-            this.name = name;
-            this.category = category;
-            this.price = price;
-            this.stock = stock;
-        }
-
-        /** 상품 한 줄 요약 — 모든 출력에서 같은 형식을 사용한다 */
-        String summary() {
-            return "[" + code + "] " + name + " | " + category
-                    + " | " + price + "원 | 재고 " + stock + "개";
-        }
-    }
-
-    public static void main(String[] args) {
-        // 입고된 순서 그대로 등록한다 (아직 아무 순서도 없다!)
-        List&lt;Product&gt; products = new ArrayList&lt;&gt;();
-        products.add(new Product(2005, "유선 키보드", "전자", 23000, 12));
-        products.add(new Product(1003, "무선 마우스", "전자", 18000, 25));
-        products.add(new Product(3010, "머그컵", "생활", 7000, 2));
-        products.add(new Product(1007, "마우스 패드", "잡화", 4000, 18));
-        products.add(new Product(2002, "USB 메모리", "전자", 9000, 5));
-        products.add(new Product(3001, "텀블러", "생활", 12000, 30));
-        products.add(new Product(1010, "노트북 파우치", "잡화", 15000, 3));
-        products.add(new Product(2008, "웹캠", "전자", 45000, 4));
-
-        System.out.println("등록된 상품 수: " + products.size());
-        for (Product p : products) {
-            System.out.println(p.summary());
-        }
-
-        System.out.println();
-        System.out.println("주의: 아직 코드 순서로 정렬되어 있지 않다.");
-        System.out.println("     이 상태로는 이진 탐색(5강)을 쓸 수 없다 — 다음 단계에서 정렬 모듈을 만든다.");
-    }
-}</code></pre>
-                </article>
-                <article class="code-card code-card--output">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">출력</span>
-                            <strong class="code-card__filename">실행 결과</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="out-step1" aria-label="Step1 실행 결과 복사">복사</button>
-                    </header>
-                    <pre><code id="out-step1">등록된 상품 수: 8
-[2005] 유선 키보드 | 전자 | 23000원 | 재고 12개
-[1003] 무선 마우스 | 전자 | 18000원 | 재고 25개
-[3010] 머그컵 | 생활 | 7000원 | 재고 2개
-[1007] 마우스 패드 | 잡화 | 4000원 | 재고 18개
-[2002] USB 메모리 | 전자 | 9000원 | 재고 5개
-[3001] 텀블러 | 생활 | 12000원 | 재고 30개
-[1010] 노트북 파우치 | 잡화 | 15000원 | 재고 3개
-[2008] 웹캠 | 전자 | 45000원 | 재고 4개
-
-주의: 아직 코드 순서로 정렬되어 있지 않다.
-     이 상태로는 이진 탐색(5강)을 쓸 수 없다 — 다음 단계에서 정렬 모듈을 만든다.</code></pre>
-                </article>
-
-                <h3>구현 2단계 — 정렬 모듈 (4강 삽입 정렬 + Comparator)</h3>
-                <p class="lecture-lead">검색을 빠르게 하려면 먼저 코드 순 정렬이 필요합니다. 정렬 기준을 <code>Comparator</code>로 받아 두면,
-                    <strong>같은 정렬 코드로</strong> 코드 순·가격 순 등 어떤 기준의 보고서도 만들 수 있습니다.</p>
-                <article class="code-card">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">Java</span>
-                            <strong class="code-card__filename">Step2SortProducts.java</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="code-step2" aria-label="Step2SortProducts.java 코드 복사">코드 복사</button>
-                    </header>
-                    <pre><code id="code-step2" class="language-java">import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-
-public class Step2SortProducts {
-
-    /** 상품 1개의 정보를 담는 데이터 클래스 (Step1과 같은 구조) */
-    static class Product {
-        int code;        // 상품 코드 (고유한 값 — 검색의 기준)
-        String name;     // 상품 이름
-        String category; // 카테고리 (분류의 기준)
-        int price;       // 가격(원)
-        int stock;       // 재고 수량 (경고의 기준)
-
-        Product(int code, String name, String category, int price, int stock) {
-            this.code = code;
-            this.name = name;
-            this.category = category;
-            this.price = price;
-            this.stock = stock;
-        }
-
-        String summary() {
-            return "[" + code + "] " + name + " | " + category
-                    + " | " + price + "원 | 재고 " + stock + "개";
-        }
-    }
-
-    /** 입고 순서 그대로의 상품 8개 (Step1과 같은 데이터) */
-    static List&lt;Product&gt; loadProducts() {
-        List&lt;Product&gt; products = new ArrayList&lt;&gt;();
-        products.add(new Product(2005, "유선 키보드", "전자", 23000, 12));
-        products.add(new Product(1003, "무선 마우스", "전자", 18000, 25));
-        products.add(new Product(3010, "머그컵", "생활", 7000, 2));
-        products.add(new Product(1007, "마우스 패드", "잡화", 4000, 18));
-        products.add(new Product(2002, "USB 메모리", "전자", 9000, 5));
-        products.add(new Product(3001, "텀블러", "생활", 12000, 30));
-        products.add(new Product(1010, "노트북 파우치", "잡화", 15000, 3));
-        products.add(new Product(2008, "웹캠", "전자", 45000, 4));
-        return products;
-    }
-
-    /**
-     * 삽입 정렬(4강) — 정렬 기준을 Comparator로 받아서
-     * "코드 순", "가격 순" 등 어떤 기준으로도 같은 코드를 재사용한다.
-     */
-    static void insertionSort(List&lt;Product&gt; list, Comparator&lt;Product&gt; comparator) {
-        for (int i = 1; i &lt; list.size(); i++) {
-            Product key = list.get(i);   // 이번에 제자리를 찾아줄 상품
-            int j = i - 1;
-            // key보다 "뒤에 와야 하는" 상품을 한 칸씩 뒤로 민다
-            while (j &gt;= 0 &amp;&amp; comparator.compare(list.get(j), key) &gt; 0) {
-                list.set(j + 1, list.get(j));
-                j--;
-            }
-            list.set(j + 1, key);        // 비게 된 자리에 key를 넣는다
-        }
-    }
-
-    public static void main(String[] args) {
-        List&lt;Product&gt; products = loadProducts();
-
-        // 기준 1: 상품 코드 오름차순 — 이진 탐색(5강)을 쓰기 위한 준비
-        insertionSort(products, (a, b) -&gt; a.code - b.code);
-        System.out.println("[정렬 1] 상품 코드 오름차순 — 이진 탐색 준비 완료");
-        for (Product p : products) {
-            System.out.println("  " + p.summary());
-        }
-
-        System.out.println();
-
-        // 기준 2: 가격 내림차순 — Comparator만 바꾸면 정렬 코드는 그대로!
-        insertionSort(products, (a, b) -&gt; b.price - a.price);
-        System.out.println("[정렬 2] 가격 내림차순 — 비싼 상품부터 보고서");
-        for (Product p : products) {
-            System.out.println("  " + p.summary());
-        }
-    }
-}</code></pre>
-                </article>
-                <article class="code-card code-card--output">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">출력</span>
-                            <strong class="code-card__filename">실행 결과</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="out-step2" aria-label="Step2 실행 결과 복사">복사</button>
-                    </header>
-                    <pre><code id="out-step2">[정렬 1] 상품 코드 오름차순 — 이진 탐색 준비 완료
-  [1003] 무선 마우스 | 전자 | 18000원 | 재고 25개
-  [1007] 마우스 패드 | 잡화 | 4000원 | 재고 18개
-  [1010] 노트북 파우치 | 잡화 | 15000원 | 재고 3개
-  [2002] USB 메모리 | 전자 | 9000원 | 재고 5개
-  [2005] 유선 키보드 | 전자 | 23000원 | 재고 12개
-  [2008] 웹캠 | 전자 | 45000원 | 재고 4개
-  [3001] 텀블러 | 생활 | 12000원 | 재고 30개
-  [3010] 머그컵 | 생활 | 7000원 | 재고 2개
-
-[정렬 2] 가격 내림차순 — 비싼 상품부터 보고서
-  [2008] 웹캠 | 전자 | 45000원 | 재고 4개
-  [2005] 유선 키보드 | 전자 | 23000원 | 재고 12개
-  [1003] 무선 마우스 | 전자 | 18000원 | 재고 25개
-  [1010] 노트북 파우치 | 잡화 | 15000원 | 재고 3개
-  [3001] 텀블러 | 생활 | 12000원 | 재고 30개
-  [2002] USB 메모리 | 전자 | 9000원 | 재고 5개
-  [3010] 머그컵 | 생활 | 7000원 | 재고 2개
-  [1007] 마우스 패드 | 잡화 | 4000원 | 재고 18개</code></pre>
-                </article>
-                <div class="note-box note-box--tip">
-                    <span class="note-box__title">관찰</span>
-                    <p class="lecture-lead">람다 <code>(a, b) -&gt; a.code - b.code</code> 한 줄만 바꿔 정렬 기준이 바뀌었습니다.
-                    <em>정렬 알고리즘(어떻게 정렬하나)과 정렬 기준(무엇으로 정렬하나)을 <strong>분리하는 것</strong> —
-                    4강에서 배운 Comparator의 힘입니다.</em></p>
-                </div>
-
-                <h3>구현 3단계 — 탐색 모듈 (5강 이진 탐색)</h3>
-                <p class="lecture-lead">코드 순으로 정렬된 리스트가 생겼으니 이진 탐색을 얹습니다.
-                    1강의 연산 카운터로 비교 횟수도 함께 세어, <strong>순차 탐색 대비 이득</strong>을 숫자로 확인합니다.</p>
-                <article class="code-card">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">Java</span>
-                            <strong class="code-card__filename">Step3SearchProduct.java</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="code-step3" aria-label="Step3SearchProduct.java 코드 복사">코드 복사</button>
-                    </header>
-                    <pre><code id="code-step3" class="language-java">import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-
-public class Step3SearchProduct {
-
-    /** 상품 1개의 정보를 담는 데이터 클래스 (Step1과 같은 구조) */
-    static class Product {
-        int code;
-        String name;
-        String category;
-        int price;
-        int stock;
-
-        Product(int code, String name, String category, int price, int stock) {
-            this.code = code;
-            this.name = name;
-            this.category = category;
-            this.price = price;
-            this.stock = stock;
-        }
-
-        String summary() {
-            return "[" + code + "] " + name + " | " + category
-                    + " | " + price + "원 | 재고 " + stock + "개";
-        }
-    }
-
-    static List&lt;Product&gt; loadProducts() {
-        List&lt;Product&gt; products = new ArrayList&lt;&gt;();
-        products.add(new Product(2005, "유선 키보드", "전자", 23000, 12));
-        products.add(new Product(1003, "무선 마우스", "전자", 18000, 25));
-        products.add(new Product(3010, "머그컵", "생활", 7000, 2));
-        products.add(new Product(1007, "마우스 패드", "잡화", 4000, 18));
-        products.add(new Product(2002, "USB 메모리", "전자", 9000, 5));
-        products.add(new Product(3001, "텀블러", "생활", 12000, 30));
-        products.add(new Product(1010, "노트북 파우치", "잡화", 15000, 3));
-        products.add(new Product(2008, "웹캠", "전자", 45000, 4));
-        return products;
-    }
-
-    /** 삽입 정렬(4강) — Step2와 같은 코드 */
-    static void insertionSort(List&lt;Product&gt; list, Comparator&lt;Product&gt; comparator) {
-        for (int i = 1; i &lt; list.size(); i++) {
-            Product key = list.get(i);
-            int j = i - 1;
-            while (j &gt;= 0 &amp;&amp; comparator.compare(list.get(j), key) &gt; 0) {
-                list.set(j + 1, list.get(j));
-                j--;
-            }
-            list.set(j + 1, key);
-        }
-    }
-
-    /** 마지막 탐색의 비교 횟수 (1강의 연산 카운터 기법) */
-    static int compareCount = 0;
-
-    /**
-     * 이진 탐색(5강) — 코드 오름차순으로 정렬된 리스트에서만 동작한다!
-     * 찾으면 해당 Product, 없으면 null을 반환한다.
-     */
-    static Product binarySearchByCode(List&lt;Product&gt; sorted, int targetCode) {
-        compareCount = 0;
-        int low = 0;
-        int high = sorted.size() - 1;
-        while (low &lt;= high) {
-            int mid = (low + high) / 2;      // 남은 범위의 가운데
-            compareCount++;
-            int midCode = sorted.get(mid).code;
-            if (midCode == targetCode) {
-                return sorted.get(mid);      // 발견!
-            }
-            if (midCode &lt; targetCode) {
-                low = mid + 1;               // 왼쪽 절반 버리기
-            } else {
-                high = mid - 1;              // 오른쪽 절반 버리기
-            }
-        }
-        return null;                          // 범위가 사라짐 = 없음
-    }
-
-    public static void main(String[] args) {
-        List&lt;Product&gt; products = loadProducts();
-
-        // 이진 탐색의 전제 조건: 반드시 먼저 코드 순으로 정렬한다 (Step2의 도구 재사용)
-        insertionSort(products, (a, b) -&gt; a.code - b.code);
-
-        int[] targets = {2005, 3010, 1500};
-        for (int code : targets) {
-            Product found = binarySearchByCode(products, code);
-            if (found != null) {
-                System.out.println("코드 " + code + " 검색: " + found.summary()
-                        + "  (비교 " + compareCount + "번)");
-            } else {
-                System.out.println("코드 " + code + " 검색: 없음  (비교 " + compareCount + "번)");
-            }
-        }
-
-        System.out.println();
-        System.out.println("상품 8개에서 최대 비교 4번 — 순차 탐색(최악 8번)의 절반 이하다.");
-        System.out.println("상품이 1,000개라면? 이진 탐색 최대 10번 vs 순차 탐색 최대 1,000번.");
-    }
-}</code></pre>
-                </article>
-                <article class="code-card code-card--output">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">출력</span>
-                            <strong class="code-card__filename">실행 결과</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="out-step3" aria-label="Step3 실행 결과 복사">복사</button>
-                    </header>
-                    <pre><code id="out-step3">코드 2005 검색: [2005] 유선 키보드 | 전자 | 23000원 | 재고 12개  (비교 3번)
-코드 3010 검색: [3010] 머그컵 | 생활 | 7000원 | 재고 2개  (비교 4번)
-코드 1500 검색: 없음  (비교 3번)
-
-상품 8개에서 최대 비교 4번 — 순차 탐색(최악 8번)의 절반 이하다.
-상품이 1,000개라면? 이진 탐색 최대 10번 vs 순차 탐색 최대 1,000번.</code></pre>
-                </article>
-
-                <h3>구현 4단계 — 집계 모듈 (3강 HashMap + 2강 조건 검색)</h3>
-                <p class="lecture-lead">카테고리별 상품 수와 재고 자산(가격 × 재고의 합)을 HashMap으로 집계하고,
-                    재고 5개 미만 상품을 조건 검색으로 골라 경고합니다. HashMap은 순서를 보장하지 않으므로,
-                    <strong>처음 등장한 순서를 리스트에 따로 기억</strong>해 출력 순서를 고정하는 요령도 함께 익힙니다.</p>
-                <article class="code-card">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">Java</span>
-                            <strong class="code-card__filename">Step4CategoryStats.java</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="code-step4" aria-label="Step4CategoryStats.java 코드 복사">코드 복사</button>
-                    </header>
-                    <pre><code id="code-step4" class="language-java">import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-public class Step4CategoryStats {
-
-    /** 상품 1개의 정보를 담는 데이터 클래스 (Step1과 같은 구조) */
-    static class Product {
-        int code;
-        String name;
-        String category;
-        int price;
-        int stock;
-
-        Product(int code, String name, String category, int price, int stock) {
-            this.code = code;
-            this.name = name;
-            this.category = category;
-            this.price = price;
-            this.stock = stock;
-        }
-
-        String summary() {
-            return "[" + code + "] " + name + " | " + category
-                    + " | " + price + "원 | 재고 " + stock + "개";
-        }
-    }
-
-    static List&lt;Product&gt; loadProducts() {
-        List&lt;Product&gt; products = new ArrayList&lt;&gt;();
-        products.add(new Product(2005, "유선 키보드", "전자", 23000, 12));
-        products.add(new Product(1003, "무선 마우스", "전자", 18000, 25));
-        products.add(new Product(3010, "머그컵", "생활", 7000, 2));
-        products.add(new Product(1007, "마우스 패드", "잡화", 4000, 18));
-        products.add(new Product(2002, "USB 메모리", "전자", 9000, 5));
-        products.add(new Product(3001, "텀블러", "생활", 12000, 30));
-        products.add(new Product(1010, "노트북 파우치", "잡화", 15000, 3));
-        products.add(new Product(2008, "웹캠", "전자", 45000, 4));
-        return products;
-    }
-
-    public static void main(String[] args) {
-        List&lt;Product&gt; products = loadProducts();
-
-        // HashMap(3강): 카테고리 이름 → 개수 / 재고 자산(가격 × 재고의 합)
-        Map&lt;String, Integer&gt; countByCategory = new HashMap&lt;&gt;();
-        Map&lt;String, Long&gt; valueByCategory = new HashMap&lt;&gt;();
-        // HashMap은 순서를 보장하지 않으므로, 처음 등장한 순서를 따로 기억해 출력 순서를 고정한다
-        List&lt;String&gt; categoryOrder = new ArrayList&lt;&gt;();
-
-        for (Product p : products) {
-            if (!countByCategory.containsKey(p.category)) {
-                categoryOrder.add(p.category);          // 처음 보는 카테고리 등록
-                countByCategory.put(p.category, 0);
-                valueByCategory.put(p.category, 0L);
-            }
-            countByCategory.put(p.category, countByCategory.get(p.category) + 1);
-            valueByCategory.put(p.category,
-                    valueByCategory.get(p.category) + (long) p.price * p.stock);
-        }
-
-        System.out.println("[카테고리별 집계] — 배열 순회(2강) + HashMap(3강)");
-        long totalValue = 0;
-        for (String category : categoryOrder) {
-            long value = valueByCategory.get(category);
-            totalValue += value;
-            System.out.println("  " + category + " : 상품 " + countByCategory.get(category)
-                    + "종 | 재고 자산 " + value + "원");
-        }
-        System.out.println("  전체 재고 자산: " + totalValue + "원");
-
-        System.out.println();
-
-        // 조건 검색(2강): 재고가 5개 미만인 상품 = 발주가 필요한 상품
-        System.out.println("[재고 부족 경고] — 재고 5개 미만");
-        int warningCount = 0;
-        for (Product p : products) {
-            if (p.stock &lt; 5) {
-                warningCount++;
-                System.out.println("  " + p.summary());
-            }
-        }
-        System.out.println("  경고 대상: " + warningCount + "종");
-    }
-}</code></pre>
-                </article>
-                <article class="code-card code-card--output">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">출력</span>
-                            <strong class="code-card__filename">실행 결과</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="out-step4" aria-label="Step4 실행 결과 복사">복사</button>
-                    </header>
-                    <pre><code id="out-step4">[카테고리별 집계] — 배열 순회(2강) + HashMap(3강)
-  전자 : 상품 4종 | 재고 자산 951000원
-  생활 : 상품 2종 | 재고 자산 374000원
-  잡화 : 상품 2종 | 재고 자산 117000원
-  전체 재고 자산: 1442000원
-
-[재고 부족 경고] — 재고 5개 미만
-  [3010] 머그컵 | 생활 | 7000원 | 재고 2개
-  [1010] 노트북 파우치 | 잡화 | 15000원 | 재고 3개
-  [2008] 웹캠 | 전자 | 45000원 | 재고 4개
-  경고 대상: 3종</code></pre>
-                </article>
-                <div class="note-box note-box--tip">
-                    <span class="note-box__title">모듈이 모두 준비되었습니다</span>
-                    <p class="lecture-lead">데이터 모델(1단계), 정렬(2단계), 탐색(3단계), 집계(4단계) —
-                    이제 남은 일은 이들을 <strong>파이프라인 순서로 연결</strong>하고,
-                    사용자 입력 방어(예외 처리)를 더하는 것뿐입니다.</p>
-                </div>
-            </section>
-
-            <!-- 10. 완성 Java 코드 -->
+            <!-- 9. 실습 코드 -->
             <section class="lesson-section" id="sec-complete" aria-labelledby="h-complete">
-                <h2 id="h-complete" data-toc-label="완성 Java 코드"><span class="section-no">10</span>완성 Java 코드</h2>
+                <h2 id="h-complete" data-toc-label="실습 코드"><span class="section-no">09</span>실습 코드</h2>
+                <p class="lecture-lead">의사코드(08)를 실제 Java 프로그램으로 옮깁니다. 요구사항 하나당 메서드 하나씩을 대응시켜
+                    <strong>데이터 모델 → 정렬 → 검색 → 집계</strong> 네 기능을 갖춘 프로그램으로 정리했습니다.</p>
                 <ul>
-                    <li>네 모듈을 <strong>로드 → 정렬 → 검색 요청 처리 → 집계 → 경고</strong> 파이프라인으로 연결</li>
+                    <li><code>insertionSort</code>는 06 개념 2의 <strong>정렬(4강)</strong>을 Comparator와 함께 옮긴 것,
+                        <code>binarySearchByCode</code>는 <strong>이진 탐색(5강)</strong>을 그대로 메서드로 옮긴 것</li>
+                    <li><code>printReport</code>는 <strong>HashMap 집계(3강)</strong>와 <strong>조건 검색(2강)</strong>을 한 메서드 안에서 순서대로 수행</li>
                     <li>새로 추가되는 것은 <code>handleSearchRequest</code> 하나 — 문자열 입력을
                         <strong>형식(숫자인가) → 범위(양수인가) → 존재(등록된 코드인가)</strong> 3단계로 검증하며,
-                        어떤 잘못된 입력에도 프로그램이 멈추지 않게 함</li>
+                        08 의사코드의 예외 방어 구조를 그대로 옮겨 어떤 잘못된 입력에도 프로그램이 멈추지 않게 함</li>
                     <li>검색 요청 시나리오에는 정상 코드 2건, 미등록 코드, 숫자 아닌 입력, 음수를 모두 넣음</li>
                 </ul>
                 <article class="code-card">
@@ -1026,7 +556,7 @@ public class ProductManagerComplete {
                             <span class="code-card__language">출력</span>
                             <strong class="code-card__filename">실행 결과</strong>
                         </div>
-                        <button type="button" class="copy-code-button" data-copy-target="out-complete" aria-label="완성 코드 실행 결과 복사">복사</button>
+                        <button type="button" class="copy-code-button" data-copy-target="out-complete" aria-label="실습 코드 실행 결과 복사">복사</button>
                     </header>
                     <pre><code id="out-complete">== 1. 상품 8종 로드 → 코드 순 정렬 ==
   [1003] 무선 마우스 | 전자 | 18000원 | 재고 25개
@@ -1063,182 +593,20 @@ public class ProductManagerComplete {
   경고 대상: 3종</code></pre>
                 </article>
                 <div class="note-box note-box--warn">
-                    <span class="note-box__title">집계 출력 순서가 4단계와 다른 이유</span>
+                    <span class="note-box__title">집계 출력 순서가 입고 순서와 다른 이유</span>
                     <ul>
-                        <li>구현 4단계에서는 입고 순서(전자 → 생활 → 잡화)로 집계했지만, 완성 프로그램은
-                            <strong>코드 순으로 정렬된 뒤</strong> 집계하므로 처음 등장하는 카테고리 순서가
-                            전자(1003) → 잡화(1007) → 생활(3001)로 바뀜</li>
+                        <li>이 프로그램은 상품을 <strong>코드 순으로 정렬한 뒤</strong> 집계하므로, 카테고리가
+                            처음 등장하는 순서가 입고 순서(전자 → 생활 → 잡화)가 아니라 정렬된 코드 순서를 따라
+                            전자(1003) → 잡화(1007) → 생활(3001)로 나타남</li>
                         <li><em>합계 값은 당연히 같습니다 — <strong>처리 순서가 바뀌어도 결과가 같은지 확인하는 것</strong>도
                             프로그램 검증의 한 방법입니다.</em></li>
                     </ul>
                 </div>
             </section>
 
-            <!-- 11. 실행 과정 추적 -->
-            <section class="lesson-section" id="sec-trace" aria-labelledby="h-trace">
-                <h2 id="h-trace" data-toc-label="실행 과정 추적"><span class="section-no">11</span>실행 과정 추적</h2>
-                <p class="lecture-lead">완성 프로그램의 두 핵심 단계 — 삽입 정렬과 이진 탐색 — 가
-                    내부에서 시각화(7번 섹션)와 똑같이 움직이는지, 회차별 상태를 출력해 확인합니다.</p>
-                <article class="code-card">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">Java</span>
-                            <strong class="code-card__filename">ProductManagerTrace.java</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="code-trace" aria-label="ProductManagerTrace.java 코드 복사">코드 복사</button>
-                    </header>
-                    <pre><code id="code-trace" class="language-java">import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-
-/**
- * 처리 과정 추적 — 완성 프로그램의 핵심 두 단계(정렬, 이진 탐색)가
- * 내부에서 어떻게 움직이는지 회차별 상태를 출력한다.
- * 시각화(7번 섹션)와 똑같이 동작하는지 눈으로 확인하는 것이 목적이다.
- */
-public class ProductManagerTrace {
-
-    /** 상품 1개의 정보를 담는 데이터 클래스 */
-    static class Product {
-        int code;
-        String name;
-        String category;
-        int price;
-        int stock;
-
-        Product(int code, String name, String category, int price, int stock) {
-            this.code = code;
-            this.name = name;
-            this.category = category;
-            this.price = price;
-            this.stock = stock;
-        }
-    }
-
-    static List&lt;Product&gt; loadProducts() {
-        List&lt;Product&gt; products = new ArrayList&lt;&gt;();
-        products.add(new Product(2005, "유선 키보드", "전자", 23000, 12));
-        products.add(new Product(1003, "무선 마우스", "전자", 18000, 25));
-        products.add(new Product(3010, "머그컵", "생활", 7000, 2));
-        products.add(new Product(1007, "마우스 패드", "잡화", 4000, 18));
-        products.add(new Product(2002, "USB 메모리", "전자", 9000, 5));
-        products.add(new Product(3001, "텀블러", "생활", 12000, 30));
-        products.add(new Product(1010, "노트북 파우치", "잡화", 15000, 3));
-        products.add(new Product(2008, "웹캠", "전자", 45000, 4));
-        return products;
-    }
-
-    /** 리스트의 상품 코드만 한 줄로 만든다 (추적 출력용) */
-    static String codeLine(List&lt;Product&gt; list) {
-        StringBuilder sb = new StringBuilder("[");
-        for (int i = 0; i &lt; list.size(); i++) {
-            if (i &gt; 0) sb.append(", ");
-            sb.append(list.get(i).code);
-        }
-        return sb.append("]").toString();
-    }
-
-    /** 삽입 정렬 — 회차(i)마다 밀어낸 칸 수와 배열 상태를 출력한다 */
-    static void insertionSortTrace(List&lt;Product&gt; list, Comparator&lt;Product&gt; comparator) {
-        System.out.println("[1] 삽입 정렬 추적 (기준: 코드 오름차순)");
-        System.out.println("  시작       " + codeLine(list));
-        for (int i = 1; i &lt; list.size(); i++) {
-            Product key = list.get(i);
-            int j = i - 1;
-            int shiftCount = 0;
-            while (j &gt;= 0 &amp;&amp; comparator.compare(list.get(j), key) &gt; 0) {
-                list.set(j + 1, list.get(j));
-                j--;
-                shiftCount++;
-            }
-            list.set(j + 1, key);
-            System.out.println("  i=" + i + " key=" + key.code
-                    + " → " + shiftCount + "칸 밀고 " + (j + 1) + "번 자리에 삽입 "
-                    + codeLine(list));
-        }
-    }
-
-    /** 이진 탐색 — 회차마다 low/mid/high와 판단 결과를 출력한다 */
-    static void binarySearchTrace(List&lt;Product&gt; sorted, int targetCode) {
-        System.out.println("[2] 이진 탐색 추적 (목표: 코드 " + targetCode + ")");
-        int low = 0;
-        int high = sorted.size() - 1;
-        int round = 0;
-        while (low &lt;= high) {
-            round++;
-            int mid = (low + high) / 2;
-            int midCode = sorted.get(mid).code;
-            System.out.print("  " + round + "회차: low=" + low + " high=" + high
-                    + " mid=" + mid + " → 코드 " + midCode);
-            if (midCode == targetCode) {
-                System.out.println(" == " + targetCode + " → 발견! ("
-                        + sorted.get(mid).name + ", 비교 " + round + "번)");
-                return;
-            }
-            if (midCode &lt; targetCode) {
-                System.out.println(" &lt; " + targetCode + " → 왼쪽 절반 버림 (low=" + (mid + 1) + ")");
-                low = mid + 1;
-            } else {
-                System.out.println(" &gt; " + targetCode + " → 오른쪽 절반 버림 (high=" + (mid - 1) + ")");
-                high = mid - 1;
-            }
-        }
-        System.out.println("  범위가 사라짐(low &gt; high) → 코드 " + targetCode + " 없음 (비교 " + round + "번)");
-    }
-
-    public static void main(String[] args) {
-        List&lt;Product&gt; products = loadProducts();
-
-        insertionSortTrace(products, (a, b) -&gt; a.code - b.code);
-
-        System.out.println();
-        binarySearchTrace(products, 2005);   // 있는 코드
-
-        System.out.println();
-        binarySearchTrace(products, 1500);   // 없는 코드
-    }
-}</code></pre>
-                </article>
-                <article class="code-card code-card--output">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">출력</span>
-                            <strong class="code-card__filename">실행 결과</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="out-trace" aria-label="추적 실행 결과 복사">복사</button>
-                    </header>
-                    <pre><code id="out-trace">[1] 삽입 정렬 추적 (기준: 코드 오름차순)
-  시작       [2005, 1003, 3010, 1007, 2002, 3001, 1010, 2008]
-  i=1 key=1003 → 1칸 밀고 0번 자리에 삽입 [1003, 2005, 3010, 1007, 2002, 3001, 1010, 2008]
-  i=2 key=3010 → 0칸 밀고 2번 자리에 삽입 [1003, 2005, 3010, 1007, 2002, 3001, 1010, 2008]
-  i=3 key=1007 → 2칸 밀고 1번 자리에 삽입 [1003, 1007, 2005, 3010, 2002, 3001, 1010, 2008]
-  i=4 key=2002 → 2칸 밀고 2번 자리에 삽입 [1003, 1007, 2002, 2005, 3010, 3001, 1010, 2008]
-  i=5 key=3001 → 1칸 밀고 4번 자리에 삽입 [1003, 1007, 2002, 2005, 3001, 3010, 1010, 2008]
-  i=6 key=1010 → 4칸 밀고 2번 자리에 삽입 [1003, 1007, 1010, 2002, 2005, 3001, 3010, 2008]
-  i=7 key=2008 → 2칸 밀고 5번 자리에 삽입 [1003, 1007, 1010, 2002, 2005, 2008, 3001, 3010]
-
-[2] 이진 탐색 추적 (목표: 코드 2005)
-  1회차: low=0 high=7 mid=3 → 코드 2002 &lt; 2005 → 왼쪽 절반 버림 (low=4)
-  2회차: low=4 high=7 mid=5 → 코드 2008 &gt; 2005 → 오른쪽 절반 버림 (high=4)
-  3회차: low=4 high=4 mid=4 → 코드 2005 == 2005 → 발견! (유선 키보드, 비교 3번)
-
-[2] 이진 탐색 추적 (목표: 코드 1500)
-  1회차: low=0 high=7 mid=3 → 코드 2002 &gt; 1500 → 오른쪽 절반 버림 (high=2)
-  2회차: low=0 high=2 mid=1 → 코드 1007 &lt; 1500 → 왼쪽 절반 버림 (low=2)
-  3회차: low=2 high=2 mid=2 → 코드 1010 &lt; 1500 → 왼쪽 절반 버림 (low=3)
-  범위가 사라짐(low &gt; high) → 코드 1500 없음 (비교 3번)</code></pre>
-                </article>
-                <ul>
-                    <li>정렬 추적의 i=6 회차를 보세요 — key 1010이 <strong>4칸</strong>이나 밀고 들어갑니다.
-                        삽입 정렬이 O(n²)인 이유가 이 "밀기"에 있습니다.</li>
-                    <li>이진 탐색 추적에서는 8개 중 3번의 비교로 2005를 찾았고, 없는 코드 1500도 3번 만에 "없음"을 확정했습니다.</li>
-                    <li><em><strong>손 풀이(5번 섹션) = 시각화(7번 섹션) = 코드</strong>가 같은 절차임을 확인했습니다.</em></li>
-                </ul>
-            </section>
-
-            <!-- 12. 잘못된 코드와 오류 찾기 -->
+            <!-- 10. 잘못된 코드와 오류 찾기 -->
             <section class="lesson-section" id="sec-bugs" aria-labelledby="h-bugs">
-                <h2 id="h-bugs" data-toc-label="잘못된 코드와 오류 찾기"><span class="section-no">12</span>잘못된 코드와 오류 찾기</h2>
+                <h2 id="h-bugs" data-toc-label="잘못된 코드와 오류 찾기"><span class="section-no">10</span>잘못된 코드와 오류 찾기</h2>
                 <p class="lecture-lead">알고리즘을 결합할 때 가장 자주 나는 오류 두 가지입니다.
                     먼저 코드를 읽고 무엇이 잘못됐는지 생각한 뒤 해설을 여세요.</p>
 
@@ -1375,16 +743,16 @@ Product found = binarySearchByCode(products, 2005);</pre>
     }
 }</pre>
                                 <p>수정 후에는 "20A5"에서 오류 안내만 출력되고 "3010" 처리와 완료 메시지까지 정상 실행됩니다.
-                                완성 코드(10번 섹션)의 <code>handleSearchRequest</code>가 바로 이 구조입니다.</p>
+                                실습 코드(09번 섹션)의 <code>handleSearchRequest</code>가 바로 이 구조입니다.</p>
                             </div>
                         </details>
                     </div>
                 </article>
             </section>
 
-            <!-- 13. 복잡도 및 특성 분석 -->
+            <!-- 11. 복잡도 및 특성 분석 -->
             <section class="lesson-section" id="sec-complexity" aria-labelledby="h-complexity">
-                <h2 id="h-complexity" data-toc-label="복잡도 및 특성 분석"><span class="section-no">13</span>복잡도 및 특성 분석</h2>
+                <h2 id="h-complexity" data-toc-label="복잡도 및 특성 분석"><span class="section-no">11</span>복잡도 및 특성 분석</h2>
 
                 <h3>입력 크기</h3>
                 <p>
@@ -1429,9 +797,9 @@ Product found = binarySearchByCode(products, 2005);</pre>
                 </ul>
             </section>
 
-            <!-- 14. 실제 데이터 응용 예제 -->
+            <!-- 12. 실제 데이터 응용 예제 -->
             <section class="lesson-section" id="sec-application" aria-labelledby="h-application">
-                <h2 id="h-application" data-toc-label="실제 데이터 응용 예제"><span class="section-no">14</span>실제 데이터 응용 예제</h2>
+                <h2 id="h-application" data-toc-label="실제 데이터 응용 예제"><span class="section-no">12</span>실제 데이터 응용 예제</h2>
 
                 <h3>문제 상황</h3>
                 <ul>
@@ -1620,9 +988,9 @@ public class ProductManagerApplication {
                 </ul>
             </section>
 
-            <!-- 15. 람다·스트림 수정 문제 -->
+            <!-- 13. 람다·스트림 수정 문제 -->
             <section class="lesson-section" id="sec-modernize" aria-labelledby="h-modernize">
-                <h2 id="h-modernize" data-toc-label="람다·스트림 수정 문제"><span class="section-no">15</span>람다·스트림 수정 문제</h2>
+                <h2 id="h-modernize" data-toc-label="람다·스트림 수정 문제"><span class="section-no">13</span>람다·스트림 수정 문제</h2>
                 <p class="lecture-lead">지금까지 쓴 코드를 <strong>같은 결과를 내는 다른 문법</strong>으로 고쳐 보는 문제입니다.
                     필요한 문법은 추가 정보의 <a href="../supplements/lambda-expressions.html">람다식</a>과
                     <a href="../supplements/java-streams.html">자바 스트림</a> 문서에 모두 있습니다. 먼저 스스로 고쳐 본 뒤 정답을 펼치세요.</p>
@@ -1808,9 +1176,9 @@ long lowCount = products.stream().filter(p -&gt; p.stock &lt; 5).count();</code>
                     직접 실행해 모든 비교가 <code>true</code>로 나오는지 확인하세요.</p>
             </section>
 
-            <!-- 16. 확인 퀴즈 -->
+            <!-- 14. 확인 퀴즈 -->
             <section class="lesson-section lesson-section--quiz" id="sec-quiz" aria-labelledby="h-quiz">
-                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">16</span>확인 퀴즈</h2>
+                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">14</span>확인 퀴즈</h2>
                 <div id="quiz-root"></div>
             </section>
 
@@ -1819,9 +1187,9 @@ long lowCount = products.stream().filter(p -&gt; p.stock &lt; 5).count();</code>
                 <p>지금까지 배운 내용을 직접 코드로 적용해 보는 과제입니다. 두 과제로 구성되며, 각 과제의 정답은 이 강의를 완료로 표시해야 열립니다.</p>
             </div>
 
-            <!-- 17. 따라 하기 실습 -->
+            <!-- 15. 따라 하기 실습 -->
             <section class="lesson-section lesson-section--assignment" id="sec-practice" aria-labelledby="h-practice">
-                <h2 id="h-practice" data-toc-label="따라 하기 실습"><span class="section-no">17</span>따라 하기 실습</h2>
+                <h2 id="h-practice" data-toc-label="따라 하기 실습"><span class="section-no">15</span>따라 하기 실습</h2>
 
                 <h3>실습 1 — 정렬 기준 바꾸기</h3>
                 <p>
@@ -1932,9 +1300,9 @@ public class CategoryTopPractice {
                 </details>
             </section>
 
-            <!-- 18. 최종 프로그램 작성 문제 -->
+            <!-- 16. 최종 프로그램 작성 문제 -->
             <section class="lesson-section lesson-section--assignment" id="sec-final" aria-labelledby="h-final">
-                <h2 id="h-final" data-toc-label="최종 프로그램 작성 문제"><span class="section-no">18</span>최종 프로그램 작성 문제</h2>
+                <h2 id="h-final" data-toc-label="최종 프로그램 작성 문제"><span class="section-no">16</span>최종 프로그램 작성 문제</h2>
 
                 <h3>문제 제목 — 편의점 재고 관리 시스템 "StockMaster"</h3>
 
@@ -2478,9 +1846,9 @@ public class StockMasterSolution {
                 </details>
             </section>
 
-            <!-- 19. 오늘의 핵심 정리 -->
+            <!-- 17. 오늘의 핵심 정리 -->
             <section class="lesson-section" id="sec-summary" aria-labelledby="h-summary">
-                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">19</span>오늘의 핵심 정리</h2>
+                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">17</span>오늘의 핵심 정리</h2>
                 <ul class="summary-list">
                     <li>실전 문제는 도구 이름 없이 <strong>요구사항 문장</strong>으로 온다.
                         명사에서 데이터 모델을, 동사에서 기능을, 신호 문장에서 자료구조·알고리즘을 찾는다.</li>
@@ -2495,9 +1863,9 @@ public class StockMasterSolution {
                 <div id="lesson-complete-slot"></div>
             </section>
 
-            <!-- 20. 다음 강의 연결 -->
+            <!-- 18. 다음 강의 연결 -->
             <section class="lesson-section" id="sec-next" aria-labelledby="h-next">
-                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">20</span>다음 강의 연결</h2>
+                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">18</span>다음 강의 연결</h2>
                 <p>
                     <strong>축하합니다! 13개 강의를 모두 마쳤습니다.</strong>
                     1강에서 "코드는 맞는데 알고리즘이 느리다"는 말의 뜻을 배웠던 여러분이,

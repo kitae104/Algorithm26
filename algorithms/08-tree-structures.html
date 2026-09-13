@@ -282,7 +282,7 @@
                     <span class="note-box__title">미리 알아 둘 함정</span>
                     <ul>
                         <li><em>BST의 성능은 <strong>트리의 모양</strong>에 달려 있음</em> — 정렬된 순서(10, 20, 30, …)로 삽입하면
-                            오른쪽으로만 자라 사실상 연결 리스트가 되고, 탐색이 O(n)으로 떨어짐 (자세한 내용은 14번 복잡도 섹션)</li>
+                            오른쪽으로만 자라 사실상 연결 리스트가 되고, 탐색이 O(n)으로 떨어짐 (자세한 내용은 11번 복잡도 섹션)</li>
                         <li>이 강의의 구현은 같은 값을 오른쪽에 넣는 방식으로 중복을 처리</li>
                     </ul>
                 </div>
@@ -369,357 +369,15 @@
                 </ul>
             </section>
 
-            <!-- 9. 점진적 Java 구현 -->
-            <section class="lesson-section" id="sec-impl" aria-labelledby="h-impl">
-                <h2 id="h-impl" data-toc-label="점진적 Java 구현"><span class="section-no">09</span>점진적 Java 구현</h2>
-                <ul>
-                    <li>한 번에 완성하지 않고 <strong>노드 만들기 → 삽입 판단 한 번 → 재귀 삽입 → 재귀 순회</strong> 순서로 확장</li>
-                    <li>각 단계의 코드는 모두 독립적으로 복사해서 실행 가능</li>
-                </ul>
-
-                <h3>구현 1단계 — 노드 클래스를 만들고 손으로 연결하기</h3>
-                <ul>
-                    <li>트리의 재료는 <strong>노드</strong> — 값 하나와, 왼쪽·오른쪽 자식을 가리키는 참조 두 개가 전부</li>
-                    <li>먼저 노드 3개를 만들어 <strong>참조 대입만으로</strong> 작은 트리를 조립 (아직 알고리즘 없음)</li>
-                </ul>
-                <article class="code-card">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">Java</span>
-                            <strong class="code-card__filename">Step1NodeBasics.java</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="code-step1" aria-label="Step1NodeBasics.java 코드 복사">코드 복사</button>
-                    </header>
-                    <pre><code id="code-step1" class="language-java">public class Step1NodeBasics {
-
-    /** 트리의 노드: 값 하나와, 왼쪽·오른쪽 자식을 가리키는 참조 두 개 */
-    static class Node {
-        int value;   // 이 노드가 저장하는 값
-        Node left;   // 왼쪽 자식 (없으면 null)
-        Node right;  // 오른쪽 자식 (없으면 null)
-
-        Node(int value) {
-            this.value = value;
-            // left와 right는 자동으로 null — 아직 자식이 없다
-        }
-    }
-
-    public static void main(String[] args) {
-        // 노드 3개를 만들어 손으로 직접 연결한다
-        Node root = new Node(50);        // 루트 노드
-        Node leftChild = new Node(30);   // 왼쪽 자식이 될 노드
-        Node rightChild = new Node(70);  // 오른쪽 자식이 될 노드
-
-        root.left = leftChild;    // 50의 왼쪽에 30을 연결
-        root.right = rightChild;  // 50의 오른쪽에 70을 연결
-
-        System.out.println("루트 노드의 값: " + root.value);
-        System.out.println("루트의 왼쪽 자식: " + root.left.value);
-        System.out.println("루트의 오른쪽 자식: " + root.right.value);
-
-        // 자식이 없는 노드(리프 노드)인지 확인한다
-        boolean isLeaf = (leftChild.left == null &amp;&amp; leftChild.right == null);
-        System.out.println("30은 리프 노드인가? " + isLeaf);
-        System.out.println("50은 리프 노드인가? " + (root.left == null &amp;&amp; root.right == null));
-    }
-}</code></pre>
-                </article>
-                <article class="code-card code-card--output">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">출력</span>
-                            <strong class="code-card__filename">실행 결과</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="out-step1" aria-label="Step1 실행 결과 복사">복사</button>
-                    </header>
-                    <pre><code id="out-step1">루트 노드의 값: 50
-루트의 왼쪽 자식: 30
-루트의 오른쪽 자식: 70
-30은 리프 노드인가? true
-50은 리프 노드인가? false</code></pre>
-                </article>
-                <div class="note-box note-box--tip">
-                    <span class="note-box__title">관찰</span>
-                    <p><em>트리는 특별한 문법이 아니라 <strong>"참조를 가진 객체들의 연결"</strong>일 뿐입니다.</em>
-                    <code>root.left = leftChild;</code> 한 줄이 간선 하나를 긋는 일입니다.</p>
-                </div>
-
-                <h3>구현 2단계 — 삽입 판단을 한 번만 해 보기</h3>
-                <ul>
-                    <li>손 풀이 STEP 1을 코드로 옮김: <strong>새 값을 현재 노드와 비교해서, 작으면 왼쪽, 크거나 같으면 오른쪽에 붙인다</strong></li>
-                    <li>일부러 <strong>판단을 딱 한 번만</strong> 하는 메서드를 만들어, 어디까지 되고 어디서 막히는지 확인</li>
-                </ul>
-                <article class="code-card">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">Java</span>
-                            <strong class="code-card__filename">Step2InsertDecision.java</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="code-step2" aria-label="Step2InsertDecision.java 코드 복사">코드 복사</button>
-                    </header>
-                    <pre><code id="code-step2" class="language-java">public class Step2InsertDecision {
-
-    static class Node {
-        int value;
-        Node left;
-        Node right;
-
-        Node(int value) {
-            this.value = value;
-        }
-    }
-
-    /** 한 번의 삽입 판단: 현재 노드와 비교해서 왼쪽 또는 오른쪽에 붙인다 */
-    static void insertOneStep(Node current, int newValue) {
-        System.out.println("새 값 " + newValue + "을(를) 노드 " + current.value + "과(와) 비교합니다.");
-
-        if (newValue &lt; current.value) {
-            System.out.println("  " + newValue + " &lt; " + current.value + " → 왼쪽으로 가야 합니다.");
-            if (current.left == null) {
-                current.left = new Node(newValue);   // 빈 자리에 새 노드를 연결
-                System.out.println("  왼쪽이 비어 있으므로 왼쪽 자식으로 연결했습니다.");
-            } else {
-                System.out.println("  왼쪽에 이미 " + current.left.value + "이(가) 있습니다. (다음 단계에서 더 내려갑니다)");
-            }
-        } else {
-            System.out.println("  " + newValue + " &gt;= " + current.value + " → 오른쪽으로 가야 합니다.");
-            if (current.right == null) {
-                current.right = new Node(newValue);
-                System.out.println("  오른쪽이 비어 있으므로 오른쪽 자식으로 연결했습니다.");
-            } else {
-                System.out.println("  오른쪽에 이미 " + current.right.value + "이(가) 있습니다. (다음 단계에서 더 내려갑니다)");
-            }
-        }
-    }
-
-    public static void main(String[] args) {
-        Node root = new Node(50);   // 루트만 있는 트리에서 시작
-
-        insertOneStep(root, 30);    // 50과 비교 → 왼쪽에 붙는다
-        insertOneStep(root, 70);    // 50과 비교 → 오른쪽에 붙는다
-        insertOneStep(root, 20);    // 왼쪽에 이미 30이 있어 한 번의 판단으로는 부족하다!
-
-        System.out.println();
-        System.out.println("현재 트리: 루트 " + root.value
-                + ", 왼쪽 " + root.left.value + ", 오른쪽 " + root.right.value);
-        System.out.println("20은 아직 넣지 못했습니다 → 반복해서 내려가는 구조(재귀)가 필요합니다.");
-    }
-}</code></pre>
-                </article>
-                <article class="code-card code-card--output">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">출력</span>
-                            <strong class="code-card__filename">실행 결과</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="out-step2" aria-label="Step2 실행 결과 복사">복사</button>
-                    </header>
-                    <pre><code id="out-step2">새 값 30을(를) 노드 50과(와) 비교합니다.
-  30 &lt; 50 → 왼쪽으로 가야 합니다.
-  왼쪽이 비어 있으므로 왼쪽 자식으로 연결했습니다.
-새 값 70을(를) 노드 50과(와) 비교합니다.
-  70 &gt;= 50 → 오른쪽으로 가야 합니다.
-  오른쪽이 비어 있으므로 오른쪽 자식으로 연결했습니다.
-새 값 20을(를) 노드 50과(와) 비교합니다.
-  20 &lt; 50 → 왼쪽으로 가야 합니다.
-  왼쪽에 이미 30이(가) 있습니다. (다음 단계에서 더 내려갑니다)
-
-현재 트리: 루트 50, 왼쪽 30, 오른쪽 70
-20은 아직 넣지 못했습니다 → 반복해서 내려가는 구조(재귀)가 필요합니다.</code></pre>
-                </article>
-                <p class="lecture-lead">
-                    판단 한 번으로는 깊이 1까지만 삽입 가능. 20을 넣으려면 "30에서 <strong>같은 판단을 또</strong>" 해야 함 —
-                    <em>같은 일을 더 작은 대상(서브트리)에 반복하는 것, 바로 7강의 <strong>재귀</strong></em>.
-                </p>
-
-                <h3>구현 3단계 — 재귀 삽입 완성</h3>
-                <ul>
-                    <li>재귀 삽입 메서드의 약속: <strong>"node를 루트로 하는 서브트리에 value를 넣고, 그 서브트리의 루트를 돌려준다"</strong></li>
-                    <li>빈자리(<code>null</code>)에 도착하면 새 노드를 만들어 돌려주는 것이 종료 조건</li>
-                    <li>반환값을 <code>node.left</code>나 <code>node.right</code>에 다시 대입하는 부분이 핵심</li>
-                </ul>
-                <article class="code-card">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">Java</span>
-                            <strong class="code-card__filename">Step3RecursiveInsert.java</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="code-step3" aria-label="Step3RecursiveInsert.java 코드 복사">코드 복사</button>
-                    </header>
-                    <pre><code id="code-step3" class="language-java">public class Step3RecursiveInsert {
-
-    static class Node {
-        int value;
-        Node left;
-        Node right;
-
-        Node(int value) {
-            this.value = value;
-        }
-    }
-
-    /**
-     * 재귀 삽입: "node를 루트로 하는 서브트리에 value를 넣고,
-     * 완성된 서브트리의 루트를 돌려준다"
-     */
-    static Node insert(Node node, int value) {
-        if (node == null) {
-            return new Node(value);          // 빈 자리 도착 → 새 노드가 그 자리의 루트가 된다
-        }
-        if (value &lt; node.value) {
-            node.left = insert(node.left, value);    // 왼쪽 서브트리에 넣고 결과를 다시 연결
-        } else {
-            node.right = insert(node.right, value);  // 오른쪽 서브트리에 넣고 결과를 다시 연결
-        }
-        return node;                          // 자기 자신을 그대로 돌려준다
-    }
-
-    /** 트리를 왼쪽으로 90도 눕힌 모양으로 출력한다 (오른쪽 자식이 위에 나온다) */
-    static void printSideways(Node node, int depth) {
-        if (node == null) {
-            return;
-        }
-        printSideways(node.right, depth + 1);
-        System.out.println("    ".repeat(depth) + node.value);
-        printSideways(node.left, depth + 1);
-    }
-
-    public static void main(String[] args) {
-        int[] values = {50, 30, 70, 20, 40, 60};
-
-        Node root = null;                     // 빈 트리에서 시작
-        for (int value : values) {
-            root = insert(root, value);       // 반환값을 반드시 root에 다시 저장!
-            System.out.println(value + " 삽입 완료");
-        }
-
-        System.out.println();
-        System.out.println("완성된 트리 (왼쪽으로 90도 눕힌 모양, 오른쪽 자식이 위):");
-        printSideways(root, 0);
-    }
-}</code></pre>
-                </article>
-                <article class="code-card code-card--output">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">출력</span>
-                            <strong class="code-card__filename">실행 결과</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="out-step3" aria-label="Step3 실행 결과 복사">복사</button>
-                    </header>
-                    <pre><code id="out-step3">50 삽입 완료
-30 삽입 완료
-70 삽입 완료
-20 삽입 완료
-40 삽입 완료
-60 삽입 완료
-
-완성된 트리 (왼쪽으로 90도 눕힌 모양, 오른쪽 자식이 위):
-    70
-        60
-50
-        40
-    30
-        20</code></pre>
-                </article>
-                <p class="lecture-lead">
-                    출력을 시계 방향으로 90도 돌려 보면 손 풀이 STEP 2에서 그린 트리와 같은 모양
-                    (맨 왼쪽 줄이 루트 50, 위쪽이 오른쪽 서브트리 70·60, 아래쪽이 왼쪽 서브트리 30·20·40).
-                </p>
-
-                <h3>구현 4단계 — 중위 순회로 전체 방문</h3>
-                <ul>
-                    <li>트리가 완성되었으니 모든 노드를 방문 — 중위 순회는 딱 세 줄: <strong>왼쪽 재귀 → 자신 출력 → 오른쪽 재귀</strong></li>
-                    <li>종료 조건 <code>if (node == null) return;</code>이 없으면 어떻게 되는지는 13번 오류 찾기 섹션에서 확인</li>
-                </ul>
-                <article class="code-card">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">Java</span>
-                            <strong class="code-card__filename">Step4InorderTraversal.java</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="code-step4" aria-label="Step4InorderTraversal.java 코드 복사">코드 복사</button>
-                    </header>
-                    <pre><code id="code-step4" class="language-java">public class Step4InorderTraversal {
-
-    static class Node {
-        int value;
-        Node left;
-        Node right;
-
-        Node(int value) {
-            this.value = value;
-        }
-    }
-
-    static Node insert(Node node, int value) {
-        if (node == null) {
-            return new Node(value);
-        }
-        if (value &lt; node.value) {
-            node.left = insert(node.left, value);
-        } else {
-            node.right = insert(node.right, value);
-        }
-        return node;
-    }
-
-    /** 중위 순회: 왼쪽 서브트리 → 자기 자신 → 오른쪽 서브트리 */
-    static void inorder(Node node) {
-        if (node == null) {
-            return;                    // 종료 조건: 빈 자리에 도착하면 되돌아간다
-        }
-        inorder(node.left);            // 1. 왼쪽 서브트리를 먼저 전부 방문
-        System.out.print(node.value + " ");  // 2. 자기 자신을 출력
-        inorder(node.right);           // 3. 오른쪽 서브트리를 방문
-    }
-
-    public static void main(String[] args) {
-        int[] values = {50, 30, 70, 20, 40, 60};
-
-        Node root = null;
-        for (int value : values) {
-            root = insert(root, value);
-        }
-
-        System.out.println("삽입 순서   : 50 30 70 20 40 60");
-        System.out.print("중위 순회 결과: ");
-        inorder(root);
-        System.out.println();
-        System.out.println("→ 중위 순회는 BST의 값을 항상 오름차순으로 출력한다!");
-    }
-}</code></pre>
-                </article>
-                <article class="code-card code-card--output">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">출력</span>
-                            <strong class="code-card__filename">실행 결과</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="out-step4" aria-label="Step4 실행 결과 복사">복사</button>
-                    </header>
-                    <pre><code id="out-step4">삽입 순서   : 50 30 70 20 40 60
-중위 순회 결과: 20 30 40 50 60 70
-→ 중위 순회는 BST의 값을 항상 오름차순으로 출력한다!</code></pre>
-                </article>
-                <div class="note-box note-box--tip">
-                    <span class="note-box__title">관찰</span>
-                    <ul>
-                        <li>뒤죽박죽 순서(50, 30, 70, …)로 넣었는데 오름차순으로 나옴</li>
-                        <li><em><strong>정렬을 한 적이 없는데 정렬된 결과</strong>가 나오는 이유는,
-                            삽입할 때마다 "작으면 왼쪽, 크면 오른쪽" 규칙이 자리를 정해 두었기 때문</em></li>
-                        <li>7번 섹션의 시각화가 바로 이 코드의 동작</li>
-                    </ul>
-                </div>
-            </section>
-
-            <!-- 10. 완성 Java 코드 -->
+            <!-- 9. 실습 코드 -->
             <section class="lesson-section" id="sec-complete" aria-labelledby="h-complete">
-                <h2 id="h-complete" data-toc-label="완성 Java 코드"><span class="section-no">10</span>완성 Java 코드</h2>
+                <h2 id="h-complete" data-toc-label="실습 코드"><span class="section-no">09</span>실습 코드</h2>
+                <p class="lecture-lead">의사코드(08)를 실제 Java 프로그램으로 옮깁니다. 노드 클래스(06)를 기준으로 삽입·검색·순회 네 기능을 메서드로 나눠 구현했습니다.</p>
                 <ul>
-                    <li>지금까지의 조각을 모아 완성 — 재귀 삽입에 <strong>재귀 검색</strong>과 <strong>순회 4종 세트</strong>(전위·중위·후위·레벨)를 더함</li>
-                    <li>검색은 지나간 노드를 화면에 남겨 "절반 버리기" 경로를 눈으로 확인할 수 있게 함</li>
-                    <li>레벨 순회는 6강의 <code>ArrayDeque</code> 큐를 그대로 재사용</li>
+                    <li><code>insert</code>는 08의 <strong>BST 삽입 의사코드</strong>를 그대로 옮긴 것 — 빈 자리(<code>null</code>)에서 새 노드를 만들어 돌려주는 종료 조건과, 반환값을 <code>node.left</code>/<code>node.right</code>에 다시 대입하는 부분까지 동일합니다.</li>
+                    <li><code>search</code>는 06에서 배운 BST의 <strong>"비교 한 번마다 반대쪽 서브트리를 버린다"</strong>는 규칙을 재귀로 구현한 것 — 지나간 노드를 화면에 남겨 절반씩 버려지는 경로를 눈으로 확인할 수 있게 했습니다.</li>
+                    <li><code>preorder</code>·<code>inorder</code>·<code>postorder</code>는 08의 <strong>중위 순회 의사코드</strong>에서 "자기 자신 출력"의 위치만 옮긴 것 — 06 표에서 정리한 방문 순서 그대로입니다.</li>
+                    <li><code>levelOrder</code>는 08의 <strong>레벨 순회(큐) 의사코드</strong>를 그대로 구현한 것 — 6강의 <code>ArrayDeque</code> 큐를 재사용합니다.</li>
                 </ul>
                 <article class="code-card">
                     <header class="code-card__header">
@@ -852,7 +510,7 @@ public class BstComplete {
                             <span class="code-card__language">출력</span>
                             <strong class="code-card__filename">실행 결과</strong>
                         </div>
-                        <button type="button" class="copy-code-button" data-copy-target="out-complete" aria-label="완성 코드 실행 결과 복사">복사</button>
+                        <button type="button" class="copy-code-button" data-copy-target="out-complete" aria-label="실습 코드 실행 결과 복사">복사</button>
                     </header>
                     <pre><code id="out-complete">삽입 순서: 50 30 70 20 40 60
 
@@ -873,122 +531,9 @@ public class BstComplete {
                 </ul>
             </section>
 
-            <!-- 11. 실행 과정 추적 -->
-            <section class="lesson-section" id="sec-trace" aria-labelledby="h-trace">
-                <h2 id="h-trace" data-toc-label="실행 과정 추적"><span class="section-no">11</span>실행 과정 추적</h2>
-                <ul>
-                    <li>중위 순회의 재귀가 실제로 어떤 순서로 호출되고 되돌아오는지, 작은 트리(50, 30, 70, 20)로 추적</li>
-                    <li>들여쓰기 한 칸이 재귀 깊이 한 층 — 7강에서 본 <strong>호출 스택이 쌓이는 모양</strong> 그대로</li>
-                </ul>
-                <article class="code-card">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">Java</span>
-                            <strong class="code-card__filename">InorderTrace.java</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="code-trace" aria-label="InorderTrace.java 코드 복사">코드 복사</button>
-                    </header>
-                    <pre><code id="code-trace" class="language-java">public class InorderTrace {
-
-    static class Node {
-        int value;
-        Node left;
-        Node right;
-
-        Node(int value) {
-            this.value = value;
-        }
-    }
-
-    static Node insert(Node node, int value) {
-        if (node == null) {
-            return new Node(value);
-        }
-        if (value &lt; node.value) {
-            node.left = insert(node.left, value);
-        } else {
-            node.right = insert(node.right, value);
-        }
-        return node;
-    }
-
-    static int visitOrder = 0;                    // 몇 번째로 출력되는지 센다
-    static StringBuilder result = new StringBuilder();
-
-    /** 중위 순회를 하면서, 재귀 호출의 시작·출력·복귀를 들여쓰기로 보여 준다 */
-    static void inorderTrace(Node node, int depth) {
-        String indent = "  ".repeat(depth);       // 깊이만큼 들여쓰기
-        if (node == null) {
-            System.out.println(indent + "빈 자리(null) → 즉시 되돌아감");
-            return;
-        }
-        System.out.println(indent + "호출: inorder(" + node.value + ")");
-        inorderTrace(node.left, depth + 1);       // 1. 왼쪽 먼저
-
-        visitOrder++;
-        result.append(node.value).append(" ");
-        System.out.println(indent + "출력: " + node.value + "  ← " + visitOrder + "번째 출력");
-
-        inorderTrace(node.right, depth + 1);      // 3. 오른쪽은 마지막
-        System.out.println(indent + "복귀: inorder(" + node.value + ") 끝");
-    }
-
-    public static void main(String[] args) {
-        int[] values = {50, 30, 70, 20};          // 작은 트리로 추적한다
-
-        Node root = null;
-        for (int value : values) {
-            root = insert(root, value);
-        }
-
-        System.out.println("트리: 50의 왼쪽에 30, 오른쪽에 70, 30의 왼쪽에 20");
-        System.out.println();
-        inorderTrace(root, 0);
-        System.out.println();
-        System.out.println("중위 순회 최종 출력: " + result.toString().trim());
-    }
-}</code></pre>
-                </article>
-                <article class="code-card code-card--output">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">출력</span>
-                            <strong class="code-card__filename">실행 결과</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="out-trace" aria-label="추적 실행 결과 복사">복사</button>
-                    </header>
-                    <pre><code id="out-trace">트리: 50의 왼쪽에 30, 오른쪽에 70, 30의 왼쪽에 20
-
-호출: inorder(50)
-  호출: inorder(30)
-    호출: inorder(20)
-      빈 자리(null) → 즉시 되돌아감
-    출력: 20  ← 1번째 출력
-      빈 자리(null) → 즉시 되돌아감
-    복귀: inorder(20) 끝
-  출력: 30  ← 2번째 출력
-    빈 자리(null) → 즉시 되돌아감
-  복귀: inorder(30) 끝
-출력: 50  ← 3번째 출력
-  호출: inorder(70)
-    빈 자리(null) → 즉시 되돌아감
-  출력: 70  ← 4번째 출력
-    빈 자리(null) → 즉시 되돌아감
-  복귀: inorder(70) 끝
-복귀: inorder(50) 끝
-
-중위 순회 최종 출력: 20 30 50 70</code></pre>
-                </article>
-                <ul>
-                    <li><code>inorder(50)</code>이 <strong>가장 먼저 호출</strong>되지만 출력은 <strong>3번째</strong> —
-                        <em>왼쪽으로 내려간 호출들(30 → 20)이 모두 끝나고 복귀한 뒤에야 자기 차례가 오기 때문</em></li>
-                    <li>손 풀이 STEP 3 = 7번 섹션의 시각화 = 이 추적 출력, 모두 같은 절차</li>
-                </ul>
-            </section>
-
-            <!-- 12. 잘못된 코드와 오류 찾기 -->
+            <!-- 10. 잘못된 코드와 오류 찾기 -->
             <section class="lesson-section" id="sec-bugs" aria-labelledby="h-bugs">
-                <h2 id="h-bugs" data-toc-label="잘못된 코드와 오류 찾기"><span class="section-no">12</span>잘못된 코드와 오류 찾기</h2>
+                <h2 id="h-bugs" data-toc-label="잘못된 코드와 오류 찾기"><span class="section-no">10</span>잘못된 코드와 오류 찾기</h2>
                 <p class="lecture-lead">트리 코드에서 초보자가 가장 자주 만드는 오류 두 가지 — 코드를 먼저 읽고 무엇이 잘못됐는지 생각한 뒤 해설을 여세요.</p>
 
                 <article class="bug-card">
@@ -1154,9 +699,9 @@ root == null ? true</pre>
                 </article>
             </section>
 
-            <!-- 13. 복잡도 및 특성 분석 -->
+            <!-- 11. 복잡도 및 특성 분석 -->
             <section class="lesson-section" id="sec-complexity" aria-labelledby="h-complexity">
-                <h2 id="h-complexity" data-toc-label="복잡도 및 특성 분석"><span class="section-no">13</span>복잡도 및 특성 분석</h2>
+                <h2 id="h-complexity" data-toc-label="복잡도 및 특성 분석"><span class="section-no">11</span>복잡도 및 특성 분석</h2>
 
                 <h3>입력 크기</h3>
                 <ul>
@@ -1207,9 +752,9 @@ root == null ? true</pre>
                 </ul>
             </section>
 
-            <!-- 14. 실제 데이터 응용 예제 -->
+            <!-- 12. 실제 데이터 응용 예제 -->
             <section class="lesson-section" id="sec-application" aria-labelledby="h-application">
-                <h2 id="h-application" data-toc-label="실제 데이터 응용 예제"><span class="section-no">14</span>실제 데이터 응용 예제</h2>
+                <h2 id="h-application" data-toc-label="실제 데이터 응용 예제"><span class="section-no">12</span>실제 데이터 응용 예제</h2>
 
                 <h3>문제 상황</h3>
                 <ul>
@@ -1370,9 +915,9 @@ public class OrgChartApplication {
                 </ul>
             </section>
 
-            <!-- 15. 확인 퀴즈 -->
+            <!-- 13. 확인 퀴즈 -->
             <section class="lesson-section lesson-section--quiz" id="sec-quiz" aria-labelledby="h-quiz">
-                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">15</span>확인 퀴즈</h2>
+                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">13</span>확인 퀴즈</h2>
                 <div id="quiz-root"></div>
             </section>
 
@@ -1381,9 +926,9 @@ public class OrgChartApplication {
                 <p>지금까지 배운 내용을 직접 코드로 적용해 보는 과제입니다. 두 과제로 구성되며, 각 과제의 정답은 이 강의를 완료로 표시해야 열립니다.</p>
             </div>
 
-            <!-- 16. 따라 하기 실습 -->
+            <!-- 14. 따라 하기 실습 -->
             <section class="lesson-section lesson-section--assignment" id="sec-practice" aria-labelledby="h-practice">
-                <h2 id="h-practice" data-toc-label="따라 하기 실습"><span class="section-no">16</span>따라 하기 실습</h2>
+                <h2 id="h-practice" data-toc-label="따라 하기 실습"><span class="section-no">14</span>따라 하기 실습</h2>
 
                 <h3>실습 1 — 데이터 변경</h3>
                 <p>
@@ -1495,9 +1040,9 @@ static int maxValue(Node node) {
                 </details>
             </section>
 
-            <!-- 17. 최종 프로그램 작성 문제 -->
+            <!-- 15. 최종 프로그램 작성 문제 -->
             <section class="lesson-section lesson-section--assignment" id="sec-final" aria-labelledby="h-final">
-                <h2 id="h-final" data-toc-label="최종 프로그램 작성 문제"><span class="section-no">17</span>최종 프로그램 작성 문제</h2>
+                <h2 id="h-final" data-toc-label="최종 프로그램 작성 문제"><span class="section-no">15</span>최종 프로그램 작성 문제</h2>
 
                 <h3>문제 제목 — 조직도 분석 프로그램 "OrgTree"</h3>
 
@@ -1917,9 +1462,9 @@ public class OrgTreeSolution {
                 </details>
             </section>
 
-            <!-- 18. 오늘의 핵심 정리 -->
+            <!-- 16. 오늘의 핵심 정리 -->
             <section class="lesson-section" id="sec-summary" aria-labelledby="h-summary">
-                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">18</span>오늘의 핵심 정리</h2>
+                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">16</span>오늘의 핵심 정리</h2>
                 <ul class="summary-list">
                     <li><strong>트리</strong>는 루트에서 시작해 부모-자식으로 갈라지는 계층 구조다.
                         리프는 자식이 없는 노드, 높이는 루트에서 가장 먼 리프까지의 간선 수다.</li>
@@ -1939,9 +1484,9 @@ public class OrgTreeSolution {
                 <div id="lesson-complete-slot"></div>
             </section>
 
-            <!-- 19. 다음 강의 연결 -->
+            <!-- 17. 다음 강의 연결 -->
             <section class="lesson-section" id="sec-next" aria-labelledby="h-next">
-                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">19</span>다음 강의 연결</h2>
+                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">17</span>다음 강의 연결</h2>
                 <p>
                     다음 강의는 <strong>9강. 그래프와 DFS·BFS 탐색</strong>입니다.
                     사실 여러분은 오늘 이미 그래프의 특수한 형태를 배웠습니다 —
