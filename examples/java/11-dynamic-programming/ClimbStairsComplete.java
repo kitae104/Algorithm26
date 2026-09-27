@@ -91,7 +91,7 @@ public class ClimbStairsComplete {
         }
 
         System.out.println();
-        System.out.println("== 큰 입력: n = 50 (순수 재귀는 약 407억 번 호출이라 생략) ==");
+        System.out.println("== 큰 입력: n = 50 (순수 재귀는 약 252억 번 호출이라 생략) ==");
         memoCalls = 0;
         System.out.println("메모이제이션 : " + waysByMemo(50) + " (호출 " + memoCalls + "번)");
         System.out.println("타뷸레이션   : " + waysByTable(50) + " (덧셈 48번, 표 51칸)");

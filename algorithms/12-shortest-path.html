@@ -139,86 +139,9 @@
                 </div>
             </section>
 
-            <!-- 5. 사람이 직접 해결해 보기 -->
-            <section class="lesson-section" id="sec-hand" aria-labelledby="h-hand">
-                <h2 id="h-hand" data-toc-label="사람이 직접 해결해 보기"><span class="section-no">05</span>사람이 직접 해결해 보기</h2>
-                <p class="lecture-lead">코드를 쓰기 전에 캠퍼스 지도를 손으로 풀기 — 정점 6개를 그리고, 각 정점 옆에 "지금까지 알아낸 A에서의 최소 시간"을 적는다. 처음에는 A만 0분, 나머지는 <strong>모름(∞)</strong>.</p>
-
-                <div class="hand-step">
-                    <span class="hand-step__label">STEP 1</span>
-                    <p class="lecture-lead">A(0분)에서 한 번에 갈 수 있는 곳을 적습니다: B는 3분, C는 7분 — 이제 후보는 B(3분), C(7분).</p>
-                    <details class="reveal-box">
-                        <summary>질문: 이 중 "이 값이 곧 최종 답"이라고 지금 확신할 수 있는 정점은 어디일까요?</summary>
-                        <div class="reveal-box__content">
-                            <ul>
-                                <li><strong>B(3분)</strong> — 다른 어떤 길로 B에 가더라도 일단 C(7분)나 그 너머를 지나야 하는데, 모든 길의 시간이 0 이상이므로 3분보다 짧아질 수 없음</li>
-                                <li><em><strong>"미확정 후보 중 가장 가까운 곳은 그대로 확정해도 된다"</strong> — 이것이 다익스트라의 그리디 선택(10강)</em></li>
-                            </ul>
-                        </div>
-                    </details>
-                </div>
-
-                <div class="hand-step">
-                    <span class="hand-step__label">STEP 2</span>
-                    <ul>
-                        <li>B(3분)를 확정하고, B에서 갈 수 있는 곳의 후보를 갱신</li>
-                        <li>C: A에서 바로 가면 7분이지만 B를 거치면 3 + 2 = <strong>5분</strong> → 7을 지우고 5로 고침</li>
-                        <li>D: 3 + 6 = <strong>9분</strong> → 새 후보로 적음</li>
-                    </ul>
-                    <details class="reveal-box">
-                        <summary>질문: C의 값을 7에서 5로 "고쳐 쓴" 이 행동을 일반 규칙으로 표현하면 어떻게 될까요?</summary>
-                        <div class="reveal-box__content">
-                            <ul>
-                                <li><strong>dist[C] = min(dist[C], dist[B] + 시간(B,C)) = min(7, 3+2) = 5</strong></li>
-                                <li>"지금 확정된 정점을 거쳐 가면 더 짧아지는지 확인하고, 짧아지면 갱신한다" — 이 규칙을 <strong>완화(relaxation)</strong>라고 부름. 11강 점화식과 같은 모양</li>
-                            </ul>
-                        </div>
-                    </details>
-                </div>
-
-                <div class="hand-step">
-                    <span class="hand-step__label">STEP 3</span>
-                    <ul>
-                        <li>같은 일을 반복</li>
-                        <li>후보 중 최소인 C(5분)를 확정 → E 후보 5 + 8 = 13분</li>
-                        <li>다음 최소인 D(9분)를 확정 → E는 9 + 1 = 10분으로 갱신, F는 9 + 5 = 14분</li>
-                        <li>다음 최소인 E(10분)를 확정 → F는 10 + 3 = 13분으로 갱신</li>
-                        <li>마지막으로 F(13분)를 확정하면 끝</li>
-                    </ul>
-                    <details class="reveal-box">
-                        <summary>질문: 확정된 순서(A, B, C, D, E, F)와 확정된 거리(0, 3, 5, 9, 10, 13) 사이에 어떤 규칙이 보이나요?</summary>
-                        <div class="reveal-box__content">
-                            <ul>
-                                <li><strong>거리가 작은 순서대로 확정됩니다.</strong></li>
-                                <li>BFS가 "간선 수가 적은 층부터" 방문을 확정하듯, 다익스트라는 "총 시간이 짧은 정점부터" 확정</li>
-                                <li><em>그래서 다익스트라를 <strong>가중치 그래프 위의 BFS</strong>라고 부르기도 함</em></li>
-                            </ul>
-                        </div>
-                    </details>
-                </div>
-
-                <div class="hand-step">
-                    <span class="hand-step__label">STEP 4</span>
-                    <ul>
-                        <li>최종 결과: A 0분, B 3분, C 5분, D 9분, E 10분, F 13분</li>
-                        <li>그런데 이용자에게는 "13분"이라는 숫자만이 아니라 <strong>길 안내</strong>도 보여 줘야 함</li>
-                    </ul>
-                    <details class="reveal-box">
-                        <summary>질문: 손으로 풀면서 "F까지 가는 실제 경로"를 알아내려면 무엇을 함께 메모해야 했을까요?</summary>
-                        <div class="reveal-box__content">
-                            <ul>
-                                <li>거리를 갱신할 때마다 <strong>"어느 정점을 거쳐서 이 값이 되었는지"</strong>를 함께 적어야 함</li>
-                                <li>F는 E를 거쳐 13분이 되었고, E는 D를, D는 B를, B는 A를 거침 — 거꾸로 따라가면 <strong>A → B → D → E → F</strong></li>
-                                <li>코드에서는 이 메모가 <code>prev</code> 배열이 됨 (경로 복원)</li>
-                            </ul>
-                        </div>
-                    </details>
-                </div>
-            </section>
-
-            <!-- 6. 핵심 개념 -->
+            <!-- 5. 핵심 개념 -->
             <section class="lesson-section" id="sec-concepts" aria-labelledby="h-concepts">
-                <h2 id="h-concepts" data-toc-label="핵심 개념"><span class="section-no">06</span>핵심 개념</h2>
+                <h2 id="h-concepts" data-toc-label="핵심 개념"><span class="section-no">05</span>핵심 개념</h2>
 
                 <h3>1. 가중치 그래프 — 9강 표현법에 숫자 하나 얹기</h3>
                 <ul>
@@ -398,7 +321,11 @@ BFS는 간선 수가 가장 적은 경로를 찾을 뿐,
 
                 <h3>6. 그리디 확정 — 가장 가까운 미확정 정점은 번복되지 않는다</h3>
                 <ul>
-                    <li>손 풀이 STEP 1에서 확인했듯, <strong>미확정 정점 중 dist가 가장 작은 정점 u</strong>는 그 값이 곧 최종 답</li>
+                    <li><strong>미확정 정점 중 dist가 가장 작은 정점 u</strong>는 그 값이 곧 최종 답
+                        <ul>
+                            <li>예: A에서 출발해 후보가 B(3분), C(7분)일 때, B는 3분으로 바로 확정해도 됨 — 다른 길로 B에 가려면 C(7분)나 그 너머를 지나야 하므로 3분보다 짧아질 수 없음</li>
+                        </ul>
+                    </li>
                     <li>이유: u에 다른 경로로 도달하려면 반드시 어떤 미확정 정점 x를 거쳐야 하는데, <code>dist[x] ≥ dist[u]</code>이고 <strong>모든 가중치가 0 이상</strong>이므로 돌아가는 경로는 절대 <code>dist[u]</code>보다 짧아질 수 없음</li>
                     <li>10강의 그리디처럼 "한 번 한 선택을 번복하지 않아도 되는" 구조가 성립</li>
                 </ul>
@@ -424,22 +351,27 @@ BFS는 간선 수가 가장 적은 경로를 찾을 뿐,
                 <ul>
                     <li>완화로 <code>dist[v]</code>를 갱신하는 순간, <strong>"v는 u를 거쳐 왔다"</strong>를 <code>prev[v] = u</code>로 기록해 둠</li>
                     <li>목적지에서 <code>prev</code>를 따라 거꾸로 올라가면 출발점까지의 경로가 복원됨</li>
-                    <li>손 풀이 STEP 4에서 F → E → D → B → A로 거슬러 올라간 것과 같은 원리</li>
+                    <li>예: 캠퍼스 그래프에서 F는 E를, E는 D를, D는 B를, B는 A를 거쳐 왔다면 F → E → D → B → A로 거슬러 올라간 뒤 뒤집어 <strong>A → B → D → E → F</strong></li>
                 </ul>
             </section>
 
-            <!-- 7. 단계별 동작 과정 -->
+            <!-- 6. 단계별 동작 과정 -->
             <section class="lesson-section" id="sec-steps" aria-labelledby="h-steps">
-                <h2 id="h-steps" data-toc-label="단계별 동작 과정"><span class="section-no">07</span>단계별 동작 과정</h2>
-                <p class="lecture-lead">캠퍼스 그래프에서 다익스트라가 진행되는 모습을 단계별로 확인 — <strong>다음 단계 ▶</strong> 버튼으로 한 단계씩 진행. <strong>파란색(현재)</strong>은 이번 회차에 확정하는 정점, <strong>앰버색(비교 중)</strong>은 완화로 거리가 갱신된 정점, <strong>초록색(확정)</strong>은 최단 거리가 확정된 정점. 정점 아래 숫자는 현재 dist 값이고, 오른쪽 표에서 같은 값을 함께 볼 수 있음. "새 데이터" 버튼을 누르면 출발 정점이 무작위로 바뀜.</p>
+                <h2 id="h-steps" data-toc-label="단계별 동작 과정"><span class="section-no">06</span>단계별 동작 과정</h2>
+                <p class="lecture-lead">04 실제 문제 상황의 캠퍼스 그래프(건물 A~F 6개, 길 9개)에서 A를 출발점으로 다익스트라가 진행되는 모습을 단계별로 확인 — 처음에는 A만 0분, 나머지는 <strong>∞(모름)</strong>. <strong>다음 단계 ▶</strong> 버튼으로 한 단계씩 진행. <strong>파란색(현재)</strong>은 이번 회차에 확정하는 정점, <strong>앰버색(비교 중)</strong>은 완화로 거리가 갱신된 정점, <strong>초록색(확정)</strong>은 최단 거리가 확정된 정점. 정점 아래 숫자는 현재 dist 값이고, 오른쪽 표에서 같은 값을 함께 볼 수 있음. "새 데이터" 버튼을 누르면 출발 정점이 무작위로 바뀜.</p>
                 <div id="viz-dijkstra" aria-label="캠퍼스 그래프에서 다익스트라 진행 시각화"></div>
-                <p><em>시각화 마지막 단계에서 확정 순서가 <strong>거리가 작은 순서</strong>(A 0 → B 3 → C 5 → D 9 → E 10 → F 13)와 일치함을 확인 — 손 풀이(5번 섹션)와 완전히 같은 진행입니다.</em></p>
+                <p><em>시각화 마지막 단계에서 확정 순서가 <strong>거리가 작은 순서</strong>(A 0 → B 3 → C 5 → D 9 → E 10 → F 13)와 일치함을 확인 — BFS가 "간선 수가 적은 층부터" 확정하듯, 다익스트라는 "총 시간이 짧은 정점부터" 확정합니다. 그래서 다익스트라를 <strong>가중치 그래프 위의 BFS</strong>라고 부르기도 합니다.</em></p>
             </section>
 
-            <!-- 8. 의사코드 -->
+            <!-- 7. 의사코드 -->
             <section class="lesson-section" id="sec-pseudo" aria-labelledby="h-pseudo">
-                <h2 id="h-pseudo" data-toc-label="의사코드"><span class="section-no">08</span>의사코드</h2>
-                <p class="lecture-lead">손 풀이 절차를 언어 중립적인 의사코드로 정리합니다. 먼저 배열 버전, 다음이 우선순위 큐 버전입니다.</p>
+                <h2 id="h-pseudo" data-toc-label="의사코드"><span class="section-no">07</span>의사코드</h2>
+                <p class="lecture-lead">시각화에서 본 절차를 언어 중립적인 의사코드로 정리합니다. 먼저 배열 버전, 다음이 우선순위 큐 버전입니다.</p>
+                <ul>
+                    <li>의사코드 = 특정 언어 문법 대신 <strong>우리말에 가까운 문장</strong>으로 알고리즘의 순서를 적은 것</li>
+                    <li>읽는 법: <code>x ← 값</code>은 "x에 값을 저장한다", 들여쓰기는 "바로 위 줄 안에 포함된 작업", <code>//</code> 뒤는 설명(주석)</li>
+                    <li><code>∞</code>는 "아직 모름(무한대)", <code>(u, v, w)</code>는 "u에서 v로 가는 가중치 w인 간선"</li>
+                </ul>
 
                 <article class="code-card">
                     <header class="code-card__header">
@@ -465,6 +397,28 @@ BFS는 간선 수가 가장 적은 경로를 찾을 뿐,
 
     dist와 prev를 반환한다</code></pre>
                 </article>
+                <p><strong>코드 설명 — 배열 버전</strong></p>
+                <ul>
+                    <li><code>모든 정점 v에 대해 dist[v] ← ∞, visited[v] ← 거짓, prev[v] ← 없음</code> — 준비 단계. 모든 정점의 거리를 "모름(∞)"으로, 확정 여부를 "아직 아님"으로, 직전 정점을 "없음"으로 초기화</li>
+                    <li><code>dist[start] ← 0</code> — 출발점까지의 거리는 당연히 0 (제자리)</li>
+                    <li><code>정점 수만큼 반복:</code> — 한 바퀴에 정점 하나씩 확정하므로 최대 V바퀴면 모든 정점이 확정됨</li>
+                    <li><code>u ← 미확정 정점 중 dist가 가장 작은 정점</code> — 아직 확정되지 않은 정점들 중 가장 가까운 곳을 고름 (그리디 선택)
+                        <ul>
+                            <li>배열 버전은 이 정점을 찾으려고 dist 배열을 <strong>처음부터 끝까지 훑음</strong> — 한 번에 V칸 확인</li>
+                        </ul>
+                    </li>
+                    <li><code>u가 없으면 반복 종료</code> — 남은 미확정 정점이 전부 ∞라면 출발점에서 갈 방법이 없는 정점들뿐이므로 더 볼 필요가 없음</li>
+                    <li><code>visited[u] ← 참</code> — u의 거리를 최종 답으로 확정. 이후 다시 뽑히지 않음</li>
+                    <li><code>u의 모든 간선 (u, v, w)에 대해:</code> — 방금 확정한 u에서 한 번에 갈 수 있는 이웃 v를 하나씩 살펴봄</li>
+                    <li><code>dist[u] + w &lt; dist[v] 이면:</code> — "u를 거쳐 v로 가는 길"이 지금까지 알던 v까지의 거리보다 짧은지 검사 (완화)
+                        <ul>
+                            <li>예: dist[B] = 3, B-C 가중치 2, dist[C] = 7이면 3 + 2 = 5 &lt; 7 → C를 5로 고침</li>
+                        </ul>
+                    </li>
+                    <li><code>dist[v] ← dist[u] + w</code> — 더 짧은 길을 찾았으니 v의 거리를 새 값으로 고쳐 씀</li>
+                    <li><code>prev[v] ← u</code> — "v에는 u를 거쳐 왔다"고 메모. 나중에 이 메모를 거꾸로 따라가 경로를 복원</li>
+                    <li><code>dist와 prev를 반환한다</code> — 모든 정점까지의 최단 거리(dist)와 경로 복원용 메모(prev)를 돌려줌</li>
+                </ul>
 
                 <article class="code-card">
                     <header class="code-card__header">
@@ -491,7 +445,29 @@ BFS는 간선 수가 가장 적은 경로를 찾을 뿐,
 
     dist와 prev를 반환한다</code></pre>
                 </article>
+                <p><strong>코드 설명 — 우선순위 큐 버전</strong></p>
+                <ul>
+                    <li><code>dist[start] ← 0, 나머지는 ∞</code> — 배열 버전과 같은 준비 단계</li>
+                    <li><code>우선순위 큐 pq에 (0, start)를 넣는다</code> — 큐에 "(거리, 정점)" 쌍을 넣음. 처음에는 출발점 하나만 거리 0으로 대기</li>
+                    <li><code>pq가 빌 때까지 반복:</code> — 배열 버전의 "정점 수만큼 반복" 대신, 처리할 후보가 남아 있는 동안 계속 진행</li>
+                    <li><code>(d, u) ← pq에서 거리가 가장 작은 항목</code> — 우선순위 큐가 가장 가까운 후보를 바로 꺼내 줌
+                        <ul>
+                            <li>배열을 전부 훑을 필요가 없어 한 번에 O(log V) — 이것이 배열 버전과의 유일한 차이</li>
+                        </ul>
+                    </li>
+                    <li><code>u가 이미 확정이면 건너뛴다</code> — 같은 정점이 큐에 여러 번 들어 있을 수 있으므로, 이미 확정된 정점의 낡은 항목은 무시
+                        <ul>
+                            <li>예: C는 처음에 (7, C)로, B를 거친 뒤 (5, C)로 또 들어감 → (5, C)가 먼저 꺼내져 확정되고, 나중에 나온 (7, C)는 버림</li>
+                        </ul>
+                    </li>
+                    <li><code>u를 확정한다</code> — 큐에서 처음 꺼낸 순간의 거리 d가 u의 최종 답</li>
+                    <li><code>u의 모든 간선 (u, v, w)에 대해:</code> / <code>d + w &lt; dist[v] 이면:</code> — 배열 버전과 똑같은 완화 검사</li>
+                    <li><code>dist[v] ← d + w</code>, <code>prev[v] ← u</code> — 더 짧은 거리로 고쳐 쓰고, 어디서 왔는지 메모</li>
+                    <li><code>pq에 (dist[v], v)를 넣는다</code> — 갱신된 새 거리로 v를 큐에 다시 넣음. 옛 항목을 지우지 않고 새로 넣기만 하므로 위의 "건너뛰기"가 필요해짐</li>
+                    <li><code>dist와 prev를 반환한다</code> — 결과는 배열 버전과 완전히 같음</li>
+                </ul>
 
+                <p><strong>두 버전 비교</strong></p>
                 <ul>
                     <li><em>두 버전의 차이는 오직 <strong>"미확정 중 최솟값을 어떻게 찾는가"</strong>뿐</em></li>
                     <li>배열 버전은 매번 전체를 훑고(O(V)), 큐 버전은 우선순위 큐가 대신 찾아 줌(O(log V))</li>
@@ -499,14 +475,14 @@ BFS는 간선 수가 가장 적은 경로를 찾을 뿐,
                 </ul>
             </section>
 
-            <!-- 9. 실습 코드 -->
+            <!-- 8. 실습 코드 -->
             <section class="lesson-section" id="sec-complete" aria-labelledby="h-complete">
-                <h2 id="h-complete" data-toc-label="실습 코드"><span class="section-no">09</span>실습 코드</h2>
-                <p class="lecture-lead">의사코드(08)의 <strong>우선순위 큐 버전</strong>을 Java로 옮깁니다. 배열 버전 대신 큐 버전을 구현하는 이유는 —
+                <h2 id="h-complete" data-toc-label="실습 코드"><span class="section-no">08</span>실습 코드</h2>
+                <p class="lecture-lead">의사코드(07)의 <strong>우선순위 큐 버전</strong>을 Java로 옮깁니다. 배열 버전 대신 큐 버전을 구현하는 이유는 —
                     "미확정 정점 중 dist가 가장 작은 정점을 찾는" 그리디 선택을 매번 전체 배열을 훑지 않고(O(V)),
                     <strong>PriorityQueue</strong>(6·10강)가 O(log V)에 대신 찾아 주기 때문입니다.</p>
                 <ul>
-                    <li>완화(relaxation) 규칙 <code>dist[u] + w &lt; dist[v]</code>와 <code>prev[v] ← u</code> 기록은 08 의사코드 두 버전에서 완전히 같음 — 달라지는 것은 다음 정점을 찾는 방법뿐</li>
+                    <li>완화(relaxation) 규칙 <code>dist[u] + w &lt; dist[v]</code>와 <code>prev[v] ← u</code> 기록은 07 의사코드 두 버전에서 완전히 같음 — 달라지는 것은 다음 정점을 찾는 방법뿐</li>
                     <li>큐 항목은 <code>int[]{거리, 정점 번호}</code>이고, 거리가 갱신될 때마다 새 항목을 넣기 때문에 같은 정점이 큐에 여러 번 들어갈 수 있음</li>
                     <li>그래서 꺼낸 뒤 <code>visited</code>로 <strong>낡은 항목을 건너뛰는 한 줄</strong>이 반드시 필요</li>
                 </ul>
@@ -659,13 +635,13 @@ public class DijkstraComplete {
                 </article>
                 <div class="note-box">
                     <span class="note-box__title">배열 버전과 결과 비교</span>
-                    <p class="lecture-lead">최단 거리(0, 3, 5, 9, 10, 13)는 배열 버전(08 의사코드)으로 구해도 완전히 같습니다. <em>두 버전은 <strong>"미확정 최솟값을 찾는 방법"만 다르고 알고리즘은 동일</strong>하기 때문입니다.</em> 빨라진 대신, "낡은 항목 건너뛰기"라는 새 주의점이 생겼다는 것도 기억하세요.</p>
+                    <p class="lecture-lead">최단 거리(0, 3, 5, 9, 10, 13)는 배열 버전(07 의사코드)으로 구해도 완전히 같습니다. <em>두 버전은 <strong>"미확정 최솟값을 찾는 방법"만 다르고 알고리즘은 동일</strong>하기 때문입니다.</em> 빨라진 대신, "낡은 항목 건너뛰기"라는 새 주의점이 생겼다는 것도 기억하세요.</p>
                 </div>
             </section>
 
-            <!-- 10. 잘못된 코드와 오류 찾기 -->
+            <!-- 9. 잘못된 코드와 오류 찾기 -->
             <section class="lesson-section" id="sec-bugs" aria-labelledby="h-bugs">
-                <h2 id="h-bugs" data-toc-label="잘못된 코드와 오류 찾기"><span class="section-no">10</span>잘못된 코드와 오류 찾기</h2>
+                <h2 id="h-bugs" data-toc-label="잘못된 코드와 오류 찾기"><span class="section-no">09</span>잘못된 코드와 오류 찾기</h2>
                 <p class="lecture-lead">다익스트라에서 초보자가 가장 자주 만드는 오류 두 가지입니다. 먼저 코드를 읽고 무엇이 잘못됐는지 생각한 뒤 해설을 여세요. <em>두 코드 모두 컴파일은 되고, <strong>조용히 틀린 답</strong>을 냅니다 — 가장 위험한 종류의 오류입니다.</em></p>
 
                 <article class="bug-card">
@@ -913,61 +889,79 @@ public class BuggyEagerVisit {
                 </article>
             </section>
 
-            <!-- 11. 복잡도 및 특성 분석 -->
+            <!-- 10. 복잡도 및 특성 분석 -->
             <section class="lesson-section" id="sec-complexity" aria-labelledby="h-complexity">
-                <h2 id="h-complexity" data-toc-label="복잡도 및 특성 분석"><span class="section-no">11</span>복잡도 및 특성 분석</h2>
+                <h2 id="h-complexity" data-toc-label="복잡도 및 특성 분석"><span class="section-no">10</span>복잡도 및 특성 분석</h2>
+                <p class="lecture-lead">복잡도 분석 = <strong>"지도가 커지면 일이 얼마나 늘어나는가?"</strong>를 따져 보는 것. 어려운 수식 대신 <strong>"몇 번 뽑고, 몇 번 비교하는가"</strong>만 세어 봅니다.</p>
 
-                <h3>입력 크기</h3>
-                <p>정점 수 <strong>V</strong>와 간선 수 <strong>E</strong>, 두 개의 입력 크기로 표현합니다. 캠퍼스 그래프는 V=6, E=9였습니다.</p>
-
-                <h3>주요 연산</h3>
+                <h3>입력 크기 — 무엇이 많아지는가?</h3>
                 <ul>
-                    <li><strong>뽑기</strong>(미확정 중 최솟값 선택)와 <strong>완화</strong>(dist 비교·갱신) 두 가지</li>
-                    <li>뽑기는 정점마다 1번씩 총 V번, 완화는 무방향 그래프에서 간선마다 최대 2번씩 총 O(E)번 시도됨</li>
+                    <li>그래프는 크기를 <strong>두 개의 숫자</strong>로 잼
+                        <ul>
+                            <li><strong>V</strong> = 정점(장소) 수 — 건물, 도시, 교차로가 많아질수록 커짐</li>
+                            <li><strong>E</strong> = 간선(길) 수 — 장소 사이를 잇는 길이 많아질수록 커짐</li>
+                        </ul>
+                    </li>
+                    <li>오늘의 캠퍼스 그래프는 <strong>V = 6, E = 9</strong></li>
                 </ul>
 
-                <h3>시간 복잡도</h3>
+                <h3>주요 연산 — 무엇을 세는가?</h3>
+                <ul>
+                    <li>다익스트라에서 반복되는 동작은 딱 두 가지
+                        <ul>
+                            <li><strong>뽑기</strong>: 미확정 정점 중 가장 가까운 곳을 고르기 — 정점마다 1번씩, 총 <strong>V번</strong></li>
+                            <li><strong>완화</strong>: "이 길로 가면 더 짧아지나?" 비교하고 고쳐 쓰기 — 길마다 검사, 무방향 그래프에서는 한 길을 양쪽에서 한 번씩 최대 2번, 총 <strong>O(E)번</strong></li>
+                        </ul>
+                    </li>
+                    <li>두 버전의 차이는 <strong>"뽑기 한 번이 얼마나 오래 걸리는가"</strong>뿐</li>
+                </ul>
+
+                <h3>시간 복잡도 — 얼마나 오래 걸리는가?</h3>
                 <div class="table-scroll">
                     <table class="data-table">
                         <thead>
-                            <tr><th scope="col">버전</th><th scope="col">뽑기 1회</th><th scope="col">완화 1회</th><th scope="col">전체</th></tr>
+                            <tr><th scope="col">버전</th><th scope="col">뽑기 1회</th><th scope="col">완화 1회</th><th scope="col">전체 Big-O</th><th scope="col">캠퍼스 (V=6, E=9)</th><th scope="col">큰 지도 (V=10,000, E=50,000)</th></tr>
                         </thead>
                         <tbody>
-                            <tr><td>배열 버전 (Step4Relax)</td><td>O(V) 훑기 × V회</td><td>O(1)</td><td><code>O(V² + E) ≈ O(V²)</code></td></tr>
-                            <tr><td>우선순위 큐 버전 (DijkstraComplete)</td><td>O(log V) 꺼내기</td><td>갱신 시 O(log V) 넣기</td><td><code>O((V + E) log V)</code></td></tr>
+                            <tr><td>배열 버전</td><td>배열 전체 훑기 O(V)</td><td>O(1)</td><td><code>O(V² + E) ≈ O(V²)</code></td><td>수십 번</td><td>약 1억(10⁸) 번</td></tr>
+                            <tr><td>우선순위 큐 버전 (DijkstraComplete)</td><td>큐에서 꺼내기 O(log V)</td><td>갱신 시 큐에 넣기 O(log V)</td><td><code>O((V + E) log V)</code></td><td>수십 번</td><td>약 100만(10⁶) 번</td></tr>
                         </tbody>
                     </table>
                 </div>
                 <ul>
-                    <li>정점 10,000개, 간선 50,000개라면 배열 버전은 약 10⁸번, 큐 버전은 약 10⁶번 수준의 연산</li>
-                    <li><em><strong>간선이 듬성한(희소) 큰 그래프일수록 우선순위 큐 버전이 압도적으로 유리</strong></em></li>
-                    <li>반대로 정점이 수백 개뿐이라면 배열 버전도 충분히 빠르고 코드가 단순함</li>
+                    <li><strong>배열 버전을 쉽게 말하면:</strong> 매번 "누가 제일 가깝지?"를 명단 전체를 처음부터 끝까지 읽어서 찾음 — V번 뽑기 × V칸 읽기 = V²</li>
+                    <li><strong>큐 버전을 쉽게 말하면:</strong> 번호표 기계(우선순위 큐)가 가장 가까운 후보를 바로 내어 줌 — 꺼내고 넣을 때마다 log V만큼의 정리만 하면 됨</li>
+                    <li><strong>작은 지도</strong>(캠퍼스처럼 정점 수백 개 이하): 두 버전 모두 순식간 — 코드가 단순한 배열 버전도 충분</li>
+                    <li><strong>크고 길이 듬성한(희소) 지도</strong>: 1억 번 vs 100만 번, 약 <strong>100배 차이</strong> — <em>우선순위 큐 버전이 압도적으로 유리</em></li>
                 </ul>
 
-                <h3>공간 복잡도</h3>
+                <h3>공간 복잡도 — 메모리를 얼마나 더 쓰는가?</h3>
                 <ul>
-                    <li>인접 리스트 O(V + E), <code>dist</code>·<code>prev</code>·<code>visited</code> 배열 O(V)</li>
-                    <li>우선순위 큐는 최악의 경우 간선마다 항목이 들어가 O(E)</li>
-                    <li>전체 <strong>O(V + E)</strong></li>
+                    <li><strong>지도 자체(인접 리스트):</strong> 정점마다 목록 하나 + 길마다 항목 — <code>O(V + E)</code></li>
+                    <li><strong>기록용 배열</strong> <code>dist</code>·<code>prev</code>·<code>visited</code>: 정점마다 한 칸씩 — <code>O(V)</code></li>
+                    <li><strong>우선순위 큐:</strong> 거리가 갱신될 때마다 새 항목을 넣으므로 최악의 경우 길 수만큼 쌓임 — <code>O(E)</code></li>
+                    <li>모두 합치면 <strong>O(V + E)</strong> — 지도 크기에 비례하는 만큼만 씀</li>
                 </ul>
+                <div class="note-box">
+                    <span class="note-box__title">한 줄 정리 — 뽑기를 빠르게 하면 전체가 빨라진다</span>
+                    <ul>
+                        <li>배열 버전 <strong>O(V²)</strong> → 우선순위 큐 버전 <strong>O((V + E) log V)</strong>, 메모리는 둘 다 <strong>O(V + E)</strong> 수준</li>
+                        <li>완화 규칙과 확정 논리는 그대로, <strong>"가장 가까운 정점 찾기"만 바꿔서</strong> 얻은 속도</li>
+                    </ul>
+                </div>
 
-                <h3>알고리즘 특성</h3>
+                <h3>알고리즘 특성 — 언제 무엇을 쓰는가?</h3>
                 <ul>
-                    <li><strong>그리디 + 점화식의 결합:</strong> 확정은 그리디(10강), 갱신은 점화식(11강).
-                        두 강의의 도구가 한 알고리즘 안에서 함께 일하는 대표 사례입니다.</li>
-                    <li><strong>음수 가중치 불가:</strong> "가장 가까운 미확정 정점은 번복 불필요"라는 그리디 논리가
-                        가중치 ≥ 0에 의존합니다. 음수 간선이 있으면 벨만-포드 등 다른 알고리즘이 필요합니다.</li>
-                    <li><strong>BFS는 다익스트라의 특수한 경우:</strong> 모든 가중치가 1이면 다익스트라의 확정 순서가
-                        BFS의 방문 순서와 같아집니다. 우선순위 큐가 일반 큐처럼 동작하기 때문입니다.</li>
-                    <li><strong>한 출발점 → 모든 정점:</strong> 다익스트라는 한 번 실행으로 출발점에서
-                        모든 정점까지의 최단 거리를 구합니다(single-source). 특정 목적지 하나만 필요하면
-                        그 정점이 확정되는 순간 멈춰도 됩니다.</li>
+                    <li><strong>그리디 + 점화식의 합작품:</strong> 확정은 그리디(10강), 거리 고쳐 쓰기는 점화식(11강) — 두 강의의 도구가 한 알고리즘 안에서 함께 일하는 대표 사례</li>
+                    <li><strong>음수 가중치에는 쓸 수 없음:</strong> "가장 가까운 미확정 정점은 다시 바뀌지 않는다"는 믿음은 모든 가중치가 0 이상일 때만 성립 — 음수 길이 있으면 벨만-포드 등 다른 알고리즘이 필요</li>
+                    <li><strong>BFS는 다익스트라의 특별한 경우:</strong> 모든 가중치가 1이면 다익스트라의 확정 순서가 BFS의 방문 순서와 같아짐 — 우선순위 큐가 일반 큐처럼 움직이기 때문</li>
+                    <li><strong>한 번 실행으로 모든 목적지:</strong> 출발점 하나에서 모든 정점까지의 최단 거리를 한꺼번에 구함(single-source) — 목적지 하나만 필요하면 그 정점이 확정되는 순간 멈춰도 됨</li>
                 </ul>
             </section>
 
-            <!-- 12. 실제 데이터 응용 예제 -->
+            <!-- 11. 실제 데이터 응용 예제 -->
             <section class="lesson-section" id="sec-application" aria-labelledby="h-application">
-                <h2 id="h-application" data-toc-label="실제 데이터 응용 예제"><span class="section-no">12</span>실제 데이터 응용 예제</h2>
+                <h2 id="h-application" data-toc-label="실제 데이터 응용 예제"><span class="section-no">11</span>실제 데이터 응용 예제</h2>
 
                 <h3>문제 상황</h3>
                 <ul>
@@ -1169,9 +1163,9 @@ public class ShortestPathApplication {
                 </ul>
             </section>
 
-            <!-- 13. 확인 퀴즈 -->
+            <!-- 12. 확인 퀴즈 -->
             <section class="lesson-section lesson-section--quiz" id="sec-quiz" aria-labelledby="h-quiz">
-                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">13</span>확인 퀴즈</h2>
+                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">12</span>확인 퀴즈</h2>
                 <div id="quiz-root"></div>
             </section>
 
@@ -1180,9 +1174,9 @@ public class ShortestPathApplication {
                 <p>지금까지 배운 내용을 직접 코드로 적용해 보는 과제입니다. 두 과제로 구성되며, 각 과제의 정답은 이 강의를 완료로 표시해야 열립니다.</p>
             </div>
 
-            <!-- 14. 따라 하기 실습 -->
+            <!-- 13. 따라 하기 실습 -->
             <section class="lesson-section lesson-section--assignment" id="sec-practice" aria-labelledby="h-practice">
-                <h2 id="h-practice" data-toc-label="따라 하기 실습"><span class="section-no">14</span>따라 하기 실습</h2>
+                <h2 id="h-practice" data-toc-label="따라 하기 실습"><span class="section-no">13</span>따라 하기 실습</h2>
 
                 <h3>실습 1 — 가중치 변경</h3>
                 <p>
@@ -1254,9 +1248,9 @@ System.out.println("10분 이내 도달 가능한 정점 수: " + within);</pre>
                 </details>
             </section>
 
-            <!-- 15. 최종 프로그램 작성 문제 -->
+            <!-- 14. 최종 프로그램 작성 문제 -->
             <section class="lesson-section lesson-section--assignment" id="sec-final" aria-labelledby="h-final">
-                <h2 id="h-final" data-toc-label="최종 프로그램 작성 문제"><span class="section-no">15</span>최종 프로그램 작성 문제</h2>
+                <h2 id="h-final" data-toc-label="최종 프로그램 작성 문제"><span class="section-no">14</span>최종 프로그램 작성 문제</h2>
 
                 <h3>문제 제목 — 동네 길찾기 "PathFinder"</h3>
 
@@ -1697,9 +1691,9 @@ public class PathFinderSolution {
                 </details>
             </section>
 
-            <!-- 16. 오늘의 핵심 정리 -->
+            <!-- 15. 오늘의 핵심 정리 -->
             <section class="lesson-section" id="sec-summary" aria-labelledby="h-summary">
-                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">16</span>오늘의 핵심 정리</h2>
+                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">15</span>오늘의 핵심 정리</h2>
                 <ul class="summary-list">
                     <li><strong>최단 경로 문제</strong>는 간선 수가 아니라 <strong>가중치의 합</strong>이 최소인 경로를 찾는 문제다.
                         BFS(9강)는 무가중치(모든 가중치 동일)에서만 최단을 보장한다.</li>
@@ -1715,9 +1709,9 @@ public class PathFinderSolution {
                 <div id="lesson-complete-slot"></div>
             </section>
 
-            <!-- 17. 다음 강의 연결 -->
+            <!-- 16. 다음 강의 연결 -->
             <section class="lesson-section" id="sec-next" aria-labelledby="h-next">
-                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">17</span>다음 강의 연결</h2>
+                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">16</span>다음 강의 연결</h2>
                 <p>
                     다음 강의는 <strong>13강. 종합 프로젝트</strong>입니다.
                     <em>새 알고리즘을 배우는 마지막 강의는 오늘이었습니다</em> —
@@ -1973,7 +1967,7 @@ public class PathFinderSolution {
                     "0, 3, 7, 9, ∞, ∞"
                 ],
                 answer: 1,
-                explain: "1회차에 A를 확정하고 B 3, C 7로 완화, 2회차에 B를 확정하고 C를 3+2=5로, D를 3+6=9로 완화합니다. 손 풀이(05번 섹션)의 STEP 2와 같습니다."
+                explain: "1회차에 A를 확정하고 B 3, C 7로 완화, 2회차에 B를 확정하고 C를 3+2=5로, D를 3+6=9로 완화합니다. 단계별 동작 과정(06번 섹션) 시각화의 2회차와 같습니다."
             },
             {
                 type: "fill",

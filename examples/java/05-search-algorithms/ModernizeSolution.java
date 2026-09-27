@@ -1,109 +1,130 @@
-import java.util.function.Predicate;
+import java.util.Arrays;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
- * 5강 「람다·스트림 수정 문제」 정답.
+ * 5강 「람다·스트림 변경」.
  *
- * 순차 탐색의 "무엇을 찾는가"를 Predicate로 분리한다.
- * 알고리즘은 그대로 O(n)이며, 이진 탐색은 이 방식으로 일반화되지 않는다.
+ * SearchAlgorithmsComplete.java(실습 코드)를 같은 결과가 나오도록 람다와 스트림으로 다시 쓴 것이다.
  */
 public class ModernizeSolution {
 
-    /** BookSearchApplication과 같은 구조 */
-    static class Book {
-        int number;
-        String title;
-        int stock;
+    /** 탐색 결과: 찾은 위치와 비교 횟수를 함께 담는 기록용 클래스 */
+    static class SearchResult {
+        int index;        // 찾은 위치 (없으면 -1)
+        int comparisons;  // 비교 횟수
 
-        Book(int number, String title, int stock) {
-            this.number = number;
-            this.title = title;
-            this.stock = stock;
-        }
-
-        @Override
-        public String toString() {
-            return "[" + number + "] " + title + " (재고 " + stock + "권)";
+        SearchResult(int index, int comparisons) {
+            this.index = index;
+            this.comparisons = comparisons;
         }
     }
 
-    /* ─────────── 이전: 찾는 것이 바뀔 때마다 메서드가 늘어난다 ─────────── */
+    /** 순차 탐색: 조건에 맞는 첫 인덱스를 findFirst로 찾는다. */
+    static SearchResult linearSearch(int[] arr, int target) {
+        int index = IntStream.range(0, arr.length)
+                .filter(i -> arr[i] == target)
+                .findFirst()                     // 찾는 즉시 멈춘다 (조기 중단)
+                .orElse(-1);
 
-    static int findByNumberLoop(Book[] books, int number) {
-        for (int i = 0; i < books.length; i++) {
-            if (books[i].number == number) return i;
-        }
-        return -1;
+        // findFirst는 찾은 칸까지만 비교하므로 비교 횟수는 index + 1, 못 찾으면 n번 전부
+        int comparisons = (index >= 0) ? index + 1 : arr.length;
+        return new SearchResult(index, comparisons);
     }
 
-    static int findByTitleLoop(Book[] books, String title) {
-        for (int i = 0; i < books.length; i++) {
-            if (books[i].title.equals(title)) return i;
-        }
-        return -1;
-    }
-
-    static int findInStockLoop(Book[] books) {
-        for (int i = 0; i < books.length; i++) {
-            if (books[i].stock > 0) return i;
-        }
-        return -1;
-    }
-
-    /* ─────────── 이후: 순회는 한 번만 쓰고, 조건은 받는다 ─────────── */
-
-    /**
-     * 조건에 맞는 첫 도서의 위치. 없으면 -1.
-     * 순차 탐색 그대로다 — 찾는 즉시 return하는 조기 중단도 그대로, 복잡도도 O(n) 그대로.
-     */
-    static int findFirstIndex(Book[] books, Predicate<Book> match) {
-        for (int i = 0; i < books.length; i++) {
-            if (match.test(books[i])) {
-                return i;
+    /** 반복문 기반 이진 탐색: low·mid·high가 매번 바뀌므로 반복문 그대로 둔다. */
+    static SearchResult binarySearchLoop(int[] arr, int target) {
+        int low = 0;
+        int high = arr.length - 1;
+        int comparisons = 0;
+        while (low <= high) {
+            int mid = (low + high) / 2;
+            comparisons++;                       // 핵심 연산: 비교
+            if (arr[mid] == target) {
+                return new SearchResult(mid, comparisons);
+            } else if (arr[mid] < target) {
+                low = mid + 1;                   // 왼쪽 절반 버리기
+            } else {
+                high = mid - 1;                  // 오른쪽 절반 버리기
             }
         }
-        return -1;
+        return new SearchResult(-1, comparisons);
+    }
+
+    /** 재귀 기반 이진 탐색: 같은 알고리즘을 "자기 자신 호출"로 표현한다. (7강에서 심화) */
+    static SearchResult binarySearchRecursive(int[] arr, int target,
+                                              int low, int high, int comparisons) {
+        if (low > high) {
+            return new SearchResult(-1, comparisons);      // 범위가 비면 실패
+        }
+        int mid = (low + high) / 2;
+        comparisons++;
+        if (arr[mid] == target) {
+            return new SearchResult(mid, comparisons);
+        } else if (arr[mid] < target) {
+            return binarySearchRecursive(arr, target, mid + 1, high, comparisons);
+        } else {
+            return binarySearchRecursive(arr, target, low, mid - 1, comparisons);
+        }
+    }
+
+    /** 중복이 있을 때 첫 번째 위치를 찾는다 (lower bound의 기초). */
+    static SearchResult firstOccurrence(int[] arr, int target) {
+        int low = 0;
+        int high = arr.length - 1;
+        int comparisons = 0;
+        int answer = -1;
+        while (low <= high) {
+            int mid = (low + high) / 2;
+            comparisons++;
+            if (arr[mid] == target) {
+                answer = mid;        // 일단 기록하고,
+                high = mid - 1;      // 더 왼쪽에도 있는지 계속 확인한다
+            } else if (arr[mid] < target) {
+                low = mid + 1;
+            } else {
+                high = mid - 1;
+            }
+        }
+        return new SearchResult(answer, comparisons);
     }
 
     public static void main(String[] args) {
-        Book[] books = {
-            new Book(1001, "알고리즘 첫걸음", 3),
-            new Book(1203, "자바 프로그래밍 입문", 5),
-            new Book(1450, "자료구조의 이해", 2),
-            new Book(2088, "데이터베이스 개론", 0),
-            new Book(2311, "운영체제 원리", 4),
-            new Book(2754, "컴퓨터 네트워크", 1)
-        };
+        int[] bookNumbers = {1001, 1203, 1450, 2088, 2311, 2754,
+                             3106, 3502, 3860, 4213, 4771, 5090};
+        int[] targets = {1001, 3106, 5090, 2500};   // 2500은 없는 번호
 
-        System.out.println("== 문제 ① 조건을 값으로 받는 순차 탐색 ==");
+        System.out.println("도서 " + bookNumbers.length + "권에서 번호 찾기 — 순차 vs 이진(반복) vs 이진(재귀)");
+        System.out.println("찾는 번호 | 순차 위치 | 순차 비교 | 이진 위치 | 이진 비교 | 재귀 비교");
+        System.out.println("---------+----------+----------+----------+----------+----------");
 
-        int byNumberOld = findByNumberLoop(books, 2311);
-        int byNumberNew = findFirstIndex(books, b -> b.number == 2311);
-        System.out.println("  번호 2311  이전 " + byNumberOld + " | 이후 " + byNumberNew
-                + " | 같은가 " + (byNumberOld == byNumberNew));
+        Arrays.stream(targets).forEach(target -> {
+            SearchResult lin = linearSearch(bookNumbers, target);
+            SearchResult bin = binarySearchLoop(bookNumbers, target);
+            SearchResult rec = binarySearchRecursive(bookNumbers, target,
+                    0, bookNumbers.length - 1, 0);
 
-        int byTitleOld = findByTitleLoop(books, "자료구조의 이해");
-        int byTitleNew = findFirstIndex(books, b -> b.title.equals("자료구조의 이해"));
-        System.out.println("  제목 검색  이전 " + byTitleOld + " | 이후 " + byTitleNew
-                + " | 같은가 " + (byTitleOld == byTitleNew));
+            System.out.printf("%-9d| %-9d| %-9d| %-9d| %-9d| %d%n",
+                    target, lin.index, lin.comparisons, bin.index, bin.comparisons, rec.comparisons);
 
-        int inStockOld = findInStockLoop(books);
-        int inStockNew = findFirstIndex(books, b -> b.stock > 0);
-        System.out.println("  재고 있음  이전 " + inStockOld + " | 이후 " + inStockNew
-                + " | 같은가 " + (inStockOld == inStockNew));
-
-        // 메서드를 새로 만들지 않고 새 조건을 바로 쓸 수 있다 — 이것이 실제로 얻는 것이다
-        int found = findFirstIndex(books, b -> b.stock >= 3 && b.number > 1100);
-        System.out.println("  새 조건(재고 3권 이상 + 번호 1100 초과): "
-                + (found >= 0 ? books[found].toString() : "없음"));
+            // 세 방법의 위치를 모아 중복을 없앴을 때 하나만 남아야 정확하다
+            boolean allSame = Stream.of(lin, bin, rec)
+                    .map(r -> r.index)
+                    .distinct()
+                    .count() == 1;
+            if (!allSame) {
+                System.out.println("경고: 세 방법의 결과가 다릅니다! 알고리즘에 오류가 있습니다.");
+            }
+        });
 
         System.out.println();
-        System.out.println("== 문제 ② 이진 탐색은 왜 이렇게 못 바꾸는가 ==");
-        System.out.println("  Predicate가 답할 수 있는 것은 '맞다 / 아니다' 둘뿐이다.");
-        System.out.println("  이진 탐색에 필요한 답은 '같다 / 왼쪽으로 / 오른쪽으로' 셋이다.");
-        System.out.println("  게다가 그 판정은 배열이 정렬된 기준과 반드시 같아야 한다.");
-        System.out.println("  그래서 이진 탐색을 일반화하려면 Predicate가 아니라 Comparator를 받아야 한다.");
-        System.out.println();
-        System.out.println("  findFirstIndex는 여전히 O(n)이다. 람다를 썼다고 이진 탐색이 되지 않는다.");
-        System.out.println("  O(log n)을 만드는 것은 '정렬해 두었다'는 조건이지 문법이 아니다.");
+        int[] withDuplicates = {1001, 2311, 2311, 2311, 2754, 3106, 3106, 3860};
+        System.out.println("중복이 있는 배열: " + Arrays.toString(withDuplicates));
+        SearchResult any = binarySearchLoop(withDuplicates, 2311);
+        SearchResult first = firstOccurrence(withDuplicates, 2311);
+        System.out.println("2311을 일반 이진 탐색으로: 인덱스 " + any.index
+                + " (비교 " + any.comparisons + "번) — 중복 중 '어느 하나'에서 멈춘다");
+        System.out.println("2311을 firstOccurrence로 : 인덱스 " + first.index
+                + " (비교 " + first.comparisons + "번) — 항상 '첫 번째' 위치를 보장한다");
     }
 }

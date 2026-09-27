@@ -1,138 +1,130 @@
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.stream.Stream;
 
 /**
- * 4강 「람다·스트림 수정 문제」 정답.
+ * 4강 「람다·스트림 변경」.
  *
- * ProductSorterSolution.java의 블록 몸통 람다 세 개를
- * Comparator의 조립 메서드로 다시 쓴 것이다.
- * 정렬 알고리즘(삽입 정렬)은 한 줄도 바뀌지 않는다 — 최악 O(n^2) 그대로다.
+ * SortingThreeComplete.java(실습 코드)를 같은 결과가 나오도록 람다와 스트림으로 다시 쓴 것이다.
+ * 배열의 칸을 직접 바꾸는 정렬 알고리즘의 핵심(교환·이동)은 반복문으로 둔다.
  */
 public class ModernizeSolution {
 
-    static class Product {
-        String name;
-        int price;
-        double rating;
+    /** 오름차순 기준: 세 정렬이 모두 이 람다로 두 값의 순서를 판단한다. */
+    static final Comparator<Integer> ASC = (a, b) -> Integer.compare(a, b);
 
-        Product(String name, int price, double rating) {
+    /** 한 번의 정렬 결과와 연산 횟수를 담는 기록 클래스 (정렬 이름 포함) */
+    static class SortResult {
+        String name;       // 정렬 이름
+        int[] sorted;      // 정렬된 배열
+        long compares;     // 비교 횟수
+        long swapsOrMoves; // 교환 횟수(선택·버블) 또는 이동 횟수(삽입)
+
+        SortResult(String name, int[] sorted, long compares, long swapsOrMoves) {
             this.name = name;
-            this.price = price;
-            this.rating = rating;
-        }
-
-        String getName() { return name; }
-
-        @Override
-        public String toString() {
-            return name + " (" + price + "원, 평점 " + rating + ")";
+            this.sorted = sorted;
+            this.compares = compares;
+            this.swapsOrMoves = swapsOrMoves;
         }
     }
 
-    /* ─────────── 이전: ProductSorterSolution의 블록 몸통 람다 ─────────── */
+    /** 선택 정렬: 남은 구간의 최솟값을 찾아 앞으로 보낸다. */
+    static SortResult selectionSort(int[] input, Comparator<Integer> order) {
+        int[] arr = Arrays.stream(input).toArray(); // 원본 보존 (스트림으로 복사)
+        long compares = 0;
+        long swaps = 0;
 
-    static final Comparator<Product> PRICE_ASC_OLD = (a, b) -> {
-        return Integer.compare(a.price, b.price);
-    };
-
-    static final Comparator<Product> RATING_DESC_OLD = (a, b) -> {
-        return Double.compare(b.rating, a.rating);   // 인자 순서를 뒤집어 내림차순
-    };
-
-    static final Comparator<Product> RATING_DESC_THEN_NAME_OLD = (a, b) -> {
-        int byRating = Double.compare(b.rating, a.rating);
-        if (byRating != 0) {
-            return byRating;                          // 평점이 다르면 평점으로 결정
+        for (int i = 0; i < arr.length - 1; i++) {
+            int minIndex = i;
+            for (int j = i + 1; j < arr.length; j++) {
+                compares++;
+                if (order.compare(arr[j], arr[minIndex]) < 0) {
+                    minIndex = j;
+                }
+            }
+            if (minIndex != i) {
+                int temp = arr[i];
+                arr[i] = arr[minIndex];
+                arr[minIndex] = temp;
+                swaps++;
+            }
         }
-        return a.name.compareTo(b.name);              // 동점일 때만 이름으로 결정
-    };
+        return new SortResult("선택 정렬", arr, compares, swaps);
+    }
 
-    /* ─────────── 이후: 조립해서 만든 기준 ─────────── */
+    /** 버블 정렬: 이웃끼리 비교·교환하며 큰 값을 뒤로 밀어낸다. 교환이 없으면 조기 종료. */
+    static SortResult bubbleSort(int[] input, Comparator<Integer> order) {
+        int[] arr = Arrays.stream(input).toArray();
+        long compares = 0;
+        long swaps = 0;
 
-    // "무엇으로 비교할지"만 준다. 부호를 따질 일이 없다.
-    static final Comparator<Product> PRICE_ASC_NEW =
-            Comparator.comparingInt(p -> p.price);
+        for (int i = 0; i < arr.length - 1; i++) {
+            boolean swapped = false;
+            for (int j = 0; j < arr.length - 1 - i; j++) {
+                compares++;
+                if (order.compare(arr[j], arr[j + 1]) > 0) {
+                    int temp = arr[j];
+                    arr[j] = arr[j + 1];
+                    arr[j + 1] = temp;
+                    swaps++;
+                    swapped = true;
+                }
+            }
+            if (!swapped) {
+                break; // 한 바퀴 동안 교환이 없었다 = 이미 정렬 완료
+            }
+        }
+        return new SortResult("버블 정렬", arr, compares, swaps);
+    }
 
-    // 내림차순은 인자 순서를 뒤집는 것이 아니라 reversed()로 말한다.
-    static final Comparator<Product> RATING_DESC_NEW =
-            Comparator.comparingDouble((Product p) -> p.rating).reversed();
+    /** 삽입 정렬: 왼쪽의 정렬된 영역에 새 값을 알맞은 자리에 끼워 넣는다. */
+    static SortResult insertionSort(int[] input, Comparator<Integer> order) {
+        int[] arr = Arrays.stream(input).toArray();
+        long compares = 0;
+        long moves = 0;
 
-    // "평점으로 비교 → 뒤집기 → 동점이면 이름으로"가 순서대로 읽힌다.
-    static final Comparator<Product> RATING_DESC_THEN_NAME_NEW =
-            Comparator.comparingDouble((Product p) -> p.rating)
-                      .reversed()
-                      .thenComparing(Product::getName);
-
-    /** ProductSorterSolution과 같은 삽입 정렬 — 이 코드는 바뀌지 않는다 */
-    static void insertionSort(Product[] arr, Comparator<Product> comp) {
         for (int i = 1; i < arr.length; i++) {
-            Product key = arr[i];
+            int key = arr[i];
             int j = i - 1;
-            // 주의: > 0 이어야 안정 정렬이다 (>= 0으로 쓰면 같은 값의 순서가 뒤집힌다)
-            while (j >= 0 && comp.compare(arr[j], key) > 0) {
-                arr[j + 1] = arr[j];
-                j--;
+            while (j >= 0) {
+                compares++;
+                if (order.compare(arr[j], key) > 0) {
+                    arr[j + 1] = arr[j]; // 한 칸 뒤로 민다 (이동)
+                    moves++;
+                    j--;
+                } else {
+                    break;
+                }
             }
             arr[j + 1] = key;
         }
+        return new SortResult("삽입 정렬", arr, compares, moves);
     }
 
-    static String namesOf(Product[] items) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < items.length; i++) {
-            if (i > 0) sb.append(", ");
-            sb.append(items[i].name);
-        }
-        return sb.toString();
-    }
+    static void printTable(String title, int[] data) {
+        System.out.println("== " + title + ": " + Arrays.toString(data) + " ==");
+        System.out.println("알고리즘  | 비교 횟수 | 교환·이동 | 정렬 결과");
 
-    /** 같은 배열에 두 기준을 각각 적용해 결과 순서가 같은지 확인한다 */
-    static boolean sameOrder(Product[] source,
-                             Comparator<Product> oldRule,
-                             Comparator<Product> newRule) {
-        Product[] a = Arrays.copyOf(source, source.length);
-        Product[] b = Arrays.copyOf(source, source.length);
-        insertionSort(a, oldRule);
-        insertionSort(b, newRule);
-        return Arrays.equals(a, b);
+        // 세 정렬의 결과를 한 줄로 늘어놓고, 같은 형식으로 한 줄씩 출력한다
+        Stream.of(selectionSort(data, ASC), bubbleSort(data, ASC), insertionSort(data, ASC))
+                .forEach(r -> System.out.printf("%s | %-8d | %-8d | %s%n",
+                        r.name, r.compares, r.swapsOrMoves, Arrays.toString(r.sorted)));
+        System.out.println();
     }
 
     public static void main(String[] args) {
-        Product[] products = {
-            new Product("무선 마우스", 23000, 4.5),
-            new Product("기계식 키보드", 89000, 4.8),
-            new Product("USB 허브", 15000, 4.2),
-            new Product("모니터 받침대", 23000, 4.7),
-            new Product("노트북 파우치", 18000, 4.5),
-            new Product("웹캠", 54000, 4.2)
-        };
+        int[] random = {26, 15, 38, 12, 21, 30, 8, 19};              // 무작위 데이터
+        int[] sorted = Arrays.stream(random).sorted().toArray();     // 이미 정렬된 데이터 (최선)
+        int[] reversed = Arrays.stream(random).boxed()               // 역순 데이터 (최악)
+                .sorted(ASC.reversed())
+                .mapToInt(x -> x)
+                .toArray();
 
-        System.out.println("== 문제 ① 단일 기준 ==");
-        System.out.println("  가격 오름차순 같은가 "
-                + sameOrder(products, PRICE_ASC_OLD, PRICE_ASC_NEW));
-        System.out.println("  평점 내림차순 같은가 "
-                + sameOrder(products, RATING_DESC_OLD, RATING_DESC_NEW));
+        printTable("무작위 데이터", random);
+        printTable("이미 정렬된 데이터", sorted);
+        printTable("역순 데이터", reversed);
 
-        System.out.println();
-        System.out.println("== 문제 ② 다중 기준 ==");
-        System.out.println("  평점 내림차순 + 동점 시 이름순 같은가 "
-                + sameOrder(products, RATING_DESC_THEN_NAME_OLD, RATING_DESC_THEN_NAME_NEW));
-
-        Product[] sorted = Arrays.copyOf(products, products.length);
-        insertionSort(sorted, RATING_DESC_THEN_NAME_NEW);
-        System.out.println("  결과: " + namesOf(sorted));
-
-        System.out.println();
-        System.out.println("== 안정 정렬이 깨지지 않았는지 ==");
-        // 가격이 같은 23000원 두 상품이 입력 순서를 지키는지 확인한다
-        Product[] byPrice = Arrays.copyOf(products, products.length);
-        insertionSort(byPrice, PRICE_ASC_NEW);
-        System.out.println("  " + namesOf(byPrice));
-        System.out.println("  23000원 두 상품이 입력 순서(무선 마우스 → 모니터 받침대)를 유지: "
-                + (byPrice[2].name.equals("무선 마우스") && byPrice[3].name.equals("모니터 받침대")));
-
-        System.out.println();
-        System.out.println("정렬 코드(insertionSort)는 한 줄도 바뀌지 않았다.");
-        System.out.println("비교 횟수도 같다 — 삽입 정렬은 여전히 최악 O(n^2)이다.");
+        System.out.println("관찰: 비교 횟수의 '모양'은 세 정렬 모두 O(n^2)이지만,");
+        System.out.println("      이미 정렬된 입력에서 버블(조기 종료)과 삽입은 n-1번 비교로 끝난다.");
     }
 }

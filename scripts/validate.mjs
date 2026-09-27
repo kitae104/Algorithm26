@@ -75,15 +75,19 @@ for (const item of supplements) {
 }
 
 /* ---------- 2. 강의 HTML 구조 ---------- */
-/* 13개 강의 전부가 공유하는 18개 필수 섹션.
+/* 13개 강의 전부가 공유하는 16개 필수 섹션.
    (점진적 Java 구현·실행 과정 추적은 실습 코드 절로 흡수되어 더 이상 별도 섹션이 아니다) */
 const REQUIRED_SECTIONS = [
     "sec-intro", "sec-objectives", "sec-prereq", "sec-problem",
-    "sec-hand", "sec-concepts", "sec-steps", "sec-pseudo",
+    "sec-concepts", "sec-steps", "sec-pseudo",
     "sec-complete", "sec-bugs", "sec-complexity",
     "sec-application", "sec-quiz", "sec-practice", "sec-final",
     "sec-summary", "sec-next"
 ];
+
+/* 없앤 섹션이 다시 들어오지 않게.
+   "사람이 직접 해결해 보기"(sec-hand)는 없애고 핵심 개념에서 바로 시작한다. */
+const REMOVED_SECTIONS = ["sec-hand"];
 
 const REQUIRED_MARKERS = [
     ["data-site-header", "상단 내비게이션 자리"],
@@ -116,6 +120,9 @@ for (const lesson of lessons) {
 
     for (const id of REQUIRED_SECTIONS) {
         if (!html.includes(`id="${id}"`)) fail(`${lesson.path}: 필수 섹션 누락 — ${id}`);
+    }
+    for (const id of REMOVED_SECTIONS) {
+        if (html.includes(`id="${id}"`)) fail(`${lesson.path}: 없앤 섹션이 남아 있음 — ${id}`);
     }
     if (!html.includes(`data-lesson-id="${lesson.id}"`)) {
         fail(`${lesson.path}: body data-lesson-id가 "${lesson.id}"가 아님`);
@@ -404,13 +411,13 @@ for (const lesson of lessons) {
     }
 }
 
-/* ---------- 6. 람다·스트림 수정 문제 ----------
+/* ---------- 6. 람다·스트림 변경 ----------
    커리큘럼 밖 문법(람다·스트림)을 끌어오는 자리이므로 규칙이 셋 있다.
    (1) 정해진 6개 강의에만 있어야 한다 — 재귀·DP 강의로 번지면
        "람다를 쓰면 무조건 좋다"는 오해를 준다.
-   (2) 정답을 실제로 돌려 볼 수 있어야 한다(ModernizeSolution.java).
-   (3) 정답에 쓰는 API는 추가 정보 문서가 가르친 것뿐이어야 한다.
-       가르치지 않은 API가 정답에 나오면 학생은 풀 수가 없다. */
+   (2) 바꾼 코드를 실제로 돌려 볼 수 있어야 한다(ModernizeSolution.java).
+   (3) 바꾼 코드에 쓰는 API는 추가 정보 문서가 가르친 것뿐이어야 한다.
+       가르치지 않은 API가 나오면 학생은 읽을 수가 없다. */
 const MODERNIZE_LESSONS = new Set([
     "arrays-and-lists",
     "brute-force-string-hash",
@@ -440,7 +447,7 @@ for (const lesson of lessons) {
 
     if (MODERNIZE_LESSONS.has(lesson.id)) {
         if (!hasSection) {
-            fail(`${lesson.path}: 수정 문제 섹션(sec-modernize) 누락`);
+            fail(`${lesson.path}: 람다·스트림 변경 섹션(sec-modernize) 누락`);
         }
         if (!hasSolution) {
             fail(`examples/java/${num}-${lesson.id}: ModernizeSolution.java 없음`);
@@ -463,7 +470,7 @@ for (const lesson of lessons) {
         }
     } else {
         if (hasSection) {
-            fail(`${lesson.path}: 수정 문제 대상 강의가 아닌데 sec-modernize가 있음`);
+            fail(`${lesson.path}: 람다·스트림 변경 대상 강의가 아닌데 sec-modernize가 있음`);
         }
         if (hasSolution) {
             fail(`examples/java/${num}-${lesson.id}: 대상 강의가 아닌데 ModernizeSolution.java가 있음`);
