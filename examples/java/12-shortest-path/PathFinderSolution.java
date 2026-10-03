@@ -8,29 +8,9 @@ import java.util.List;
  */
 public class PathFinderSolution {
 
+    // Edge, Result 클래스는 같은 폴더의 Edge.java, Result.java에 정의되어 있다.
+
     static final int INF = Integer.MAX_VALUE;
-
-    /** 간선 정보: 도착 장소 번호와 걷는 시간(분) */
-    static class Edge {
-        int to;
-        int weight;
-
-        Edge(int to, int weight) {
-            this.to = to;
-            this.weight = weight;
-        }
-    }
-
-    /** 다익스트라 결과: 최단 시간 배열 + 경로 복원용 직전 장소 배열 */
-    static class Result {
-        int[] dist;
-        int[] prev;
-
-        Result(int[] dist, int[] prev) {
-            this.dist = dist;
-            this.prev = prev;
-        }
-    }
 
     static void addPath(List<List<Edge>> map, int u, int v, int minutes) {
         map.get(u).add(new Edge(v, minutes));

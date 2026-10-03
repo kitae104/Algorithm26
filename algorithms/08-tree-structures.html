@@ -304,6 +304,24 @@
                     <header class="code-card__header">
                         <div class="code-card__info">
                             <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">Node.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-complete-node" aria-label="Node.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-complete-node" class="language-java">public class Node {
+    int value;
+    Node left;
+    Node right;
+
+    Node(int value) {
+        this.value = value;
+    }
+}</code></pre>
+                </article>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
                             <strong class="code-card__filename">BstComplete.java</strong>
                         </div>
                         <button type="button" class="copy-code-button" data-copy-target="code-complete" aria-label="BstComplete.java 코드 복사">코드 복사</button>
@@ -313,15 +331,7 @@ import java.util.Queue;
 
 public class BstComplete {
 
-    static class Node {
-        int value;
-        Node left;
-        Node right;
-
-        Node(int value) {
-            this.value = value;
-        }
-    }
+    // Node 클래스는 같은 폴더의 Node.java에 정의되어 있다.
 
     /** 재귀 삽입: 서브트리에 값을 넣고 그 서브트리의 루트를 돌려준다 */
     static Node insert(Node node, int value) {
@@ -464,21 +474,31 @@ public class BstComplete {
                             <header class="code-card__header">
                                 <div class="code-card__info">
                                     <span class="code-card__language">Java</span>
+                                    <strong class="code-card__filename">Node.java</strong>
+                                </div>
+                                <button type="button" class="copy-code-button" data-copy-target="code-bugs-node" aria-label="Node.java 코드 복사">코드 복사</button>
+                            </header>
+                            <pre><code id="code-bugs-node" class="language-java">public class Node {
+    int value;
+    Node left;
+    Node right;
+
+    Node(int value) {
+        this.value = value;
+    }
+}</code></pre>
+                        </article>
+                        <article class="code-card">
+                            <header class="code-card__header">
+                                <div class="code-card__info">
+                                    <span class="code-card__language">Java</span>
                                     <strong class="code-card__filename">BuggyInsertIgnoreReturn.java (오류 있음)</strong>
                                 </div>
                                 <button type="button" class="copy-code-button" data-copy-target="code-bug1" aria-label="오류 1 코드 복사">코드 복사</button>
                             </header>
                             <pre><code id="code-bug1" class="language-java">public class BuggyInsertIgnoreReturn {
 
-    static class Node {
-        int value;
-        Node left;
-        Node right;
-
-        Node(int value) {
-            this.value = value;
-        }
-    }
+    // Node 클래스는 같은 폴더의 Node.java에 정의되어 있다.
 
     static Node insert(Node node, int value) {
         if (node == null) {
@@ -558,15 +578,7 @@ root == null ? true</pre>
                             </header>
                             <pre><code id="code-bug2" class="language-java">public class BuggyInorderNoBase {
 
-    static class Node {
-        int value;
-        Node left;
-        Node right;
-
-        Node(int value) {
-            this.value = value;
-        }
-    }
+    // Node 클래스는 같은 폴더의 Node.java에 정의되어 있다.
 
     /** 중위 순회 */
     static void inorder(Node node) {
@@ -681,30 +693,45 @@ root == null ? true</pre>
                     <header class="code-card__header">
                         <div class="code-card__info">
                             <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">Dept.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-application-dept" aria-label="Dept.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-application-dept" class="language-java">import java.util.ArrayList;
+import java.util.List;
+
+/** 조직도의 부서: 자식 수가 정해져 있지 않으므로 List로 관리하는 일반 트리 */
+public class Dept {
+    String name;
+    int headcount;                            // 이 부서에 직접 소속된 인원
+    List&lt;Dept&gt; children = new ArrayList&lt;&gt;();  // 하위 부서 목록
+
+    /** 인원 정보 없이 이름만으로 만드는 부서 (headcount는 0) */
+    Dept(String name) {
+        this.name = name;
+    }
+
+    Dept(String name, int headcount) {
+        this.name = name;
+        this.headcount = headcount;
+    }
+
+    void add(Dept child) {
+        children.add(child);
+    }
+}</code></pre>
+                </article>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
                             <strong class="code-card__filename">OrgChartApplication.java</strong>
                         </div>
                         <button type="button" class="copy-code-button" data-copy-target="code-app" aria-label="OrgChartApplication.java 코드 복사">코드 복사</button>
                     </header>
-                    <pre><code id="code-app" class="language-java">import java.util.ArrayList;
-import java.util.List;
+                    <pre><code id="code-app" class="language-java">public class OrgChartApplication {
 
-public class OrgChartApplication {
-
-    /** 조직도의 부서: 자식 수가 정해져 있지 않으므로 List로 관리하는 일반 트리 */
-    static class Dept {
-        String name;
-        int headcount;                            // 이 부서에 직접 소속된 인원
-        List&lt;Dept&gt; children = new ArrayList&lt;&gt;();  // 하위 부서 목록
-
-        Dept(String name, int headcount) {
-            this.name = name;
-            this.headcount = headcount;
-        }
-
-        void add(Dept child) {
-            children.add(child);
-        }
-    }
+    // Dept 클래스는 같은 폴더의 Dept.java에 정의되어 있다.
 
     /** 부서 구조를 들여쓰기로 출력한다 (전위 순회: 자신 먼저, 그다음 하위 부서) */
     static void printOrg(Dept dept, int depth) {
@@ -862,21 +889,31 @@ public class OrgChartApplication {
                     <header class="code-card__header">
                         <div class="code-card__info">
                             <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">Node.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-practice-node" aria-label="Node.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-practice-node" class="language-java">public class Node {
+    int value;
+    Node left;
+    Node right;
+
+    Node(int value) {
+        this.value = value;
+    }
+}</code></pre>
+                </article>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
                             <strong class="code-card__filename">TreeStatsPractice.java</strong>
                         </div>
                         <button type="button" class="copy-code-button" data-copy-target="code-practice3" aria-label="TreeStatsPractice.java 코드 복사">코드 복사</button>
                     </header>
                     <pre><code id="code-practice3" class="language-java">public class TreeStatsPractice {
 
-    static class Node {
-        int value;
-        Node left;
-        Node right;
-
-        Node(int value) {
-            this.value = value;
-        }
-    }
+    // Node 클래스는 같은 폴더의 Node.java에 정의되어 있다.
 
     static Node insert(Node node, int value) {
         if (node == null) {
@@ -1031,28 +1068,45 @@ static int maxValue(Node node) {
                     <header class="code-card__header">
                         <div class="code-card__info">
                             <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">Dept.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-final-dept" aria-label="Dept.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-final-dept" class="language-java">import java.util.ArrayList;
+import java.util.List;
+
+/** 조직도의 부서: 자식 수가 정해져 있지 않으므로 List로 관리하는 일반 트리 */
+public class Dept {
+    String name;
+    int headcount;                            // 이 부서에 직접 소속된 인원
+    List&lt;Dept&gt; children = new ArrayList&lt;&gt;();  // 하위 부서 목록
+
+    /** 인원 정보 없이 이름만으로 만드는 부서 (headcount는 0) */
+    Dept(String name) {
+        this.name = name;
+    }
+
+    Dept(String name, int headcount) {
+        this.name = name;
+        this.headcount = headcount;
+    }
+
+    void add(Dept child) {
+        children.add(child);
+    }
+}</code></pre>
+                </article>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
                             <strong class="code-card__filename">OrgTreeStarter.java</strong>
                         </div>
                         <button type="button" class="copy-code-button" data-copy-target="code-starter" aria-label="OrgTreeStarter.java 코드 복사">코드 복사</button>
                     </header>
-                    <pre><code id="code-starter" class="language-java">import java.util.ArrayList;
-import java.util.List;
+                    <pre><code id="code-starter" class="language-java">public class OrgTreeStarter {
 
-public class OrgTreeStarter {
-
-    /** 조직도의 부서 노드: 하위 부서가 몇 개든 담을 수 있는 일반 트리 */
-    static class Dept {
-        String name;
-        List&lt;Dept&gt; children = new ArrayList&lt;&gt;();
-
-        Dept(String name) {
-            this.name = name;
-        }
-
-        void add(Dept child) {
-            children.add(child);
-        }
-    }
+    // Dept 클래스는 같은 폴더의 Dept.java에 정의되어 있다.
 
     /** 요구사항 1: 전위 순회로 전체 부서를 들여쓰기와 함께 출력한다. */
     static void printOrgChart(Dept dept, int depth) {
@@ -1186,24 +1240,9 @@ public class OrgTreeStarter {
                                 </div>
                                 <button type="button" class="copy-code-button" data-copy-target="code-solution" aria-label="OrgTreeSolution.java 코드 복사">코드 복사</button>
                             </header>
-                            <pre><code id="code-solution" class="language-java">import java.util.ArrayList;
-import java.util.List;
+                            <pre><code id="code-solution" class="language-java">public class OrgTreeSolution {
 
-public class OrgTreeSolution {
-
-    /** 조직도의 부서 노드: 하위 부서가 몇 개든 담을 수 있는 일반 트리 */
-    static class Dept {
-        String name;
-        List&lt;Dept&gt; children = new ArrayList&lt;&gt;();
-
-        Dept(String name) {
-            this.name = name;
-        }
-
-        void add(Dept child) {
-            children.add(child);
-        }
-    }
+    // Dept 클래스는 같은 폴더의 Dept.java에 정의되어 있다.
 
     /** 요구사항 1: 전위 순회로 전체 부서를 들여쓰기와 함께 출력한다. */
     static void printOrgChart(Dept dept, int depth) {

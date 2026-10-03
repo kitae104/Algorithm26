@@ -1,14 +1,6 @@
 public class Step4InorderTraversal {
 
-    static class Node {
-        int value;
-        Node left;
-        Node right;
-
-        Node(int value) {
-            this.value = value;
-        }
-    }
+    // Node 클래스는 같은 폴더의 Node.java에 정의되어 있다.
 
     static Node insert(Node node, int value) {
         if (node == null) {

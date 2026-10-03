@@ -1,14 +1,6 @@
 public class Step3RecursiveInsert {
 
-    static class Node {
-        int value;
-        Node left;
-        Node right;
-
-        Node(int value) {
-            this.value = value;
-        }
-    }
+    // Node 클래스는 같은 폴더의 Node.java에 정의되어 있다.
 
     /**
      * 재귀 삽입: "node를 루트로 하는 서브트리에 value를 넣고,

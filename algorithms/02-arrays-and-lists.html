@@ -1030,6 +1030,25 @@ public class BookLoanApplication {
                     <header class="code-card__header">
                         <div class="code-card__info">
                             <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">Student.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-final-student" aria-label="Student.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-final-student" class="language-java">/** 학생 한 명의 데이터: 이름 + 점수 */
+public class Student {
+    String name;
+    int score;
+
+    Student(String name, int score) {
+        this.name = name;
+        this.score = score;
+    }
+}</code></pre>
+                </article>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
                             <strong class="code-card__filename">GradeAnalyzerStarter.java</strong>
                         </div>
                         <button type="button" class="copy-code-button" data-copy-target="code-starter" aria-label="GradeAnalyzerStarter.java 코드 복사">코드 복사</button>
@@ -1038,16 +1057,7 @@ public class BookLoanApplication {
 
 public class GradeAnalyzerStarter {
 
-    /** 학생 한 명의 데이터: 이름 + 점수 */
-    static class Student {
-        String name;
-        int score;
-
-        Student(String name, int score) {
-            this.name = name;
-            this.score = score;
-        }
-    }
+    // Student 클래스는 같은 폴더의 Student.java에 정의되어 있다.
 
     /** 1) 전체 점수 합계 */
     static int totalScore(Student[] students) {
@@ -1195,16 +1205,7 @@ public class GradeAnalyzerStarter {
 
 public class GradeAnalyzerSolution {
 
-    /** 학생 한 명의 데이터: 이름 + 점수 */
-    static class Student {
-        String name;
-        int score;
-
-        Student(String name, int score) {
-            this.name = name;
-            this.score = score;
-        }
-    }
+    // Student 클래스는 같은 폴더의 Student.java에 정의되어 있다.
 
     /** 1) 전체 점수 합계 — 1강의 누적 패턴, O(n) */
     static int totalScore(Student[] students) {

@@ -4,18 +4,9 @@ import java.util.List;
 
 public class Step4Relax {
 
+    // Edge 클래스는 같은 폴더의 Edge.java에 정의되어 있다.
+
     static final int INF = Integer.MAX_VALUE;
-
-    /** 간선 정보: 도착 정점 번호와 가중치(이동 시간) */
-    static class Edge {
-        int to;
-        int weight;
-
-        Edge(int to, int weight) {
-            this.to = to;
-            this.weight = weight;
-        }
-    }
 
     static void addEdge(List<List<Edge>> graph, int u, int v, int weight) {
         graph.get(u).add(new Edge(v, weight));

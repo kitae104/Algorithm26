@@ -3,16 +3,7 @@ import java.util.List;
 
 public class Step1WeightedGraph {
 
-    /** 간선 정보: 도착 정점 번호와 가중치(이동 시간) */
-    static class Edge {
-        int to;
-        int weight;
-
-        Edge(int to, int weight) {
-            this.to = to;
-            this.weight = weight;
-        }
-    }
+    // Edge 클래스는 같은 폴더의 Edge.java에 정의되어 있다.
 
     /** 무방향 가중치 간선을 양쪽 인접 리스트에 모두 추가한다 */
     static void addEdge(List<List<Edge>> graph, int u, int v, int weight) {

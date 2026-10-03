@@ -258,22 +258,32 @@
                     <header class="code-card__header">
                         <div class="code-card__info">
                             <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">SearchResult.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-complete-searchresult" aria-label="SearchResult.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-complete-searchresult" class="language-java">/** 탐색 결과: 찾은 위치와 비교 횟수를 함께 담는 기록용 클래스 */
+public class SearchResult {
+    int index;        // 찾은 위치 (없으면 -1)
+    int comparisons;  // 비교 횟수
+
+    SearchResult(int index, int comparisons) {
+        this.index = index;
+        this.comparisons = comparisons;
+    }
+}</code></pre>
+                </article>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
                             <strong class="code-card__filename">SearchAlgorithmsComplete.java</strong>
                         </div>
                         <button type="button" class="copy-code-button" data-copy-target="code-complete" aria-label="SearchAlgorithmsComplete.java 코드 복사">코드 복사</button>
                     </header>
                     <pre><code id="code-complete" class="language-java">public class SearchAlgorithmsComplete {
 
-    /** 탐색 결과: 찾은 위치와 비교 횟수를 함께 담는 기록용 클래스 */
-    static class SearchResult {
-        int index;        // 찾은 위치 (없으면 -1)
-        int comparisons;  // 비교 횟수
-
-        SearchResult(int index, int comparisons) {
-            this.index = index;
-            this.comparisons = comparisons;
-        }
-    }
+    // SearchResult 클래스는 같은 폴더의 SearchResult.java에 정의되어 있다.
 
     /** 순차 탐색: 앞에서부터 하나씩 비교. 1강의 findStopEarly와 같은 구조다. */
     static SearchResult linearSearch(int[] arr, int target) {
@@ -627,6 +637,25 @@ low + (high - low) / 2 = 1550000000</code></pre>
                     <header class="code-card__header">
                         <div class="code-card__info">
                             <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">SearchResult.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-modernize-searchresult" aria-label="SearchResult.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-modernize-searchresult" class="language-java">/** 탐색 결과: 찾은 위치와 비교 횟수를 함께 담는 기록용 클래스 */
+public class SearchResult {
+    int index;        // 찾은 위치 (없으면 -1)
+    int comparisons;  // 비교 횟수
+
+    SearchResult(int index, int comparisons) {
+        this.index = index;
+        this.comparisons = comparisons;
+    }
+}</code></pre>
+                </article>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
                             <strong class="code-card__filename">ModernizeSolution.java</strong>
                         </div>
                         <button type="button" class="copy-code-button" data-copy-target="code-modernize" aria-label="ModernizeSolution.java 코드 복사">코드 복사</button>
@@ -642,16 +671,7 @@ import java.util.stream.Stream;
  */
 public class ModernizeSolution {
 
-    /** 탐색 결과: 찾은 위치와 비교 횟수를 함께 담는 기록용 클래스 */
-    static class SearchResult {
-        int index;        // 찾은 위치 (없으면 -1)
-        int comparisons;  // 비교 횟수
-
-        SearchResult(int index, int comparisons) {
-            this.index = index;
-            this.comparisons = comparisons;
-        }
-    }
+    // SearchResult 클래스는 같은 폴더의 SearchResult.java에 정의되어 있다.
 
     /** 순차 탐색: 조건에 맞는 첫 인덱스를 findFirst로 찾는다. */
     static SearchResult linearSearch(int[] arr, int target) {
@@ -808,24 +828,34 @@ public class ModernizeSolution {
                     <header class="code-card__header">
                         <div class="code-card__info">
                             <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">Book.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-application-book" aria-label="Book.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-application-book" class="language-java">/** 도서 정보: 번호, 제목, 재고 */
+public class Book {
+    int number;
+    String title;
+    int stock;
+
+    Book(int number, String title, int stock) {
+        this.number = number;
+        this.title = title;
+        this.stock = stock;
+    }
+}</code></pre>
+                </article>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
                             <strong class="code-card__filename">BookSearchApplication.java</strong>
                         </div>
                         <button type="button" class="copy-code-button" data-copy-target="code-app" aria-label="BookSearchApplication.java 코드 복사">코드 복사</button>
                     </header>
                     <pre><code id="code-app" class="language-java">public class BookSearchApplication {
 
-    /** 도서 정보: 번호, 제목, 재고 */
-    static class Book {
-        int number;
-        String title;
-        int stock;
-
-        Book(int number, String title, int stock) {
-            this.number = number;
-            this.title = title;
-            this.stock = stock;
-        }
-    }
+    // Book 클래스는 같은 폴더의 Book.java에 정의되어 있다.
 
     /** 마지막 탐색의 비교 횟수 */
     static int compareCount = 0;

@@ -3,23 +3,7 @@ import java.util.Comparator;
 
 public class ProductSorterSolution {
 
-    /** 상품: 이름, 가격, 평점 */
-    static class Product {
-        String name;
-        int price;      // 원
-        double rating;  // 0.0 ~ 5.0
-
-        Product(String name, int price, double rating) {
-            this.name = name;
-            this.price = price;
-            this.rating = rating;
-        }
-
-        @Override
-        public String toString() {
-            return name + " (" + price + "원, 평점 " + rating + ")";
-        }
-    }
+    // Product 클래스는 같은 폴더의 Product.java에 정의되어 있다.
 
     /** 기준 1: 가격 오름차순 */
     static final Comparator<Product> PRICE_ASC = (a, b) -> {

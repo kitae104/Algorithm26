@@ -3,15 +3,7 @@ import java.util.Queue;
 
 public class BstComplete {
 
-    static class Node {
-        int value;
-        Node left;
-        Node right;
-
-        Node(int value) {
-            this.value = value;
-        }
-    }
+    // Node 클래스는 같은 폴더의 Node.java에 정의되어 있다.
 
     /** 재귀 삽입: 서브트리에 값을 넣고 그 서브트리의 루트를 돌려준다 */
     static Node insert(Node node, int value) {

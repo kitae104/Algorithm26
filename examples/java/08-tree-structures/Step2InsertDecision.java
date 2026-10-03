@@ -1,14 +1,6 @@
 public class Step2InsertDecision {
 
-    static class Node {
-        int value;
-        Node left;
-        Node right;
-
-        Node(int value) {
-            this.value = value;
-        }
-    }
+    // Node 클래스는 같은 폴더의 Node.java에 정의되어 있다.
 
     /** 한 번의 삽입 판단: 현재 노드와 비교해서 왼쪽 또는 오른쪽에 붙인다 */
     static void insertOneStep(Node current, int newValue) {

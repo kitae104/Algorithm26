@@ -2,16 +2,7 @@ import java.util.ArrayList;
 
 public class GradeAnalyzerSolution {
 
-    /** 학생 한 명의 데이터: 이름 + 점수 */
-    static class Student {
-        String name;
-        int score;
-
-        Student(String name, int score) {
-            this.name = name;
-            this.score = score;
-        }
-    }
+    // Student 클래스는 같은 폴더의 Student.java에 정의되어 있다.
 
     /** 1) 전체 점수 합계 — 1강의 누적 패턴, O(n) */
     static int totalScore(Student[] students) {

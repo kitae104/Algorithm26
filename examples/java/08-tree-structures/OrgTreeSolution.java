@@ -1,21 +1,6 @@
-import java.util.ArrayList;
-import java.util.List;
-
 public class OrgTreeSolution {
 
-    /** 조직도의 부서 노드: 하위 부서가 몇 개든 담을 수 있는 일반 트리 */
-    static class Dept {
-        String name;
-        List<Dept> children = new ArrayList<>();
-
-        Dept(String name) {
-            this.name = name;
-        }
-
-        void add(Dept child) {
-            children.add(child);
-        }
-    }
+    // Dept 클래스는 같은 폴더의 Dept.java에 정의되어 있다.
 
     /** 요구사항 1: 전위 순회로 전체 부서를 들여쓰기와 함께 출력한다. */
     static void printOrgChart(Dept dept, int depth) {

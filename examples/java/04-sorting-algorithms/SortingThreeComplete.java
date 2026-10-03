@@ -2,18 +2,7 @@ import java.util.Arrays;
 
 public class SortingThreeComplete {
 
-    /** 한 번의 정렬 결과와 연산 횟수를 담는 기록 클래스 (1강 Measurement 패턴) */
-    static class SortResult {
-        int[] sorted;      // 정렬된 배열
-        long compares;     // 비교 횟수
-        long swapsOrMoves; // 교환 횟수(선택·버블) 또는 이동 횟수(삽입)
-
-        SortResult(int[] sorted, long compares, long swapsOrMoves) {
-            this.sorted = sorted;
-            this.compares = compares;
-            this.swapsOrMoves = swapsOrMoves;
-        }
-    }
+    // SortResult 클래스는 같은 폴더의 SortResult.java에 정의되어 있다.
 
     /** 선택 정렬: 남은 구간의 최솟값을 찾아 앞으로 보낸다. */
     static SortResult selectionSort(int[] input) {

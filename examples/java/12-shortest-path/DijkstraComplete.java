@@ -6,29 +6,9 @@ import java.util.PriorityQueue;
 
 public class DijkstraComplete {
 
+    // Edge, Result 클래스는 같은 폴더의 Edge.java, Result.java에 정의되어 있다.
+
     static final int INF = Integer.MAX_VALUE;
-
-    /** 간선 정보: 도착 정점 번호와 가중치(이동 시간) */
-    static class Edge {
-        int to;
-        int weight;
-
-        Edge(int to, int weight) {
-            this.to = to;
-            this.weight = weight;
-        }
-    }
-
-    /** 다익스트라 결과: 최단 거리 배열 + 경로 복원용 직전 정점 배열 */
-    static class Result {
-        int[] dist;
-        int[] prev;
-
-        Result(int[] dist, int[] prev) {
-            this.dist = dist;
-            this.prev = prev;
-        }
-    }
 
     static void addEdge(List<List<Edge>> graph, int u, int v, int weight) {
         graph.get(u).add(new Edge(v, weight));

@@ -290,6 +290,36 @@
                     <header class="code-card__header">
                         <div class="code-card__info">
                             <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">Product.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-complete-product" aria-label="Product.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-complete-product" class="language-java">/** 상품 1개의 정보를 담는 데이터 클래스 */
+public class Product {
+    int code;
+    String name;
+    String category;
+    int price;
+    int stock;
+
+    Product(int code, String name, String category, int price, int stock) {
+        this.code = code;
+        this.name = name;
+        this.category = category;
+        this.price = price;
+        this.stock = stock;
+    }
+
+    String summary() {
+        return "[" + code + "] " + name + " | " + category
+                + " | " + price + "원 | 재고 " + stock + "개";
+    }
+}</code></pre>
+                </article>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
                             <strong class="code-card__filename">ProductManagerComplete.java</strong>
                         </div>
                         <button type="button" class="copy-code-button" data-copy-target="code-complete" aria-label="ProductManagerComplete.java 코드 복사">코드 복사</button>
@@ -309,27 +339,7 @@ import java.util.Map;
  */
 public class ProductManagerComplete {
 
-    /** 상품 1개의 정보를 담는 데이터 클래스 */
-    static class Product {
-        int code;
-        String name;
-        String category;
-        int price;
-        int stock;
-
-        Product(int code, String name, String category, int price, int stock) {
-            this.code = code;
-            this.name = name;
-            this.category = category;
-            this.price = price;
-            this.stock = stock;
-        }
-
-        String summary() {
-            return "[" + code + "] " + name + " | " + category
-                    + " | " + price + "원 | 재고 " + stock + "개";
-        }
-    }
+    // Product 클래스는 같은 폴더의 Product.java에 정의되어 있다.
 
     /** 입고 순서 그대로의 상품 8개 */
     static List&lt;Product&gt; loadProducts() {
@@ -708,6 +718,36 @@ Product found = binarySearchByCode(products, 2005);</pre>
                     <header class="code-card__header">
                         <div class="code-card__info">
                             <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">Product.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-modernize-product" aria-label="Product.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-modernize-product" class="language-java">/** 상품 1개의 정보를 담는 데이터 클래스 */
+public class Product {
+    int code;
+    String name;
+    String category;
+    int price;
+    int stock;
+
+    Product(int code, String name, String category, int price, int stock) {
+        this.code = code;
+        this.name = name;
+        this.category = category;
+        this.price = price;
+        this.stock = stock;
+    }
+
+    String summary() {
+        return "[" + code + "] " + name + " | " + category
+                + " | " + price + "원 | 재고 " + stock + "개";
+    }
+}</code></pre>
+                </article>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
                             <strong class="code-card__filename">ModernizeSolution.java</strong>
                         </div>
                         <button type="button" class="copy-code-button" data-copy-target="code-modernize" aria-label="ModernizeSolution.java 코드 복사">코드 복사</button>
@@ -725,27 +765,7 @@ import java.util.stream.Collectors;
  */
 public class ModernizeSolution {
 
-    /** 상품 1개의 정보를 담는 데이터 클래스 */
-    static class Product {
-        int code;
-        String name;
-        String category;
-        int price;
-        int stock;
-
-        Product(int code, String name, String category, int price, int stock) {
-            this.code = code;
-            this.name = name;
-            this.category = category;
-            this.price = price;
-            this.stock = stock;
-        }
-
-        String summary() {
-            return "[" + code + "] " + name + " | " + category
-                    + " | " + price + "원 | 재고 " + stock + "개";
-        }
-    }
+    // Product 클래스는 같은 폴더의 Product.java에 정의되어 있다.
 
     /** 입고 순서 그대로의 상품 8개 */
     static List&lt;Product&gt; loadProducts() {
@@ -923,6 +943,33 @@ public class ModernizeSolution {
                     <header class="code-card__header">
                         <div class="code-card__info">
                             <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">Book.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-application-book" aria-label="Book.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-application-book" class="language-java">/** 도서 1권의 정보 — Product와 구조가 같다 (고유 번호, 이름, 분류, 수량) */
+public class Book {
+    int id;          // 등록 번호 (고유한 값 — 검색의 기준)
+    String title;    // 제목
+    String genre;    // 장르 (분류의 기준)
+    int copies;      // 대출 가능 권수 (경고의 기준)
+
+    Book(int id, String title, String genre, int copies) {
+        this.id = id;
+        this.title = title;
+        this.genre = genre;
+        this.copies = copies;
+    }
+
+    String summary() {
+        return "[" + id + "] " + title + " | " + genre + " | 대출 가능 " + copies + "권";
+    }
+}</code></pre>
+                </article>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
                             <strong class="code-card__filename">ProductManagerApplication.java</strong>
                         </div>
                         <button type="button" class="copy-code-button" data-copy-target="code-app" aria-label="ProductManagerApplication.java 코드 복사">코드 복사</button>
@@ -943,24 +990,7 @@ import java.util.Map;
  */
 public class ProductManagerApplication {
 
-    /** 도서 1권의 정보 — Product와 구조가 같다 (고유 번호, 이름, 분류, 수량) */
-    static class Book {
-        int id;          // 등록 번호 (고유한 값 — 검색의 기준)
-        String title;    // 제목
-        String genre;    // 장르 (분류의 기준)
-        int copies;      // 대출 가능 권수 (경고의 기준)
-
-        Book(int id, String title, String genre, int copies) {
-            this.id = id;
-            this.title = title;
-            this.genre = genre;
-            this.copies = copies;
-        }
-
-        String summary() {
-            return "[" + id + "] " + title + " | " + genre + " | 대출 가능 " + copies + "권";
-        }
-    }
+    // Book 클래스는 같은 폴더의 Book.java에 정의되어 있다.
 
     /** 기증받은 순서 그대로의 도서 6권 */
     static List&lt;Book&gt; loadBooks() {
@@ -1127,6 +1157,36 @@ public class ProductManagerApplication {
                     <header class="code-card__header">
                         <div class="code-card__info">
                             <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">Product.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-practice-product" aria-label="Product.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-practice-product" class="language-java">/** 상품 1개의 정보를 담는 데이터 클래스 */
+public class Product {
+    int code;
+    String name;
+    String category;
+    int price;
+    int stock;
+
+    Product(int code, String name, String category, int price, int stock) {
+        this.code = code;
+        this.name = name;
+        this.category = category;
+        this.price = price;
+        this.stock = stock;
+    }
+
+    String summary() {
+        return "[" + code + "] " + name + " | " + category
+                + " | " + price + "원 | 재고 " + stock + "개";
+    }
+}</code></pre>
+                </article>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
                             <strong class="code-card__filename">CategoryTopPractice.java</strong>
                         </div>
                         <button type="button" class="copy-code-button" data-copy-target="code-practice3" aria-label="CategoryTopPractice.java 코드 복사">코드 복사</button>
@@ -1138,19 +1198,7 @@ import java.util.Map;
 
 public class CategoryTopPractice {
 
-    static class Product {
-        String name;
-        String category;
-        int price;
-        int stock;
-
-        Product(String name, String category, int price, int stock) {
-            this.name = name;
-            this.category = category;
-            this.price = price;
-            this.stock = stock;
-        }
-    }
+    // Product 클래스는 같은 폴더의 Product.java에 정의되어 있다.
 
     /** 재고 자산이 가장 큰 카테고리 이름을 반환한다 */
     static String findTopCategory(List&lt;String&gt; categoryOrder, Map&lt;String, Long&gt; valueByCategory) {
@@ -1321,6 +1369,36 @@ public class CategoryTopPractice {
                     <header class="code-card__header">
                         <div class="code-card__info">
                             <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">Product.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-final-product" aria-label="Product.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-final-product" class="language-java">/** 상품 1개의 정보를 담는 데이터 클래스 */
+public class Product {
+    int code;
+    String name;
+    String category;
+    int price;
+    int stock;
+
+    Product(int code, String name, String category, int price, int stock) {
+        this.code = code;
+        this.name = name;
+        this.category = category;
+        this.price = price;
+        this.stock = stock;
+    }
+
+    String summary() {
+        return "[" + code + "] " + name + " | " + category
+                + " | " + price + "원 | 재고 " + stock + "개";
+    }
+}</code></pre>
+                </article>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
                             <strong class="code-card__filename">StockMasterStarter.java</strong>
                         </div>
                         <button type="button" class="copy-code-button" data-copy-target="code-starter" aria-label="StockMasterStarter.java 코드 복사">코드 복사</button>
@@ -1329,7 +1407,6 @@ public class CategoryTopPractice {
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 최종 프로그램 문제 — 편의점 재고 관리 시스템 "StockMaster" 학생 시작 코드.
@@ -1339,27 +1416,7 @@ import java.util.Map;
  */
 public class StockMasterStarter {
 
-    /** 상품 1개의 정보를 담는 데이터 클래스 (완성되어 있음 — 수정 불필요) */
-    static class Product {
-        int code;
-        String name;
-        String category;
-        int price;
-        int stock;
-
-        Product(int code, String name, String category, int price, int stock) {
-            this.code = code;
-            this.name = name;
-            this.category = category;
-            this.price = price;
-            this.stock = stock;
-        }
-
-        String summary() {
-            return "[" + code + "] " + name + " | " + category
-                    + " | " + price + "원 | 재고 " + stock + "개";
-        }
-    }
+    // Product 클래스는 같은 폴더의 Product.java에 정의되어 있다.
 
     /** 편의점 상품 8종 (완성되어 있음 — 수정 불필요) */
     static List&lt;Product&gt; loadProducts() {
@@ -1515,27 +1572,7 @@ import java.util.Map;
  */
 public class StockMasterSolution {
 
-    /** 상품 1개의 정보를 담는 데이터 클래스 */
-    static class Product {
-        int code;
-        String name;
-        String category;
-        int price;
-        int stock;
-
-        Product(int code, String name, String category, int price, int stock) {
-            this.code = code;
-            this.name = name;
-            this.category = category;
-            this.price = price;
-            this.stock = stock;
-        }
-
-        String summary() {
-            return "[" + code + "] " + name + " | " + category
-                    + " | " + price + "원 | 재고 " + stock + "개";
-        }
-    }
+    // Product 클래스는 같은 폴더의 Product.java에 정의되어 있다.
 
     /** 편의점 상품 8종 */
     static List&lt;Product&gt; loadProducts() {

@@ -261,6 +261,27 @@
                     <header class="code-card__header">
                         <div class="code-card__info">
                             <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">Meeting.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-complete-meeting" aria-label="Meeting.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-complete-meeting" class="language-java">/** 회의 정보를 담는 작은 기록용 클래스 */
+public class Meeting {
+    String name;
+    int start;
+    int end;
+
+    Meeting(String name, int start, int end) {
+        this.name = name;
+        this.start = start;
+        this.end = end;
+    }
+}</code></pre>
+                </article>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
                             <strong class="code-card__filename">MeetingRoomComplete.java</strong>
                         </div>
                         <button type="button" class="copy-code-button" data-copy-target="code-complete" aria-label="MeetingRoomComplete.java 코드 복사">코드 복사</button>
@@ -270,18 +291,7 @@ import java.util.List;
 
 public class MeetingRoomComplete {
 
-    /** 회의 정보를 담는 작은 기록용 클래스 */
-    static class Meeting {
-        String name;
-        int start;
-        int end;
-
-        Meeting(String name, int start, int end) {
-            this.name = name;
-            this.start = start;
-            this.end = end;
-        }
-    }
+    // Meeting 클래스는 같은 폴더의 Meeting.java에 정의되어 있다.
 
     /** 그리디의 전처리: 4강의 삽입 정렬로 종료 시각 기준 오름차순 정렬 */
     static void sortByEndTime(Meeting[] meetings) {
@@ -399,6 +409,27 @@ public class MeetingRoomComplete {
                             <header class="code-card__header">
                                 <div class="code-card__info">
                                     <span class="code-card__language">Java</span>
+                                    <strong class="code-card__filename">Meeting.java</strong>
+                                </div>
+                                <button type="button" class="copy-code-button" data-copy-target="code-bugs-meeting" aria-label="Meeting.java 코드 복사">코드 복사</button>
+                            </header>
+                            <pre><code id="code-bugs-meeting" class="language-java">/** 회의 정보를 담는 작은 기록용 클래스 */
+public class Meeting {
+    String name;
+    int start;
+    int end;
+
+    Meeting(String name, int start, int end) {
+        this.name = name;
+        this.start = start;
+        this.end = end;
+    }
+}</code></pre>
+                        </article>
+                        <article class="code-card">
+                            <header class="code-card__header">
+                                <div class="code-card__info">
+                                    <span class="code-card__language">Java</span>
                                     <strong class="code-card__filename">BuggyStartTimeSort.java (오류 있음)</strong>
                                 </div>
                                 <button type="button" class="copy-code-button" data-copy-target="code-bug1" aria-label="오류 1 코드 복사">코드 복사</button>
@@ -408,18 +439,7 @@ import java.util.List;
 
 public class BuggyStartTimeSort {
 
-    /** 회의 정보를 담는 작은 기록용 클래스 */
-    static class Meeting {
-        String name;
-        int start;
-        int end;
-
-        Meeting(String name, int start, int end) {
-            this.name = name;
-            this.start = start;
-            this.end = end;
-        }
-    }
+    // Meeting 클래스는 같은 폴더의 Meeting.java에 정의되어 있다.
 
     /** 시작 시각(start) 기준으로 정렬한다 */
     static void sortByStartTime(Meeting[] meetings) {
@@ -503,18 +523,7 @@ import java.util.List;
 
 public class BuggyStrictCompare {
 
-    /** 회의 정보를 담는 작은 기록용 클래스 */
-    static class Meeting {
-        String name;
-        int start;
-        int end;
-
-        Meeting(String name, int start, int end) {
-            this.name = name;
-            this.start = start;
-            this.end = end;
-        }
-    }
+    // Meeting 클래스는 같은 폴더의 Meeting.java에 정의되어 있다.
 
     /** 종료 시각 기준 오름차순 정렬 */
     static void sortByEndTime(Meeting[] meetings) {
@@ -631,6 +640,27 @@ public class BuggyStrictCompare {
                     <header class="code-card__header">
                         <div class="code-card__info">
                             <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">Meeting.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-modernize-meeting" aria-label="Meeting.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-modernize-meeting" class="language-java">/** 회의 정보를 담는 작은 기록용 클래스 */
+public class Meeting {
+    String name;
+    int start;
+    int end;
+
+    Meeting(String name, int start, int end) {
+        this.name = name;
+        this.start = start;
+        this.end = end;
+    }
+}</code></pre>
+                </article>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
                             <strong class="code-card__filename">ModernizeSolution.java</strong>
                         </div>
                         <button type="button" class="copy-code-button" data-copy-target="code-modernize" aria-label="ModernizeSolution.java 코드 복사">코드 복사</button>
@@ -648,18 +678,7 @@ import java.util.stream.IntStream;
  */
 public class ModernizeSolution {
 
-    /** 회의 정보를 담는 작은 기록용 클래스 */
-    static class Meeting {
-        String name;
-        int start;
-        int end;
-
-        Meeting(String name, int start, int end) {
-            this.name = name;
-            this.start = start;
-            this.end = end;
-        }
-    }
+    // Meeting 클래스는 같은 폴더의 Meeting.java에 정의되어 있다.
 
     /** 그리디의 전처리: 종료 시각 기준 오름차순으로 정렬한 새 목록을 만든다. */
     static List&lt;Meeting&gt; sortByEndTime(Meeting[] meetings) {
@@ -782,6 +801,25 @@ public class ModernizeSolution {
                     <header class="code-card__header">
                         <div class="code-card__info">
                             <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">Job.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-application-job" aria-label="Job.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-application-job" class="language-java">/** 작업 정보를 담는 작은 기록용 클래스 (이름, 소요 시간) */
+public class Job {
+    String name;
+    int minutes;
+
+    Job(String name, int minutes) {
+        this.name = name;
+        this.minutes = minutes;
+    }
+}</code></pre>
+                </article>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
                             <strong class="code-card__filename">ShortestJobApplication.java</strong>
                         </div>
                         <button type="button" class="copy-code-button" data-copy-target="code-app1" aria-label="ShortestJobApplication.java 코드 복사">코드 복사</button>
@@ -791,16 +829,7 @@ import java.util.PriorityQueue;
 
 public class ShortestJobApplication {
 
-    /** 작업 정보를 담는 작은 기록용 클래스 (이름, 소요 시간) */
-    static class Job {
-        String name;
-        int minutes;
-
-        Job(String name, int minutes) {
-            this.name = name;
-            this.minutes = minutes;
-        }
-    }
+    // Job 클래스는 같은 폴더의 Job.java에 정의되어 있다.
 
     /** 주어진 순서대로 처리했을 때 각 작업의 대기 시간과 총 대기 시간을 출력한다. */
     static int runInOrder(Job[] jobs) {
@@ -1184,6 +1213,27 @@ public class ShortestJobApplication {
                     <header class="code-card__header">
                         <div class="code-card__info">
                             <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">Meeting.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-final-meeting" aria-label="Meeting.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-final-meeting" class="language-java">/** 회의 정보를 담는 작은 기록용 클래스 */
+public class Meeting {
+    String name;
+    int start;
+    int end;
+
+    Meeting(String name, int start, int end) {
+        this.name = name;
+        this.start = start;
+        this.end = end;
+    }
+}</code></pre>
+                </article>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
                             <strong class="code-card__filename">MeetingSchedulerStarter.java</strong>
                         </div>
                         <button type="button" class="copy-code-button" data-copy-target="code-starter" aria-label="MeetingSchedulerStarter.java 코드 복사">코드 복사</button>
@@ -1193,18 +1243,7 @@ import java.util.List;
 
 public class MeetingSchedulerStarter {
 
-    /** 모임 정보를 담는 작은 기록용 클래스 (이름, 시작 시각, 종료 시각) */
-    static class Meeting {
-        String name;
-        int start;
-        int end;
-
-        Meeting(String name, int start, int end) {
-            this.name = name;
-            this.start = start;
-            this.end = end;
-        }
-    }
+    // Meeting 클래스는 같은 폴더의 Meeting.java에 정의되어 있다.
 
     /** 1단계: 종료 시각(end) 기준 오름차순으로 정렬한다. (4강 삽입 정렬 재사용) */
     static void sortByEndTime(Meeting[] meetings) {
@@ -1328,18 +1367,7 @@ import java.util.List;
 
 public class MeetingSchedulerSolution {
 
-    /** 모임 정보를 담는 작은 기록용 클래스 (이름, 시작 시각, 종료 시각) */
-    static class Meeting {
-        String name;
-        int start;
-        int end;
-
-        Meeting(String name, int start, int end) {
-            this.name = name;
-            this.start = start;
-            this.end = end;
-        }
-    }
+    // Meeting 클래스는 같은 폴더의 Meeting.java에 정의되어 있다.
 
     /** 1단계: 종료 시각(end) 기준 오름차순 정렬 — 4강 삽입 정렬 재사용 */
     static void sortByEndTime(Meeting[] meetings) {

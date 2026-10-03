@@ -4,27 +4,7 @@ import java.util.List;
 
 public class Step2SortProducts {
 
-    /** 상품 1개의 정보를 담는 데이터 클래스 (Step1과 같은 구조) */
-    static class Product {
-        int code;        // 상품 코드 (고유한 값 — 검색의 기준)
-        String name;     // 상품 이름
-        String category; // 카테고리 (분류의 기준)
-        int price;       // 가격(원)
-        int stock;       // 재고 수량 (경고의 기준)
-
-        Product(int code, String name, String category, int price, int stock) {
-            this.code = code;
-            this.name = name;
-            this.category = category;
-            this.price = price;
-            this.stock = stock;
-        }
-
-        String summary() {
-            return "[" + code + "] " + name + " | " + category
-                    + " | " + price + "원 | 재고 " + stock + "개";
-        }
-    }
+    // Product 클래스는 같은 폴더의 Product.java에 정의되어 있다.
 
     /** 입고 순서 그대로의 상품 8개 (Step1과 같은 데이터) */
     static List<Product> loadProducts() {

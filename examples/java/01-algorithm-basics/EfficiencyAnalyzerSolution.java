@@ -8,16 +8,7 @@
  */
 public class EfficiencyAnalyzerSolution {
 
-    /** 측정 결과를 담는 작은 기록용 클래스 */
-    static class Measurement {
-        long result;          // 계산 결과 (합계 또는 찾은 위치)
-        long operationCount;  // 핵심 연산 실행 횟수
-
-        Measurement(long result, long operationCount) {
-            this.result = result;
-            this.operationCount = operationCount;
-        }
-    }
+    // Measurement 클래스는 같은 폴더의 Measurement.java에 정의되어 있다.
 
     /** 과제 1-A: 반복문으로 1부터 n까지 더하고, 덧셈 횟수를 센다. */
     static Measurement sumByLoop(int n) {

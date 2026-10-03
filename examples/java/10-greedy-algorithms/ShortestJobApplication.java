@@ -3,16 +3,7 @@ import java.util.PriorityQueue;
 
 public class ShortestJobApplication {
 
-    /** 작업 정보를 담는 작은 기록용 클래스 (이름, 소요 시간) */
-    static class Job {
-        String name;
-        int minutes;
-
-        Job(String name, int minutes) {
-            this.name = name;
-            this.minutes = minutes;
-        }
-    }
+    // Job 클래스는 같은 폴더의 Job.java에 정의되어 있다.
 
     /** 주어진 순서대로 처리했을 때 각 작업의 대기 시간과 총 대기 시간을 출력한다. */
     static int runInOrder(Job[] jobs) {

@@ -267,6 +267,27 @@ arr[j] = temp;       // 3) 보관해 둔 값을 넣기</pre>
                     <header class="code-card__header">
                         <div class="code-card__info">
                             <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">SortResult.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-complete-sortresult" aria-label="SortResult.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-complete-sortresult" class="language-java">/** 한 번의 정렬 결과와 연산 횟수를 담는 기록 클래스 (1강 Measurement 패턴) */
+public class SortResult {
+    int[] sorted;      // 정렬된 배열
+    long compares;     // 비교 횟수
+    long swapsOrMoves; // 교환 횟수(선택·버블) 또는 이동 횟수(삽입)
+
+    SortResult(int[] sorted, long compares, long swapsOrMoves) {
+        this.sorted = sorted;
+        this.compares = compares;
+        this.swapsOrMoves = swapsOrMoves;
+    }
+}</code></pre>
+                </article>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
                             <strong class="code-card__filename">SortingThreeComplete.java</strong>
                         </div>
                         <button type="button" class="copy-code-button" data-copy-target="code-complete" aria-label="SortingThreeComplete.java 코드 복사">코드 복사</button>
@@ -275,18 +296,7 @@ arr[j] = temp;       // 3) 보관해 둔 값을 넣기</pre>
 
 public class SortingThreeComplete {
 
-    /** 한 번의 정렬 결과와 연산 횟수를 담는 기록 클래스 (1강 Measurement 패턴) */
-    static class SortResult {
-        int[] sorted;      // 정렬된 배열
-        long compares;     // 비교 횟수
-        long swapsOrMoves; // 교환 횟수(선택·버블) 또는 이동 횟수(삽입)
-
-        SortResult(int[] sorted, long compares, long swapsOrMoves) {
-            this.sorted = sorted;
-            this.compares = compares;
-            this.swapsOrMoves = swapsOrMoves;
-        }
-    }
+    // SortResult 클래스는 같은 폴더의 SortResult.java에 정의되어 있다.
 
     /** 선택 정렬: 남은 구간의 최솟값을 찾아 앞으로 보낸다. */
     static SortResult selectionSort(int[] input) {
@@ -1055,7 +1065,7 @@ USB 허브        15000원  평점 4.2
 
                 <h3>구현 단계 안내</h3>
                 <ol>
-                    <li><code>Product</code> 클래스와 출력 메서드는 시작 코드에 준비되어 있다 — 먼저 구조를 읽는다.</li>
+                    <li><code>Product</code> 클래스는 <code>Product.java</code>에, 출력 메서드는 시작 코드에 준비되어 있다 — 먼저 구조를 읽는다.</li>
                     <li><code>PRICE_ASC</code>부터 작성한다. <code>Integer.compare(a.price, b.price)</code> 한 줄이면 된다.</li>
                     <li><code>RATING_DESC</code>는 인자 순서를 바꾼 <code>Double.compare(b.rating, a.rating)</code>으로 방향을 뒤집는다.</li>
                     <li><code>RATING_DESC_THEN_NAME</code>은 평점 비교 결과가 0일 때만 이름을 비교한다.</li>
@@ -1068,6 +1078,38 @@ USB 허브        15000원  평점 4.2
                     <header class="code-card__header">
                         <div class="code-card__info">
                             <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">Product.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-final-product" aria-label="Product.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-final-product" class="language-java">/** 상품: 이름, 가격, 평점. 기본 정렬 기준(가격 오름차순)을 Comparable로 정의한다. */
+public class Product implements Comparable&lt;Product&gt; {
+    String name;
+    int price;      // 원
+    double rating;  // 0.0 ~ 5.0
+
+    Product(String name, int price, double rating) {
+        this.name = name;
+        this.price = price;
+        this.rating = rating;
+    }
+
+    /** 기본 정렬 기준: 가격 오름차순. 음수=this가 앞, 0=같음, 양수=this가 뒤. */
+    @Override
+    public int compareTo(Product other) {
+        return Integer.compare(this.price, other.price);
+    }
+
+    @Override
+    public String toString() {
+        return name + " (" + price + "원, 평점 " + rating + ")";
+    }
+}</code></pre>
+                </article>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
                             <strong class="code-card__filename">ProductSorterStarter.java</strong>
                         </div>
                         <button type="button" class="copy-code-button" data-copy-target="code-starter" aria-label="ProductSorterStarter.java 코드 복사">코드 복사</button>
@@ -1076,23 +1118,7 @@ USB 허브        15000원  평점 4.2
 
 public class ProductSorterStarter {
 
-    /** 상품: 이름, 가격, 평점 */
-    static class Product {
-        String name;
-        int price;      // 원
-        double rating;  // 0.0 ~ 5.0
-
-        Product(String name, int price, double rating) {
-            this.name = name;
-            this.price = price;
-            this.rating = rating;
-        }
-
-        @Override
-        public String toString() {
-            return name + " (" + price + "원, 평점 " + rating + ")";
-        }
-    }
+    // Product 클래스는 같은 폴더의 Product.java에 정의되어 있다.
 
     /** 기준 1: 가격 오름차순 */
     static final Comparator&lt;Product&gt; PRICE_ASC = (a, b) -&gt; {
@@ -1244,23 +1270,7 @@ import java.util.Comparator;
 
 public class ProductSorterSolution {
 
-    /** 상품: 이름, 가격, 평점 */
-    static class Product {
-        String name;
-        int price;      // 원
-        double rating;  // 0.0 ~ 5.0
-
-        Product(String name, int price, double rating) {
-            this.name = name;
-            this.price = price;
-            this.rating = rating;
-        }
-
-        @Override
-        public String toString() {
-            return name + " (" + price + "원, 평점 " + rating + ")";
-        }
-    }
+    // Product 클래스는 같은 폴더의 Product.java에 정의되어 있다.
 
     /** 기준 1: 가격 오름차순 */
     static final Comparator&lt;Product&gt; PRICE_ASC = (a, b) -&gt; {
@@ -1432,7 +1442,7 @@ Arrays.sort 결과와 일치(검증): true</code></pre>
                         <h4>다른 해결 방법</h4>
                         <p>
                             기준 3은 <code>Comparator.comparingDouble((Product p) -&gt; p.rating).reversed().thenComparing(p -&gt; p.name)</code>으로도
-                            만들 수 있습니다(12번 응용 예제 참고). 또한 <code>Product</code>에 <code>Comparable</code>을 구현해
+                            만들 수 있습니다(12번 응용 예제 참고). 또한 <code>Product.java</code>가 구현한 <code>Comparable</code>(<code>compareTo</code>)처럼
                             기본 기준(가격순)을 클래스 안에 두는 방법도 있습니다 —
                             <em>기본 기준이 하나 있고 나머지를 Comparator로 두는 것이 실무에서 흔한 구성입니다.</em>
                         </p>

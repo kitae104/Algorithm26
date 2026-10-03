@@ -1,17 +1,6 @@
 public class BookSearchApplication {
 
-    /** 도서 정보: 번호, 제목, 재고 */
-    static class Book {
-        int number;
-        String title;
-        int stock;
-
-        Book(int number, String title, int stock) {
-            this.number = number;
-            this.title = title;
-            this.stock = stock;
-        }
-    }
+    // Book 클래스는 같은 폴더의 Book.java에 정의되어 있다.
 
     /** 마지막 탐색의 비교 횟수 */
     static int compareCount = 0;

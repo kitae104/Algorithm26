@@ -1,15 +1,6 @@
 public class SearchAlgorithmsComplete {
 
-    /** 탐색 결과: 찾은 위치와 비교 횟수를 함께 담는 기록용 클래스 */
-    static class SearchResult {
-        int index;        // 찾은 위치 (없으면 -1)
-        int comparisons;  // 비교 횟수
-
-        SearchResult(int index, int comparisons) {
-            this.index = index;
-            this.comparisons = comparisons;
-        }
-    }
+    // SearchResult 클래스는 같은 폴더의 SearchResult.java에 정의되어 있다.
 
     /** 순차 탐색: 앞에서부터 하나씩 비교. 1강의 findStopEarly와 같은 구조다. */
     static SearchResult linearSearch(int[] arr, int target) {

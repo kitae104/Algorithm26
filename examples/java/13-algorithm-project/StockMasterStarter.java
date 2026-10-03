@@ -2,7 +2,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 최종 프로그램 문제 — 편의점 재고 관리 시스템 "StockMaster" 학생 시작 코드.
@@ -12,27 +11,7 @@ import java.util.Map;
  */
 public class StockMasterStarter {
 
-    /** 상품 1개의 정보를 담는 데이터 클래스 (완성되어 있음 — 수정 불필요) */
-    static class Product {
-        int code;
-        String name;
-        String category;
-        int price;
-        int stock;
-
-        Product(int code, String name, String category, int price, int stock) {
-            this.code = code;
-            this.name = name;
-            this.category = category;
-            this.price = price;
-            this.stock = stock;
-        }
-
-        String summary() {
-            return "[" + code + "] " + name + " | " + category
-                    + " | " + price + "원 | 재고 " + stock + "개";
-        }
-    }
+    // Product 클래스는 같은 폴더의 Product.java에 정의되어 있다.
 
     /** 편의점 상품 8종 (완성되어 있음 — 수정 불필요) */
     static List<Product> loadProducts() {

@@ -9,22 +9,7 @@ import java.util.List;
  */
 public class ProductManagerTrace {
 
-    /** 상품 1개의 정보를 담는 데이터 클래스 */
-    static class Product {
-        int code;
-        String name;
-        String category;
-        int price;
-        int stock;
-
-        Product(int code, String name, String category, int price, int stock) {
-            this.code = code;
-            this.name = name;
-            this.category = category;
-            this.price = price;
-            this.stock = stock;
-        }
-    }
+    // Product 클래스는 같은 폴더의 Product.java에 정의되어 있다.
 
     static List<Product> loadProducts() {
         List<Product> products = new ArrayList<>();

@@ -348,6 +348,114 @@ isEmpty():
                     <header class="code-card__header">
                         <div class="code-card__info">
                             <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">ArrayCharStack.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-complete-arraycharstack" aria-label="ArrayCharStack.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-complete-arraycharstack" class="language-java">/** 배열로 직접 구현한 문자 스택 — "자료구조 = 데이터(배열) + 규칙(LIFO)" */
+public class ArrayCharStack {
+    private char[] data;
+    private int top = -1;
+
+    ArrayCharStack(int capacity) {
+        data = new char[capacity];
+    }
+
+    boolean isEmpty() {
+        return top == -1;
+    }
+
+    int size() {
+        return top + 1;
+    }
+
+    void push(char value) {
+        if (top == data.length - 1) {
+            throw new IllegalStateException("스택이 가득 찼습니다.");
+        }
+        data[++top] = value;
+    }
+
+    char pop() {
+        if (isEmpty()) {
+            throw new IllegalStateException("빈 스택에서는 pop할 수 없습니다.");
+        }
+        return data[top--];
+    }
+
+    char peek() {
+        if (isEmpty()) {
+            throw new IllegalStateException("빈 스택에서는 peek할 수 없습니다.");
+        }
+        return data[top];
+    }
+}</code></pre>
+                </article>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">ArrayStringQueue.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-complete-arraystringqueue" aria-label="ArrayStringQueue.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-complete-arraystringqueue" class="language-java">/** 배열로 직접 구현한 문자열 큐 — "자료구조 = 데이터(배열) + 규칙(FIFO)" */
+public class ArrayStringQueue {
+    private String[] data;
+    private int front = 0;   // 다음에 꺼낼 자리
+    private int rear = 0;    // 다음에 넣을 자리
+
+    ArrayStringQueue(int capacity) {
+        data = new String[capacity];
+    }
+
+    boolean isEmpty() {
+        return front == rear;
+    }
+
+    int size() {
+        return rear - front;
+    }
+
+    void enqueue(String value) {
+        if (rear == data.length) {
+            throw new IllegalStateException("큐가 가득 찼습니다.");
+        }
+        data[rear++] = value;
+    }
+
+    String dequeue() {
+        if (isEmpty()) {
+            throw new IllegalStateException("빈 큐에서는 dequeue할 수 없습니다.");
+        }
+        return data[front++];
+    }
+
+    String peek() {
+        if (isEmpty()) {
+            throw new IllegalStateException("빈 큐에서는 peek할 수 없습니다.");
+        }
+        return data[front];
+    }
+
+    /** 앞(front)부터 뒤(rear 직전)까지의 대기 상태 문자열 */
+    String state() {
+        if (isEmpty()) {
+            return "(비어 있음)";
+        }
+        StringBuilder sb = new StringBuilder("[");
+        for (int i = front; i &lt; rear; i++) {
+            if (i &gt; front) sb.append(", ");
+            sb.append(data[i]);
+        }
+        return sb.append("]").toString();
+    }
+}</code></pre>
+                </article>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
                             <strong class="code-card__filename">StackQueueComplete.java</strong>
                         </div>
                         <button type="button" class="copy-code-button" data-copy-target="code-complete" aria-label="StackQueueComplete.java 코드 복사">코드 복사</button>
@@ -357,97 +465,7 @@ import java.util.Deque;
 
 public class StackQueueComplete {
 
-    /** 배열로 직접 구현한 문자 스택 — "자료구조 = 데이터(배열) + 규칙(LIFO)" */
-    static class ArrayCharStack {
-        private char[] data;
-        private int top = -1;
-
-        ArrayCharStack(int capacity) {
-            data = new char[capacity];
-        }
-
-        boolean isEmpty() {
-            return top == -1;
-        }
-
-        int size() {
-            return top + 1;
-        }
-
-        void push(char value) {
-            if (top == data.length - 1) {
-                throw new IllegalStateException("스택이 가득 찼습니다.");
-            }
-            data[++top] = value;
-        }
-
-        char pop() {
-            if (isEmpty()) {
-                throw new IllegalStateException("빈 스택에서는 pop할 수 없습니다.");
-            }
-            return data[top--];
-        }
-
-        char peek() {
-            if (isEmpty()) {
-                throw new IllegalStateException("빈 스택에서는 peek할 수 없습니다.");
-            }
-            return data[top];
-        }
-    }
-
-    /** 배열로 직접 구현한 문자열 큐 — "자료구조 = 데이터(배열) + 규칙(FIFO)" */
-    static class ArrayStringQueue {
-        private String[] data;
-        private int front = 0;   // 다음에 꺼낼 자리
-        private int rear = 0;    // 다음에 넣을 자리
-
-        ArrayStringQueue(int capacity) {
-            data = new String[capacity];
-        }
-
-        boolean isEmpty() {
-            return front == rear;
-        }
-
-        int size() {
-            return rear - front;
-        }
-
-        void enqueue(String value) {
-            if (rear == data.length) {
-                throw new IllegalStateException("큐가 가득 찼습니다.");
-            }
-            data[rear++] = value;
-        }
-
-        String dequeue() {
-            if (isEmpty()) {
-                throw new IllegalStateException("빈 큐에서는 dequeue할 수 없습니다.");
-            }
-            return data[front++];
-        }
-
-        String peek() {
-            if (isEmpty()) {
-                throw new IllegalStateException("빈 큐에서는 peek할 수 없습니다.");
-            }
-            return data[front];
-        }
-
-        /** 앞(front)부터 뒤(rear 직전)까지의 대기 상태 문자열 */
-        String state() {
-            if (isEmpty()) {
-                return "(비어 있음)";
-            }
-            StringBuilder sb = new StringBuilder("[");
-            for (int i = front; i &lt; rear; i++) {
-                if (i &gt; front) sb.append(", ");
-                sb.append(data[i]);
-            }
-            return sb.append("]").toString();
-        }
-    }
+    // ArrayCharStack, ArrayStringQueue 클래스는 같은 폴더의 ArrayCharStack.java, ArrayStringQueue.java에 정의되어 있다.
 
     /** 여는 괄호 open과 닫는 괄호 close가 서로 짝인지 확인한다 */
     static boolean isPair(char open, char close) {
@@ -788,6 +806,32 @@ Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: Index -1 ou
                     <header class="code-card__header">
                         <div class="code-card__info">
                             <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">Customer.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-application-customer" aria-label="Customer.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-application-customer" class="language-java">/** 은행 고객: 이름, 접수 번호, VIP 여부 */
+public class Customer {
+    String name;
+    int ticketNo;
+    boolean vip;
+
+    Customer(String name, int ticketNo, boolean vip) {
+        this.name = name;
+        this.ticketNo = ticketNo;
+        this.vip = vip;
+    }
+
+    @Override
+    public String toString() {
+        return name + "(" + ticketNo + "번" + (vip ? ", VIP" : "") + ")";
+    }
+}</code></pre>
+                </article>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
                             <strong class="code-card__filename">BankQueueApplication.java</strong>
                         </div>
                         <button type="button" class="copy-code-button" data-copy-target="code-app" aria-label="BankQueueApplication.java 코드 복사">코드 복사</button>
@@ -799,23 +843,7 @@ import java.util.Queue;
 
 public class BankQueueApplication {
 
-    /** 은행 고객: 이름, 접수 번호, VIP 여부 */
-    static class Customer {
-        String name;
-        int ticketNo;
-        boolean vip;
-
-        Customer(String name, int ticketNo, boolean vip) {
-            this.name = name;
-            this.ticketNo = ticketNo;
-            this.vip = vip;
-        }
-
-        @Override
-        public String toString() {
-            return name + "(" + ticketNo + "번" + (vip ? ", VIP" : "") + ")";
-        }
-    }
+    // Customer 클래스는 같은 폴더의 Customer.java에 정의되어 있다.
 
     public static void main(String[] args) {
         Customer[] arrivals = {

@@ -1,16 +1,6 @@
 public class Step1NodeBasics {
 
-    /** 트리의 노드: 값 하나와, 왼쪽·오른쪽 자식을 가리키는 참조 두 개 */
-    static class Node {
-        int value;   // 이 노드가 저장하는 값
-        Node left;   // 왼쪽 자식 (없으면 null)
-        Node right;  // 오른쪽 자식 (없으면 null)
-
-        Node(int value) {
-            this.value = value;
-            // left와 right는 자동으로 null — 아직 자식이 없다
-        }
-    }
+    // Node 클래스는 같은 폴더의 Node.java에 정의되어 있다.
 
     public static void main(String[] args) {
         // 노드 3개를 만들어 손으로 직접 연결한다

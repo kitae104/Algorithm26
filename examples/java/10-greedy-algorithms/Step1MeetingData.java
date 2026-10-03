@@ -1,17 +1,6 @@
 public class Step1MeetingData {
 
-    /** 회의 정보를 담는 작은 기록용 클래스 (이름, 시작 시각, 종료 시각) */
-    static class Meeting {
-        String name;
-        int start;   // 시작 시각 (시 단위)
-        int end;     // 종료 시각 (시 단위)
-
-        Meeting(String name, int start, int end) {
-            this.name = name;
-            this.start = start;
-            this.end = end;
-        }
-    }
+    // Meeting 클래스는 같은 폴더의 Meeting.java에 정의되어 있다.
 
     public static void main(String[] args) {
         // 오늘 신청된 회의 6건 (입력 데이터)

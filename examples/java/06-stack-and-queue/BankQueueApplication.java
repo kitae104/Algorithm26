@@ -5,23 +5,7 @@ import java.util.Queue;
 
 public class BankQueueApplication {
 
-    /** 은행 고객: 이름, 접수 번호, VIP 여부 */
-    static class Customer {
-        String name;
-        int ticketNo;
-        boolean vip;
-
-        Customer(String name, int ticketNo, boolean vip) {
-            this.name = name;
-            this.ticketNo = ticketNo;
-            this.vip = vip;
-        }
-
-        @Override
-        public String toString() {
-            return name + "(" + ticketNo + "번" + (vip ? ", VIP" : "") + ")";
-        }
-    }
+    // Customer 클래스는 같은 폴더의 Customer.java에 정의되어 있다.
 
     public static void main(String[] args) {
         Customer[] arrivals = {

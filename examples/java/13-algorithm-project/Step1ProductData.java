@@ -3,28 +3,7 @@ import java.util.List;
 
 public class Step1ProductData {
 
-    /** 상품 1개의 정보를 담는 데이터 클래스 (요구사항의 "데이터"를 코드로 옮긴 것) */
-    static class Product {
-        int code;        // 상품 코드 (고유한 값 — 검색의 기준)
-        String name;     // 상품 이름
-        String category; // 카테고리 (분류의 기준)
-        int price;       // 가격(원)
-        int stock;       // 재고 수량 (경고의 기준)
-
-        Product(int code, String name, String category, int price, int stock) {
-            this.code = code;
-            this.name = name;
-            this.category = category;
-            this.price = price;
-            this.stock = stock;
-        }
-
-        /** 상품 한 줄 요약 — 모든 출력에서 같은 형식을 사용한다 */
-        String summary() {
-            return "[" + code + "] " + name + " | " + category
-                    + " | " + price + "원 | 재고 " + stock + "개";
-        }
-    }
+    // Product 클래스는 같은 폴더의 Product.java에 정의되어 있다.
 
     public static void main(String[] args) {
         // 입고된 순서 그대로 등록한다 (아직 아무 순서도 없다!)

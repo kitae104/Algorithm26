@@ -1,17 +1,6 @@
 public class MeetingRoomTrace {
 
-    /** 회의 정보를 담는 작은 기록용 클래스 */
-    static class Meeting {
-        String name;
-        int start;
-        int end;
-
-        Meeting(String name, int start, int end) {
-            this.name = name;
-            this.start = start;
-            this.end = end;
-        }
-    }
+    // Meeting 클래스는 같은 폴더의 Meeting.java에 정의되어 있다.
 
     /** 4강의 삽입 정렬을 재사용해 종료 시각 기준 오름차순으로 정렬한다. */
     static void sortByEndTime(Meeting[] meetings) {

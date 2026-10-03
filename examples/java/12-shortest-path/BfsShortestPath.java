@@ -6,16 +6,7 @@ import java.util.Queue;
 
 public class BfsShortestPath {
 
-    /** 간선: 도착 정점과 가중치. BFS는 가중치를 무시한다 — 비교 출력에만 사용한다 */
-    static class Edge {
-        int to;
-        int weight;
-
-        Edge(int to, int weight) {
-            this.to = to;
-            this.weight = weight;
-        }
-    }
+    // Edge 클래스는 같은 폴더의 Edge.java에 정의되어 있다.
 
     static void addEdge(List<List<Edge>> graph, int u, int v, int weight) {
         graph.get(u).add(new Edge(v, weight));

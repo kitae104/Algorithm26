@@ -1,23 +1,6 @@
-import java.util.ArrayList;
-import java.util.List;
-
 public class OrgChartApplication {
 
-    /** 조직도의 부서: 자식 수가 정해져 있지 않으므로 List로 관리하는 일반 트리 */
-    static class Dept {
-        String name;
-        int headcount;                            // 이 부서에 직접 소속된 인원
-        List<Dept> children = new ArrayList<>();  // 하위 부서 목록
-
-        Dept(String name, int headcount) {
-            this.name = name;
-            this.headcount = headcount;
-        }
-
-        void add(Dept child) {
-            children.add(child);
-        }
-    }
+    // Dept 클래스는 같은 폴더의 Dept.java에 정의되어 있다.
 
     /** 부서 구조를 들여쓰기로 출력한다 (전위 순회: 자신 먼저, 그다음 하위 부서) */
     static void printOrg(Dept dept, int depth) {

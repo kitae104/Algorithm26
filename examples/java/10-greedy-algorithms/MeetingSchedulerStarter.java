@@ -3,18 +3,7 @@ import java.util.List;
 
 public class MeetingSchedulerStarter {
 
-    /** 모임 정보를 담는 작은 기록용 클래스 (이름, 시작 시각, 종료 시각) */
-    static class Meeting {
-        String name;
-        int start;
-        int end;
-
-        Meeting(String name, int start, int end) {
-            this.name = name;
-            this.start = start;
-            this.end = end;
-        }
-    }
+    // Meeting 클래스는 같은 폴더의 Meeting.java에 정의되어 있다.
 
     /** 1단계: 종료 시각(end) 기준 오름차순으로 정렬한다. (4강 삽입 정렬 재사용) */
     static void sortByEndTime(Meeting[] meetings) {
