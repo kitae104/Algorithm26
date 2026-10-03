@@ -408,9 +408,9 @@
                             </header>
                             <pre><code id="code-bug1" class="language-java">public class BuggyFactorialNoBase {
 
-    /** 팩토리얼을 재귀로 구하려 했지만, 종료 조건이 없다! */
+    /** 팩토리얼을 재귀로 구한다 */
     static long factorial(int n) {
-        return n * factorial(n - 1);   // 자기 호출만 있고 멈추는 조건이 없다
+        return n * factorial(n - 1);
     }
 
     public static void main(String[] args) {
@@ -479,9 +479,8 @@ public class BuggySubsetsNoRestore {
             return;
         }
 
-        chosen.add(numbers[index]);   // (1) 선택
-        subsets(index + 1);           // (2) 진행
-        // (3) 취소를 잊었다! chosen.remove(chosen.size() - 1)가 없다
+        chosen.add(numbers[index]);   // 넣는 경우
+        subsets(index + 1);
 
         subsets(index + 1);           // 넣지 않는 경우
     }

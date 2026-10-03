@@ -458,7 +458,7 @@ n = 10일 때: 완전 탐색은 45번, 해시는 10번. n이 커질수록 차이
 
         int count = 0;
         for (int i = 0; i &lt; words.length; i++) {
-            if (words[i] == target) {   // 문자열을 ==로 비교하고 있다
+            if (words[i] == target) {
                 count++;
             }
         }
@@ -506,7 +506,7 @@ public class BuggyNullCounter {
 
         Map&lt;String, Integer&gt; freq = new HashMap&lt;&gt;();
         for (String word : words) {
-            freq.put(word, freq.get(word) + 1);   // 처음 보는 단어라면?
+            freq.put(word, freq.get(word) + 1);
         }
 
         System.out.println("apple = " + freq.get("apple") + "회");

@@ -570,7 +570,7 @@ public class BuggyUnsortedSearch {
     }
 
     public static void main(String[] args) {
-        // 입고 순서 그대로의 리스트 — 정렬을 깜빡했다!
+        // 입고 순서 그대로의 상품 리스트
         List&lt;Product&gt; products = new ArrayList&lt;&gt;();
         products.add(new Product(2005, "유선 키보드"));
         products.add(new Product(1003, "무선 마우스"));
@@ -581,7 +581,6 @@ public class BuggyUnsortedSearch {
         products.add(new Product(1010, "노트북 파우치"));
         products.add(new Product(2008, "웹캠"));
 
-        // 2005번은 분명히 리스트의 첫 번째 상품인데...
         Product found = binarySearchByCode(products, 2005);
         System.out.println("코드 2005 검색 결과: " + (found == null ? "없음" : found.name));
     }
@@ -627,7 +626,6 @@ Product found = binarySearchByCode(products, 2005);</pre>
         String[] requests = {"2005", "20A5", "3010"};
 
         for (String request : requests) {
-            // 사용자 입력이 항상 숫자라고 믿어 버렸다!
             int code = Integer.parseInt(request);
             System.out.println("코드 " + code + " 검색을 시작합니다.");
         }

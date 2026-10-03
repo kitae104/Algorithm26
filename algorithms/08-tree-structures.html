@@ -504,7 +504,7 @@ public class BstComplete {
 
         Node root = null;
         for (int value : values) {
-            insert(root, value);          // 반환값을 어디에도 저장하지 않았다!
+            insert(root, value);
         }
 
         System.out.print("중위 순회 결과: ");
@@ -568,7 +568,7 @@ root == null ? true</pre>
         }
     }
 
-    /** 중위 순회 — 그런데 종료 조건이 없다! */
+    /** 중위 순회 */
     static void inorder(Node node) {
         inorder(node.left);
         System.out.print(node.value + " ");

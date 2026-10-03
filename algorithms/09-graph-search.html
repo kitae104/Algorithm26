@@ -467,7 +467,7 @@ public class BuggyBfsLateVisit {
         queue.offer(0);
         while (!queue.isEmpty()) {
             int v = queue.poll();
-            visited[v] = true;   // 큐에서 "꺼낼 때" 방문 표시한다 (?)
+            visited[v] = true;
             order.add(v);
             for (int neighbor : adjacency.get(v)) {
                 if (!visited[neighbor]) {

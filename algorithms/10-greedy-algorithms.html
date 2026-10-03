@@ -421,7 +421,7 @@ public class BuggyStartTimeSort {
         }
     }
 
-    /** 시작 시각(start) 기준으로 정렬한다 — 여기가 잘못된 부분이다. */
+    /** 시작 시각(start) 기준으로 정렬한다 */
     static void sortByStartTime(Meeting[] meetings) {
         for (int i = 1; i &lt; meetings.length; i++) {
             Meeting key = meetings[i];
@@ -516,7 +516,7 @@ public class BuggyStrictCompare {
         }
     }
 
-    /** 종료 시각 기준 오름차순 정렬 (올바름) */
+    /** 종료 시각 기준 오름차순 정렬 */
     static void sortByEndTime(Meeting[] meetings) {
         for (int i = 1; i &lt; meetings.length; i++) {
             Meeting key = meetings[i];
@@ -534,7 +534,7 @@ public class BuggyStrictCompare {
         int lastEnd = Integer.MIN_VALUE;
 
         for (Meeting m : sorted) {
-            if (m.start &gt; lastEnd) {   // 조건이 &gt; 로 잘못됨
+            if (m.start &gt; lastEnd) {
                 selected.add(m);
                 lastEnd = m.end;
             }

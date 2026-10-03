@@ -617,7 +617,7 @@ public class BuggyPickClosest {
         graph.get(v).add(new Edge(u, weight));
     }
 
-    /** 미확정 정점 중 최솟값을 찾으려고 했는데... 무엇이 빠졌을까? */
+    /** 미확정 정점 중 거리가 가장 짧은 정점을 찾는다 */
     static int pickClosest(int[] dist, boolean[] visited) {
         int minVertex = -1;
         int minDist = INF;
@@ -775,8 +775,8 @@ public class BuggyEagerVisit {
             int[] item = pq.poll();
             int u = item[1];
             for (Edge e : graph.get(u)) {
-                if (!visited[e.to]) {              // BFS처럼: 처음 본 정점이면
-                    visited[e.to] = true;          // 큐에 넣으면서 바로 확정해 버린다!
+                if (!visited[e.to]) {
+                    visited[e.to] = true;
                     dist[e.to] = dist[u] + e.weight;
                     pq.add(new int[]{dist[e.to], e.to});
                 }

@@ -450,10 +450,10 @@ public class SortingThreeComplete {
                             </header>
                             <pre><code id="code-bug1" class="language-java">public class BuggySwapNoTemp {
 
-    /** 두 칸의 값을 맞바꾸려고 했지만, 임시 변수를 빠뜨렸다. */
+    /** 두 칸의 값을 맞바꾼다. */
     static void swap(int[] arr, int i, int j) {
-        arr[i] = arr[j];   // 이 순간 arr[i]의 원래 값이 사라진다!
-        arr[j] = arr[i];   // 이미 덮어써진 값을 다시 넣을 뿐이다
+        arr[i] = arr[j];
+        arr[j] = arr[i];
     }
 
     static String toText(int[] arr) {
@@ -527,9 +527,8 @@ public class SortingThreeComplete {
     public static void main(String[] args) {
         int[] prices = {26, 15, 38, 12, 21};
 
-        // 버블 정렬 — 이웃한 두 값을 비교하려고 한다
+        // 버블 정렬 — 이웃한 두 값을 비교한다
         for (int i = 0; i &lt; prices.length - 1; i++) {
-            // 잘못된 범위: j가 마지막 칸까지 가면 j + 1은 배열 밖이다
             for (int j = 0; j &lt; prices.length - i; j++) {
                 if (prices[j] &gt; prices[j + 1]) {
                     int temp = prices[j];

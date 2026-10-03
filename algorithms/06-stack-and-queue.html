@@ -602,7 +602,7 @@ public class StackQueueComplete {
             if (ch == '(' || ch == '[' || ch == '{') {
                 push(ch);
             } else if (ch == ')' || ch == ']' || ch == '}') {
-                if (!isPair(pop(), ch)) {   // 닫는 괄호: 바로 pop해서 비교한다
+                if (!isPair(pop(), ch)) {
                     return false;
                 }
             }
@@ -673,9 +673,9 @@ Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: Index -1 ou
 
     static void enqueue(String name) { queue[rear++] = name; }
 
-    /** 맨 앞 고객을 꺼낸다 ... 고 생각했지만? */
+    /** 맨 앞 고객을 꺼낸다 */
     static String dequeue() {
-        return queue[front];   // 값을 돌려주기만 한다
+        return queue[front];
     }
 
     public static void main(String[] args) {

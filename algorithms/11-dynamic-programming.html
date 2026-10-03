@@ -438,7 +438,7 @@ n    | 결과      | 재귀 호출    | 메모 호출 | 테이블 덧셈
 
     static long[] memo;
 
-    /** 메모이제이션 피보나치 — 그런데 무언가 빠졌다! */
+    /** 메모이제이션 피보나치 */
     static long fibo(int n) {
         if (memo[n] != 0) {
             return memo[n];
@@ -502,7 +502,7 @@ n    | 결과      | 재귀 호출    | 메모 호출 | 테이블 덧셈
                             <pre><code id="code-bug2" class="language-java">public class BuggyTableSize {
     public static void main(String[] args) {
         int n = 10;
-        long[] dp = new long[n];        // dp[0]부터 dp[n]까지 쓸 계획인데...
+        long[] dp = new long[n];
         dp[0] = 0;
         dp[1] = 1;
         for (int i = 2; i &lt;= n; i++) {

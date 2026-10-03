@@ -436,7 +436,7 @@
         int high = bookNumbers.length - 1;
         int foundIndex = -1;
 
-        // 범위가 남아 있는 동안 절반씩 버리며 찾는다 (…라고 생각했다)
+        // 범위가 남아 있는 동안 절반씩 버리며 찾는다
         while (low &lt; high) {
             int mid = low + (high - low) / 2;
             if (bookNumbers[mid] == target) {
@@ -486,9 +486,9 @@
                             </header>
                             <pre><code id="code-bug2" class="language-java">public class BuggyUnsortedSearch {
     public static void main(String[] args) {
-        // 반납된 순서 그대로라 아직 정렬되지 않은 도서 번호
+        // 반납된 순서 그대로의 도서 번호
         int[] bookNumbers = {3106, 1001, 2754, 5090, 1203, 4213};
-        int target = 1001;   // 인덱스 1에 분명히 있다
+        int target = 1001;
 
         int low = 0;
         int high = bookNumbers.length - 1;
