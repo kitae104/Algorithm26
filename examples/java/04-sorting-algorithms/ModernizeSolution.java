@@ -1,130 +1,81 @@
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.stream.Stream;
+import java.util.List;
 
 /**
  * 4강 「람다·스트림 변경」.
  *
- * SortingThreeComplete.java(실습 코드)를 같은 결과가 나오도록 람다와 스트림으로 다시 쓴 것이다.
- * 배열의 칸을 직접 바꾸는 정렬 알고리즘의 핵심(교환·이동)은 반복문으로 둔다.
+ * 정렬 알고리즘을 직접 구현하지 않고, 람다와 스트림만으로 정렬하는 방법을 모았다.
+ * 오름차순은 sorted() 한 줄이고, 역순(내림차순)은 비교 기준을 뒤집어 만든다.
  */
 public class ModernizeSolution {
 
-    /** 오름차순 기준: 세 정렬이 모두 이 람다로 두 값의 순서를 판단한다. */
-    static final Comparator<Integer> ASC = (a, b) -> Integer.compare(a, b);
-
-    /** 한 번의 정렬 결과와 연산 횟수를 담는 기록 클래스 (정렬 이름 포함) */
-    static class SortResult {
-        String name;       // 정렬 이름
-        int[] sorted;      // 정렬된 배열
-        long compares;     // 비교 횟수
-        long swapsOrMoves; // 교환 횟수(선택·버블) 또는 이동 횟수(삽입)
-
-        SortResult(String name, int[] sorted, long compares, long swapsOrMoves) {
-            this.name = name;
-            this.sorted = sorted;
-            this.compares = compares;
-            this.swapsOrMoves = swapsOrMoves;
-        }
-    }
-
-    /** 선택 정렬: 남은 구간의 최솟값을 찾아 앞으로 보낸다. */
-    static SortResult selectionSort(int[] input, Comparator<Integer> order) {
-        int[] arr = Arrays.stream(input).toArray(); // 원본 보존 (스트림으로 복사)
-        long compares = 0;
-        long swaps = 0;
-
-        for (int i = 0; i < arr.length - 1; i++) {
-            int minIndex = i;
-            for (int j = i + 1; j < arr.length; j++) {
-                compares++;
-                if (order.compare(arr[j], arr[minIndex]) < 0) {
-                    minIndex = j;
-                }
-            }
-            if (minIndex != i) {
-                int temp = arr[i];
-                arr[i] = arr[minIndex];
-                arr[minIndex] = temp;
-                swaps++;
-            }
-        }
-        return new SortResult("선택 정렬", arr, compares, swaps);
-    }
-
-    /** 버블 정렬: 이웃끼리 비교·교환하며 큰 값을 뒤로 밀어낸다. 교환이 없으면 조기 종료. */
-    static SortResult bubbleSort(int[] input, Comparator<Integer> order) {
-        int[] arr = Arrays.stream(input).toArray();
-        long compares = 0;
-        long swaps = 0;
-
-        for (int i = 0; i < arr.length - 1; i++) {
-            boolean swapped = false;
-            for (int j = 0; j < arr.length - 1 - i; j++) {
-                compares++;
-                if (order.compare(arr[j], arr[j + 1]) > 0) {
-                    int temp = arr[j];
-                    arr[j] = arr[j + 1];
-                    arr[j + 1] = temp;
-                    swaps++;
-                    swapped = true;
-                }
-            }
-            if (!swapped) {
-                break; // 한 바퀴 동안 교환이 없었다 = 이미 정렬 완료
-            }
-        }
-        return new SortResult("버블 정렬", arr, compares, swaps);
-    }
-
-    /** 삽입 정렬: 왼쪽의 정렬된 영역에 새 값을 알맞은 자리에 끼워 넣는다. */
-    static SortResult insertionSort(int[] input, Comparator<Integer> order) {
-        int[] arr = Arrays.stream(input).toArray();
-        long compares = 0;
-        long moves = 0;
-
-        for (int i = 1; i < arr.length; i++) {
-            int key = arr[i];
-            int j = i - 1;
-            while (j >= 0) {
-                compares++;
-                if (order.compare(arr[j], key) > 0) {
-                    arr[j + 1] = arr[j]; // 한 칸 뒤로 민다 (이동)
-                    moves++;
-                    j--;
-                } else {
-                    break;
-                }
-            }
-            arr[j + 1] = key;
-        }
-        return new SortResult("삽입 정렬", arr, compares, moves);
-    }
-
-    static void printTable(String title, int[] data) {
-        System.out.println("== " + title + ": " + Arrays.toString(data) + " ==");
-        System.out.println("알고리즘  | 비교 횟수 | 교환·이동 | 정렬 결과");
-
-        // 세 정렬의 결과를 한 줄로 늘어놓고, 같은 형식으로 한 줄씩 출력한다
-        Stream.of(selectionSort(data, ASC), bubbleSort(data, ASC), insertionSort(data, ASC))
-                .forEach(r -> System.out.printf("%s | %-8d | %-8d | %s%n",
-                        r.name, r.compares, r.swapsOrMoves, Arrays.toString(r.sorted)));
-        System.out.println();
-    }
-
     public static void main(String[] args) {
-        int[] random = {26, 15, 38, 12, 21, 30, 8, 19};              // 무작위 데이터
-        int[] sorted = Arrays.stream(random).sorted().toArray();     // 이미 정렬된 데이터 (최선)
-        int[] reversed = Arrays.stream(random).boxed()               // 역순 데이터 (최악)
-                .sorted(ASC.reversed())
+        int[] prices = {26, 15, 38, 12, 21, 30, 8, 19};
+        System.out.println("원본 배열      : " + Arrays.toString(prices));
+
+        // 1) 오름차순: sorted()는 기준을 주지 않으면 작은 값부터 늘어놓는다
+        int[] asc = Arrays.stream(prices)
+                .sorted()
+                .toArray();
+        System.out.println("오름차순       : " + Arrays.toString(asc));
+
+        // 2) 역순(내림차순): 람다에서 a와 b의 자리를 바꿔 비교한다
+        //    int 스트림은 비교 기준을 받지 못하므로 boxed()로 Integer 스트림으로 바꾼 뒤 정렬한다
+        int[] desc = Arrays.stream(prices)
+                .boxed()
+                .sorted((a, b) -> Integer.compare(b, a))
                 .mapToInt(x -> x)
                 .toArray();
+        System.out.println("역순 (람다)    : " + Arrays.toString(desc));
 
-        printTable("무작위 데이터", random);
-        printTable("이미 정렬된 데이터", sorted);
-        printTable("역순 데이터", reversed);
+        // 3) 역순(내림차순): 오름차순 기준을 만들어 두고 reversed()로 뒤집는다
+        Comparator<Integer> ascOrder = (a, b) -> Integer.compare(a, b);
+        int[] descByReversed = Arrays.stream(prices)
+                .boxed()
+                .sorted(ascOrder.reversed())
+                .mapToInt(x -> x)
+                .toArray();
+        System.out.println("역순 (reversed): " + Arrays.toString(descByReversed));
 
-        System.out.println("관찰: 비교 횟수의 '모양'은 세 정렬 모두 O(n^2)이지만,");
-        System.out.println("      이미 정렬된 입력에서 버블(조기 종료)과 삽입은 n-1번 비교로 끝난다.");
+        // 4) 큰 값 3개만: 역순으로 정렬한 뒤 앞에서 3개만 남긴다
+        int[] top3 = Arrays.stream(prices)
+                .boxed()
+                .sorted(ascOrder.reversed())
+                .limit(3)
+                .mapToInt(x -> x)
+                .toArray();
+        System.out.println("큰 값 3개      : " + Arrays.toString(top3));
+
+        // 스트림 정렬은 새 배열을 만들 뿐, 원본 배열은 바꾸지 않는다
+        System.out.println("정렬 후 원본   : " + Arrays.toString(prices));
+        System.out.println();
+
+        List<String> names = List.of("보조 배터리", "이어폰", "스마트폰 거치대", "충전기", "블루투스 스피커");
+        System.out.println("원본 목록      : " + names);
+
+        // 5) 문자열 오름차순(사전순)
+        List<String> byName = names.stream()
+                .sorted()
+                .toList();
+        System.out.println("이름순         : " + byName);
+
+        // 6) 문자열 역순: compareTo의 방향을 뒤집는다
+        List<String> byNameDesc = names.stream()
+                .sorted((a, b) -> b.compareTo(a))
+                .toList();
+        System.out.println("이름 역순      : " + byNameDesc);
+
+        // 7) 기준 바꾸기: 글자 수가 짧은 것부터
+        List<String> byLength = names.stream()
+                .sorted(Comparator.comparingInt(String::length))
+                .toList();
+        System.out.println("짧은 이름부터  : " + byLength);
+
+        // 8) 기준 바꾸기 + 역순: 글자 수가 긴 것부터
+        List<String> byLengthDesc = names.stream()
+                .sorted(Comparator.comparingInt(String::length).reversed())
+                .toList();
+        System.out.println("긴 이름부터    : " + byLengthDesc);
     }
 }

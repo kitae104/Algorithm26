@@ -70,7 +70,7 @@ window.ALGORITHMS = [
         englishTitle: "Sorting Algorithms and Object Sorting",
         category: "정렬",
         difficulty: "초급",
-        examples: 11,
+        examples: 12,
         language: "Java",
         description:
             "선택·버블·삽입 정렬의 동작 원리를 단계별로 구현하고 Comparable과 Comparator로 상품 목록을 다중 기준 정렬합니다.",

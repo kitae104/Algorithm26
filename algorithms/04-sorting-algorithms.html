@@ -605,7 +605,14 @@ public class SortingThreeComplete {
             <!-- 10. 람다·스트림 변경 -->
             <section class="lesson-section" id="sec-modernize" aria-labelledby="h-modernize">
                 <h2 id="h-modernize" data-toc-label="람다·스트림 변경"><span class="section-no">10</span>람다·스트림 변경</h2>
-                <p class="lecture-lead">07 실습 코드(<code>SortingThreeComplete.java</code>)를 <strong>람다와 스트림</strong>으로 다시 쓴 코드입니다. 문법은 추가 정보의 <a href="../supplements/lambda-expressions.html">람다식</a>·<a href="../supplements/java-streams.html">자바 스트림</a> 문서를 참고하세요.</p>
+                <p class="lecture-lead">정렬 알고리즘을 직접 구현하지 않고 <strong>람다와 스트림</strong>만으로 정렬하는 코드입니다. 문법은 추가 정보의 <a href="../supplements/lambda-expressions.html">람다식</a>·<a href="../supplements/java-streams.html">자바 스트림</a> 문서를 참고하세요.</p>
+                <ul>
+                    <li><strong>오름차순:</strong> <code>sorted()</code> 한 줄 — 기준을 주지 않으면 작은 값부터 정렬</li>
+                    <li><strong>역순(내림차순):</strong> 람다에서 <code>a</code>와 <code>b</code>의 자리를 바꿔 비교하거나, 만들어 둔 기준에 <code>reversed()</code>를 붙임</li>
+                    <li><strong>int 배열의 역순:</strong> int 스트림은 비교 기준을 받지 못하므로 <code>boxed()</code>로 바꿔 정렬한 뒤 <code>mapToInt</code>로 되돌림</li>
+                    <li><strong>기준 바꾸기:</strong> <code>Comparator.comparingInt(String::length)</code>처럼 "무엇으로 비교할지"만 알려 주면 됨</li>
+                    <li><em>스트림 정렬은 새 결과를 만들 뿐, 원본 배열·목록은 바꾸지 않습니다.</em></li>
+                </ul>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -616,132 +623,83 @@ public class SortingThreeComplete {
                     </header>
                     <pre><code id="code-modernize" class="language-java">import java.util.Arrays;
 import java.util.Comparator;
-import java.util.stream.Stream;
+import java.util.List;
 
 /**
  * 4강 「람다·스트림 변경」.
  *
- * SortingThreeComplete.java(실습 코드)를 같은 결과가 나오도록 람다와 스트림으로 다시 쓴 것이다.
- * 배열의 칸을 직접 바꾸는 정렬 알고리즘의 핵심(교환·이동)은 반복문으로 둔다.
+ * 정렬 알고리즘을 직접 구현하지 않고, 람다와 스트림만으로 정렬하는 방법을 모았다.
+ * 오름차순은 sorted() 한 줄이고, 역순(내림차순)은 비교 기준을 뒤집어 만든다.
  */
 public class ModernizeSolution {
 
-    /** 오름차순 기준: 세 정렬이 모두 이 람다로 두 값의 순서를 판단한다. */
-    static final Comparator&lt;Integer&gt; ASC = (a, b) -&gt; Integer.compare(a, b);
-
-    /** 한 번의 정렬 결과와 연산 횟수를 담는 기록 클래스 (정렬 이름 포함) */
-    static class SortResult {
-        String name;       // 정렬 이름
-        int[] sorted;      // 정렬된 배열
-        long compares;     // 비교 횟수
-        long swapsOrMoves; // 교환 횟수(선택·버블) 또는 이동 횟수(삽입)
-
-        SortResult(String name, int[] sorted, long compares, long swapsOrMoves) {
-            this.name = name;
-            this.sorted = sorted;
-            this.compares = compares;
-            this.swapsOrMoves = swapsOrMoves;
-        }
-    }
-
-    /** 선택 정렬: 남은 구간의 최솟값을 찾아 앞으로 보낸다. */
-    static SortResult selectionSort(int[] input, Comparator&lt;Integer&gt; order) {
-        int[] arr = Arrays.stream(input).toArray(); // 원본 보존 (스트림으로 복사)
-        long compares = 0;
-        long swaps = 0;
-
-        for (int i = 0; i &lt; arr.length - 1; i++) {
-            int minIndex = i;
-            for (int j = i + 1; j &lt; arr.length; j++) {
-                compares++;
-                if (order.compare(arr[j], arr[minIndex]) &lt; 0) {
-                    minIndex = j;
-                }
-            }
-            if (minIndex != i) {
-                int temp = arr[i];
-                arr[i] = arr[minIndex];
-                arr[minIndex] = temp;
-                swaps++;
-            }
-        }
-        return new SortResult("선택 정렬", arr, compares, swaps);
-    }
-
-    /** 버블 정렬: 이웃끼리 비교·교환하며 큰 값을 뒤로 밀어낸다. 교환이 없으면 조기 종료. */
-    static SortResult bubbleSort(int[] input, Comparator&lt;Integer&gt; order) {
-        int[] arr = Arrays.stream(input).toArray();
-        long compares = 0;
-        long swaps = 0;
-
-        for (int i = 0; i &lt; arr.length - 1; i++) {
-            boolean swapped = false;
-            for (int j = 0; j &lt; arr.length - 1 - i; j++) {
-                compares++;
-                if (order.compare(arr[j], arr[j + 1]) &gt; 0) {
-                    int temp = arr[j];
-                    arr[j] = arr[j + 1];
-                    arr[j + 1] = temp;
-                    swaps++;
-                    swapped = true;
-                }
-            }
-            if (!swapped) {
-                break; // 한 바퀴 동안 교환이 없었다 = 이미 정렬 완료
-            }
-        }
-        return new SortResult("버블 정렬", arr, compares, swaps);
-    }
-
-    /** 삽입 정렬: 왼쪽의 정렬된 영역에 새 값을 알맞은 자리에 끼워 넣는다. */
-    static SortResult insertionSort(int[] input, Comparator&lt;Integer&gt; order) {
-        int[] arr = Arrays.stream(input).toArray();
-        long compares = 0;
-        long moves = 0;
-
-        for (int i = 1; i &lt; arr.length; i++) {
-            int key = arr[i];
-            int j = i - 1;
-            while (j &gt;= 0) {
-                compares++;
-                if (order.compare(arr[j], key) &gt; 0) {
-                    arr[j + 1] = arr[j]; // 한 칸 뒤로 민다 (이동)
-                    moves++;
-                    j--;
-                } else {
-                    break;
-                }
-            }
-            arr[j + 1] = key;
-        }
-        return new SortResult("삽입 정렬", arr, compares, moves);
-    }
-
-    static void printTable(String title, int[] data) {
-        System.out.println("== " + title + ": " + Arrays.toString(data) + " ==");
-        System.out.println("알고리즘  | 비교 횟수 | 교환·이동 | 정렬 결과");
-
-        // 세 정렬의 결과를 한 줄로 늘어놓고, 같은 형식으로 한 줄씩 출력한다
-        Stream.of(selectionSort(data, ASC), bubbleSort(data, ASC), insertionSort(data, ASC))
-                .forEach(r -&gt; System.out.printf("%s | %-8d | %-8d | %s%n",
-                        r.name, r.compares, r.swapsOrMoves, Arrays.toString(r.sorted)));
-        System.out.println();
-    }
-
     public static void main(String[] args) {
-        int[] random = {26, 15, 38, 12, 21, 30, 8, 19};              // 무작위 데이터
-        int[] sorted = Arrays.stream(random).sorted().toArray();     // 이미 정렬된 데이터 (최선)
-        int[] reversed = Arrays.stream(random).boxed()               // 역순 데이터 (최악)
-                .sorted(ASC.reversed())
+        int[] prices = {26, 15, 38, 12, 21, 30, 8, 19};
+        System.out.println("원본 배열      : " + Arrays.toString(prices));
+
+        // 1) 오름차순: sorted()는 기준을 주지 않으면 작은 값부터 늘어놓는다
+        int[] asc = Arrays.stream(prices)
+                .sorted()
+                .toArray();
+        System.out.println("오름차순       : " + Arrays.toString(asc));
+
+        // 2) 역순(내림차순): 람다에서 a와 b의 자리를 바꿔 비교한다
+        //    int 스트림은 비교 기준을 받지 못하므로 boxed()로 Integer 스트림으로 바꾼 뒤 정렬한다
+        int[] desc = Arrays.stream(prices)
+                .boxed()
+                .sorted((a, b) -&gt; Integer.compare(b, a))
                 .mapToInt(x -&gt; x)
                 .toArray();
+        System.out.println("역순 (람다)    : " + Arrays.toString(desc));
 
-        printTable("무작위 데이터", random);
-        printTable("이미 정렬된 데이터", sorted);
-        printTable("역순 데이터", reversed);
+        // 3) 역순(내림차순): 오름차순 기준을 만들어 두고 reversed()로 뒤집는다
+        Comparator&lt;Integer&gt; ascOrder = (a, b) -&gt; Integer.compare(a, b);
+        int[] descByReversed = Arrays.stream(prices)
+                .boxed()
+                .sorted(ascOrder.reversed())
+                .mapToInt(x -&gt; x)
+                .toArray();
+        System.out.println("역순 (reversed): " + Arrays.toString(descByReversed));
 
-        System.out.println("관찰: 비교 횟수의 '모양'은 세 정렬 모두 O(n^2)이지만,");
-        System.out.println("      이미 정렬된 입력에서 버블(조기 종료)과 삽입은 n-1번 비교로 끝난다.");
+        // 4) 큰 값 3개만: 역순으로 정렬한 뒤 앞에서 3개만 남긴다
+        int[] top3 = Arrays.stream(prices)
+                .boxed()
+                .sorted(ascOrder.reversed())
+                .limit(3)
+                .mapToInt(x -&gt; x)
+                .toArray();
+        System.out.println("큰 값 3개      : " + Arrays.toString(top3));
+
+        // 스트림 정렬은 새 배열을 만들 뿐, 원본 배열은 바꾸지 않는다
+        System.out.println("정렬 후 원본   : " + Arrays.toString(prices));
+        System.out.println();
+
+        List&lt;String&gt; names = List.of("보조 배터리", "이어폰", "스마트폰 거치대", "충전기", "블루투스 스피커");
+        System.out.println("원본 목록      : " + names);
+
+        // 5) 문자열 오름차순(사전순)
+        List&lt;String&gt; byName = names.stream()
+                .sorted()
+                .toList();
+        System.out.println("이름순         : " + byName);
+
+        // 6) 문자열 역순: compareTo의 방향을 뒤집는다
+        List&lt;String&gt; byNameDesc = names.stream()
+                .sorted((a, b) -&gt; b.compareTo(a))
+                .toList();
+        System.out.println("이름 역순      : " + byNameDesc);
+
+        // 7) 기준 바꾸기: 글자 수가 짧은 것부터
+        List&lt;String&gt; byLength = names.stream()
+                .sorted(Comparator.comparingInt(String::length))
+                .toList();
+        System.out.println("짧은 이름부터  : " + byLength);
+
+        // 8) 기준 바꾸기 + 역순: 글자 수가 긴 것부터
+        List&lt;String&gt; byLengthDesc = names.stream()
+                .sorted(Comparator.comparingInt(String::length).reversed())
+                .toList();
+        System.out.println("긴 이름부터    : " + byLengthDesc);
     }
 }</code></pre>
                 </article>
@@ -753,26 +711,18 @@ public class ModernizeSolution {
                         </div>
                         <button type="button" class="copy-code-button" data-copy-target="out-modernize" aria-label="람다·스트림 변경 코드 실행 결과 복사">복사</button>
                     </header>
-                    <pre><code id="out-modernize">== 무작위 데이터: [26, 15, 38, 12, 21, 30, 8, 19] ==
-알고리즘  | 비교 횟수 | 교환·이동 | 정렬 결과
-선택 정렬 | 28       | 5        | [8, 12, 15, 19, 21, 26, 30, 38]
-버블 정렬 | 28       | 17       | [8, 12, 15, 19, 21, 26, 30, 38]
-삽입 정렬 | 21       | 17       | [8, 12, 15, 19, 21, 26, 30, 38]
+                    <pre><code id="out-modernize">원본 배열      : [26, 15, 38, 12, 21, 30, 8, 19]
+오름차순       : [8, 12, 15, 19, 21, 26, 30, 38]
+역순 (람다)    : [38, 30, 26, 21, 19, 15, 12, 8]
+역순 (reversed): [38, 30, 26, 21, 19, 15, 12, 8]
+큰 값 3개      : [38, 30, 26]
+정렬 후 원본   : [26, 15, 38, 12, 21, 30, 8, 19]
 
-== 이미 정렬된 데이터: [8, 12, 15, 19, 21, 26, 30, 38] ==
-알고리즘  | 비교 횟수 | 교환·이동 | 정렬 결과
-선택 정렬 | 28       | 0        | [8, 12, 15, 19, 21, 26, 30, 38]
-버블 정렬 | 7        | 0        | [8, 12, 15, 19, 21, 26, 30, 38]
-삽입 정렬 | 7        | 0        | [8, 12, 15, 19, 21, 26, 30, 38]
-
-== 역순 데이터: [38, 30, 26, 21, 19, 15, 12, 8] ==
-알고리즘  | 비교 횟수 | 교환·이동 | 정렬 결과
-선택 정렬 | 28       | 4        | [8, 12, 15, 19, 21, 26, 30, 38]
-버블 정렬 | 28       | 28       | [8, 12, 15, 19, 21, 26, 30, 38]
-삽입 정렬 | 28       | 28       | [8, 12, 15, 19, 21, 26, 30, 38]
-
-관찰: 비교 횟수의 '모양'은 세 정렬 모두 O(n^2)이지만,
-      이미 정렬된 입력에서 버블(조기 종료)과 삽입은 n-1번 비교로 끝난다.</code></pre>
+원본 목록      : [보조 배터리, 이어폰, 스마트폰 거치대, 충전기, 블루투스 스피커]
+이름순         : [보조 배터리, 블루투스 스피커, 스마트폰 거치대, 이어폰, 충전기]
+이름 역순      : [충전기, 이어폰, 스마트폰 거치대, 블루투스 스피커, 보조 배터리]
+짧은 이름부터  : [이어폰, 충전기, 보조 배터리, 스마트폰 거치대, 블루투스 스피커]
+긴 이름부터    : [스마트폰 거치대, 블루투스 스피커, 보조 배터리, 이어폰, 충전기]</code></pre>
                 </article>
             </section>
 
@@ -798,6 +748,44 @@ public class ModernizeSolution {
                         내부의 <strong>TimSort는 안정 정렬</strong>이므로 동점 상품의 입력 순서가 그대로 유지됩니다</li>
                 </ul>
 
+                <ul>
+                    <li>코드는 <strong>두 파일</strong>로 나뉨 — 상품 데이터 <code>Product.java</code>와 실행 클래스 <code>ProductSortApplication.java</code></li>
+                    <li>두 파일을 <strong>같은 폴더</strong>에 두고 <code>javac Product.java ProductSortApplication.java</code>로 컴파일한 뒤 <code>java ProductSortApplication</code>으로 실행</li>
+                </ul>
+
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">Product.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-app-product" aria-label="Product.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-app-product" class="language-java">/** 상품: 이름, 가격, 평점. 기본 정렬 기준(가격 오름차순)을 Comparable로 정의한다. */
+public class Product implements Comparable&lt;Product&gt; {
+    String name;
+    int price;      // 원
+    double rating;  // 0.0 ~ 5.0
+
+    Product(String name, int price, double rating) {
+        this.name = name;
+        this.price = price;
+        this.rating = rating;
+    }
+
+    /** 기본 정렬 기준: 가격 오름차순. 음수=this가 앞, 0=같음, 양수=this가 뒤. */
+    @Override
+    public int compareTo(Product other) {
+        return Integer.compare(this.price, other.price);
+    }
+
+    @Override
+    public String toString() {
+        return name + " (" + price + "원, 평점 " + rating + ")";
+    }
+}</code></pre>
+                </article>
+
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -809,31 +797,8 @@ public class ModernizeSolution {
                     <pre><code id="code-app" class="language-java">import java.util.Arrays;
 import java.util.Comparator;
 
+/** 상품 데이터는 같은 폴더의 Product.java에 정의되어 있다. */
 public class ProductSortApplication {
-
-    /** 상품: 이름, 가격, 평점. 기본 정렬 기준(가격 오름차순)을 Comparable로 정의한다. */
-    static class Product implements Comparable&lt;Product&gt; {
-        String name;
-        int price;      // 원
-        double rating;  // 0.0 ~ 5.0
-
-        Product(String name, int price, double rating) {
-            this.name = name;
-            this.price = price;
-            this.rating = rating;
-        }
-
-        /** 기본 정렬 기준: 가격 오름차순. 음수=this가 앞, 0=같음, 양수=this가 뒤. */
-        @Override
-        public int compareTo(Product other) {
-            return Integer.compare(this.price, other.price);
-        }
-
-        @Override
-        public String toString() {
-            return name + " (" + price + "원, 평점 " + rating + ")";
-        }
-    }
 
     static void printAll(String title, Product[] items) {
         System.out.println("[" + title + "]");
