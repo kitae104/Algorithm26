@@ -539,82 +539,40 @@ n    | 결과      | 재귀 호출    | 메모 호출 | 테이블 덧셈
             <!-- 9. 복잡도 및 특성 분석 -->
             <section class="lesson-section" id="sec-complexity" aria-labelledby="h-complexity">
                 <h2 id="h-complexity" data-toc-label="복잡도 및 특성 분석"><span class="section-no">09</span>복잡도 및 특성 분석</h2>
-                <p class="lecture-lead">복잡도 분석 = <strong>"문제가 커지면 일이 얼마나 늘어나는가?"</strong>를 따져 보는 것. 어려운 수식 대신 <strong>"몇 번 계산하는가"</strong>만 세어 봅니다.</p>
-
-                <h3>입력 크기 — 무엇이 많아지는가?</h3>
-                <ul>
-                    <li>계단 오르기·피보나치: <strong>n</strong> — 계단이 몇 칸인지(피보나치라면 몇 번째 수인지). 칸이 많아질수록 일이 늘어남</li>
-                    <li>동전 문제(11번 섹션): 크기가 <strong>두 개</strong> — 거슬러 줄 <strong>금액</strong>과 <strong>동전 종류 수</strong></li>
-                </ul>
-
-                <h3>주요 연산 — 무엇을 세는가?</h3>
-                <ul>
-                    <li>프로그램에서 <strong>가장 많이 반복되는 한 동작</strong>만 세면 충분</li>
-                    <li>재귀·메모이제이션: 함수를 <strong>한 번 부르는 것</strong>(호출 1번)</li>
-                    <li>타뷸레이션·공간 최적화: 표의 칸 하나를 채우는 <strong>덧셈 한 번</strong> (동전 문제라면 min 비교 한 번)</li>
-                    <li>저장된 답을 꺼내 보는 것(<code>memo[n]</code>, <code>dp[i]</code>)은 배열 칸을 바로 여는 것이라 <strong>한 번에 끝남</strong></li>
-                    <li>그래서 DP의 일의 양은 어떤 문제든 이 공식 하나로 셀 수 있음: <strong>채워야 할 칸 수 × 한 칸을 채우는 비용</strong></li>
-                </ul>
+                <p class="lecture-lead">복잡도 = <strong>"문제가 커지면 일이 얼마나 늘어나는가?"</strong> 초 단위 시간이 아니라 <strong>"몇 번 계산하는가"</strong>만 세어 봅니다.</p>
 
                 <h3>시간 복잡도 — 얼마나 오래 걸리는가?</h3>
                 <div class="table-scroll">
                     <table class="data-table">
                         <thead>
-                            <tr><th scope="col">구현</th><th scope="col">세는 것</th><th scope="col">계단 10칸일 때</th><th scope="col">계단 30칸일 때</th><th scope="col">Big-O</th></tr>
+                            <tr><th scope="col">구현</th><th scope="col">계단 30칸일 때</th><th scope="col">Big-O</th><th scope="col">쉽게 말하면</th></tr>
                         </thead>
                         <tbody>
-                            <tr><td>순수 재귀</td><td>호출 횟수</td><td>109번</td><td>1,664,079번</td><td><code>O(2ⁿ)</code></td></tr>
-                            <tr><td>메모이제이션 (탑다운)</td><td>호출 횟수</td><td>17번</td><td>57번</td><td><code>O(n)</code></td></tr>
-                            <tr><td>타뷸레이션 (바텀업)</td><td>덧셈 횟수</td><td>8번</td><td>28번</td><td><code>O(n)</code></td></tr>
-                            <tr><td>공간 최적화 (변수 2개)</td><td>덧셈 횟수</td><td>8번</td><td>28번</td><td><code>O(n)</code></td></tr>
+                            <tr><td>순수 재귀</td><td>1,664,079번 호출</td><td><code>O(2ⁿ)</code></td><td>칸이 하나 늘 때마다 일이 몇 배씩 — 같은 작은 문제를 버리고 다시 계산하기 때문</td></tr>
+                            <tr><td>메모이제이션 (탑다운)</td><td>57번 호출</td><td><code>O(n)</code></td><td>수첩에 적어 두고 다시 나오면 꺼내 봄</td></tr>
+                            <tr><td>타뷸레이션 (바텀업)</td><td>28번 덧셈</td><td><code>O(n)</code></td><td>표를 왼쪽에서 오른쪽으로 한 번 채우고 끝</td></tr>
+                            <tr><td>공간 최적화</td><td>28번 덧셈</td><td><code>O(n)</code></td><td>직전 두 칸만 변수 2개로 기억</td></tr>
                         </tbody>
                     </table>
                 </div>
                 <ul>
-                    <li><strong>O(2ⁿ)을 쉽게 말하면:</strong> 칸이 <strong>하나</strong> 늘 때마다 일이 <strong>몇 배씩</strong> 불어남 — 계단이 10칸 늘 때마다 호출이 <strong>약 120배</strong> (10칸 109번 → 20칸 13,529번 → 30칸 1,664,079번)
-                        <ul>
-                            <li>이유: 같은 작은 문제를 버리고 또 계산하기 때문 — 소문이 한 사람에게서 두 사람씩 퍼져 나가듯 호출이 가지를 치며 불어남</li>
-                            <li>7강 피보나치로 재도 같음: fibo(35) 한 번에 <strong>29,860,703번</strong> 호출</li>
-                        </ul>
-                    </li>
-                    <li><strong>O(n)을 쉽게 말하면:</strong> 칸이 <strong>10배</strong> 늘면 일도 <strong>10배</strong>만 늘어남 — 표를 왼쪽에서 오른쪽으로 한 번 채우고 끝
-                        <ul>
-                            <li>같은 fibo(35)도 메모이제이션은 <strong>69번</strong>, 타뷸레이션은 덧셈 <strong>34번</strong>, 공간 최적화는 덧셈 <strong>33번</strong></li>
-                        </ul>
-                    </li>
-                    <li>메모이제이션의 호출이 덧셈보다 조금 많은 이유: 수첩(<code>memo</code>)을 열어 보고 바로 돌아오는 호출도 1번으로 세기 때문 — 그래도 n에 비례</li>
-                    <li>계단 오르기는 입력 n이 정해지면 항상 같은 횟수만큼 일함 — <strong>운이 좋은 경우·나쁜 경우의 차이가 없음</strong></li>
-                    <li><strong>동전 문제:</strong> 칸 수(금액 + 1) × 한 칸의 비용(동전 종류 수) = <code>O(금액 × 동전 종류)</code>
-                        <ul>
-                            <li>예: 120원, 동전 3종 → 121칸 × 3 = 약 363번 비교</li>
-                        </ul>
-                    </li>
+                    <li>DP의 일의 양 = <strong>채워야 할 칸 수 × 한 칸을 채우는 비용</strong></li>
+                    <li>동전 문제: (금액 + 1)칸 × 동전 종류 수 → <code>O(금액 × 동전 종류)</code></li>
                 </ul>
 
                 <h3>공간 복잡도 — 메모리를 얼마나 더 쓰는가?</h3>
                 <ul>
-                    <li><strong>순수 재귀:</strong> 표는 없지만, 아직 끝나지 않은 호출들이 차례를 기다리며 쌓임(호출 스택) — 가장 깊을 때 약 n개, <code>O(n)</code></li>
-                    <li><strong>메모이제이션:</strong> 수첩(<code>memo</code>) n칸 + 호출 스택, <code>O(n)</code> — n이 아주 크면 호출 스택이 넘칠(StackOverflow) 위험</li>
-                    <li><strong>타뷸레이션:</strong> 표(<code>dp</code>) n + 1칸, <code>O(n)</code> — 반복문이라 호출 스택은 쓰지 않음</li>
-                    <li><strong>공간 최적화:</strong> 직전 두 칸만 기억하는 변수 2개, <code>O(1)</code> — 계단이 아무리 길어도 메모리는 그대로</li>
-                    <li><strong>동전 문제:</strong> 금액 + 1칸짜리 표, <code>O(금액)</code> — 먼 칸(dp[money - 100])을 참조하므로 변수 2개로 줄일 수 없음</li>
+                    <li>순수 재귀: 호출 스택 → <code>O(n)</code> / 메모이제이션: 수첩 n칸 + 호출 스택 → <code>O(n)</code></li>
+                    <li>타뷸레이션: 표 n + 1칸 → <code>O(n)</code>, 호출 스택은 안 씀 / 공간 최적화: 변수 2개 → <code>O(1)</code></li>
                 </ul>
                 <div class="note-box">
                     <span class="note-box__title">한 줄 정리 — 적어 두면 다시 계산하지 않는다</span>
                     <ul>
-                        <li>DP는 <strong>답을 적어 둘 표(메모리)를 조금 쓰는 대신</strong> 일의 양을 <strong>O(2ⁿ) → O(n)</strong>으로 줄임</li>
-                        <li>점화식이 직전 몇 칸만 본다면 그 표마저 변수 몇 개로 줄일 수 있음 (<code>O(n)</code> → <code>O(1)</code>)</li>
+                        <li>DP는 <strong>표(메모리)를 조금 쓰는 대신</strong> 일의 양을 <strong>O(2ⁿ) → O(n)</strong>으로 줄임 — 점화식이 직전 몇 칸만 보면 표도 변수 몇 개로(<code>O(1)</code>)</li>
+                        <li>모든 선택을 비교하므로 점화식이 옳다면 <strong>항상 최적</strong> — 그리디처럼 "운 좋게 맞는" 것이 아님</li>
+                        <li>n이 크면 호출 스택을 안 쓰는 타뷸레이션이 안전</li>
                     </ul>
                 </div>
-
-                <h3>알고리즘 특성 — 언제 무엇을 쓰는가?</h3>
-                <ul>
-                    <li><strong>DP는 "알고리즘"이 아니라 "기법":</strong> "저장하고 재사용한다"는 접근법 — 문제마다 점화식이 다르므로, 연습의 핵심은 코드가 아니라 <strong>점화식 3단계</strong></li>
-                    <li><strong>왜 항상 정답인가:</strong> 전이에서 가능한 모든 선택을 비교하므로, <em>점화식이 옳다면 답은 항상 최적</em> — 그리디처럼 "운 좋게 맞는" 것이 아님</li>
-                    <li><strong>시간과 공간의 교환:</strong> O(2ⁿ)의 시간을 O(n)의 메모리와 맞바꿈 — 1강의 "데이터의 규칙을 알수록 빨라진다"가 "이미 푼 답을 알수록 빨라진다"로 확장된 것</li>
-                    <li><strong>탑다운 vs 바텀업 고르기:</strong> 필요한 칸만 계산하고 싶으면 메모이제이션, n이 크거나 어차피 모든 칸이 필요하면 호출 스택을 안 쓰는 타뷸레이션</li>
-                    <li><strong>한계:</strong> 칸(상태)이 너무 많으면 메모리가 먼저 부족해짐, 또 같은 작은 문제가 다시 나오지 않으면 적어 둬도 다시 쓸 일이 없어 이득이 없음</li>
-                </ul>
             </section>
 
             <!-- 10. 실제 데이터 응용 예제 -->

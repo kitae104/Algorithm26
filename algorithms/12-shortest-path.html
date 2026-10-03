@@ -831,71 +831,38 @@ public class BuggyEagerVisit {
             <!-- 9. 복잡도 및 특성 분석 -->
             <section class="lesson-section" id="sec-complexity" aria-labelledby="h-complexity">
                 <h2 id="h-complexity" data-toc-label="복잡도 및 특성 분석"><span class="section-no">09</span>복잡도 및 특성 분석</h2>
-                <p class="lecture-lead">복잡도 분석 = <strong>"지도가 커지면 일이 얼마나 늘어나는가?"</strong>를 따져 보는 것. 어려운 수식 대신 <strong>"몇 번 뽑고, 몇 번 비교하는가"</strong>만 세어 봅니다.</p>
-
-                <h3>입력 크기 — 무엇이 많아지는가?</h3>
-                <ul>
-                    <li>그래프는 크기를 <strong>두 개의 숫자</strong>로 잼
-                        <ul>
-                            <li><strong>V</strong> = 정점(장소) 수 — 건물, 도시, 교차로가 많아질수록 커짐</li>
-                            <li><strong>E</strong> = 간선(길) 수 — 장소 사이를 잇는 길이 많아질수록 커짐</li>
-                        </ul>
-                    </li>
-                    <li>오늘의 캠퍼스 그래프는 <strong>V = 6, E = 9</strong></li>
-                </ul>
-
-                <h3>주요 연산 — 무엇을 세는가?</h3>
-                <ul>
-                    <li>다익스트라에서 반복되는 동작은 딱 두 가지
-                        <ul>
-                            <li><strong>뽑기</strong>: 미확정 정점 중 가장 가까운 곳을 고르기 — 정점마다 1번씩, 총 <strong>V번</strong></li>
-                            <li><strong>완화</strong>: "이 길로 가면 더 짧아지나?" 비교하고 고쳐 쓰기 — 길마다 검사, 무방향 그래프에서는 한 길을 양쪽에서 한 번씩 최대 2번, 총 <strong>O(E)번</strong></li>
-                        </ul>
-                    </li>
-                    <li>두 버전의 차이는 <strong>"뽑기 한 번이 얼마나 오래 걸리는가"</strong>뿐</li>
-                </ul>
+                <p class="lecture-lead">복잡도 = <strong>"지도가 커지면 일이 얼마나 늘어나는가?"</strong> 초 단위 시간이 아니라 <strong>"몇 번 뽑고, 몇 번 비교하는가"</strong>만 세어 봅니다.</p>
 
                 <h3>시간 복잡도 — 얼마나 오래 걸리는가?</h3>
                 <div class="table-scroll">
                     <table class="data-table">
                         <thead>
-                            <tr><th scope="col">버전</th><th scope="col">뽑기 1회</th><th scope="col">완화 1회</th><th scope="col">전체 Big-O</th><th scope="col">캠퍼스 (V=6, E=9)</th><th scope="col">큰 지도 (V=10,000, E=50,000)</th></tr>
+                            <tr><th scope="col">버전</th><th scope="col">뽑기 1회</th><th scope="col">전체 Big-O</th><th scope="col">큰 지도 (V = 1만, E = 5만)</th></tr>
                         </thead>
                         <tbody>
-                            <tr><td>배열 버전</td><td>배열 전체 훑기 O(V)</td><td>O(1)</td><td><code>O(V² + E) ≈ O(V²)</code></td><td>수십 번</td><td>약 1억(10⁸) 번</td></tr>
-                            <tr><td>우선순위 큐 버전 (DijkstraComplete)</td><td>큐에서 꺼내기 O(log V)</td><td>갱신 시 큐에 넣기 O(log V)</td><td><code>O((V + E) log V)</code></td><td>수십 번</td><td>약 100만(10⁶) 번</td></tr>
+                            <tr><td>배열 버전</td><td>명단 전체 훑기 <code>O(V)</code></td><td><code>O(V²)</code></td><td>약 1억 번</td></tr>
+                            <tr><td>우선순위 큐 버전</td><td>큐에서 꺼내기 <code>O(log V)</code></td><td><code>O((V + E) log V)</code></td><td>약 100만 번</td></tr>
                         </tbody>
                     </table>
                 </div>
                 <ul>
-                    <li><strong>배열 버전을 쉽게 말하면:</strong> 매번 "누가 제일 가깝지?"를 명단 전체를 처음부터 끝까지 읽어서 찾음 — V번 뽑기 × V칸 읽기 = V²</li>
-                    <li><strong>큐 버전을 쉽게 말하면:</strong> 번호표 기계(우선순위 큐)가 가장 가까운 후보를 바로 내어 줌 — 꺼내고 넣을 때마다 log V만큼의 정리만 하면 됨</li>
-                    <li><strong>작은 지도</strong>(캠퍼스처럼 정점 수백 개 이하): 두 버전 모두 순식간 — 코드가 단순한 배열 버전도 충분</li>
-                    <li><strong>크고 길이 듬성한(희소) 지도</strong>: 1억 번 vs 100만 번, 약 <strong>100배 차이</strong> — <em>우선순위 큐 버전이 압도적으로 유리</em></li>
+                    <li>반복되는 동작은 두 가지 — <strong>뽑기</strong>(정점마다 1번, V번)와 <strong>완화</strong>(길마다 1번, O(E)번). 두 버전의 차이는 "뽑기 한 번이 얼마나 걸리는가"뿐</li>
+                    <li>캠퍼스처럼 작은 지도는 둘 다 순식간, 크고 길이 듬성한 지도는 큐 버전이 <strong>약 100배</strong> 유리</li>
                 </ul>
 
                 <h3>공간 복잡도 — 메모리를 얼마나 더 쓰는가?</h3>
                 <ul>
-                    <li><strong>지도 자체(인접 리스트):</strong> 정점마다 목록 하나 + 길마다 항목 — <code>O(V + E)</code></li>
-                    <li><strong>기록용 배열</strong> <code>dist</code>·<code>prev</code>·<code>visited</code>: 정점마다 한 칸씩 — <code>O(V)</code></li>
-                    <li><strong>우선순위 큐:</strong> 거리가 갱신될 때마다 새 항목을 넣으므로 최악의 경우 길 수만큼 쌓임 — <code>O(E)</code></li>
+                    <li>지도(인접 리스트) <code>O(V + E)</code> / 기록용 배열 <code>dist</code>·<code>prev</code>·<code>visited</code> <code>O(V)</code> / 우선순위 큐 최악 <code>O(E)</code></li>
                     <li>모두 합치면 <strong>O(V + E)</strong> — 지도 크기에 비례하는 만큼만 씀</li>
                 </ul>
                 <div class="note-box">
                     <span class="note-box__title">한 줄 정리 — 뽑기를 빠르게 하면 전체가 빨라진다</span>
                     <ul>
-                        <li>배열 버전 <strong>O(V²)</strong> → 우선순위 큐 버전 <strong>O((V + E) log V)</strong>, 메모리는 둘 다 <strong>O(V + E)</strong> 수준</li>
-                        <li>완화 규칙과 확정 논리는 그대로, <strong>"가장 가까운 정점 찾기"만 바꿔서</strong> 얻은 속도</li>
+                        <li>완화 규칙과 확정 논리는 그대로, <strong>"가장 가까운 정점 찾기"만 바꿔서</strong> O(V²) → O((V + E) log V)</li>
+                        <li><strong>음수 가중치에는 쓸 수 없음</strong> — "가장 가까운 미확정 정점은 다시 바뀌지 않는다"가 깨짐 (벨만-포드 필요)</li>
+                        <li>모든 가중치가 1이면 BFS와 같은 순서로 확정됨 — BFS는 다익스트라의 특별한 경우</li>
                     </ul>
                 </div>
-
-                <h3>알고리즘 특성 — 언제 무엇을 쓰는가?</h3>
-                <ul>
-                    <li><strong>그리디 + 점화식의 합작품:</strong> 확정은 그리디(10강), 거리 고쳐 쓰기는 점화식(11강) — 두 강의의 도구가 한 알고리즘 안에서 함께 일하는 대표 사례</li>
-                    <li><strong>음수 가중치에는 쓸 수 없음:</strong> "가장 가까운 미확정 정점은 다시 바뀌지 않는다"는 믿음은 모든 가중치가 0 이상일 때만 성립 — 음수 길이 있으면 벨만-포드 등 다른 알고리즘이 필요</li>
-                    <li><strong>BFS는 다익스트라의 특별한 경우:</strong> 모든 가중치가 1이면 다익스트라의 확정 순서가 BFS의 방문 순서와 같아짐 — 우선순위 큐가 일반 큐처럼 움직이기 때문</li>
-                    <li><strong>한 번 실행으로 모든 목적지:</strong> 출발점 하나에서 모든 정점까지의 최단 거리를 한꺼번에 구함(single-source) — 목적지 하나만 필요하면 그 정점이 확정되는 순간 멈춰도 됨</li>
-                </ul>
             </section>
 
             <!-- 10. 실제 데이터 응용 예제 -->

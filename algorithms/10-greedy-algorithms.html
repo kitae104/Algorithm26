@@ -587,66 +587,38 @@ public class BuggyStrictCompare {
             <!-- 9. 복잡도 및 특성 분석 -->
             <section class="lesson-section" id="sec-complexity" aria-labelledby="h-complexity">
                 <h2 id="h-complexity" data-toc-label="복잡도 및 특성 분석"><span class="section-no">09</span>복잡도 및 특성 분석</h2>
-                <p class="lecture-lead">복잡도 분석 = <strong>"데이터가 많아지면 일이 얼마나 늘어나는가?"</strong>를 따져 보는 것. 어려운 수식 대신 <strong>"몇 번 비교·계산하는가"</strong>만 세어 봅니다.</p>
-
-                <h3>입력 크기 — 무엇이 많아지는가?</h3>
-                <ul>
-                    <li>회의실 배정: <strong>회의 수 n</strong> — 신청이 많아질수록 일이 늘어남</li>
-                    <li>동전 교환: <strong>동전 종류 수 k</strong> — 금액이 아니라 동전 종류가 늘어날 때 일이 늘어남 (한국 동전은 k = 4)</li>
-                </ul>
-
-                <h3>주요 연산 — 무엇을 세는가?</h3>
-                <ul>
-                    <li>프로그램에서 <strong>가장 많이 반복되는 한 동작</strong>만 세면 충분</li>
-                    <li>회의 정렬: 두 회의의 종료 시각을 비교하는 한 번 (삽입 정렬의 <code>meetings[j].end &gt; key.end</code>)</li>
-                    <li>그리디 선택: "겹치지 않는가?"를 묻는 <code>m.start &gt;= lastEnd</code> 한 번 — 회의마다 정확히 1번</li>
-                    <li>동전 교환: 동전마다 나눗셈(<code>/</code>)·나머지(<code>%</code>) 한 번씩</li>
-                </ul>
+                <p class="lecture-lead">복잡도 = <strong>"데이터가 많아지면 일이 얼마나 늘어나는가?"</strong> 초 단위 시간이 아니라 <strong>"몇 번 하는가"</strong>만 세어 봅니다.</p>
 
                 <h3>시간 복잡도 — 얼마나 오래 걸리는가?</h3>
                 <div class="table-scroll">
                     <table class="data-table">
                         <thead>
-                            <tr><th scope="col">단계</th><th scope="col">비교 횟수</th><th scope="col">회의 6건일 때</th><th scope="col">회의 1만 건일 때</th><th scope="col">Big-O</th></tr>
+                            <tr><th scope="col">단계</th><th scope="col">Big-O</th><th scope="col">쉽게 말하면</th></tr>
                         </thead>
                         <tbody>
-                            <tr><td>정렬 — 삽입 정렬 (07 실습 코드)</td><td>최악 n(n-1)/2번</td><td>15번</td><td>약 5,000만 번</td><td><code>O(n²)</code></td></tr>
-                            <tr><td>정렬 — <code>Arrays.sort</code>·스트림 <code>sorted</code></td><td>약 n × log₂n번</td><td>약 16번</td><td>약 13만 번</td><td><code>O(n log n)</code></td></tr>
-                            <tr><td>그리디 선택</td><td>회의마다 1번: n번</td><td>6번</td><td>1만 번</td><td><code>O(n)</code></td></tr>
-                            <tr><td>(비교용) 완전 탐색 — 모든 회의 조합 확인</td><td>조합 2ⁿ개</td><td>64개</td><td>3,000자리가 넘는 수</td><td><code>O(2ⁿ)</code></td></tr>
+                            <tr><td>정렬 — 삽입 정렬 (07 실습 코드)</td><td><code>O(n²)</code></td><td>회의가 10배 늘면 비교는 100배</td></tr>
+                            <tr><td>정렬 — <code>Arrays.sort</code>·스트림 <code>sorted</code></td><td><code>O(n log n)</code></td><td>회의 1만 건이면 약 13만 번</td></tr>
+                            <tr><td>그리디 선택</td><td><code>O(n)</code></td><td>회의마다 "겹치나?" 1번만 묻고 되돌아가지 않음</td></tr>
+                            <tr><td>(비교용) 완전 탐색 — 모든 조합</td><td><code>O(2ⁿ)</code></td><td>회의 1만 건이면 3,000자리가 넘는 수</td></tr>
                         </tbody>
                     </table>
                 </div>
                 <ul>
-                    <li><strong>전체 시간은 정렬이 결정:</strong> 선택 자체는 회의마다 한 번씩만 보고 되돌아가지 않으므로 O(n)으로 매우 가벼움 — 그래서 정렬 방법만 바꿔도 전체가 O(n²) → O(n log n)으로 빨라짐</li>
-                    <li><strong>O(n²)을 쉽게 말하면:</strong> 회의가 <strong>10배</strong> 늘면 정렬 비교는 <strong>100배</strong> 늘어남 — 반 친구 모두가 서로 한 번씩 악수하는 것과 같음</li>
-                    <li><strong>O(n)을 쉽게 말하면:</strong> 회의가 10배 늘면 선택도 10배만 늘어남 — 출석부를 위에서부터 한 번 읽어 내려가는 것과 같음</li>
-                    <li><strong>회의가 6건뿐이면 차이 없음:</strong> 15번과 16번 — 정렬 방법의 차이는 데이터가 많아질 때 비로소 드러남</li>
-                    <li><strong>동전 교환은 O(k):</strong> 1,260원이든 126만 원이든 한국 동전 4종류마다 나눗셈 한 번씩, 딱 <strong>4번</strong>이면 끝 — 금액이 커져도 일은 그대로</li>
-                    <li><strong>우선순위 큐 방식</strong>(12 응용 예제의 작업 스케줄링): 넣기·꺼내기가 각각 O(log n)이므로 작업 n개 전체는 <strong>O(n log n)</strong></li>
+                    <li><strong>전체 시간은 정렬이 결정</strong> — 선택은 가벼우므로 정렬 방법만 바꿔도 O(n²) → O(n log n)</li>
+                    <li>동전 교환은 동전 종류 수 k만큼 → <code>O(k)</code> — 1,260원이든 126만 원이든 한국 동전 4종류, 딱 4번</li>
                 </ul>
 
                 <h3>공간 복잡도 — 메모리를 얼마나 더 쓰는가?</h3>
                 <ul>
-                    <li><strong>회의실 배정:</strong> 선택된 회의를 담는 목록 — 최대 n개이므로 <code>O(n)</code> (삽입 정렬 자체는 배열 안에서 자리만 바꾸므로 추가 메모리 거의 없음)</li>
-                    <li><strong>동전 교환:</strong> 남은 금액·합계 같은 변수 몇 개뿐 — 금액이 커져도 그대로, <code>O(1)</code></li>
-                </ul>
-
-                <h3>알고리즘 특성 — 언제 무엇을 쓰는가?</h3>
-                <ul>
-                    <li><strong>번복 없음:</strong> 백트래킹(7강)과 달리 한 번 한 선택을 취소하지 않음 — 그래서 빠르지만, 기준이 잘못되면 만회할 기회도 없음
-                        <ul>
-                            <li>비유: 산에서 <strong>눈앞의 가장 가파른 오르막만</strong> 따라 오르면 빨리 오르지만, 가까운 작은 봉우리에 올라 버리면 더 높은 봉우리로 돌아갈 수 없음</li>
-                        </ul>
-                    </li>
-                    <li><strong>정답 보장은 문제의 성질에 달림:</strong> 같은 코드가 한국 동전(1,260원 → 6개)에서는 최적, 동전 {1, 7, 10}(14원 → 5개, 최적은 2개)에서는 오답 — 알고리즘이 아니라 <strong>문제가 탐욕 선택 속성을 갖는지</strong>가 관건</li>
-                    <li><strong>반례 하나면 탈락:</strong> "여러 번 해 보니 맞더라"로는 부족 — "반례가 있을 수 없다"는 근거(교환해도 손해 없음, 배수 관계)를 말할 수 있어야 그리디를 믿을 수 있음</li>
-                    <li><strong>속도 대 정확성:</strong> 그리디 O(n log n)은 모든 조합을 보는 완전 탐색 O(2ⁿ)보다 압도적으로 빠름 — 정답이 보장되는 문제라면 그리디가 최고의 선택, 보장되지 않으면 11강의 동적 계획법으로</li>
+                    <li>회의실 배정: 선택된 회의 목록 최대 n개 → <code>O(n)</code></li>
+                    <li>동전 교환: 남은 금액·합계 변수 몇 개 → <code>O(1)</code></li>
                 </ul>
                 <div class="note-box">
                     <span class="note-box__title">한 줄 정리 — 빠른 것은 확실, 맞는지는 문제가 결정</span>
                     <ul>
-                        <li>그리디는 <strong>정렬 한 번 + 한 번 훑기</strong>로 끝나 빠르지만(보통 O(n log n)), 그 답이 최선인지는 탐욕 선택 속성이 성립하는 문제에서만 보장됨</li>
+                        <li>그리디는 <strong>정렬 한 번 + 한 번 훑기</strong>(O(n log n))로 끝나 빠르지만, 번복이 없어 기준이 틀리면 만회할 수 없음</li>
+                        <li>같은 코드가 한국 동전에서는 최적, 동전 {1, 7, 10}(14원)에서는 오답 — "반례가 없다"는 근거가 있어야 믿을 수 있음</li>
+                        <li>정답이 보장되지 않는 문제는 11강의 동적 계획법으로</li>
                     </ul>
                 </div>
             </section>

@@ -539,68 +539,38 @@ public class BuggyNullCounter {
             <!-- 9. 복잡도 및 특성 분석 -->
             <section class="lesson-section" id="sec-complexity" aria-labelledby="h-complexity">
                 <h2 id="h-complexity" data-toc-label="복잡도 및 특성 분석"><span class="section-no">09</span>복잡도 및 특성 분석</h2>
-                <p class="lecture-lead">복잡도 분석 = <strong>"데이터가 많아지면 일이 얼마나 늘어나는가?"</strong>를 따져 보는 것. 어려운 수식 대신 <strong>"몇 번 확인하는가"</strong>만 세어 봅니다.</p>
-
-                <h3>입력 크기 — 무엇이 많아지는가?</h3>
-                <ul>
-                    <li>중복 찾기·빈도 계산: <strong>단어 수 n</strong> — 게시글이 길어져 단어가 많아질수록 일이 늘어남</li>
-                    <li>회문 판별: <strong>글자 수 L</strong> — 한 단어가 길어질수록 일이 늘어남</li>
-                </ul>
-
-                <h3>주요 연산 — 무엇을 세는가?</h3>
-                <ul>
-                    <li>프로그램에서 <strong>가장 많이 반복되는 한 동작</strong>만 세면 충분</li>
-                    <li>이중 반복문: 두 단어를 비교하는 <code>equals</code> 한 번</li>
-                    <li>HashSet·HashMap: 명단에 확인·기록하는 <code>add</code>·<code>put</code> 한 번</li>
-                    <li>회문 판별: 앞 글자와 뒤 글자를 비교하는 한 번</li>
-                </ul>
+                <p class="lecture-lead">복잡도 = <strong>"데이터가 많아지면 일이 얼마나 늘어나는가?"</strong> 초 단위 시간이 아니라 <strong>"몇 번 하는가"</strong>만 세어 봅니다.</p>
 
                 <h3>시간 복잡도 — 얼마나 오래 걸리는가?</h3>
                 <div class="table-scroll">
                     <table class="data-table">
                         <thead>
-                            <tr><th scope="col">알고리즘</th><th scope="col">확인 횟수</th><th scope="col">단어 10개일 때</th><th scope="col">단어 10만 개일 때</th><th scope="col">Big-O</th></tr>
+                            <tr><th scope="col">알고리즘</th><th scope="col">Big-O</th><th scope="col">쉽게 말하면</th></tr>
                         </thead>
                         <tbody>
-                            <tr><td>중복 찾기 — 이중 반복문</td><td>모든 쌍: n(n-1)/2번</td><td>45번</td><td>약 50억 번</td><td><code>O(n²)</code></td></tr>
-                            <tr><td>중복 찾기 — HashSet</td><td>단어마다 1번: n번</td><td>10번</td><td>10만 번</td><td>평균 <code>O(n)</code></td></tr>
-                            <tr><td>단어 빈도 — HashMap</td><td>단어마다 1번: n번</td><td>10번</td><td>10만 번</td><td>평균 <code>O(n)</code></td></tr>
+                            <tr><td>중복 찾기 — 이중 반복문</td><td><code>O(n²)</code></td><td>반 친구 모두가 서로 한 번씩 악수 — 10배 늘면 100배</td></tr>
+                            <tr><td>중복 찾기·빈도 — HashSet·HashMap</td><td>평균 <code>O(n)</code></td><td>단어마다 명단 확인 1번 — 10배 늘면 10배</td></tr>
+                            <tr><td>회문 판별 (글자 수 L)</td><td><code>O(L)</code></td><td>양 끝에서 한 쌍씩 비교, 최대 L/2번</td></tr>
                         </tbody>
                     </table>
                 </div>
                 <ul>
-                    <li><strong>O(n²)을 쉽게 말하면:</strong> 데이터가 <strong>10배</strong> 늘면 일은 <strong>100배</strong> 늘어남 — 반 친구 모두가 서로 한 번씩 악수하는 것과 같음 (사람이 늘수록 악수 횟수가 폭발적으로 증가)</li>
-                    <li><strong>O(n)을 쉽게 말하면:</strong> 데이터가 <strong>10배</strong> 늘면 일도 <strong>10배</strong>만 늘어남 — 출석부를 위에서부터 한 번 읽어 내려가는 것과 같음</li>
-                    <li>이중 반복문은 중복을 일찍 찾아도 <strong>모든 쌍을 끝까지</strong> 확인 → 운이 좋아도 나빠도 항상 같은 횟수</li>
-                    <li>HashSet·HashMap 앞의 "평균": 아주 드물게 한 번의 확인이 느려질 수 있지만, 실제로는 거의 항상 한 번에 끝난다고 생각해도 충분</li>
-                    <li><strong>회문 판별</strong>(글자 수 L): 양 끝에서 한 쌍씩 비교하므로 최대 L/2번, <code>O(L)</code>
-                        <ul>
-                            <li>첫 글자와 끝 글자부터 다르면 1번 만에 끝남 — <em>회문이 아닐수록 빨리 끝남</em></li>
-                            <li>회문일 때 가장 오래 걸림 (모든 쌍을 끝까지 확인해야 하므로)</li>
-                        </ul>
-                    </li>
+                    <li>단어 10만 개: 이중 반복문 <strong>약 50억 번</strong> vs HashSet <strong>10만 번</strong></li>
+                    <li>해시의 "평균": 아주 드물게 느려질 수 있지만, 거의 항상 한 번에 끝난다고 생각해도 충분</li>
                 </ul>
 
                 <h3>공간 복잡도 — 메모리를 얼마나 더 쓰는가?</h3>
                 <ul>
-                    <li><strong>이중 반복문:</strong> 변수 i, j, 카운터 몇 개뿐 — 단어가 늘어도 추가 메모리는 그대로, <code>O(1)</code></li>
-                    <li><strong>HashSet·HashMap:</strong> 서로 다른 단어를 모두 명단에 적어 둠 — 단어가 늘면 명단도 커짐, <code>O(n)</code></li>
+                    <li>이중 반복문: 변수 i, j 몇 개뿐 → <code>O(1)</code></li>
+                    <li>HashSet·HashMap: 서로 다른 단어를 모두 명단에 적어 둠 → <code>O(n)</code></li>
                 </ul>
                 <div class="note-box">
                     <span class="note-box__title">한 줄 정리 — 메모리를 내주고 시간을 산다</span>
                     <ul>
-                        <li>해시는 <strong>명단(메모리)을 조금 더 쓰는 대신</strong> 확인 횟수를 <strong>n² → n</strong>으로 크게 줄임</li>
-                        <li>요즘 컴퓨터는 메모리가 넉넉해 대부분 이득인 교환 — 단, "빠름에는 공짜가 없다"는 사실은 기억</li>
+                        <li>해시는 <strong>명단(메모리)을 조금 더 쓰는 대신</strong> 확인 횟수를 <strong>n² → n</strong>으로 줄임</li>
+                        <li>단어가 수십~수백 개면 단순한 완전 탐색도 충분 — 느리지만 틀리지 않아 빠른 코드의 "정답지"로도 쓰임</li>
                     </ul>
                 </div>
-
-                <h3>알고리즘 특성 — 언제 무엇을 쓰는가?</h3>
-                <ul>
-                    <li><strong>완전 탐색은 "정답지" 역할:</strong> 느리지만 틀리지 않으므로, 새로 만든 빠른 코드(해시)의 결과와 비교해 버그를 찾는 데 유용 (실습 코드의 <code>dupA.equals(dupB)</code>)</li>
-                    <li><strong>데이터가 적으면 완전 탐색도 괜찮음:</strong> 단어가 수십~수백 개 정도면 O(n²)도 눈 깜짝할 사이에 끝남 — <em>코드가 단순한 쪽이 오히려 좋은 선택일 수 있음</em></li>
-                    <li><strong>해시는 순서를 기억하지 않음:</strong> HashMap·HashSet에서 꺼내면 넣은 순서와 다르게 나올 수 있음 — 순서가 필요하면 원본 배열을 다시 순회</li>
-                    <li><strong>이중 반복문은 다시 만남:</strong> "i를 고정하고 j를 훑는" 구조는 4강의 선택 정렬·버블 정렬에서 그대로 등장</li>
-                </ul>
             </section>
 
             <!-- 10. 람다·스트림 변경 -->

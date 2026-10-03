@@ -580,76 +580,39 @@ public class BuggyRemoveWhileLoop {
             <!-- 9. 복잡도 및 특성 분석 -->
             <section class="lesson-section" id="sec-complexity" aria-labelledby="h-complexity">
                 <h2 id="h-complexity" data-toc-label="복잡도 및 특성 분석"><span class="section-no">09</span>복잡도 및 특성 분석</h2>
-                <p class="lecture-lead">복잡도 분석 = <strong>"데이터가 많아지면 일이 얼마나 늘어나는가?"</strong>를 따져 보는 것. 어려운 수식 대신 <strong>"원소를 몇 번 건드리는가"</strong>만 세어 봅니다.</p>
-
-                <h3>입력 크기 — 무엇이 많아지는가?</h3>
-                <ul>
-                    <li><strong>원소 수 n</strong> — 배열이나 리스트에 담긴 값의 개수 (예: 학생 수 8명)</li>
-                    <li>학생이 8명에서 200명, 100만 명으로 늘어날수록 일이 늘어남</li>
-                    <li>빈도 계산에서는 하나 더: 카운팅 배열의 <strong>칸 수 k</strong> (점수대 10칸이면 k = 10)</li>
-                </ul>
-
-                <h3>주요 연산 — 무엇을 세는가?</h3>
-                <ul>
-                    <li>프로그램에서 <strong>가장 많이 반복되는 한 동작</strong>만 세면 충분</li>
-                    <li>합계: 더하기 <code>sum = sum + scores[i]</code> 한 번</li>
-                    <li>최댓값·최솟값: 후보와 비교 <code>scores[i] &gt; max</code> 한 번</li>
-                    <li>조건 검색: 조건 검사 <code>scores[i] &gt;= 80</code> 한 번</li>
-                    <li>어느 것이든 순회 한 바퀴에 <strong>원소 하나당 한 번</strong> 실행됨</li>
-                </ul>
+                <p class="lecture-lead">복잡도 = <strong>"데이터가 많아지면 일이 얼마나 늘어나는가?"</strong> 초 단위 시간이 아니라 <strong>"몇 번 하는가"</strong>만 세어 봅니다.</p>
 
                 <h3>시간 복잡도 — 얼마나 오래 걸리는가?</h3>
                 <div class="table-scroll">
                     <table class="data-table">
                         <thead>
-                            <tr><th scope="col">연산</th><th scope="col">하는 일</th><th scope="col">원소 8개일 때</th><th scope="col">원소 100만 개일 때</th><th scope="col">배열</th><th scope="col">ArrayList</th></tr>
+                            <tr><th scope="col">연산</th><th scope="col">Big-O</th><th scope="col">쉽게 말하면</th></tr>
                         </thead>
                         <tbody>
-                            <tr><td>인덱스로 읽기·쓰기</td><td>위치 계산 한 번으로 바로 접근</td><td>1번</td><td>1번</td><td><code>O(1)</code></td><td><code>O(1)</code></td></tr>
-                            <tr><td>순회 (합계·평균·최대·최소·빈도)</td><td>모든 원소를 한 번씩 방문</td><td>8번</td><td>100만 번</td><td><code>O(n)</code></td><td><code>O(n)</code></td></tr>
-                            <tr><td>조건 검색 (전체)</td><td>원소마다 조건 검사</td><td>8번</td><td>100만 번</td><td><code>O(n)</code></td><td><code>O(n)</code></td></tr>
-                            <tr><td>끝에 추가</td><td>배열: 더 큰 새 배열에 전부 옮김 / 리스트: 남는 칸에 넣음</td><td>배열 8번 옮김 / 리스트 대개 1번</td><td>배열 100만 번 옮김 / 리스트 대개 1번</td><td>불가 (새 배열 복사 <code>O(n)</code>)</td><td>평균 <code>O(1)</code></td></tr>
-                            <tr><td>맨 앞(중간) 삭제</td><td>뒤의 원소를 한 칸씩 당김</td><td>최대 7번 이동</td><td>최대 약 100만 번 이동</td><td>직접 밀어야 함 <code>O(n)</code></td><td><code>O(n)</code></td></tr>
-                            <tr><td>배열 복사</td><td>원소를 한 칸씩 옮김</td><td>8번</td><td>100만 번</td><td><code>O(n)</code></td><td><code>O(n)</code></td></tr>
+                            <tr><td>인덱스로 읽기·쓰기</td><td><code>O(1)</code></td><td>사물함 번호만 알면 몇 개가 있든 바로 그 칸을 열기</td></tr>
+                            <tr><td>순회 (합계·평균·최대·최소·빈도)</td><td><code>O(n)</code></td><td>출석부를 위에서 끝까지 한 번 읽기 — 10배 늘면 10배</td></tr>
+                            <tr><td>끝에 추가 (ArrayList)</td><td>평균 <code>O(1)</code></td><td>여유 칸에 바로 넣음, 가득 차면 가끔 더 큰 곳으로 이사</td></tr>
+                            <tr><td>맨 앞·중간 삭제</td><td><code>O(n)</code></td><td>맨 앞사람이 빠지면 뒤의 모두가 한 걸음씩 앞으로</td></tr>
                         </tbody>
                     </table>
                 </div>
                 <ul>
-                    <li><strong>O(1)을 쉽게 말하면:</strong> 데이터가 아무리 많아도 일은 <strong>늘 한 번</strong> — 사물함 번호만 알면 몇 개가 있든 바로 그 칸을 여는 것과 같음</li>
-                    <li><strong>O(n)을 쉽게 말하면:</strong> 데이터가 <strong>10배</strong> 늘면 일도 <strong>10배</strong> — 출석부를 위에서부터 한 번 읽어 내려가는 것과 같음</li>
-                    <li><strong>ArrayList의 끝 추가가 "평균" O(1)인 이유:</strong> 리스트는 여유 칸을 미리 확보해 둠
-                        <ul>
-                            <li>빈 칸이 있으면 넣기만 하면 끝 (1번)</li>
-                            <li>가득 차면 가끔 한 번 더 큰 곳으로 "이사"(전체 복사)하지만, 드물게 일어나므로 평균하면 한 번꼴</li>
-                        </ul>
-                    </li>
-                    <li><strong>중간 삭제가 O(n)인 이유:</strong> 줄 선 사람 중 맨 앞사람이 빠지면 뒤의 모든 사람이 한 걸음씩 앞으로 — 이 "밀림"이 오류 카드 2번의 원인</li>
+                    <li>원소 100만 개: 인덱스 접근은 1번, 순회는 100만 번</li>
+                    <li>합계·최댓값은 운이 좋아도 끝까지 다 봐야 함 → <strong>항상 n번</strong></li>
                 </ul>
 
                 <h3>공간 복잡도 — 메모리를 얼마나 더 쓰는가?</h3>
                 <ul>
-                    <li><strong>합계·평균·최댓값·최솟값·개수 세기:</strong> 기억 칸(sum, max, count) 몇 개뿐 — 학생이 늘어도 추가 메모리는 그대로, <code>O(1)</code></li>
-                    <li><strong>조건에 맞는 원소를 새 배열·리스트에 모으기:</strong> 최악의 경우 전부 조건에 맞으면 n개를 모두 담음, <code>O(n)</code></li>
-                    <li><strong>빈도 계산:</strong> 칸 수 k만큼의 카운팅 배열이 필요, <code>O(k)</code> — 점수대 10칸이면 학생이 100만 명이어도 10칸 그대로</li>
+                    <li>합계·평균·최대·최소·개수: 기억 칸(sum, max, count) 몇 개뿐 → <code>O(1)</code></li>
+                    <li>조건에 맞는 원소를 새 리스트에 모으기: 최대 n개 → <code>O(n)</code> / 빈도 카운팅 배열: 칸 수 k만큼 → <code>O(k)</code></li>
                 </ul>
                 <div class="note-box">
                     <span class="note-box__title">한 줄 정리 — 한 번 훑으면 O(n), 기억 칸은 몇 개면 충분</span>
                     <ul>
-                        <li>오늘 배운 통계·검색·빈도는 모두 <strong>배열을 한 번 훑는 O(n)</strong>, 추가 메모리는 기억 칸 몇 개(O(1)) 또는 칸 수 k(O(k))</li>
+                        <li>오늘 배운 통계·검색·빈도는 모두 <strong>배열을 한 번 훑는 O(n)</strong>, 추가 메모리는 기억 칸 몇 개</li>
+                        <li>개수가 정해져 있으면 <strong>배열</strong>, 늘었다 줄었다 하면 <strong>ArrayList</strong></li>
                     </ul>
                 </div>
-
-                <h3>알고리즘 특성 — 언제 무엇을 쓰는가?</h3>
-                <ul>
-                    <li><strong>통계 순회는 항상 n번:</strong> 합계·최댓값은 운이 좋아도 나빠도 끝까지 다 봐야 함 → 입력이 무엇이든 같은 횟수
-                        <ul>
-                            <li>반면 "첫 번째로 80점 이상인 학생 찾기"처럼 1강의 조기 중단을 쓰면 빠르면 1번, 늦으면 n번</li>
-                        </ul>
-                    </li>
-                    <li><strong>한 번 훑을 때 여러 일을 같이:</strong> 합계·최대·최소를 한 바퀴에 처리하면 순회 3번이 1번 — Big-O는 똑같이 O(n)이지만 실제 시간은 줄어드는 실전 요령</li>
-                    <li><strong>그릇 고르기가 곧 설계:</strong> 개수가 정해져 있으면 배열, 늘었다 줄었다 하면 ArrayList — 빈도 계산처럼 "값 → 칸 번호"로 세는 일에는 크기가 정해진 카운팅 배열이 딱 맞음</li>
-                    <li><strong>다음 강의와 연결:</strong> 순회 + 조건 검사는 3강의 완전 탐색으로, 카운팅 배열의 "값 → 칸 번호" 발상은 3강의 해시로 이어짐</li>
-                </ul>
             </section>
 
             <!-- 10. 람다·스트림 변경 -->

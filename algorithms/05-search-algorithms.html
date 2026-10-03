@@ -586,63 +586,37 @@ low + (high - low) / 2 = 1550000000</code></pre>
             <!-- 9. 복잡도 및 특성 분석 -->
             <section class="lesson-section" id="sec-complexity" aria-labelledby="h-complexity">
                 <h2 id="h-complexity" data-toc-label="복잡도 및 특성 분석"><span class="section-no">09</span>복잡도 및 특성 분석</h2>
-
-                <p class="lecture-lead">복잡도 분석 = <strong>"데이터가 많아지면 일이 얼마나 늘어나는가?"</strong>를 따져 보는 것. 어려운 수식 대신 <strong>"몇 번 비교하는가"</strong>만 세어 봅니다.</p>
-
-                <h3>입력 크기 — 무엇이 많아지는가?</h3>
-                <ul>
-                    <li>배열에 든 데이터(도서)의 개수 <strong>n</strong> — 장서가 12권에서 10만 권으로 늘어날 때 일이 얼마나 늘어나는지를 봄</li>
-                </ul>
-
-                <h3>주요 연산 — 무엇을 세는가?</h3>
-                <ul>
-                    <li>프로그램에서 <strong>가장 많이 반복되는 한 동작</strong>만 세면 충분</li>
-                    <li>순차 탐색: <code>arr[i]</code>와 target을 비교하는 한 번</li>
-                    <li>이진 탐색: <code>arr[mid]</code>와 target을 비교하는 한 번 (같다/작다/크다 판단을 묶어 한 번으로 셈)</li>
-                    <li>실습 코드의 <code>comparisons</code> 카운터가 세던 바로 그 연산</li>
-                </ul>
+                <p class="lecture-lead">복잡도 = <strong>"데이터가 많아지면 일이 얼마나 늘어나는가?"</strong> 초 단위 시간이 아니라 <strong>"몇 번 하는가"</strong>만 세어 봅니다.</p>
 
                 <h3>시간 복잡도 — 얼마나 오래 걸리는가?</h3>
                 <div class="table-scroll">
                     <table class="data-table">
                         <thead>
-                            <tr><th scope="col">알고리즘</th><th scope="col">최선</th><th scope="col">최악</th><th scope="col">도서 12권일 때 (최악)</th><th scope="col">도서 10만 권일 때 (최악)</th><th scope="col">Big-O</th></tr>
+                            <tr><th scope="col">알고리즘</th><th scope="col">최선</th><th scope="col">최악</th><th scope="col">Big-O</th><th scope="col">쉽게 말하면</th></tr>
                         </thead>
                         <tbody>
-                            <tr><td>순차 탐색</td><td>1번 (첫 칸에 있음)</td><td>n번 (맨 끝 또는 없음)</td><td>12번</td><td>100,000번</td><td><code>O(n)</code></td></tr>
-                            <tr><td>이진 탐색</td><td>1번 (첫 mid가 정답)</td><td>⌊log₂n⌋ + 1번</td><td>4번</td><td>17번</td><td><code>O(log n)</code></td></tr>
+                            <tr><td>순차 탐색</td><td>1번</td><td>n번</td><td><code>O(n)</code></td><td>출석부를 위에서 한 줄씩 읽기 — 10배 늘면 10배</td></tr>
+                            <tr><td>이진 탐색</td><td>1번</td><td>약 log₂n번</td><td><code>O(log n)</code></td><td>사전 가운데를 펴고 절반 버리기 — 2배 늘어도 1번만 추가</td></tr>
                         </tbody>
                     </table>
                 </div>
                 <ul>
-                    <li><strong>O(n)을 쉽게 말하면:</strong> 데이터가 <strong>10배</strong> 늘면 비교도 <strong>10배</strong> 늘어남 — 출석부를 위에서부터 한 줄씩 읽어 내려가며 이름을 찾는 것과 같음</li>
-                    <li><strong>O(log n)을 쉽게 말하면:</strong> 데이터가 <strong>2배</strong> 늘어도 비교는 <strong>1번</strong>만 늘어남 — 국어사전의 가운데를 펴고 앞이나 뒤 절반을 버리는 일을 반복하는 것과 같음 (10억 개여도 30번)</li>
-                    <li><strong>평균은?</strong> 순차 탐색은 대략 절반쯤(약 n/2번)에서 찾고, 이진 탐색은 대부분 최악과 비슷한 약 log₂n번</li>
-                    <li><strong>실제로 세어 본 값과 일치:</strong> 12권에서 이진 탐색의 최악은 ⌊log₂12⌋ + 1 = 4번 (5090, 2500 모두 4번), 뒤의 응용 예제(12번 섹션) 100,000권 실험에서는 16번 (이론상 최대 17번)</li>
-                    <li><em>1강에서 "탐색은 어디에 있느냐에 따라 최선과 최악이 달라진다"고 예고했던 것이 두 알고리즘 모두에서 확인됨</em></li>
+                    <li>도서 10만 권: 순차 탐색 최악 <strong>10만 번</strong> vs 이진 탐색 <strong>17번</strong> (10억 권이어도 30번)</li>
+                    <li>단, 이진 탐색은 <strong>데이터가 정렬돼 있어야</strong> 가능</li>
                 </ul>
 
                 <h3>공간 복잡도 — 메모리를 얼마나 더 쓰는가?</h3>
                 <ul>
-                    <li><strong>순차 탐색·반복문 이진 탐색:</strong> 변수 <code>i</code>, <code>low</code>, <code>high</code>, <code>mid</code>, 카운터 몇 개뿐 — 데이터가 늘어도 추가 메모리는 그대로, <code>O(1)</code></li>
-                    <li><strong>재귀 이진 탐색:</strong> 자기 자신을 부를 때마다 호출 기록이 쌓임 — 최대 약 log₂n개, <code>O(log n)</code> (7강에서 자세히)</li>
+                    <li>순차 탐색·반복문 이진 탐색: 변수 몇 개뿐 → <code>O(1)</code></li>
+                    <li>재귀 이진 탐색: 호출 기록이 약 log₂n개 쌓임 → <code>O(log n)</code> (7강)</li>
                 </ul>
                 <div class="note-box">
                     <span class="note-box__title">한 줄 정리 — 정렬해 두면 찾기가 n번에서 log n번으로</span>
                     <ul>
-                        <li>이진 탐색은 추가 메모리 없이(<code>O(1)</code>) 비교 횟수를 <strong>n → log₂n</strong>으로 크게 줄임</li>
-                        <li>대가는 <strong>"데이터가 정렬돼 있어야 한다"</strong>는 조건 — 빠름에는 공짜가 없음</li>
+                        <li>대가는 <strong>정렬(4강) 비용</strong> — 한 번 정렬하고 여러 번 검색할수록 이득</li>
+                        <li>데이터가 아주 적거나 정렬돼 있지 않으면 순차 탐색이 합리적인 선택</li>
                     </ul>
                 </div>
-
-                <h3>알고리즘 특성 — 언제 무엇을 쓰는가?</h3>
-                <ul>
-                    <li><strong>속도는 공짜가 아님:</strong> 이진 탐색의 빠르기는 <strong>정렬(4강)</strong>이라는 비용을 먼저 치른 대가 — 한 번 정렬해 두고 여러 번 검색할수록 이득이 커짐</li>
-                    <li><strong>항상 이기지는 않음:</strong> 실습 코드의 표에서 첫 원소 1001은 순차 1번 vs 이진 3번 — 데이터가 아주 적거나 정렬돼 있지 않다면 순차 탐색이 합리적인 선택</li>
-                    <li><strong>칸 번호로 바로 접근할 수 있어야 함:</strong> <code>arr[mid]</code>를 즉시(<code>O(1)</code>) 읽을 수 있는 배열이기에 가능 — 앞에서부터 따라가야만 하는 연결 리스트(2강)에서는 이진 탐색의 이점이 사라짐</li>
-                    <li><strong>자주 바뀌는 데이터에는 불리:</strong> 새 도서가 들어올 때마다 정렬된 자리에 끼워 넣는 비용(<code>O(n)</code>)이 듦 — 삽입·삭제가 잦다면 3강의 해시(HashMap)가 대안</li>
-                    <li><strong>절반 버리기는 다시 만남:</strong> 이 아이디어는 8강 이진 탐색 트리(BST), 11강의 최적화 문제까지 이어지는 이 과정 전체의 핵심 무기</li>
-                </ul>
             </section>
 
             <!-- 10. 람다·스트림 변경 -->
