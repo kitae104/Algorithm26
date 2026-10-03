@@ -75,10 +75,10 @@ for (const item of supplements) {
 }
 
 /* ---------- 2. 강의 HTML 구조 ---------- */
-/* 13개 강의 전부가 공유하는 16개 필수 섹션.
+/* 13개 강의 전부가 공유하는 15개 필수 섹션.
    (점진적 Java 구현·실행 과정 추적은 실습 코드 절로 흡수되어 더 이상 별도 섹션이 아니다) */
 const REQUIRED_SECTIONS = [
-    "sec-intro", "sec-objectives", "sec-prereq", "sec-problem",
+    "sec-intro", "sec-objectives", "sec-problem",
     "sec-concepts", "sec-steps", "sec-pseudo",
     "sec-complete", "sec-bugs", "sec-complexity",
     "sec-application", "sec-quiz", "sec-practice", "sec-final",
@@ -86,8 +86,9 @@ const REQUIRED_SECTIONS = [
 ];
 
 /* 없앤 섹션이 다시 들어오지 않게.
-   "사람이 직접 해결해 보기"(sec-hand)는 없애고 핵심 개념에서 바로 시작한다. */
-const REMOVED_SECTIONS = ["sec-hand"];
+   "사람이 직접 해결해 보기"(sec-hand)는 없애고 핵심 개념에서 바로 시작한다.
+   "선수 지식"(sec-prereq)도 없애고 학습 목표 다음에 바로 실제 문제 상황으로 넘어간다. */
+const REMOVED_SECTIONS = ["sec-hand", "sec-prereq"];
 
 const REQUIRED_MARKERS = [
     ["data-site-header", "상단 내비게이션 자리"],

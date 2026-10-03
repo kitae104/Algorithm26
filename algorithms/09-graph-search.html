@@ -88,29 +88,10 @@
                 </ul>
             </section>
 
-            <!-- 3. 선수 지식 -->
-            <section class="lesson-section" id="sec-prereq" aria-labelledby="h-prereq">
-                <h2 id="h-prereq" data-toc-label="선수 지식"><span class="section-no">03</span>선수 지식</h2>
-                <p class="lecture-lead">다음 내용을 이미 안다고 가정합니다 — 낯설면 해당 강의를 먼저 복습하세요.</p>
-                <div class="table-scroll">
-                    <table class="data-table">
-                        <thead>
-                            <tr><th scope="col">항목</th><th scope="col">어느 강의</th><th scope="col">이 강의에서 쓰이는 곳</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr><td>2차원 배열과 <code>ArrayList</code></td><td>2강</td><td>간선 목록 <code>int[][]</code>, 인접 리스트</td></tr>
-                            <tr><td>스택(LIFO)과 큐(FIFO), <code>ArrayDeque</code></td><td>6강</td><td>DFS 스택 버전, BFS의 큐</td></tr>
-                            <tr><td>재귀 호출과 호출 스택</td><td>7강</td><td>DFS 재귀 버전</td></tr>
-                            <tr><td>방문 관리(<code>visited</code>)</td><td>7강</td><td>같은 정점 재방문 방지</td></tr>
-                            <tr><td>트리의 재귀 순회·레벨 순회</td><td>8강</td><td>DFS·BFS와의 비교 기준</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
 
-            <!-- 4. 실제 문제 상황 -->
+            <!-- 3. 실제 문제 상황 -->
             <section class="lesson-section" id="sec-problem" aria-labelledby="h-problem">
-                <h2 id="h-problem" data-toc-label="실제 문제 상황"><span class="section-no">04</span>실제 문제 상황</h2>
+                <h2 id="h-problem" data-toc-label="실제 문제 상황"><span class="section-no">03</span>실제 문제 상황</h2>
                 <p class="lecture-lead">소규모 SNS 서비스 개발자인 여러분에게, 기획팀이 세 가지 기능을 요청했습니다.</p>
                 <ul>
                     <li>회원 A가 <strong>친구의 친구를 타고 도달할 수 있는 사람</strong>을 모두 찾아 "알 수도 있는 사람"으로 추천</li>
@@ -125,9 +106,9 @@
                 </div>
             </section>
 
-            <!-- 5. 핵심 개념 -->
+            <!-- 4. 핵심 개념 -->
             <section class="lesson-section" id="sec-concepts" aria-labelledby="h-concepts">
-                <h2 id="h-concepts" data-toc-label="핵심 개념"><span class="section-no">05</span>핵심 개념</h2>
+                <h2 id="h-concepts" data-toc-label="핵심 개념"><span class="section-no">04</span>핵심 개념</h2>
 
                 <h3>그래프 = 정점 + 간선</h3>
                 <ul>
@@ -218,10 +199,10 @@
                 </ul>
             </section>
 
-            <!-- 6. 단계별 동작 과정 -->
+            <!-- 5. 단계별 동작 과정 -->
             <section class="lesson-section" id="sec-steps" aria-labelledby="h-steps">
-                <h2 id="h-steps" data-toc-label="단계별 동작 과정"><span class="section-no">06</span>단계별 동작 과정</h2>
-                <p class="lecture-lead">05 핵심 개념의 예제 그래프(회원 7명, 친구 관계 (0,1), (0,2), (1,3), (2,4), (3,5), (4,5), 외딴 6번)를 0번에서 출발해 <strong>1부: 스택 DFS → 2부: 큐 BFS</strong> 순서로 탐색하는 과정입니다. <strong>다음 단계 ▶</strong> 버튼으로 한 단계씩 진행하세요.</p>
+                <h2 id="h-steps" data-toc-label="단계별 동작 과정"><span class="section-no">05</span>단계별 동작 과정</h2>
+                <p class="lecture-lead">04 핵심 개념의 예제 그래프(회원 7명, 친구 관계 (0,1), (0,2), (1,3), (2,4), (3,5), (4,5), 외딴 6번)를 0번에서 출발해 <strong>1부: 스택 DFS → 2부: 큐 BFS</strong> 순서로 탐색하는 과정입니다. <strong>다음 단계 ▶</strong> 버튼으로 한 단계씩 진행하세요.</p>
                 <ul>
                     <li><strong>파란색 + "지금 처리 중"</strong> — 방금 스택/큐에서 꺼내 처리하는 정점</li>
                     <li><strong>노란색 + "대기 중"</strong> — 스택/큐 안에서 차례를 기다리는 정점</li>
@@ -237,9 +218,9 @@
                 </p>
             </section>
 
-            <!-- 7. 의사코드 -->
+            <!-- 6. 의사코드 -->
             <section class="lesson-section" id="sec-pseudo" aria-labelledby="h-pseudo">
-                <h2 id="h-pseudo" data-toc-label="의사코드"><span class="section-no">07</span>의사코드</h2>
+                <h2 id="h-pseudo" data-toc-label="의사코드"><span class="section-no">06</span>의사코드</h2>
                 <p class="lecture-lead">코드를 쓰기 전에, 시각화에서 본 절차를 언어 중립적인 의사코드로 정리합니다.</p>
                 <ul>
                     <li>의사코드 = 특정 언어 문법 대신 <strong>우리말에 가까운 문장</strong>으로 알고리즘의 순서를 적은 것</li>
@@ -247,6 +228,7 @@
                     <li><code>참</code>·<code>거짓</code>은 Java의 <code>true</code>·<code>false</code>, <code>visited[v]</code>는 "v번 정점을 방문했는가?"를 적어 두는 칸</li>
                 </ul>
 
+                <h3>깊이 우선 탐색 (DFS)</h3>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -259,29 +241,11 @@
     visited[v] ← 참              // 1) 도착 즉시 방문 표시 (무한 반복 방지)
     v를 방문 순서에 기록한다        // 2) 처리
     v의 각 이웃 next에 대해 반복:
-        만약 visited[next]가 거짓이면:
+        만약 visited[next]가 거짓이면:  // 안 가 본 이웃만 골라낸다
             DFS(그래프, next)     // 3) 더 깊이 — 되돌아오기는 호출 스택이 담당</code></pre>
                 </article>
-                <p><strong>코드 설명 — DFS 재귀 버전</strong></p>
-                <ul>
-                    <li><code>알고리즘 DFS(그래프, v)</code> — "v번 정점에 도착했을 때 할 일"을 정의. 이 안에서 자기 자신(DFS)을 다시 부르는 <strong>재귀</strong> 구조</li>
-                    <li><code>visited[v] ← 참</code> — 도착하자마자 <strong>가장 먼저</strong> 방문 표시 (형광펜 칠하기)
-                        <ul>
-                            <li>먼저 표시해야 하는 이유: 이웃을 둘러보다 v로 되돌아오는 길(무방향 간선, 순환)을 만나도 "이미 왔던 곳"으로 걸러 낼 수 있음</li>
-                            <li>이 줄이 없으면 0 → 1 → 0 → 1 …을 영원히 왕복 (09 오류 2에서 확인)</li>
-                        </ul>
-                    </li>
-                    <li><code>v를 방문 순서에 기록한다</code> — 실제로 할 일(출력, 저장 등)을 하는 자리. 여기서는 방문 순서만 적어 둠</li>
-                    <li><code>v의 각 이웃 next에 대해 반복</code> — 인접 리스트에서 v의 이웃 목록을 앞에서부터 하나씩 확인</li>
-                    <li><code>만약 visited[next]가 거짓이면</code> — 아직 안 가 본 이웃만 골라냄. 이미 칠해진 이웃은 건너뜀</li>
-                    <li><code>DFS(그래프, next)</code> — 그 이웃으로 <strong>즉시 한 걸음 더 깊이</strong> 들어감
-                        <ul>
-                            <li>그 안쪽 탐색이 모두 끝나면 이 줄로 돌아와 v의 다음 이웃을 이어서 확인 — "막히면 되돌아오기"를 호출 스택이 자동으로 처리</li>
-                            <li>예: DFS(0) → DFS(1) → DFS(3) → DFS(5) → DFS(4) → DFS(2)에서 더 갈 곳이 없어 차례로 되돌아옴 → 방문 순서 0, 1, 3, 5, 4, 2</li>
-                        </ul>
-                    </li>
-                </ul>
 
+                <h3>너비 우선 탐색 (BFS)</h3>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -293,30 +257,14 @@
                     <pre><code id="code-pseudo-bfs">알고리즘 BFS(그래프, 출발점 start)
     visited[start] ← 참           // 큐에 "넣는 순간" 방문 표시!
     큐에 start를 넣는다
-    큐가 비어 있지 않은 동안 반복:
-        v ← 큐에서 꺼낸다 (front)
+    큐가 비어 있지 않은 동안 반복:  // 비면 도달 가능한 곳을 모두 방문
+        v ← 큐에서 꺼낸다 (front)  // 먼저 들어온 정점부터 (FIFO)
         v를 방문 순서에 기록한다
         v의 각 이웃 next에 대해 반복:
             만약 visited[next]가 거짓이면:
                 visited[next] ← 참    // 넣을 때 표시해야 중복 삽입이 없다
                 큐에 next를 넣는다</code></pre>
                 </article>
-                <p><strong>코드 설명 — BFS 큐 버전</strong></p>
-                <ul>
-                    <li><code>알고리즘 BFS(그래프, 출발점 start)</code> — 재귀 없이 <strong>큐 하나</strong>로 "다음에 갈 곳"을 관리하는 반복문 구조</li>
-                    <li><code>visited[start] ← 참</code>, <code>큐에 start를 넣는다</code> — 출발점을 대기 줄(큐)에 세우면서 <strong>동시에</strong> 방문 표시</li>
-                    <li><code>큐가 비어 있지 않은 동안 반복</code> — 대기 줄에 누군가 남아 있는 한 계속. 줄이 비면 도달할 수 있는 곳을 모두 방문한 것</li>
-                    <li><code>v ← 큐에서 꺼낸다 (front)</code> — 줄의 <strong>맨 앞</strong>(가장 먼저 들어온 정점)을 꺼냄 — 먼저 발견한 가까운 정점부터 처리하는 비결 (FIFO)</li>
-                    <li><code>v를 방문 순서에 기록한다</code> — 꺼낸 정점을 처리(방문 순서에 적기)</li>
-                    <li><code>v의 각 이웃 next에 대해 반복</code> → <code>만약 visited[next]가 거짓이면</code> — 아직 표시되지 않은 이웃만 골라냄</li>
-                    <li><code>visited[next] ← 참</code>, <code>큐에 next를 넣는다</code> — 줄에 세우는 <strong>그 순간</strong> 표시
-                        <ul>
-                            <li>꺼낼 때가 아니라 넣을 때 표시하는 이유: 예제에서 5는 3의 이웃이기도 하고 4의 이웃이기도 함. 3을 처리할 때 5를 넣으며 표시해 두면, 4를 처리할 때는 5를 다시 넣지 않음</li>
-                            <li>꺼낼 때 표시하면 5가 줄에 두 번 서게 됨 (09 오류 1에서 확인)</li>
-                        </ul>
-                    </li>
-                    <li>예: 큐 [0] → 0을 꺼내고 1, 2를 넣음 → 1을 꺼내고 3을 넣음 → 2를 꺼내고 4를 넣음 → 3을 꺼내고 5를 넣음 → 4, 5를 꺼냄 → 방문 순서 0, 1, 2, 3, 4, 5</li>
-                </ul>
 
                 <p><strong>두 의사코드 비교</strong></p>
                 <ul>
@@ -326,16 +274,16 @@
                 </ul>
             </section>
 
-            <!-- 8. 실습 코드 -->
+            <!-- 7. 실습 코드 -->
             <section class="lesson-section" id="sec-complete" aria-labelledby="h-complete">
-                <h2 id="h-complete" data-toc-label="실습 코드"><span class="section-no">08</span>실습 코드</h2>
-                <p class="lecture-lead">07 의사코드를 Java로 옮긴 그래프 탐색 도구 세트입니다 — <strong>재귀 DFS</strong>, 6강의 스택으로 "되돌아갈 곳"을 직접 관리하는 <strong>스택 DFS</strong>, 큐를 쓰는 <strong>BFS</strong>, 미방문 정점마다 DFS를 새로 시작해 <strong>연결 요소 개수</strong>를 세는 메서드까지 네 가지입니다.</p>
+                <h2 id="h-complete" data-toc-label="실습 코드"><span class="section-no">07</span>실습 코드</h2>
+                <p class="lecture-lead">06 의사코드를 Java로 옮긴 그래프 탐색 도구 세트입니다 — <strong>재귀 DFS</strong>, 6강의 스택으로 "되돌아갈 곳"을 직접 관리하는 <strong>스택 DFS</strong>, 큐를 쓰는 <strong>BFS</strong>, 미방문 정점마다 DFS를 새로 시작해 <strong>연결 요소 개수</strong>를 세는 메서드까지 네 가지입니다.</p>
                 <ul>
-                    <li><code>buildAdjacency</code>는 05에서 다룬 <strong>인접 리스트</strong> 만들기 그대로 — 간선 쌍을 <strong>양쪽 리스트에 추가</strong>합니다</li>
-                    <li><code>dfsRecursive</code>·<code>bfs</code>는 07 의사코드의 "꺼내서 처리하고, 미방문 이웃을 보관함에 넣는다"를 그대로 옮긴 것 —
-                        <code>visited[v] = true</code>가 05의 <strong>방문 배열</strong>, 재귀 호출과 큐가 각각 <strong>호출 스택(LIFO)</strong>·<strong>큐(FIFO)</strong> 보관함입니다</li>
-                    <li><code>dfsWithStack</code>은 재귀 없이 05에서 소개한 <strong>스택</strong>으로 같은 절차를 직접 구현한 버전입니다</li>
-                    <li><code>countComponents</code>는 05의 <strong>연결 요소</strong> 개념 그대로 — 미방문 정점을 만날 때마다 DFS를 새로 시작합니다</li>
+                    <li><code>buildAdjacency</code>는 04에서 다룬 <strong>인접 리스트</strong> 만들기 그대로 — 간선 쌍을 <strong>양쪽 리스트에 추가</strong>합니다</li>
+                    <li><code>dfsRecursive</code>·<code>bfs</code>는 06 의사코드의 "꺼내서 처리하고, 미방문 이웃을 보관함에 넣는다"를 그대로 옮긴 것 —
+                        <code>visited[v] = true</code>가 04의 <strong>방문 배열</strong>, 재귀 호출과 큐가 각각 <strong>호출 스택(LIFO)</strong>·<strong>큐(FIFO)</strong> 보관함입니다</li>
+                    <li><code>dfsWithStack</code>은 재귀 없이 04에서 소개한 <strong>스택</strong>으로 같은 절차를 직접 구현한 버전입니다</li>
+                    <li><code>countComponents</code>는 04의 <strong>연결 요소</strong> 개념 그대로 — 미방문 정점을 만날 때마다 DFS를 새로 시작합니다</li>
                 </ul>
                 <article class="code-card">
                     <header class="code-card__header">
@@ -477,9 +425,9 @@ public class GraphSearchComplete {
                 </div>
             </section>
 
-            <!-- 9. 잘못된 코드와 오류 찾기 -->
+            <!-- 8. 잘못된 코드와 오류 찾기 -->
             <section class="lesson-section" id="sec-bugs" aria-labelledby="h-bugs">
-                <h2 id="h-bugs" data-toc-label="잘못된 코드와 오류 찾기"><span class="section-no">09</span>잘못된 코드와 오류 찾기</h2>
+                <h2 id="h-bugs" data-toc-label="잘못된 코드와 오류 찾기"><span class="section-no">08</span>잘못된 코드와 오류 찾기</h2>
                 <p class="lecture-lead">그래프 탐색에서 초보자가 가장 자주 만드는 오류 두 가지. 먼저 코드를 읽고 무엇이 잘못됐는지 생각한 뒤 해설을 여세요.</p>
 
                 <article class="bug-card">
@@ -608,7 +556,7 @@ public class BuggyDfsNoMark {
                             <div class="answer-box__content">
                                 <ul>
                                     <li><strong>발생하는 문제:</strong> <code>0번 방문</code>과 <code>1번 방문</code>이 수천 번 번갈아 출력되다가 <code>Exception in thread "main" java.lang.StackOverflowError</code>로 프로그램이 죽음(실제 실행에서 3,000줄 넘게 출력된 뒤 터짐)</li>
-                                    <li><strong>원인:</strong> <code>dfs</code> 안에서 이웃의 방문 여부는 확인하지만, 정작 <strong>자기 자신을 방문 표시하는 <code>visited[v] = true;</code>가 없음</strong> — 0이 1로 가면 1의 이웃 목록에 있는 0은 여전히 "미방문"이므로 다시 0으로, 0은 다시 1로… 무방향 간선 하나가 무한 재귀를 만들고, 재귀 호출이 호출 스택을 가득 채우면 StackOverflowError 발생(05 핵심 개념의 "방문 배열"에서 경고한 바로 그 상황)</li>
+                                    <li><strong>원인:</strong> <code>dfs</code> 안에서 이웃의 방문 여부는 확인하지만, 정작 <strong>자기 자신을 방문 표시하는 <code>visited[v] = true;</code>가 없음</strong> — 0이 1로 가면 1의 이웃 목록에 있는 0은 여전히 "미방문"이므로 다시 0으로, 0은 다시 1로… 무방향 간선 하나가 무한 재귀를 만들고, 재귀 호출이 호출 스택을 가득 채우면 StackOverflowError 발생(04 핵심 개념의 "방문 배열"에서 경고한 바로 그 상황)</li>
                                     <li><strong>수정 방법:</strong> 방문 순서 기록·출력보다 먼저, 도착 즉시 표시</li>
                                 </ul>
                                 <pre class="quiz-code">static void dfs(int v) {
@@ -629,9 +577,9 @@ public class BuggyDfsNoMark {
                 </article>
             </section>
 
-            <!-- 10. 복잡도 및 특성 분석 -->
+            <!-- 9. 복잡도 및 특성 분석 -->
             <section class="lesson-section" id="sec-complexity" aria-labelledby="h-complexity">
-                <h2 id="h-complexity" data-toc-label="복잡도 및 특성 분석"><span class="section-no">10</span>복잡도 및 특성 분석</h2>
+                <h2 id="h-complexity" data-toc-label="복잡도 및 특성 분석"><span class="section-no">09</span>복잡도 및 특성 분석</h2>
                 <p class="lecture-lead">복잡도 분석 = <strong>"데이터가 많아지면 일이 얼마나 늘어나는가?"</strong>를 따져 보는 것. 어려운 수식 대신 <strong>"몇 번 확인하는가"</strong>만 세어 봅니다.</p>
 
                 <h3>입력 크기 — 무엇이 많아지는가?</h3>
@@ -726,9 +674,9 @@ public class BuggyDfsNoMark {
                 </ul>
             </section>
 
-            <!-- 11. 실제 데이터 응용 예제 -->
+            <!-- 10. 실제 데이터 응용 예제 -->
             <section class="lesson-section" id="sec-application" aria-labelledby="h-application">
-                <h2 id="h-application" data-toc-label="실제 데이터 응용 예제"><span class="section-no">11</span>실제 데이터 응용 예제</h2>
+                <h2 id="h-application" data-toc-label="실제 데이터 응용 예제"><span class="section-no">10</span>실제 데이터 응용 예제</h2>
 
                 <h3>문제 상황</h3>
                 <ul>
@@ -867,9 +815,9 @@ public class SubwayRouteApplication {
                 </ul>
             </section>
 
-            <!-- 12. 확인 퀴즈 -->
+            <!-- 11. 확인 퀴즈 -->
             <section class="lesson-section lesson-section--quiz" id="sec-quiz" aria-labelledby="h-quiz">
-                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">12</span>확인 퀴즈</h2>
+                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">11</span>확인 퀴즈</h2>
                 <div id="quiz-root"></div>
             </section>
 
@@ -878,9 +826,9 @@ public class SubwayRouteApplication {
                 <p>지금까지 배운 내용을 직접 코드로 적용해 보는 과제입니다. 두 과제로 구성되며, 각 과제의 정답은 이 강의를 완료로 표시해야 열립니다.</p>
             </div>
 
-            <!-- 13. 따라 하기 실습 -->
+            <!-- 12. 따라 하기 실습 -->
             <section class="lesson-section lesson-section--assignment" id="sec-practice" aria-labelledby="h-practice">
-                <h2 id="h-practice" data-toc-label="따라 하기 실습"><span class="section-no">13</span>따라 하기 실습</h2>
+                <h2 id="h-practice" data-toc-label="따라 하기 실습"><span class="section-no">12</span>따라 하기 실습</h2>
 
                 <h3>실습 1 — 간선 추가</h3>
                 <p>
@@ -972,9 +920,9 @@ static void dfs(int v) {
                 </details>
             </section>
 
-            <!-- 14. 최종 프로그램 작성 문제 -->
+            <!-- 13. 최종 프로그램 작성 문제 -->
             <section class="lesson-section lesson-section--assignment" id="sec-final" aria-labelledby="h-final">
-                <h2 id="h-final" data-toc-label="최종 프로그램 작성 문제"><span class="section-no">14</span>최종 프로그램 작성 문제</h2>
+                <h2 id="h-final" data-toc-label="최종 프로그램 작성 문제"><span class="section-no">13</span>최종 프로그램 작성 문제</h2>
 
                 <h3>문제 제목 — SNS 친구 네트워크 분석기 "FriendNet"</h3>
 
@@ -1042,7 +990,7 @@ static void dfs(int v) {
 
                 <h3>구현 단계 안내</h3>
                 <ol>
-                    <li><code>buildAdjacency</code>부터 완성한다 — 05 핵심 개념의 인접 리스트 구성과 같은 구조다. [1] 출력이 예상과 같은지 먼저 확인한다.</li>
+                    <li><code>buildAdjacency</code>부터 완성한다 — 04 핵심 개념의 인접 리스트 구성과 같은 구조다. [1] 출력이 예상과 같은지 먼저 확인한다.</li>
                     <li><code>dfs</code>를 완성한다 — 실습 코드의 <code>dfs</code>와 같은 세 줄 구조(방문 표시 → 기록 → 미방문 이웃 재귀)를 그대로 쓴다.</li>
                     <li>[2] 출력에서 4명(민준, 서연, 하은, 지호)이 나오는지 확인한다. 하은이 지호보다 먼저인 이유를 생각해 본다.</li>
                     <li><code>bfsDistances</code>를 완성한다 — 응용 예제의 거리 배열 패턴(<code>distance[이웃] = distance[v] + 1</code>)을 쓴다.</li>
@@ -1382,9 +1330,9 @@ public class FriendNetworkSolution {
                 </details>
             </section>
 
-            <!-- 15. 오늘의 핵심 정리 -->
+            <!-- 14. 오늘의 핵심 정리 -->
             <section class="lesson-section" id="sec-summary" aria-labelledby="h-summary">
-                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">15</span>오늘의 핵심 정리</h2>
+                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">14</span>오늘의 핵심 정리</h2>
                 <ul class="summary-list">
                     <li><strong>그래프</strong>는 정점과 간선으로 연결 관계를 표현한다. 트리와 달리 순환·여러 경로·고립 정점이 있을 수 있다.</li>
                     <li>간선 쌍 목록은 <strong>인접 리스트</strong>(<code>List&lt;List&lt;Integer&gt;&gt;</code>)로 바꿔 다룬다.
@@ -1400,9 +1348,9 @@ public class FriendNetworkSolution {
                 <div id="lesson-complete-slot"></div>
             </section>
 
-            <!-- 16. 다음 강의 연결 -->
+            <!-- 15. 다음 강의 연결 -->
             <section class="lesson-section" id="sec-next" aria-labelledby="h-next">
-                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">16</span>다음 강의 연결</h2>
+                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">15</span>다음 강의 연결</h2>
                 <p>
                     다음 강의는 <strong>10강. 그리디 알고리즘</strong>입니다.
                     "모든 곳을 빠짐없이 탐색"하던 오늘과 반대로, "매 순간 가장 좋아 보이는 것 하나만 선택"하는 설계 기법을 배웁니다.

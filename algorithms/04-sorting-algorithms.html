@@ -84,30 +84,10 @@
                 </ul>
             </section>
 
-            <!-- 3. 선수 지식 -->
-            <section class="lesson-section" id="sec-prereq" aria-labelledby="h-prereq">
-                <h2 id="h-prereq" data-toc-label="선수 지식"><span class="section-no">03</span>선수 지식</h2>
-                <p class="lecture-lead">다음 내용을 이미 안다고 가정합니다. 낯설다면 해당 강의를 먼저 복습하세요.</p>
-                <div class="table-scroll">
-                    <table class="data-table">
-                        <thead>
-                            <tr><th scope="col">항목</th><th scope="col">필요한 수준</th><th scope="col">이 강의에서 쓰이는 곳</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr><td>배열 (2강)</td><td>선언, 인덱스 접근, <code>length</code>, 배열 복사</td><td>정렬 대상 데이터 전체</td></tr>
-                            <tr><td>최솟값 찾기 (2강)</td><td>후보를 두고 순회하며 갱신</td><td>선택 정렬의 안쪽 반복문</td></tr>
-                            <tr><td>중첩 반복문 (3강)</td><td><code>for (i...) for (j = i + 1...)</code> 구조를 읽고 쓸 수 있음</td><td>세 정렬의 전체 뼈대</td></tr>
-                            <tr><td>연산 카운터 (1강)</td><td>핵심 연산마다 <code>count++</code></td><td>비교·교환 횟수 측정</td></tr>
-                            <tr><td>클래스와 필드</td><td>필드·생성자·<code>toString</code>이 있는 클래스 정의</td><td>상품(Product) 객체 정렬</td></tr>
-                            <tr><td>메서드</td><td>배열을 매개변수로 받는 <code>static</code> 메서드</td><td><code>swap</code>, 각 정렬 메서드</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
 
-            <!-- 4. 실제 문제 상황 -->
+            <!-- 3. 실제 문제 상황 -->
             <section class="lesson-section" id="sec-problem" aria-labelledby="h-problem">
-                <h2 id="h-problem" data-toc-label="실제 문제 상황"><span class="section-no">04</span>실제 문제 상황</h2>
+                <h2 id="h-problem" data-toc-label="실제 문제 상황"><span class="section-no">03</span>실제 문제 상황</h2>
                 <ul>
                     <li>상황: 작은 온라인 쇼핑몰 개발 담당. 상품 목록은 등록 순서대로만 표시되는데, 사용자 설문 1위 요청이 <strong>"낮은 가격순으로 보고 싶어요"</strong></li>
                     <li>상품 가격 데이터는 등록 순서대로 <code>[26, 15, 38, 12, 21]</code>(단위: 천 원)처럼 뒤죽박죽</li>
@@ -122,9 +102,9 @@
                 </div>
             </section>
 
-            <!-- 5. 핵심 개념 -->
+            <!-- 4. 핵심 개념 -->
             <section class="lesson-section" id="sec-concepts" aria-labelledby="h-concepts">
-                <h2 id="h-concepts" data-toc-label="핵심 개념"><span class="section-no">05</span>핵심 개념</h2>
+                <h2 id="h-concepts" data-toc-label="핵심 개념"><span class="section-no">04</span>핵심 개념</h2>
 
                 <h3>정렬이란?</h3>
                 <ul>
@@ -196,9 +176,9 @@ arr[j] = temp;       // 3) 보관해 둔 값을 넣기</pre>
                 </div>
             </section>
 
-            <!-- 6. 단계별 동작 과정 -->
+            <!-- 5. 단계별 동작 과정 -->
             <section class="lesson-section" id="sec-steps" aria-labelledby="h-steps">
-                <h2 id="h-steps" data-toc-label="단계별 동작 과정"><span class="section-no">06</span>단계별 동작 과정</h2>
+                <h2 id="h-steps" data-toc-label="단계별 동작 과정"><span class="section-no">05</span>단계별 동작 과정</h2>
                 <p class="lecture-lead">가격표 카드 5장 <code>[26, 15, 38, 12, 21]</code>(단위: 천 원)을 사람이 정렬한다면 대개 <strong>"가장 싼 카드를 찾아 맨 앞에 놓고, 남은 카드에서 또 가장 싼 것을 찾아 그다음에 놓는"</strong> 방법을 씁니다 — 이것이 바로 <strong>선택 정렬</strong>입니다. 선택 정렬이 이 배열을 정렬하는 모습을 한 단계씩 확인합니다.
                     <strong>다음 단계 ▶</strong>로 진행 — 비교 중인 칸은 <strong>앰버색</strong>, 최솟값 후보는 <strong>보라색</strong>, 확정된 칸은 <strong>초록색</strong>입니다.</p>
                 <div id="viz-selection-sort" aria-label="선택 정렬 단계별 실행 시각화"></div>
@@ -208,12 +188,12 @@ arr[j] = temp;       // 3) 보관해 둔 값을 넣기</pre>
                 <p class="lecture-lead">이번에는 같은 배열을 <strong>삽입 정렬</strong>이 어떻게 처리하는지 봅시다 — 왼쪽의 초록색 영역(정렬된 영역)이 한 칸씩 넓어지고, 파란색 칸(끼워 넣을 값 key)이 자기 자리를 찾아 들어가는 모습에 주목하세요.</p>
                 <div id="viz-insertion-sort" aria-label="삽입 정렬 단계별 실행 시각화"></div>
                 <p>삽입 정렬은 key보다 작은 값을 만나는 순간 비교를 멈춥니다.
-                    <em>그래서 <strong>거의 정렬된 데이터에서는 비교가 확 줄어듭니다</strong></em> — 08 실습 코드의 실험에서 숫자로 확인합니다.</p>
+                    <em>그래서 <strong>거의 정렬된 데이터에서는 비교가 확 줄어듭니다</strong></em> — 07 실습 코드의 실험에서 숫자로 확인합니다.</p>
             </section>
 
-            <!-- 7. 의사코드 -->
+            <!-- 6. 의사코드 -->
             <section class="lesson-section" id="sec-pseudo" aria-labelledby="h-pseudo">
-                <h2 id="h-pseudo" data-toc-label="의사코드"><span class="section-no">07</span>의사코드</h2>
+                <h2 id="h-pseudo" data-toc-label="의사코드"><span class="section-no">06</span>의사코드</h2>
                 <p class="lecture-lead">코드를 쓰기 전에, 시각화에서 본 두 정렬의 움직임을 언어 중립적인 의사코드로 정리합니다.</p>
                 <ul>
                     <li>의사코드 = 특정 언어 문법 대신 <strong>우리말에 가까운 문장</strong>으로 알고리즘의 순서를 적은 것</li>
@@ -221,6 +201,7 @@ arr[j] = temp;       // 3) 보관해 둔 값을 넣기</pre>
                     <li>들여쓰기는 "바로 위 줄 안에 포함된 작업", <code>//</code> 뒤는 설명(주석), <code>arr[i]</code>는 배열 arr의 i번 칸</li>
                 </ul>
 
+                <h3>선택 정렬 (Selection Sort)</h3>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -231,39 +212,18 @@ arr[j] = temp;       // 3) 보관해 둔 값을 넣기</pre>
                     </header>
                     <pre><code id="code-pseudo-sel">알고리즘 SelectionSort(arr)
     n ← arr의 길이
+    // n-2까지: 마지막 칸은 자동으로 최댓값
     i를 0부터 n-2까지 반복:                 // 채울 자리
         minIndex ← i                        // 남은 구간의 최솟값 "위치" 후보
         j를 i+1부터 n-1까지 반복:           // 남은 구간 훑기
             arr[j] &lt; arr[minIndex] 이면:    // 핵심 연산: 비교
                 minIndex ← j
-        minIndex ≠ i 이면:
+        minIndex ≠ i 이면:                  // 이미 제자리면 교환 생략
             arr[i]와 arr[minIndex]를 교환   // 핵심 연산: 교환
     // 반복이 끝나면 arr는 오름차순</code></pre>
                 </article>
-                <p><strong>코드 설명 — 선택 정렬</strong></p>
-                <ul>
-                    <li><code>n ← arr의 길이</code> — 정렬할 원소가 몇 개인지 기억해 둠 (예: 가격표 5장이면 n = 5)</li>
-                    <li><code>i를 0부터 n-2까지 반복</code> — 바깥 반복문. i는 <strong>이번 회전에 채울 자리</strong>
-                        <ul>
-                            <li>n-1이 아니라 <strong>n-2까지</strong>인 이유: 앞의 n-1자리가 "남은 것 중 최솟값"으로 채워지면, 마지막 한 칸에는 <strong>자동으로 가장 큰 값</strong>이 남기 때문 — 카드 n장에 회전은 n-1번이면 충분</li>
-                        </ul>
-                    </li>
-                    <li><code>minIndex ← i</code> — 남은 구간의 첫 칸을 일단 최솟값 후보로 둠. 값이 아니라 <strong>위치(인덱스)</strong>를 기억해야 나중에 교환할 수 있음</li>
-                    <li><code>j를 i+1부터 n-1까지 반복</code> — 안쪽 반복문. 후보 다음 칸부터 끝까지 남은 구간을 훑음 (2강의 최솟값 찾기와 같은 구조)</li>
-                    <li><code>arr[j] &lt; arr[minIndex] 이면: minIndex ← j</code> — 더 작은 값을 만나면 후보 위치를 바꿈. 이 비교가 알고리즘의 일의 양을 결정하는 <strong>핵심 연산</strong>
-                        <ul>
-                            <li>예: 첫 회전(i=0)에 <code>[26, 15, 38, 12, 21]</code>을 훑으면 후보가 26 → 15 → 12로 바뀌고, 비교는 4번</li>
-                        </ul>
-                    </li>
-                    <li><code>minIndex ≠ i 이면: arr[i]와 arr[minIndex]를 교환</code> — 찾은 최솟값을 채울 자리로 보냄
-                        <ul>
-                            <li>예: 12(3번 칸)와 26(0번 칸)을 맞바꿔 <code>[12, 15, 38, 26, 21]</code> — 0번 칸 확정</li>
-                            <li>최솟값이 이미 제자리에 있으면(두 번째 회전의 15처럼) 교환하지 않음 — 비교는 했지만 교환은 0번</li>
-                        </ul>
-                    </li>
-                    <li><code>// 반복이 끝나면 arr는 오름차순</code> — 회전마다 앞에서부터 한 자리씩 확정되므로, 모든 회전이 끝나면 전체가 정렬됨</li>
-                </ul>
 
+                <h3>삽입 정렬 (Insertion Sort)</h3>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -275,36 +235,15 @@ arr[j] = temp;       // 3) 보관해 둔 값을 넣기</pre>
                     <pre><code id="code-pseudo-ins">알고리즘 InsertionSort(arr)
     n ← arr의 길이
     i를 1부터 n-1까지 반복:                 // arr[0..i-1]은 이미 정렬됨
+        // 밀기 중 arr[i]가 덮어써지므로 미리 보관
         key ← arr[i]                        // 이번에 끼워 넣을 값
-        j ← i - 1
+        j ← i - 1                           // key 바로 왼쪽부터 비교
+        // j ≥ 0: 배열 맨 앞을 넘지 않게 막음
         j ≥ 0 이고 arr[j] &gt; key 인 동안:    // key보다 큰 값은
             arr[j+1] ← arr[j]               // 한 칸 뒤로 민다 (이동)
             j ← j - 1
         arr[j+1] ← key                      // 빈 자리에 key 넣기</code></pre>
                 </article>
-                <p><strong>코드 설명 — 삽입 정렬</strong></p>
-                <ul>
-                    <li><code>i를 1부터 n-1까지 반복</code> — 바깥 반복문. 0번 칸 하나는 그 자체로 이미 정렬된 영역이므로 <strong>1번 칸부터</strong> 시작
-                        <ul>
-                            <li>회전이 시작될 때 왼쪽 <code>arr[0..i-1]</code>은 항상 정렬된 상태 (카드 게임에서 손에 든 카드를 정리해 둔 상태)</li>
-                        </ul>
-                    </li>
-                    <li><code>key ← arr[i]</code> — 이번에 끼워 넣을 값을 따로 꺼내 둠. 뒤에서 값을 밀다 보면 <code>arr[i]</code> 칸이 덮어써지므로 미리 보관해야 함</li>
-                    <li><code>j ← i - 1</code> — key 바로 왼쪽 칸부터 비교를 시작</li>
-                    <li><code>j ≥ 0 이고 arr[j] &gt; key 인 동안</code> — 왼쪽 값이 key보다 <strong>큰 동안만</strong> 반복
-                        <ul>
-                            <li><code>j ≥ 0</code>: 배열 맨 앞을 넘어가지 않도록 막는 조건</li>
-                            <li><code>arr[j] &gt; key</code>: key보다 작거나 같은 값을 만나면 즉시 멈춤 — <strong>이미 정렬된 데이터에서 빠른 이유</strong></li>
-                        </ul>
-                    </li>
-                    <li><code>arr[j+1] ← arr[j]</code>, <code>j ← j - 1</code> — 큰 값을 한 칸 오른쪽으로 밀고(이동), 한 칸 더 왼쪽을 보러 감. 교환이 아니라 <strong>밀기</strong>라서 값 하나만 옮김</li>
-                    <li><code>arr[j+1] ← key</code> — 밀기가 끝나 생긴 빈 자리에 key를 넣음
-                        <ul>
-                            <li>예: <code>[26, 15, 38, 12, 21]</code>에서 i=1이면 key=15. 26 &gt; 15라서 26을 한 칸 밀고, 맨 앞에 15를 넣어 <code>[15, 26, 38, 12, 21]</code></li>
-                            <li>i=2이면 key=38. 26 &gt; 38이 아니므로 비교 1번 만에 멈추고 38은 제자리</li>
-                        </ul>
-                    </li>
-                </ul>
 
                 <p><strong>두 의사코드 비교</strong></p>
                 <ul>
@@ -313,15 +252,15 @@ arr[j] = temp;       // 3) 보관해 둔 값을 넣기</pre>
                 </ul>
             </section>
 
-            <!-- 8. 실습 코드 -->
+            <!-- 7. 실습 코드 -->
             <section class="lesson-section" id="sec-complete" aria-labelledby="h-complete">
-                <h2 id="h-complete" data-toc-label="실습 코드"><span class="section-no">08</span>실습 코드</h2>
-                <p class="lecture-lead">의사코드(07)를 실제 Java 프로그램으로 옮깁니다. 선택·버블·삽입 세 정렬을 <strong>비교와 교환을 세는 메서드</strong>로 각각 구현해 한 번에 비교합니다 —
-                    바깥 반복문은 3강에서 배운 <strong>중첩 반복문 패턴</strong>, <code>minIndex</code>·<code>key</code> 갱신은 07 의사코드의 "위치 후보 기억" 로직을 그대로 옮긴 것입니다.</p>
+                <h2 id="h-complete" data-toc-label="실습 코드"><span class="section-no">07</span>실습 코드</h2>
+                <p class="lecture-lead">의사코드(06)를 실제 Java 프로그램으로 옮깁니다. 선택·버블·삽입 세 정렬을 <strong>비교와 교환을 세는 메서드</strong>로 각각 구현해 한 번에 비교합니다 —
+                    바깥 반복문은 3강에서 배운 <strong>중첩 반복문 패턴</strong>, <code>minIndex</code>·<code>key</code> 갱신은 06 의사코드의 "위치 후보 기억" 로직을 그대로 옮긴 것입니다.</p>
                 <ul>
-                    <li><code>selectionSort</code>는 남은 구간의 최솟값 <strong>위치</strong>를 찾아 앞으로 보내는 07 선택 정렬 의사코드를 그대로 옮긴 것</li>
+                    <li><code>selectionSort</code>는 남은 구간의 최솟값 <strong>위치</strong>를 찾아 앞으로 보내는 06 선택 정렬 의사코드를 그대로 옮긴 것</li>
                     <li><code>bubbleSort</code>는 이웃끼리 비교·교환하며 큰 값을 뒤로 밀어내되, <code>swapped</code> 플래그로 <strong>조기 종료</strong>(한 바퀴 동안 교환이 한 번도 없으면 이미 정렬된 것이므로 멈춤)를 더함</li>
-                    <li><code>insertionSort</code>는 <code>key</code>를 왼쪽 정렬 영역에 끼워 넣는 07 삽입 정렬 의사코드를 그대로 옮긴 것</li>
+                    <li><code>insertionSort</code>는 <code>key</code>를 왼쪽 정렬 영역에 끼워 넣는 06 삽입 정렬 의사코드를 그대로 옮긴 것</li>
                     <li>1강의 Measurement 패턴처럼 결과와 연산 횟수를 <code>SortResult</code>에 담아, <strong>무작위·이미 정렬됨·역순</strong> 세 종류의 입력으로 실험</li>
                 </ul>
                 <article class="code-card">
@@ -493,9 +432,9 @@ public class SortingThreeComplete {
                 </div>
             </section>
 
-            <!-- 9. 잘못된 코드와 오류 찾기 -->
+            <!-- 8. 잘못된 코드와 오류 찾기 -->
             <section class="lesson-section" id="sec-bugs" aria-labelledby="h-bugs">
-                <h2 id="h-bugs" data-toc-label="잘못된 코드와 오류 찾기"><span class="section-no">09</span>잘못된 코드와 오류 찾기</h2>
+                <h2 id="h-bugs" data-toc-label="잘못된 코드와 오류 찾기"><span class="section-no">08</span>잘못된 코드와 오류 찾기</h2>
                 <p class="lecture-lead">정렬을 처음 구현할 때 누구나 한 번은 만드는 오류 두 가지 — 코드를 먼저 읽고 무엇이 잘못됐는지 생각한 뒤 해설을 여세요.</p>
 
                 <article class="bug-card">
@@ -628,15 +567,15 @@ public class SortingThreeComplete {
                 </article>
             </section>
 
-            <!-- 10. 복잡도 및 특성 분석 -->
+            <!-- 9. 복잡도 및 특성 분석 -->
             <section class="lesson-section" id="sec-complexity" aria-labelledby="h-complexity">
-                <h2 id="h-complexity" data-toc-label="복잡도 및 특성 분석"><span class="section-no">10</span>복잡도 및 특성 분석</h2>
+                <h2 id="h-complexity" data-toc-label="복잡도 및 특성 분석"><span class="section-no">09</span>복잡도 및 특성 분석</h2>
                 <p class="lecture-lead">복잡도 분석 = <strong>"데이터가 많아지면 일이 얼마나 늘어나는가?"</strong>를 따져 보는 것. 어려운 수식 대신 <strong>"몇 번 비교하는가"</strong>만 세어 봅니다.</p>
 
                 <h3>입력 크기 — 무엇이 많아지는가?</h3>
                 <ul>
                     <li><strong>정렬할 원소의 개수 n</strong> — 쇼핑몰에 상품이 많아질수록 정렬할 일이 늘어남</li>
-                    <li>08 실습 코드의 실험은 n = 8 (가격 8개)</li>
+                    <li>07 실습 코드의 실험은 n = 8 (가격 8개)</li>
                 </ul>
 
                 <h3>주요 연산 — 무엇을 세는가?</h3>
@@ -670,7 +609,7 @@ public class SortingThreeComplete {
                             <li>삽입: 원소마다 왼쪽 이웃과 1번만 비교하고 바로 제자리임을 확인</li>
                         </ul>
                     </li>
-                    <li>08 실습 코드의 실험(n = 8)과 표의 숫자가 <strong>정확히 일치</strong> — 선택 정렬은 세 입력 모두 28번, 역순에서는 세 정렬 모두 28번, 이미 정렬된 입력에서 버블·삽입은 7번</li>
+                    <li>07 실습 코드의 실험(n = 8)과 표의 숫자가 <strong>정확히 일치</strong> — 선택 정렬은 세 입력 모두 28번, 역순에서는 세 정렬 모두 28번, 이미 정렬된 입력에서 버블·삽입은 7번</li>
                 </ul>
 
                 <h3>공간 복잡도 — 메모리를 얼마나 더 쓰는가?</h3>
@@ -702,10 +641,10 @@ public class SortingThreeComplete {
                 </ul>
             </section>
 
-            <!-- 11. 람다·스트림 변경 -->
+            <!-- 10. 람다·스트림 변경 -->
             <section class="lesson-section" id="sec-modernize" aria-labelledby="h-modernize">
-                <h2 id="h-modernize" data-toc-label="람다·스트림 변경"><span class="section-no">11</span>람다·스트림 변경</h2>
-                <p class="lecture-lead">08 실습 코드(<code>SortingThreeComplete.java</code>)를 <strong>람다와 스트림</strong>으로 다시 쓴 코드입니다. 문법은 추가 정보의 <a href="../supplements/lambda-expressions.html">람다식</a>·<a href="../supplements/java-streams.html">자바 스트림</a> 문서를 참고하세요.</p>
+                <h2 id="h-modernize" data-toc-label="람다·스트림 변경"><span class="section-no">10</span>람다·스트림 변경</h2>
+                <p class="lecture-lead">07 실습 코드(<code>SortingThreeComplete.java</code>)를 <strong>람다와 스트림</strong>으로 다시 쓴 코드입니다. 문법은 추가 정보의 <a href="../supplements/lambda-expressions.html">람다식</a>·<a href="../supplements/java-streams.html">자바 스트림</a> 문서를 참고하세요.</p>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -876,9 +815,9 @@ public class ModernizeSolution {
                 </article>
             </section>
 
-            <!-- 12. 실제 데이터 응용 예제 -->
+            <!-- 11. 실제 데이터 응용 예제 -->
             <section class="lesson-section" id="sec-application" aria-labelledby="h-application">
-                <h2 id="h-application" data-toc-label="실제 데이터 응용 예제"><span class="section-no">12</span>실제 데이터 응용 예제</h2>
+                <h2 id="h-application" data-toc-label="실제 데이터 응용 예제"><span class="section-no">11</span>실제 데이터 응용 예제</h2>
 
                 <h3>문제 상황</h3>
                 <ul>
@@ -1032,9 +971,9 @@ Arrays.sort 호출은 세 번 다 똑같습니다. 바뀐 것은 Comparator뿐�
                 </ul>
             </section>
 
-            <!-- 13. 확인 퀴즈 -->
+            <!-- 12. 확인 퀴즈 -->
             <section class="lesson-section lesson-section--quiz" id="sec-quiz" aria-labelledby="h-quiz">
-                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">13</span>확인 퀴즈</h2>
+                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">12</span>확인 퀴즈</h2>
                 <div id="quiz-root"></div>
             </section>
 
@@ -1043,9 +982,9 @@ Arrays.sort 호출은 세 번 다 똑같습니다. 바뀐 것은 Comparator뿐�
                 <p>지금까지 배운 내용을 직접 코드로 적용해 보는 과제입니다. 두 과제로 구성되며, 각 과제의 정답은 이 강의를 완료로 표시해야 열립니다.</p>
             </div>
 
-            <!-- 14. 따라 하기 실습 -->
+            <!-- 13. 따라 하기 실습 -->
             <section class="lesson-section lesson-section--assignment" id="sec-practice" aria-labelledby="h-practice">
-                <h2 id="h-practice" data-toc-label="따라 하기 실습"><span class="section-no">14</span>따라 하기 실습</h2>
+                <h2 id="h-practice" data-toc-label="따라 하기 실습"><span class="section-no">13</span>따라 하기 실습</h2>
 
                 <h3>실습 1 — 데이터 변경</h3>
                 <p>
@@ -1128,9 +1067,9 @@ Arrays.sort 호출은 세 번 다 똑같습니다. 바뀐 것은 Comparator뿐�
                 </details>
             </section>
 
-            <!-- 15. 최종 프로그램 작성 문제 -->
+            <!-- 14. 최종 프로그램 작성 문제 -->
             <section class="lesson-section lesson-section--assignment" id="sec-final" aria-labelledby="h-final">
-                <h2 id="h-final" data-toc-label="최종 프로그램 작성 문제"><span class="section-no">15</span>최종 프로그램 작성 문제</h2>
+                <h2 id="h-final" data-toc-label="최종 프로그램 작성 문제"><span class="section-no">14</span>최종 프로그램 작성 문제</h2>
 
                 <h3>문제 제목 — 상품 정렬기 "ProductSorter"</h3>
 
@@ -1194,7 +1133,7 @@ USB 허브        15000원  평점 4.2
                     <li><code>PRICE_ASC</code>부터 작성한다. <code>Integer.compare(a.price, b.price)</code> 한 줄이면 된다.</li>
                     <li><code>RATING_DESC</code>는 인자 순서를 바꾼 <code>Double.compare(b.rating, a.rating)</code>으로 방향을 뒤집는다.</li>
                     <li><code>RATING_DESC_THEN_NAME</code>은 평점 비교 결과가 0일 때만 이름을 비교한다.</li>
-                    <li><code>insertionSort</code>를 완성한다 — 08 실습 코드의 <code>insertionSort</code>와 같은 구조이고, 타입이 <code>Product</code>, 비교가 <code>comp.compare</code>로 바뀔 뿐이다.</li>
+                    <li><code>insertionSort</code>를 완성한다 — 07 실습 코드의 <code>insertionSort</code>와 같은 구조이고, 타입이 <code>Product</code>, 비교가 <code>comp.compare</code>로 바뀔 뿐이다.</li>
                     <li>실행해서 세 결과를 확인하고, 23000원 두 상품의 순서(무선 마우스 → 모니터 받침대)를 검사한다.</li>
                 </ol>
 
@@ -1534,7 +1473,7 @@ Arrays.sort 결과와 일치(검증): true</code></pre>
                                 (실습 2에서 부등호 하나로 방향을 뒤집은 것과 같은 원리입니다.)</li>
                             <li><strong>다중 기준:</strong> 1차 기준의 결과가 0(동점)일 때만 2차 기준을 봅니다.
                                 <code>if (byRating != 0) return byRating;</code> — 이 구조는 기준이 몇 개든 확장됩니다.</li>
-                            <li><strong>삽입 정렬:</strong> 08 실습 코드의 <code>insertionSort</code>와 같은 구조에서 타입이 <code>Product</code>로, 비교가 <code>comp.compare</code>로 바뀌었습니다.
+                            <li><strong>삽입 정렬:</strong> 07 실습 코드의 <code>insertionSort</code>와 같은 구조에서 타입이 <code>Product</code>로, 비교가 <code>comp.compare</code>로 바뀌었습니다.
                                 핵심은 <code>comp.compare(arr[j], key) &gt; 0</code> — "arr[j]가 key보다 뒤에 와야 하면 민다"입니다.</li>
                             <li><strong>검증:</strong> 마지막에 <code>Arrays.sort</code>와 결과를 비교해 <code>true</code>를 확인합니다.
                                 <em>1강의 원칙 — 빠르거나 직접 만든 방법은 <strong>확실한 방법과 결과를 대조</strong>합니다.</em></li>
@@ -1575,9 +1514,9 @@ Arrays.sort 결과와 일치(검증): true</code></pre>
                 </details>
             </section>
 
-            <!-- 16. 오늘의 핵심 정리 -->
+            <!-- 15. 오늘의 핵심 정리 -->
             <section class="lesson-section" id="sec-summary" aria-labelledby="h-summary">
-                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">16</span>오늘의 핵심 정리</h2>
+                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">15</span>오늘의 핵심 정리</h2>
                 <ul class="summary-list">
                     <li><strong>선택 정렬</strong> = 2강의 최솟값 찾기(값 대신 <strong>위치</strong> 기억) + 3강의 중첩 반복문.
                         한 회전마다 앞쪽에 한 자리가 확정된다.</li>
@@ -1594,9 +1533,9 @@ Arrays.sort 결과와 일치(검증): true</code></pre>
                 <div id="lesson-complete-slot"></div>
             </section>
 
-            <!-- 17. 다음 강의 연결 -->
+            <!-- 16. 다음 강의 연결 -->
             <section class="lesson-section" id="sec-next" aria-labelledby="h-next">
-                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">17</span>다음 강의 연결</h2>
+                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">16</span>다음 강의 연결</h2>
                 <p>
                     다음 강의는 <strong>5강. 순차 탐색과 이진 탐색</strong>입니다.
                     <em>오늘 만든 "정렬된 배열"이 그대로 다음 강의의 출발점이 됩니다.</em>

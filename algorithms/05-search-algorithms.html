@@ -82,29 +82,10 @@
                 </ul>
             </section>
 
-            <!-- 3. 선수 지식 -->
-            <section class="lesson-section" id="sec-prereq" aria-labelledby="h-prereq">
-                <h2 id="h-prereq" data-toc-label="선수 지식"><span class="section-no">03</span>선수 지식</h2>
-                <p class="lecture-lead">이 강의는 다음 내용을 이미 알고 있다고 가정합니다 (특히 2강 배열 인덱스, 4강 정렬 개념은 필수).</p>
-                <div class="table-scroll">
-                    <table class="data-table">
-                        <thead>
-                            <tr><th scope="col">항목</th><th scope="col">필요한 수준</th><th scope="col">이 강의에서 쓰이는 곳</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr><td>배열 인덱스 (2강)</td><td>0부터 시작, 마지막은 <code>length - 1</code>, <code>arr[i]</code> 접근</td><td><code>low</code>·<code>high</code> 범위 표현, <code>arr[mid]</code> 접근</td></tr>
-                            <tr><td>정렬 개념 (4강)</td><td>오름차순의 의미, 정렬이 끝난 배열의 성질</td><td>이진 탐색의 전제 조건 확인</td></tr>
-                            <tr><td>while 반복문</td><td>조건이 참인 동안 반복, <code>break</code>로 중단</td><td><code>while (low &lt;= high)</code> 탐색 루프</td></tr>
-                            <tr><td>if – else if – else</td><td>세 갈래 분기(같다 / 작다 / 크다)를 읽고 쓸 수 있음</td><td>mid 값과 target의 비교 분기</td></tr>
-                            <tr><td>연산 카운터 (1강)</td><td>핵심 연산마다 카운터를 1씩 증가</td><td>순차 vs 이진의 비교 횟수 측정</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
 
-            <!-- 4. 실제 문제 상황 -->
+            <!-- 3. 실제 문제 상황 -->
             <section class="lesson-section" id="sec-problem" aria-labelledby="h-problem">
-                <h2 id="h-problem" data-toc-label="실제 문제 상황"><span class="section-no">04</span>실제 문제 상황</h2>
+                <h2 id="h-problem" data-toc-label="실제 문제 상황"><span class="section-no">03</span>실제 문제 상황</h2>
                 <ul>
                     <li>여러분은 대학 도서관의 좌석·대출 시스템을 만드는 개발팀에 합류함 — 담당 기능은 도서 번호 입력 시 제목과 재고(대출 가능 여부) 표시</li>
                     <li>테스트 서버의 장서는 12권이라 앞에서부터 하나씩 확인해도 순식간이었지만, 실제 서버에는 <strong>장서 100,000권</strong>이 등록, 검색 요청은 하루 수십만 건</li>
@@ -117,9 +98,9 @@
                 </div>
             </section>
 
-            <!-- 5. 핵심 개념 -->
+            <!-- 4. 핵심 개념 -->
             <section class="lesson-section" id="sec-concepts" aria-labelledby="h-concepts">
-                <h2 id="h-concepts" data-toc-label="핵심 개념"><span class="section-no">05</span>핵심 개념</h2>
+                <h2 id="h-concepts" data-toc-label="핵심 개념"><span class="section-no">04</span>핵심 개념</h2>
 
                 <h3>탐색과 순차 탐색</h3>
                 <ul>
@@ -156,7 +137,7 @@
                 </div>
                 <ul>
                     <li>갱신 규칙의 <strong>+1과 -1</strong>이 중요 — <code>mid</code> 자리는 방금 비교로 이미 확인했으므로 다음 범위에서 <strong>반드시 제외</strong>해야 함</li>
-                    <li>이것을 빼먹으면(<code>low = mid</code>) 범위가 줄지 않아 무한 반복에 빠질 수 있음 (13 확인 퀴즈의 오류 찾기 문제에서 직접 확인)</li>
+                    <li>이것을 빼먹으면(<code>low = mid</code>) 범위가 줄지 않아 무한 반복에 빠질 수 있음 (12 확인 퀴즈의 오류 찾기 문제에서 직접 확인)</li>
                     <li>반복은 <code>low &lt;= high</code>인 동안, 즉 <strong>범위에 후보가 하나라도 남아 있는 동안</strong> 계속하고, <code>low &gt; high</code>가 되는 순간 "없다"(-1)를 확정</li>
                 </ul>
 
@@ -191,9 +172,9 @@
                 </ul>
             </section>
 
-            <!-- 6. 단계별 동작 과정 -->
+            <!-- 5. 단계별 동작 과정 -->
             <section class="lesson-section" id="sec-steps" aria-labelledby="h-steps">
-                <h2 id="h-steps" data-toc-label="단계별 동작 과정"><span class="section-no">06</span>단계별 동작 과정</h2>
+                <h2 id="h-steps" data-toc-label="단계별 동작 과정"><span class="section-no">05</span>단계별 동작 과정</h2>
                 <p class="lecture-lead">도서 번호 순서대로 12권이 꽂힌 책장 <strong>[1001, 1203, 1450, 2088, 2311, 2754, 3106, 3502, 3860, 4213, 4771, 5090]</strong>에서 <strong>3106번 책</strong>을 찾는 과정을 시각화로 봅니다. 이진 탐색이 범위를 절반씩 버리는 모습을 <strong>다음 단계 ▶</strong> 버튼으로 한 단계씩 확인하세요.</p>
                 <ul>
                     <li>지금 비교 중인 mid 칸은 <strong>앰버색(비교 중)</strong>, 발견된 칸은 <strong>초록색(확정)</strong></li>
@@ -205,9 +186,9 @@
                 <p class="lecture-lead">"남은 후보" 카운터가 12 → 6 → 2처럼 <strong>비교 1번마다 절반</strong>으로 줄고, 실패할 때는 범위가 완전히 빈 뒤에야(low &gt; high) 멈추는 것을 확인 — 이 움직임을 지금부터 의사코드와 Java 코드로 옮깁니다.</p>
             </section>
 
-            <!-- 7. 의사코드 -->
+            <!-- 6. 의사코드 -->
             <section class="lesson-section" id="sec-pseudo" aria-labelledby="h-pseudo">
-                <h2 id="h-pseudo" data-toc-label="의사코드"><span class="section-no">07</span>의사코드</h2>
+                <h2 id="h-pseudo" data-toc-label="의사코드"><span class="section-no">06</span>의사코드</h2>
                 <p class="lecture-lead">코드를 쓰기 전에, 두 탐색의 절차를 언어 중립적인 의사코드로 정리합니다.</p>
                 <ul>
                     <li>의사코드 = 특정 언어 문법 대신 <strong>우리말에 가까운 문장</strong>으로 알고리즘의 순서를 적은 것</li>
@@ -215,6 +196,7 @@
                     <li><code>arr[i]</code>는 "arr의 i번 칸", <code>반환한다</code>는 "답을 돌려주고 알고리즘을 즉시 끝낸다"는 뜻</li>
                 </ul>
 
+                <h3>순차 탐색 (Linear Search)</h3>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -227,21 +209,10 @@
     i를 0부터 arr의 끝까지 반복:
         arr[i]와 target을 비교한다          // 핵심 연산 (최악 n번)
         같으면 i를 반환한다                 // 조기 중단
-    끝까지 못 찾았으면 -1을 반환한다</code></pre>
+    끝까지 못 찾았으면 -1을 반환한다        // 모든 칸을 봤는데 없다는 뜻</code></pre>
                 </article>
-                <p><strong>코드 설명 — 순차 탐색</strong></p>
-                <ul>
-                    <li><code>알고리즘 LinearSearch(arr, target)</code> — 배열 <code>arr</code>에서 찾는 값 <code>target</code>의 위치를 알아내는 알고리즘. 배열은 정렬돼 있지 않아도 됨</li>
-                    <li><code>i를 0부터 arr의 끝까지 반복</code> — 0번 칸부터 마지막 칸까지 <strong>한 칸씩</strong> 차례로 봄 (책장 맨 왼쪽부터 책 번호를 하나씩 읽는 것)</li>
-                    <li><code>arr[i]와 target을 비교한다</code> — 이 줄이 실행되는 횟수가 곧 일의 양. 못 찾으면 n칸 모두 비교하므로 최악 n번</li>
-                    <li><code>같으면 i를 반환한다</code> — 찾는 즉시 멈춤(조기 중단). 뒤쪽 칸은 아예 보지 않음
-                        <ul>
-                            <li>예: 12권 책장에서 3106은 6번 칸 → 0~6번 칸까지 <strong>7번</strong> 비교하고 끝</li>
-                        </ul>
-                    </li>
-                    <li><code>끝까지 못 찾았으면 -1을 반환한다</code> — 반복이 끝났다 = 모든 칸을 봤는데 없었다. 위치로 쓸 수 없는 값 <code>-1</code>로 "없음"을 알림</li>
-                </ul>
 
+                <h3>이진 탐색 (Binary Search)</h3>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -251,40 +222,18 @@
                         <button type="button" class="copy-code-button" data-copy-target="code-pseudo-binary" aria-label="이진 탐색 의사코드 복사">코드 복사</button>
                     </header>
                     <pre><code id="code-pseudo-binary">알고리즘 BinarySearch(arr, target)
-    low ← 0
-    high ← arr의 길이 - 1
+    low ← 0                                  // 후보 범위의 왼쪽 끝
+    high ← arr의 길이 - 1                    // 후보 범위의 오른쪽 끝
+    // 등호 필요: low = high(후보 1개)도 확인해야 함
     low가 high 이하인 동안 반복:              // 범위에 후보가 남아 있는 동안
         mid ← (low + high) / 2               // 정수 나눗셈 (소수점 버림)
         arr[mid]와 target을 비교한다          // 핵심 연산 (최악 log₂n번)
         같으면 mid를 반환한다
+        // ±1: mid는 방금 확인했으므로 범위에서 뺀다
         arr[mid]가 target보다 작으면 low ← mid + 1     // 왼쪽 절반 버리기
         arr[mid]가 target보다 크면 high ← mid - 1      // 오른쪽 절반 버리기
     -1을 반환한다                             // 범위가 비었다 = 없다</code></pre>
                 </article>
-                <p><strong>코드 설명 — 이진 탐색</strong></p>
-                <ul>
-                    <li><code>low ← 0</code>, <code>high ← arr의 길이 - 1</code> — 남은 후보 범위의 <strong>왼쪽 끝</strong>과 <strong>오른쪽 끝</strong>. 처음에는 배열 전체가 후보</li>
-                    <li><code>low가 high 이하인 동안 반복</code> — <code>low &lt;= high</code>면 범위에 후보가 <strong>1개 이상</strong> 남아 있다는 뜻
-                        <ul>
-                            <li><code>low == high</code>(후보 1개)일 때도 반드시 확인해야 하므로 등호(<code>=</code>)가 필요</li>
-                        </ul>
-                    </li>
-                    <li><code>mid ← (low + high) / 2</code> — 남은 범위의 가운데 칸. 소수점은 버림 (예: (6 + 11) / 2 = 8)</li>
-                    <li><code>arr[mid]와 target을 비교한다</code> — 이 비교 한 번의 결과로 범위의 절반을 버릴 수 있음. 최악 약 log₂n번</li>
-                    <li><code>같으면 mid를 반환한다</code> — 찾았으니 즉시 끝</li>
-                    <li><code>arr[mid]가 target보다 작으면 low ← mid + 1</code> — 정렬돼 있으므로 mid와 그 왼쪽은 전부 target보다 작음 → 왼쪽 절반을 버림
-                        <ul>
-                            <li><code>+1</code>: mid 칸은 방금 확인했으므로 다음 범위에서 빼야 함</li>
-                        </ul>
-                    </li>
-                    <li><code>arr[mid]가 target보다 크면 high ← mid - 1</code> — 반대로 mid와 그 오른쪽을 버림 (<code>-1</code>도 같은 이유)</li>
-                    <li><code>-1을 반환한다</code> — 반복이 끝났다 = <code>low &gt; high</code> = 후보가 하나도 안 남음 → "없다"를 확정
-                        <ul>
-                            <li>예: 3106 찾기 → mid 5(2754, 작다) → mid 8(3860, 크다) → mid 6(3106, 발견) — <strong>3번</strong> 비교</li>
-                            <li>예: 없는 2500 찾기 → 2754(크다) → 1450 → 2088 → 2311(모두 작다) 후 low 5 &gt; high 4 — <strong>4번</strong> 비교로 "없음"</li>
-                        </ul>
-                    </li>
-                </ul>
 
                 <p><strong>두 의사코드 비교</strong></p>
                 <ul>
@@ -294,14 +243,14 @@
                 </ul>
             </section>
 
-            <!-- 8. 실습 코드 -->
+            <!-- 7. 실습 코드 -->
             <section class="lesson-section" id="sec-complete" aria-labelledby="h-complete">
-                <h2 id="h-complete" data-toc-label="실습 코드"><span class="section-no">08</span>실습 코드</h2>
-                <p class="lecture-lead">의사코드(07)를 Java로 옮깁니다. 순차 탐색과 이진 탐색을 각각 메서드로 분리하고,
+                <h2 id="h-complete" data-toc-label="실습 코드"><span class="section-no">07</span>실습 코드</h2>
+                <p class="lecture-lead">의사코드(06)를 Java로 옮깁니다. 순차 탐색과 이진 탐색을 각각 메서드로 분리하고,
                     결과와 비교 횟수를 <code>SearchResult</code>로 함께 반환하는 탐색 비교 프로그램입니다.</p>
                 <ul>
-                    <li><code>linearSearch</code>의 <code>comparisons++</code>와 <code>return</code>은 05 핵심 개념의 <strong>비교 카운터·조기 중단</strong>을 그대로 메서드로 옮긴 것</li>
-                    <li><code>binarySearchLoop</code>는 07 의사코드의 <strong>중간 비교 → 범위 절반 버리기</strong>(<code>low = mid + 1</code> / <code>high = mid - 1</code>)를 <code>low &lt;= high</code>인 동안 반복하는 while 문으로 그대로 옮긴 것</li>
+                    <li><code>linearSearch</code>의 <code>comparisons++</code>와 <code>return</code>은 04 핵심 개념의 <strong>비교 카운터·조기 중단</strong>을 그대로 메서드로 옮긴 것</li>
+                    <li><code>binarySearchLoop</code>는 06 의사코드의 <strong>중간 비교 → 범위 절반 버리기</strong>(<code>low = mid + 1</code> / <code>high = mid - 1</code>)를 <code>low &lt;= high</code>인 동안 반복하는 while 문으로 그대로 옮긴 것</li>
                     <li>같은 알고리즘을 재귀로 표현한 <code>binarySearchRecursive</code>(7강에서 심화)와, 중복 값이 있을 때 첫 번째 위치를 보장하는 <code>firstOccurrence</code>도 함께 담음</li>
                     <li>결과와 비교 횟수를 함께 담는 <code>SearchResult</code>는 1강 AlgoMeter의 <code>Measurement</code>와 같은 패턴이며, 세 방법의 결과가 항상 같은지 <strong>정확성 검증</strong>도 진행</li>
                 </ul>
@@ -461,9 +410,9 @@
                 </div>
             </section>
 
-            <!-- 9. 잘못된 코드와 오류 찾기 -->
+            <!-- 8. 잘못된 코드와 오류 찾기 -->
             <section class="lesson-section" id="sec-bugs" aria-labelledby="h-bugs">
-                <h2 id="h-bugs" data-toc-label="잘못된 코드와 오류 찾기"><span class="section-no">09</span>잘못된 코드와 오류 찾기</h2>
+                <h2 id="h-bugs" data-toc-label="잘못된 코드와 오류 찾기"><span class="section-no">08</span>잘못된 코드와 오류 찾기</h2>
                 <p class="lecture-lead">이진 탐색은 "아이디어는 쉽지만 경계에서 틀리기로 악명 높은" 알고리즘입니다. 초보자가 자주 만드는 오류 세 가지를 직접 찾아봅시다 — 먼저 코드를 읽고 무엇이 잘못됐는지 생각한 뒤 해설을 여세요.</p>
 
                 <article class="bug-card">
@@ -634,9 +583,9 @@ low + (high - low) / 2 = 1550000000</code></pre>
                 </article>
             </section>
 
-            <!-- 10. 복잡도 및 특성 분석 -->
+            <!-- 9. 복잡도 및 특성 분석 -->
             <section class="lesson-section" id="sec-complexity" aria-labelledby="h-complexity">
-                <h2 id="h-complexity" data-toc-label="복잡도 및 특성 분석"><span class="section-no">10</span>복잡도 및 특성 분석</h2>
+                <h2 id="h-complexity" data-toc-label="복잡도 및 특성 분석"><span class="section-no">09</span>복잡도 및 특성 분석</h2>
 
                 <p class="lecture-lead">복잡도 분석 = <strong>"데이터가 많아지면 일이 얼마나 늘어나는가?"</strong>를 따져 보는 것. 어려운 수식 대신 <strong>"몇 번 비교하는가"</strong>만 세어 봅니다.</p>
 
@@ -696,10 +645,10 @@ low + (high - low) / 2 = 1550000000</code></pre>
                 </ul>
             </section>
 
-            <!-- 11. 람다·스트림 변경 -->
+            <!-- 10. 람다·스트림 변경 -->
             <section class="lesson-section" id="sec-modernize" aria-labelledby="h-modernize">
-                <h2 id="h-modernize" data-toc-label="람다·스트림 변경"><span class="section-no">11</span>람다·스트림 변경</h2>
-                <p class="lecture-lead">08 실습 코드(<code>SearchAlgorithmsComplete.java</code>)를 <strong>람다와 스트림</strong>으로 다시 쓴 코드입니다. 문법은 추가 정보의 <a href="../supplements/lambda-expressions.html">람다식</a>·<a href="../supplements/java-streams.html">자바 스트림</a> 문서를 참고하세요.</p>
+                <h2 id="h-modernize" data-toc-label="람다·스트림 변경"><span class="section-no">10</span>람다·스트림 변경</h2>
+                <p class="lecture-lead">07 실습 코드(<code>SearchAlgorithmsComplete.java</code>)를 <strong>람다와 스트림</strong>으로 다시 쓴 코드입니다. 문법은 추가 정보의 <a href="../supplements/lambda-expressions.html">람다식</a>·<a href="../supplements/java-streams.html">자바 스트림</a> 문서를 참고하세요.</p>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -861,9 +810,9 @@ public class ModernizeSolution {
                 </article>
             </section>
 
-            <!-- 12. 실제 데이터 응용 예제 -->
+            <!-- 11. 실제 데이터 응용 예제 -->
             <section class="lesson-section" id="sec-application" aria-labelledby="h-application">
-                <h2 id="h-application" data-toc-label="실제 데이터 응용 예제"><span class="section-no">12</span>실제 데이터 응용 예제</h2>
+                <h2 id="h-application" data-toc-label="실제 데이터 응용 예제"><span class="section-no">11</span>실제 데이터 응용 예제</h2>
 
                 <h3>문제 상황</h3>
                 <ul>
@@ -1055,9 +1004,9 @@ public class ModernizeSolution {
                 </ul>
             </section>
 
-            <!-- 13. 확인 퀴즈 -->
+            <!-- 12. 확인 퀴즈 -->
             <section class="lesson-section lesson-section--quiz" id="sec-quiz" aria-labelledby="h-quiz">
-                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">13</span>확인 퀴즈</h2>
+                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">12</span>확인 퀴즈</h2>
                 <div id="quiz-root"></div>
             </section>
 
@@ -1066,9 +1015,9 @@ public class ModernizeSolution {
                 <p>지금까지 배운 내용을 직접 코드로 적용해 보는 과제입니다. 두 과제로 구성되며, 각 과제의 정답은 이 강의를 완료로 표시해야 열립니다.</p>
             </div>
 
-            <!-- 14. 따라 하기 실습 -->
+            <!-- 13. 따라 하기 실습 -->
             <section class="lesson-section lesson-section--assignment" id="sec-practice" aria-labelledby="h-practice">
-                <h2 id="h-practice" data-toc-label="따라 하기 실습"><span class="section-no">14</span>따라 하기 실습</h2>
+                <h2 id="h-practice" data-toc-label="따라 하기 실습"><span class="section-no">13</span>따라 하기 실습</h2>
 
                 <h3>실습 1 — 데이터 변경</h3>
                 <p>
@@ -1156,9 +1105,9 @@ target 6000 → 위치 12</pre>
                 </details>
             </section>
 
-            <!-- 15. 최종 프로그램 작성 문제 -->
+            <!-- 14. 최종 프로그램 작성 문제 -->
             <section class="lesson-section lesson-section--assignment" id="sec-final" aria-labelledby="h-final">
-                <h2 id="h-final" data-toc-label="최종 프로그램 작성 문제"><span class="section-no">15</span>최종 프로그램 작성 문제</h2>
+                <h2 id="h-final" data-toc-label="최종 프로그램 작성 문제"><span class="section-no">14</span>최종 프로그램 작성 문제</h2>
 
                 <h3>문제 제목 — 도서 검색 프로그램 "BookFinder"</h3>
 
@@ -1218,7 +1167,7 @@ stocks = {3, 5, 2, 0, 4, 1, 6, 2, 0, 3, 7, 1}
                 <h3>구현 단계 안내</h3>
                 <ol>
                     <li><code>linearSearch</code>부터 완성한다 — 실습 코드의 linearSearch와 같은, 1강에서 배운 조기 중단 패턴을 그대로 쓰는 구조다. 4개 번호의 순차 결과가 표(테스트 데이터)와 같은지 먼저 확인한다.</li>
-                    <li><code>binarySearch</code>를 완성한다 — 07 의사코드의 while 뼈대를 그대로 옮기되, <code>break</code> 대신 <code>return mid</code>로 즉시 반환한다.</li>
+                    <li><code>binarySearch</code>를 완성한다 — 06 의사코드의 while 뼈대를 그대로 옮기되, <code>break</code> 대신 <code>return mid</code>로 즉시 반환한다.</li>
                     <li>두 메서드의 위치가 4개 검색 모두에서 일치하는지 검증 출력을 확인한다.</li>
                     <li>비교 횟수가 순차 1·7·12·12번, 이진 3·3·4·4번으로 나오는지 확인한다.</li>
                     <li>재고 0권인 책(2088 등)으로 "재고 없음" 분기도 시험해 본다.</li>
@@ -1541,9 +1490,9 @@ stocks = {3, 5, 2, 0, 4, 1, 6, 2, 0, 3, 7, 1}
                 </details>
             </section>
 
-            <!-- 16. 오늘의 핵심 정리 -->
+            <!-- 15. 오늘의 핵심 정리 -->
             <section class="lesson-section" id="sec-summary" aria-labelledby="h-summary">
-                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">16</span>오늘의 핵심 정리</h2>
+                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">15</span>오늘의 핵심 정리</h2>
                 <ul class="summary-list">
                     <li><strong>순차 탐색</strong>은 앞에서부터 하나씩 비교한다 — 정렬 불필요, 최악 n번, O(n).</li>
                     <li><strong>이진 탐색</strong>은 정렬된 배열에서 중간과 비교해 <strong>절반을 통째로 버린다</strong> — 최악 ⌊log₂n⌋+1번, O(log n). 10억 개도 30번이면 끝난다.</li>
@@ -1556,9 +1505,9 @@ stocks = {3, 5, 2, 0, 4, 1, 6, 2, 0, 3, 7, 1}
                 <div id="lesson-complete-slot"></div>
             </section>
 
-            <!-- 17. 다음 강의 연결 -->
+            <!-- 16. 다음 강의 연결 -->
             <section class="lesson-section" id="sec-next" aria-labelledby="h-next">
-                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">17</span>다음 강의 연결</h2>
+                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">16</span>다음 강의 연결</h2>
                 <p>
                     다음 강의는 <strong>6강. 스택과 큐를 활용한 작업 처리</strong>입니다.
 <em>지금까지는 "이미 담겨 있는 데이터를 어떻게 찾는가"를 다뤘다면,

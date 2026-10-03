@@ -88,29 +88,10 @@
                 </ul>
             </section>
 
-            <!-- 3. 선수 지식 -->
-            <section class="lesson-section" id="sec-prereq" aria-labelledby="h-prereq">
-                <h2 id="h-prereq" data-toc-label="선수 지식"><span class="section-no">03</span>선수 지식</h2>
-                <p class="lecture-lead">이 강의는 다음 내용을 이미 알고 있다고 가정합니다.</p>
-                <div class="table-scroll">
-                    <table class="data-table">
-                        <thead>
-                            <tr><th scope="col">항목</th><th scope="col">필요한 수준</th><th scope="col">이 강의에서 쓰이는 곳</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr><td>재귀 호출 (7강)</td><td>종료 조건과 자기 호출을 읽고 쓸 수 있음</td><td>순회·삽입·검색·집계 전부</td></tr>
-                            <tr><td>큐 (6강)</td><td><code>ArrayDeque</code>의 <code>offer</code>/<code>poll</code>/<code>isEmpty</code></td><td>레벨 순회</td></tr>
-                            <tr><td>이진 탐색 (5강)</td><td>비교 후 절반을 버리는 원리</td><td>BST 검색·삽입 경로</td></tr>
-                            <tr><td>클래스와 참조</td><td>필드, <code>new</code>, <code>null</code> 확인</td><td><code>Node</code>의 left/right 연결</td></tr>
-                            <tr><td>ArrayList (2강)</td><td><code>add</code>, for-each 순회</td><td>일반 트리의 자식 목록</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
 
-            <!-- 4. 실제 문제 상황 -->
+            <!-- 3. 실제 문제 상황 -->
             <section class="lesson-section" id="sec-problem" aria-labelledby="h-problem">
-                <h2 id="h-problem" data-toc-label="실제 문제 상황"><span class="section-no">04</span>실제 문제 상황</h2>
+                <h2 id="h-problem" data-toc-label="실제 문제 상황"><span class="section-no">03</span>실제 문제 상황</h2>
                 <ul>
                     <li>사내 인트라넷 개발팀에서 첫 업무로 <strong>조직도 화면</strong>을 맡음 —
                         대표이사실 아래 본부 3개, 각 본부 아래 팀 2~3개</li>
@@ -126,9 +107,9 @@
                 </div>
             </section>
 
-            <!-- 5. 핵심 개념 -->
+            <!-- 4. 핵심 개념 -->
             <section class="lesson-section" id="sec-concepts" aria-labelledby="h-concepts">
-                <h2 id="h-concepts" data-toc-label="핵심 개념"><span class="section-no">05</span>핵심 개념</h2>
+                <h2 id="h-concepts" data-toc-label="핵심 개념"><span class="section-no">04</span>핵심 개념</h2>
 
                 <h3>트리와 트리 용어</h3>
                 <ul>
@@ -218,11 +199,11 @@
                 </div>
             </section>
 
-            <!-- 6. 단계별 동작 과정 -->
+            <!-- 5. 단계별 동작 과정 -->
             <section class="lesson-section" id="sec-steps" aria-labelledby="h-steps">
-                <h2 id="h-steps" data-toc-label="단계별 동작 과정"><span class="section-no">06</span>단계별 동작 과정</h2>
+                <h2 id="h-steps" data-toc-label="단계별 동작 과정"><span class="section-no">05</span>단계별 동작 과정</h2>
                 <ul>
-                    <li>핵심 개념(05)의 예제 트리 — 삽입 순서 50, 30, 70, 20, 40, 60으로 만든 BST — 위에서 <strong>중위 순회(왼쪽 → 자신 → 오른쪽)</strong>가 진행되는 모습을 단계별로 관찰</li>
+                    <li>핵심 개념(04)의 예제 트리 — 삽입 순서 50, 30, 70, 20, 40, 60으로 만든 BST — 위에서 <strong>중위 순회(왼쪽 → 자신 → 오른쪽)</strong>가 진행되는 모습을 단계별로 관찰</li>
                     <li><strong>다음 단계 ▶</strong> 버튼으로 한 단계씩 진행</li>
                     <li>지금 방문 중인 노드는 <strong>파란색(현재)</strong>, 값이 출력된 노드는 <strong>초록색(완료)</strong>, 아래 배열에 출력 순서가 쌓임</li>
                 </ul>
@@ -235,9 +216,9 @@
                 </ul>
             </section>
 
-            <!-- 7. 의사코드 -->
+            <!-- 6. 의사코드 -->
             <section class="lesson-section" id="sec-pseudo" aria-labelledby="h-pseudo">
-                <h2 id="h-pseudo" data-toc-label="의사코드"><span class="section-no">07</span>의사코드</h2>
+                <h2 id="h-pseudo" data-toc-label="의사코드"><span class="section-no">06</span>의사코드</h2>
                 <p class="lecture-lead">코드를 쓰기 전에, 핵심 개념의 규칙과 시각화에서 본 절차를 언어 중립적인 의사코드로 정리합니다.</p>
                 <ul>
                     <li>의사코드 = 특정 언어 문법 대신 <strong>우리말에 가까운 문장</strong>으로 알고리즘의 순서를 적은 것</li>
@@ -245,6 +226,7 @@
                     <li><code>Insert(…)</code>처럼 알고리즘이 <strong>자기 이름을 다시 부르는 줄</strong>은 재귀 호출 (7강) — "더 작은 서브트리에 같은 일을 맡긴다"로 읽기</li>
                 </ul>
 
+                <h3>이진 탐색 트리 삽입 (BST Insert)</h3>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -257,33 +239,13 @@
     만약 node가 비어 있으면(null):
         새 노드를 만들어 반환한다          // 빈자리 도착 = 종료 조건
     만약 value가 node의 값보다 작으면:
-        node의 왼쪽  ← Insert(node의 왼쪽, value)
-    아니면:
+        node의 왼쪽  ← Insert(node의 왼쪽, value)     // 다시 저장해야 새 노드가 연결됨
+    아니면:                                // 크거나 같으면 오른쪽으로
         node의 오른쪽 ← Insert(node의 오른쪽, value)
-    node를 그대로 반환한다</code></pre>
+    node를 그대로 반환한다                 // 자기 자신을 돌려줘 부모 연결 유지</code></pre>
                 </article>
-                <p><strong>코드 설명 — BST 삽입</strong></p>
-                <ul>
-                    <li><code>알고리즘 Insert(node, value)</code> — "node를 루트로 하는 서브트리에 value를 넣고, <strong>넣은 뒤의 서브트리 루트</strong>를 돌려준다"는 뜻</li>
-                    <li><code>만약 node가 비어 있으면(null): 새 노드를 만들어 반환한다</code> — 내려가다가 <strong>빈자리</strong>에 도착하면 그곳이 새 값의 자리
-                        <ul>
-                            <li>재귀가 멈추는 <strong>종료 조건</strong> — 이 줄이 없으면 끝없이 내려가려다 오류가 남</li>
-                            <li>트리가 처음부터 비어 있을 때(root가 null)도 이 줄 덕분에 새 노드가 곧바로 루트가 됨</li>
-                        </ul>
-                    </li>
-                    <li><code>만약 value가 node의 값보다 작으면: node의 왼쪽 ← Insert(node의 왼쪽, value)</code> — 작으면 <strong>왼쪽 서브트리</strong>에 넣는 일을 맡김
-                        <ul>
-                            <li>돌아온 결과를 <code>node의 왼쪽</code>에 <strong>다시 저장</strong>하는 것이 핵심 — 빈자리에서 만든 새 노드가 이 대입으로 부모에 연결됨</li>
-                        </ul>
-                    </li>
-                    <li><code>아니면: node의 오른쪽 ← Insert(node의 오른쪽, value)</code> — 크거나 같으면 <strong>오른쪽 서브트리</strong>로 (같은 값은 오른쪽에 넣는 규칙)</li>
-                    <li><code>node를 그대로 반환한다</code> — 이 노드 자체는 바뀌지 않았으므로 자기 자신을 돌려줌 → 부모의 연결이 그대로 유지됨
-                        <ul>
-                            <li>예: 예제 트리에 40을 넣으면 50(작다 → 왼쪽) → 30(크다 → 오른쪽) → 빈자리에서 새 노드 40 생성 → 30의 오른쪽에 연결</li>
-                        </ul>
-                    </li>
-                </ul>
 
+                <h3>중위 순회 (Inorder Traversal)</h3>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -301,28 +263,8 @@
 // 전위 순회: 출력을 1번 위치로 옮기면 된다
 // 후위 순회: 출력을 3번 아래로 옮기면 된다</code></pre>
                 </article>
-                <p><strong>코드 설명 — 중위 순회</strong></p>
-                <ul>
-                    <li><code>만약 node가 비어 있으면(null): 되돌아간다</code> — 빈자리에 도착하면 할 일이 없으므로 바로 돌아감 (종료 조건)
-                        <ul>
-                            <li>리프의 왼쪽·오른쪽 자식은 항상 비어 있으므로, 재귀는 반드시 이 줄에서 멈추게 됨</li>
-                        </ul>
-                    </li>
-                    <li><code>Inorder(node의 왼쪽)</code> — 자기 값을 출력하기 <strong>전에</strong> 왼쪽 서브트리를 <strong>전부</strong> 끝까지 처리</li>
-                    <li><code>node의 값을 출력한다</code> — 왼쪽이 모두 끝난 뒤에야 자기 자신을 출력</li>
-                    <li><code>Inorder(node의 오른쪽)</code> — 마지막으로 오른쪽 서브트리를 전부 처리
-                        <ul>
-                            <li>BST에서는 왼쪽 = 작은 값, 오른쪽 = 큰 값이므로 이 순서대로 읽으면 <strong>오름차순</strong> (예제 트리 → 20 30 40 50 60 70)</li>
-                        </ul>
-                    </li>
-                    <li><code>// 전위 순회 …</code>, <code>// 후위 순회 …</code> — 세 순회는 <strong>출력 한 줄의 위치만</strong> 다름
-                        <ul>
-                            <li>출력이 맨 앞(1번 위치) → 전위: 50 30 20 40 70 60</li>
-                            <li>출력이 맨 뒤(3번 아래) → 후위: 20 40 30 60 70 50</li>
-                        </ul>
-                    </li>
-                </ul>
 
+                <h3>레벨 순회 (Level-order Traversal)</h3>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -334,24 +276,12 @@
                     <pre><code id="code-pseudo-level">알고리즘 LevelOrder(root)
     큐를 만들고 root를 넣는다
     큐가 비지 않은 동안 반복:
-        node ← 큐에서 하나 꺼낸다(poll)
+        node ← 큐에서 하나 꺼낸다(poll)    // 맨 앞 = 먼저 들어온 노드
         node의 값을 출력한다
+        // 자식은 줄 맨 뒤로 → 위층이 끝나야 아래층 차례
         node의 왼쪽 자식이 있으면 큐에 넣는다(offer)
         node의 오른쪽 자식이 있으면 큐에 넣는다(offer)</code></pre>
                 </article>
-                <p><strong>코드 설명 — 레벨 순회</strong></p>
-                <ul>
-                    <li><code>큐를 만들고 root를 넣는다</code> — "앞으로 방문할 노드"를 줄 세워 둘 대기열(큐)을 준비하고, 맨 위의 루트부터 줄에 세움</li>
-                    <li><code>큐가 비지 않은 동안 반복</code> — 줄에 기다리는 노드가 남아 있는 한 계속 (재귀 대신 반복문 하나로 동작)</li>
-                    <li><code>node ← 큐에서 하나 꺼낸다(poll)</code> — 줄의 <strong>맨 앞</strong> 노드를 꺼냄 — 먼저 들어온 노드가 먼저 나옴(FIFO)</li>
-                    <li><code>node의 값을 출력한다</code> — 꺼낸 노드를 방문</li>
-                    <li><code>node의 왼쪽/오른쪽 자식이 있으면 큐에 넣는다(offer)</code> — 자식들은 줄의 <strong>맨 뒤</strong>에 세움 (왼쪽 먼저)
-                        <ul>
-                            <li>자식은 항상 같은 층의 다른 노드들보다 뒤에 서므로, 위층이 모두 끝나야 아래층 차례가 옴</li>
-                            <li>예: 예제 트리 → 큐 [50] → 50 출력, [30, 70] → 30 출력, [70, 20, 40] → 70 출력, [20, 40, 60] → … → 50 30 70 20 40 60</li>
-                        </ul>
-                    </li>
-                </ul>
 
                 <p><strong>세 의사코드 정리</strong></p>
                 <ul>
@@ -360,15 +290,15 @@
                 </ul>
             </section>
 
-            <!-- 8. 실습 코드 -->
+            <!-- 7. 실습 코드 -->
             <section class="lesson-section" id="sec-complete" aria-labelledby="h-complete">
-                <h2 id="h-complete" data-toc-label="실습 코드"><span class="section-no">08</span>실습 코드</h2>
-                <p class="lecture-lead">의사코드(07)를 실제 Java 프로그램으로 옮깁니다. 핵심 개념(05)의 노드 구조를 기준으로 삽입·검색·순회 네 기능을 메서드로 나눠 구현했습니다.</p>
+                <h2 id="h-complete" data-toc-label="실습 코드"><span class="section-no">07</span>실습 코드</h2>
+                <p class="lecture-lead">의사코드(06)를 실제 Java 프로그램으로 옮깁니다. 핵심 개념(04)의 노드 구조를 기준으로 삽입·검색·순회 네 기능을 메서드로 나눠 구현했습니다.</p>
                 <ul>
-                    <li><code>insert</code>는 07의 <strong>BST 삽입 의사코드</strong>를 그대로 옮긴 것 — 빈 자리(<code>null</code>)에서 새 노드를 만들어 돌려주는 종료 조건과, 반환값을 <code>node.left</code>/<code>node.right</code>에 다시 대입하는 부분까지 동일합니다.</li>
-                    <li><code>search</code>는 05에서 배운 BST의 <strong>"비교 한 번마다 반대쪽 서브트리를 버린다"</strong>는 규칙을 재귀로 구현한 것 — 지나간 노드를 화면에 남겨 절반씩 버려지는 경로를 눈으로 확인할 수 있게 했습니다.</li>
-                    <li><code>preorder</code>·<code>inorder</code>·<code>postorder</code>는 07의 <strong>중위 순회 의사코드</strong>에서 "자기 자신 출력"의 위치만 옮긴 것 — 05 표에서 정리한 방문 순서 그대로입니다.</li>
-                    <li><code>levelOrder</code>는 07의 <strong>레벨 순회(큐) 의사코드</strong>를 그대로 구현한 것 — 6강의 <code>ArrayDeque</code> 큐를 재사용합니다.</li>
+                    <li><code>insert</code>는 06의 <strong>BST 삽입 의사코드</strong>를 그대로 옮긴 것 — 빈 자리(<code>null</code>)에서 새 노드를 만들어 돌려주는 종료 조건과, 반환값을 <code>node.left</code>/<code>node.right</code>에 다시 대입하는 부분까지 동일합니다.</li>
+                    <li><code>search</code>는 04에서 배운 BST의 <strong>"비교 한 번마다 반대쪽 서브트리를 버린다"</strong>는 규칙을 재귀로 구현한 것 — 지나간 노드를 화면에 남겨 절반씩 버려지는 경로를 눈으로 확인할 수 있게 했습니다.</li>
+                    <li><code>preorder</code>·<code>inorder</code>·<code>postorder</code>는 06의 <strong>중위 순회 의사코드</strong>에서 "자기 자신 출력"의 위치만 옮긴 것 — 04 표에서 정리한 방문 순서 그대로입니다.</li>
+                    <li><code>levelOrder</code>는 06의 <strong>레벨 순회(큐) 의사코드</strong>를 그대로 구현한 것 — 6강의 <code>ArrayDeque</code> 큐를 재사용합니다.</li>
                 </ul>
                 <article class="code-card">
                     <header class="code-card__header">
@@ -522,9 +452,9 @@ public class BstComplete {
                 </ul>
             </section>
 
-            <!-- 9. 잘못된 코드와 오류 찾기 -->
+            <!-- 8. 잘못된 코드와 오류 찾기 -->
             <section class="lesson-section" id="sec-bugs" aria-labelledby="h-bugs">
-                <h2 id="h-bugs" data-toc-label="잘못된 코드와 오류 찾기"><span class="section-no">09</span>잘못된 코드와 오류 찾기</h2>
+                <h2 id="h-bugs" data-toc-label="잘못된 코드와 오류 찾기"><span class="section-no">08</span>잘못된 코드와 오류 찾기</h2>
                 <p class="lecture-lead">트리 코드에서 초보자가 가장 자주 만드는 오류 두 가지 — 코드를 먼저 읽고 무엇이 잘못됐는지 생각한 뒤 해설을 여세요.</p>
 
                 <article class="bug-card">
@@ -690,9 +620,9 @@ root == null ? true</pre>
                 </article>
             </section>
 
-            <!-- 10. 복잡도 및 특성 분석 -->
+            <!-- 9. 복잡도 및 특성 분석 -->
             <section class="lesson-section" id="sec-complexity" aria-labelledby="h-complexity">
-                <h2 id="h-complexity" data-toc-label="복잡도 및 특성 분석"><span class="section-no">10</span>복잡도 및 특성 분석</h2>
+                <h2 id="h-complexity" data-toc-label="복잡도 및 특성 분석"><span class="section-no">09</span>복잡도 및 특성 분석</h2>
                 <p class="lecture-lead">복잡도 분석 = <strong>"데이터가 많아지면 일이 얼마나 늘어나는가?"</strong>를 따져 보는 것. 트리에서는 <strong>"몇 개의 노드를 방문하는가"</strong>와 <strong>"몇 층을 내려가는가"</strong>만 세어 봅니다.</p>
 
                 <h3>입력 크기 — 무엇이 많아지는가?</h3>
@@ -772,9 +702,9 @@ root == null ? true</pre>
                 </ul>
             </section>
 
-            <!-- 11. 실제 데이터 응용 예제 -->
+            <!-- 10. 실제 데이터 응용 예제 -->
             <section class="lesson-section" id="sec-application" aria-labelledby="h-application">
-                <h2 id="h-application" data-toc-label="실제 데이터 응용 예제"><span class="section-no">11</span>실제 데이터 응용 예제</h2>
+                <h2 id="h-application" data-toc-label="실제 데이터 응용 예제"><span class="section-no">10</span>실제 데이터 응용 예제</h2>
 
                 <h3>문제 상황</h3>
                 <ul>
@@ -935,9 +865,9 @@ public class OrgChartApplication {
                 </ul>
             </section>
 
-            <!-- 12. 확인 퀴즈 -->
+            <!-- 11. 확인 퀴즈 -->
             <section class="lesson-section lesson-section--quiz" id="sec-quiz" aria-labelledby="h-quiz">
-                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">12</span>확인 퀴즈</h2>
+                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">11</span>확인 퀴즈</h2>
                 <div id="quiz-root"></div>
             </section>
 
@@ -946,9 +876,9 @@ public class OrgChartApplication {
                 <p>지금까지 배운 내용을 직접 코드로 적용해 보는 과제입니다. 두 과제로 구성되며, 각 과제의 정답은 이 강의를 완료로 표시해야 열립니다.</p>
             </div>
 
-            <!-- 13. 따라 하기 실습 -->
+            <!-- 12. 따라 하기 실습 -->
             <section class="lesson-section lesson-section--assignment" id="sec-practice" aria-labelledby="h-practice">
-                <h2 id="h-practice" data-toc-label="따라 하기 실습"><span class="section-no">13</span>따라 하기 실습</h2>
+                <h2 id="h-practice" data-toc-label="따라 하기 실습"><span class="section-no">12</span>따라 하기 실습</h2>
 
                 <h3>실습 1 — 데이터 변경</h3>
                 <p>
@@ -1060,9 +990,9 @@ static int maxValue(Node node) {
                 </details>
             </section>
 
-            <!-- 14. 최종 프로그램 작성 문제 -->
+            <!-- 13. 최종 프로그램 작성 문제 -->
             <section class="lesson-section lesson-section--assignment" id="sec-final" aria-labelledby="h-final">
-                <h2 id="h-final" data-toc-label="최종 프로그램 작성 문제"><span class="section-no">14</span>최종 프로그램 작성 문제</h2>
+                <h2 id="h-final" data-toc-label="최종 프로그램 작성 문제"><span class="section-no">13</span>최종 프로그램 작성 문제</h2>
 
                 <h3>문제 제목 — 조직도 분석 프로그램 "OrgTree"</h3>
 
@@ -1482,9 +1412,9 @@ public class OrgTreeSolution {
                 </details>
             </section>
 
-            <!-- 15. 오늘의 핵심 정리 -->
+            <!-- 14. 오늘의 핵심 정리 -->
             <section class="lesson-section" id="sec-summary" aria-labelledby="h-summary">
-                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">15</span>오늘의 핵심 정리</h2>
+                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">14</span>오늘의 핵심 정리</h2>
                 <ul class="summary-list">
                     <li><strong>트리</strong>는 루트에서 시작해 부모-자식으로 갈라지는 계층 구조다.
                         리프는 자식이 없는 노드, 높이는 루트에서 가장 먼 리프까지의 간선 수다.</li>
@@ -1504,9 +1434,9 @@ public class OrgTreeSolution {
                 <div id="lesson-complete-slot"></div>
             </section>
 
-            <!-- 16. 다음 강의 연결 -->
+            <!-- 15. 다음 강의 연결 -->
             <section class="lesson-section" id="sec-next" aria-labelledby="h-next">
-                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">16</span>다음 강의 연결</h2>
+                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">15</span>다음 강의 연결</h2>
                 <p>
                     다음 강의는 <strong>9강. 그래프와 DFS·BFS 탐색</strong>입니다.
                     사실 여러분은 오늘 이미 그래프의 특수한 형태를 배웠습니다 —

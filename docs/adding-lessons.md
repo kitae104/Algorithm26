@@ -28,10 +28,10 @@
   - `<section class="lesson-hero">` (eyebrow `LESSON NN / 13`, h1, 영문 제목, 배지, 소개)
     - 인쇄 버튼은 두지 않는다. 화면에서 인쇄 기능을 제공하지 않으며, `print.css`는 브라우저 자체 인쇄(Ctrl+P) 대비용으로만 남아 있다.
   - `<nav class="lesson-toc"><p class="lesson-toc__title">이 강의의 목차</p><ol id="lesson-toc-list"></ol></nav>` (목차는 자동 생성)
-  - `<div class="lesson-body">` 안에 16개 섹션 (람다·스트림 변경이 있는 강의는 17개)
+  - `<div class="lesson-body">` 안에 15개 섹션 (람다·스트림 변경이 있는 강의는 16개)
 - body 끝 스크립트(순서대로): `algorithms-data.js`, `progress.js`, `common.js`, `code-copy.js`, `visualization.js`, `quiz.js`, 그리고 인라인 `<script>`(시각화 + 퀴즈 초기화)
 
-### 16개 섹션 (id와 순서 고정)
+### 15개 섹션 (id와 순서 고정)
 
 각 섹션은 `<section class="lesson-section" id="..."><h2 data-toc-label="..."><span class="section-no">NN</span>제목</h2>` 형태.
 
@@ -39,28 +39,28 @@
 |---|----|------|
 | 1 | `sec-intro` | 강의 소개 (문단 2개, 표 없음) |
 | 2 | `sec-objectives` | 학습 목표 4~6개 (`ul.objective-list`, 행동 동사로) |
-| 3 | `sec-prereq` | 선수 지식 표 |
-| 4 | `sec-problem` | 실제 문제 상황 (3~6문장 스토리) |
-| 5 | `sec-concepts` | 핵심 개념 |
-| 6 | `sec-steps` | 단계별 동작 과정 — AlgoViz 시각화 마운트 `<div id="viz-..."></div>`. 도입부에서 시각화에 쓰는 예제 데이터를 직접 소개한다 |
-| 7 | `sec-pseudo` | 의사코드 (code-card, 언어 배지 `Pseudo`). 도입부에 의사코드 읽는 법 `<ul>`, 카드마다 바로 뒤에 `<p><strong>코드 설명 — …</strong></p>` + 한 줄씩 풀어 주는 `<ul>` |
-| 8 | `sec-complete` | **실습 코드** — 의사코드를 옮긴 완성된 Java 프로그램을 곧바로 제시 + 실행 결과. 도입부 설명(또는 `<ul>`)에서 각 메서드가 05 핵심 개념·07 의사코드의 어떤 패턴을 옮긴 것인지 먼저 짚어 준다 |
-| 9 | `sec-bugs` | 잘못된 코드 2개 이상 (`article.bug-card`, 해설은 `details.answer-box`) |
-| 10 | `sec-complexity` | 복잡도 및 특성 — 학생 눈높이의 쉬운 설명. 질문형 소제목(입력 크기 — 무엇이 많아지는가? / 주요 연산 — 무엇을 세는가? / 시간 복잡도 — 얼마나 오래 걸리는가? / 공간 복잡도 — 메모리를 얼마나 더 쓰는가? / 알고리즘 특성 — 언제 무엇을 쓰는가?), 작은 n·큰 n 숫자 비교, 일상 비유, `note-box` 한 줄 정리 |
-| — | `sec-modernize` | (2·3·4·5·10·13강만) **람다·스트림 변경** — 08 실습 코드를 람다·스트림으로 다시 쓴 `ModernizeSolution.java` 전체 코드와 실행 결과만 보여 준다(문제·정답 형식 아님). 있는 강의에서만 10번 다음에 끼어들어 이후 번호가 하나씩 밀린다 |
-| 11 | `sec-application` | 실제 데이터 응용 예제 (문제 상황→데이터 모델→전체 코드→출력→해설→복잡도). 항상 확인 퀴즈 바로 위 |
-| 12 | `sec-quiz` | `<div id="quiz-root"></div>` 만 두고 인라인 스크립트에서 초기화 |
-| 13 | `sec-practice` | **프로그램 실습 과제 ①** — 따라 하기 실습 2~3개 (실습3은 TODO 코드 + `details.answer-box` 정답). 확인 퀴즈 바로 뒤, `.assignment-banner` 안내 배너로 시작하며 `lesson-section--assignment` 클래스로 확인 퀴즈와 색상 구분 |
-| 14 | `sec-final` | **프로그램 실습 과제 ②** — 최종 프로그램 작성 문제(제목·배경 4~7문장·목표·필수 요구사항·입력·예상 출력·제한·구현 단계 안내·시작 코드·테스트 3종 표·자기 점검표 `ul.checklist`·추가 도전 2~3개) + 섹션 끝에 `<h3>정답과 해설</h3>`과 `details.answer-box`(정답 코드·예상 출력·구현 순서·핵심 적용부·복잡도·자주 나는 오류·다른 방법). `lesson-section--assignment` 클래스 |
-| 15 | `sec-summary` | 오늘의 핵심 정리 + `<div id="lesson-complete-slot"></div>` |
-| 16 | `sec-next` | 다음 강의 연결 + `<div id="lesson-pager"></div>` |
+| 3 | `sec-problem` | 실제 문제 상황 (3~6문장 스토리) |
+| 4 | `sec-concepts` | 핵심 개념 |
+| 5 | `sec-steps` | 단계별 동작 과정 — AlgoViz 시각화 마운트 `<div id="viz-..."></div>`. 도입부에서 시각화에 쓰는 예제 데이터를 직접 소개한다 |
+| 6 | `sec-pseudo` | 의사코드 (code-card, 언어 배지 `Pseudo`). 도입부에 의사코드 읽는 법 `<ul>`, 카드마다 바로 위에 알고리즘 이름 `<h3>`(예: `선택 정렬 (Selection Sort)`). 별도 코드 설명 목록은 두지 않고, 필요한 해설은 의사코드 안의 `//` 주석으로 단다 |
+| 7 | `sec-complete` | **실습 코드** — 의사코드를 옮긴 완성된 Java 프로그램을 곧바로 제시 + 실행 결과. 도입부 설명(또는 `<ul>`)에서 각 메서드가 04 핵심 개념·06 의사코드의 어떤 패턴을 옮긴 것인지 먼저 짚어 준다 |
+| 8 | `sec-bugs` | 잘못된 코드 2개 이상 (`article.bug-card`, 해설은 `details.answer-box`) |
+| 9 | `sec-complexity` | 복잡도 및 특성 — 학생 눈높이의 쉬운 설명. 질문형 소제목(입력 크기 — 무엇이 많아지는가? / 주요 연산 — 무엇을 세는가? / 시간 복잡도 — 얼마나 오래 걸리는가? / 공간 복잡도 — 메모리를 얼마나 더 쓰는가? / 알고리즘 특성 — 언제 무엇을 쓰는가?), 작은 n·큰 n 숫자 비교, 일상 비유, `note-box` 한 줄 정리 |
+| — | `sec-modernize` | (2·3·4·5·10·13강만) **람다·스트림 변경** — 07 실습 코드를 람다·스트림으로 다시 쓴 `ModernizeSolution.java` 전체 코드와 실행 결과만 보여 준다(문제·정답 형식 아님). 있는 강의에서만 9번 다음에 끼어들어 이후 번호가 하나씩 밀린다 |
+| 10 | `sec-application` | 실제 데이터 응용 예제 (문제 상황→데이터 모델→전체 코드→출력→해설→복잡도). 항상 확인 퀴즈 바로 위 |
+| 11 | `sec-quiz` | `<div id="quiz-root"></div>` 만 두고 인라인 스크립트에서 초기화 |
+| 12 | `sec-practice` | **프로그램 실습 과제 ①** — 따라 하기 실습 2~3개 (실습3은 TODO 코드 + `details.answer-box` 정답). 확인 퀴즈 바로 뒤, `.assignment-banner` 안내 배너로 시작하며 `lesson-section--assignment` 클래스로 확인 퀴즈와 색상 구분 |
+| 13 | `sec-final` | **프로그램 실습 과제 ②** — 최종 프로그램 작성 문제(제목·배경 4~7문장·목표·필수 요구사항·입력·예상 출력·제한·구현 단계 안내·시작 코드·테스트 3종 표·자기 점검표 `ul.checklist`·추가 도전 2~3개) + 섹션 끝에 `<h3>정답과 해설</h3>`과 `details.answer-box`(정답 코드·예상 출력·구현 순서·핵심 적용부·복잡도·자주 나는 오류·다른 방법). `lesson-section--assignment` 클래스 |
+| 14 | `sec-summary` | 오늘의 핵심 정리 + `<div id="lesson-complete-slot"></div>` |
+| 15 | `sec-next` | 다음 강의 연결 + `<div id="lesson-pager"></div>` |
 
 과거에는 `sec-hand`(사람이 직접 해결해 보기)가 4번과 핵심 개념 사이에 있었지만 없앴다 — `scripts/validate.mjs`의 `REMOVED_SECTIONS`가 다시 들어오지 않게 막는다.
-람다·스트림 섹션이 있는 강의는 `sec-complexity` → `sec-modernize` → `sec-application` → `sec-quiz` 순서로 17개, 없는 강의는 16개 섹션이다.
+람다·스트림 섹션이 있는 강의는 `sec-complexity` → `sec-modernize` → `sec-application` → `sec-quiz` 순서로 16개, 없는 강의는 15개 섹션이다.
+과거에는 `sec-prereq`(선수 지식 표)가 학습 목표 다음에 있었지만 없앴다 — `REMOVED_SECTIONS`에 함께 등록되어 있다.
 
 과거에는 `sec-impl`(점진적 Java 구현, 구현 1~4단계)과 `sec-trace`(실행 과정 추적)가 의사코드와 완성 코드 사이·완성 코드 뒤에 따로 있었다.
 지금은 이 두 섹션을 없애고 `sec-complete`(실습 코드) 하나로 합쳤다 — 완성된 프로그램을 처음부터 바로 보여주되,
-그 프로그램이 어떤 개념의 조합인지는 06·08에서 이미 다룬 내용을 짚어 주는 것으로 대신한다.
+그 프로그램이 어떤 개념의 조합인지는 05·07에서 이미 다룬 내용을 짚어 주는 것으로 대신한다.
 
 `sec-practice`, `sec-final` 두 섹션은 "프로그램 실습 과제"로 묶여 확인 퀴즈 뒤에 배치된다.
 안에 있는 `details.answer-box[data-locked-until-complete]`는 강의를 완료로 표시하기

@@ -88,29 +88,10 @@
                 </ul>
             </section>
 
-            <!-- 3. 선수 지식 -->
-            <section class="lesson-section" id="sec-prereq" aria-labelledby="h-prereq">
-                <h2 id="h-prereq" data-toc-label="선수 지식"><span class="section-no">03</span>선수 지식</h2>
-                <p class="lecture-lead">다음 내용을 이미 안다고 가정합니다. 하나라도 낯설면 해당 강의부터 복습하세요.</p>
-                <div class="table-scroll">
-                    <table class="data-table">
-                        <thead>
-                            <tr><th scope="col">항목</th><th scope="col">필요한 수준</th><th scope="col">이 강의에서 쓰이는 곳</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr><td>배열 선언과 인덱스 (2강)</td><td><code>new char[8]</code>, <code>arr[i]</code> 읽기·쓰기</td><td>스택·큐의 저장 공간</td></tr>
-                            <tr><td>문자열 순회 (3강)</td><td><code>charAt(i)</code>, <code>length()</code></td><td>괄호 검사 루프</td></tr>
-                            <tr><td>char 비교 (3강)</td><td><code>ch == '('</code>, <code>&amp;&amp;</code>, <code>||</code></td><td>여는·닫는 괄호 판정</td></tr>
-                            <tr><td>static 메서드 (1강)</td><td>매개변수와 반환값이 있는 메서드 작성</td><td><code>push</code>, <code>pop</code>, <code>enqueue</code>, <code>dequeue</code> 분리</td></tr>
-                            <tr><td>StringBuilder (3강)</td><td><code>append</code>로 문자열 조립</td><td>상태 출력, 최종 문제의 문서 편집</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
 
-            <!-- 4. 실제 문제 상황 -->
+            <!-- 3. 실제 문제 상황 -->
             <section class="lesson-section" id="sec-problem" aria-labelledby="h-problem">
-                <h2 id="h-problem" data-toc-label="실제 문제 상황"><span class="section-no">04</span>실제 문제 상황</h2>
+                <h2 id="h-problem" data-toc-label="실제 문제 상황"><span class="section-no">03</span>실제 문제 상황</h2>
                 <ul>
                     <li>상황: 작은 메모 앱 개발팀에 합류. 첫 출근 날 세 가지 기능 요청</li>
                     <li>사용자 입력을 "가장 최근 것부터" 되돌리는 <strong>실행 취소(Ctrl+Z)</strong></li>
@@ -126,9 +107,9 @@
                 </div>
             </section>
 
-            <!-- 5. 핵심 개념 -->
+            <!-- 4. 핵심 개념 -->
             <section class="lesson-section" id="sec-concepts" aria-labelledby="h-concepts">
-                <h2 id="h-concepts" data-toc-label="핵심 개념"><span class="section-no">05</span>핵심 개념</h2>
+                <h2 id="h-concepts" data-toc-label="핵심 개념"><span class="section-no">04</span>핵심 개념</h2>
 
                 <h3>자료구조 = 데이터 + 규칙</h3>
                 <ul>
@@ -228,9 +209,9 @@
                 </ul>
             </section>
 
-            <!-- 6. 단계별 동작 과정 -->
+            <!-- 5. 단계별 동작 과정 -->
             <section class="lesson-section" id="sec-steps" aria-labelledby="h-steps">
-                <h2 id="h-steps" data-toc-label="단계별 동작 과정"><span class="section-no">06</span>단계별 동작 과정</h2>
+                <h2 id="h-steps" data-toc-label="단계별 동작 과정"><span class="section-no">05</span>단계별 동작 과정</h2>
                 <p class="lecture-lead">두 가지 작업을 시각화로 확인합니다 — 괄호 문자열 <strong>"([()])"</strong>의 짝 검사(스택), 그리고 카페 주문 줄 <strong>김하늘 → 이준호 → (한 명 처리) → 박서연</strong>의 대기열 처리(큐).
                     <strong>다음 단계 ▶</strong>로 한 단계씩 진행하며 스택·큐 내용이 언제 늘고 줄어드는지 관찰하세요.
                     현재 = <strong>파란색</strong>, 완료 = <strong>초록색</strong>, 실패 지점 = <strong>붉은색</strong>.</p>
@@ -248,9 +229,9 @@
                     문자·손님 하나당 push/pop 또는 enqueue/dequeue가 최대 1번씩, 데이터가 n개면 전체 작업이 O(n)이라는 것을 눈으로 확인할 수 있습니다.</em></p>
             </section>
 
-            <!-- 7. 의사코드 -->
+            <!-- 6. 의사코드 -->
             <section class="lesson-section" id="sec-pseudo" aria-labelledby="h-pseudo">
-                <h2 id="h-pseudo" data-toc-label="의사코드"><span class="section-no">07</span>의사코드</h2>
+                <h2 id="h-pseudo" data-toc-label="의사코드"><span class="section-no">06</span>의사코드</h2>
                 <p class="lecture-lead">코드를 쓰기 전에, 배열 위의 두 규칙과 괄호 검사 절차를 언어 중립적인 의사코드로 정리합니다.</p>
                 <ul>
                     <li>의사코드 = 특정 언어 문법 대신 <strong>우리말에 가까운 문장</strong>으로 알고리즘의 순서를 적은 것</li>
@@ -258,6 +239,7 @@
                     <li><code>push(v):</code>처럼 이름 뒤에 콜론이 붙은 줄은 <strong>연산(메서드) 하나의 시작</strong> — 그 아래 들여쓴 줄들이 그 연산이 하는 일</li>
                 </ul>
 
+                <h3>배열 스택 (Array Stack)</h3>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -285,30 +267,8 @@ peek():
 isEmpty():
     top = -1 인지를 반환한다</code></pre>
                 </article>
-                <p><strong>코드 설명 — 배열 스택의 네 가지 연산</strong></p>
-                <ul>
-                    <li><code>준비: 배열 stack, top ← -1</code> — 값을 쌓아 둘 배열과, 맨 위 칸 번호를 기억할 변수 <code>top</code>을 준비
-                        <ul>
-                            <li>처음엔 아무것도 없으므로 존재하지 않는 칸 번호 <strong>-1</strong>을 "비어 있음"의 표시로 사용</li>
-                        </ul>
-                    </li>
-                    <li><code>push(v)</code>의 <code>top ← top + 1</code>, <code>stack[top] ← v</code> — 먼저 맨 위 자리를 한 칸 올린 뒤, 그 자리에 v를 넣음
-                        <ul>
-                            <li>예: 빈 스택(top = -1)에 'A'를 push → top이 0이 되고 stack[0] = 'A'</li>
-                        </ul>
-                    </li>
-                    <li><code>pop()</code>의 <code>top = -1 이면 "빈 스택 오류"</code> — 꺼낼 것이 없는데 꺼내려 하면 안 되므로 <strong>가장 먼저</strong> 비었는지 검사
-                        <ul>
-                            <li>이 검사를 빼먹으면 stack[-1]을 읽게 되어 프로그램이 예외로 멈춤 (09 오류 카드에서 재현)</li>
-                        </ul>
-                    </li>
-                    <li><code>v ← stack[top]</code>, <code>top ← top - 1</code> — 맨 위 값을 따로 읽어 둔 뒤 top을 한 칸 내림. 배열 칸을 지우지 않아도 top 위쪽은 "없는 것"으로 취급</li>
-                    <li><code>v를 반환한다</code> — 꺼낸 값을 돌려줌</li>
-                    <li><code>peek()</code> — pop과 똑같이 맨 위 값을 돌려주지만 <strong>top을 움직이지 않음</strong> (보기만 하고 꺼내지 않음)</li>
-                    <li><code>isEmpty()</code>의 <code>top = -1 인지를 반환한다</code> — top이 -1이면 참(비어 있음), 아니면 거짓</li>
-                    <li>네 연산 모두 반복문 없이 몇 줄만 실행 — 스택에 값이 몇 개 있든 걸리는 시간이 같음(O(1))</li>
-                </ul>
 
+                <h3>배열 큐 (Array Queue)</h3>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -337,31 +297,8 @@ peek():
 isEmpty():
     front = rear 인지를 반환한다</code></pre>
                 </article>
-                <p><strong>코드 설명 — 배열 큐의 네 가지 연산</strong></p>
-                <ul>
-                    <li><code>준비: 배열 queue, front ← 0, rear ← 0</code> — 줄을 세울 배열과 두 개의 위치 변수를 준비
-                        <ul>
-                            <li><code>front</code>는 "다음에 꺼낼 자리", <code>rear</code>는 "다음에 넣을 자리"</li>
-                            <li>처음엔 둘 다 0으로 같음 → 두 값이 같으면 빈 큐</li>
-                        </ul>
-                    </li>
-                    <li><code>enqueue(v)</code>의 <code>queue[rear] ← v</code>, <code>rear ← rear + 1</code> — 맨 뒤 빈자리에 v를 넣고, 다음 손님이 설 자리를 한 칸 뒤로 옮김
-                        <ul>
-                            <li>스택의 push와 순서가 반대: 스택은 "올리고 넣기", 큐는 "넣고 올리기" — rear가 이미 빈자리를 가리키고 있기 때문</li>
-                        </ul>
-                    </li>
-                    <li><code>dequeue()</code>의 <code>front = rear 이면 "빈 큐 오류"</code> — 줄에 아무도 없으면 꺼낼 수 없으므로 먼저 검사</li>
-                    <li><code>v ← queue[front]</code>, <code>front ← front + 1</code> — 맨 앞 사람을 읽어 두고, "다음에 꺼낼 자리"를 한 칸 뒤로 옮김
-                        <ul>
-                            <li>예: [김하늘, 이준호]에서 dequeue → 김하늘을 돌려주고 front가 0 → 1, 이제 맨 앞은 이준호</li>
-                        </ul>
-                    </li>
-                    <li><code>v를 반환한다</code> — 꺼낸 값을 돌려줌</li>
-                    <li><code>peek()</code> — 맨 앞 값을 보여 주기만 하고 <strong>front는 그대로</strong> 둠</li>
-                    <li><code>isEmpty()</code>의 <code>front = rear 인지를 반환한다</code> — 꺼낼 자리와 넣을 자리가 같으면 줄이 비어 있음</li>
-                    <li>넣는 쪽(rear)과 꺼내는 쪽(front)이 <strong>서로 다른 변수</strong>라는 점이 스택과의 결정적 차이 — 그래서 먼저 온 것이 먼저 나감(FIFO)</li>
-                </ul>
 
+                <h3>괄호 짝 검사 (CheckBrackets)</h3>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -374,34 +311,14 @@ isEmpty():
     빈 스택 S를 준비한다
     text의 각 문자 ch에 대해 순서대로 반복:
         ch가 여는 괄호 ( [ { 이면:
-            S에 ch를 push한다
+            S에 ch를 push한다                        // 짝이 나올 때까지 쌓아 둔다
         ch가 닫는 괄호 ) ] } 이면:
             S가 비어 있으면 "무효"를 반환한다        // 짝 없는 닫는 괄호
-            open ← S에서 pop한 값
+            open ← S에서 pop한 값                   // 맨 위 = 가장 최근에 열린 괄호
             open과 ch가 짝이 아니면 "무효"를 반환한다  // 종류가 다른 괄호
     반복이 끝난 뒤:
         S가 비어 있으면 "유효", 아니면 "무효"를 반환한다  // 여는 괄호가 남음</code></pre>
                 </article>
-                <p><strong>코드 설명 — 스택을 이용한 괄호 짝 검사</strong></p>
-                <ul>
-                    <li><code>빈 스택 S를 준비한다</code> — 아직 닫히지 않은 여는 괄호를 쌓아 둘 곳 (접시 더미)</li>
-                    <li><code>text의 각 문자 ch에 대해 순서대로 반복</code> — 문자열을 왼쪽부터 한 글자씩 딱 한 번 읽음</li>
-                    <li><code>ch가 여는 괄호 ( [ { 이면: S에 ch를 push한다</code> — 여는 괄호는 짝이 나올 때까지 맨 위에 쌓아 둠</li>
-                    <li><code>ch가 닫는 괄호 ) ] } 이면</code> — 닫는 괄호는 <strong>가장 최근에 열린 괄호</strong>(스택 맨 위)와 짝을 맞춰야 함
-                        <ul>
-                            <li>예: "([()])"의 첫 ')'는 맨 처음 '('가 아니라 가장 나중에 열린 세 번째 '('와 짝</li>
-                        </ul>
-                    </li>
-                    <li><code>S가 비어 있으면 "무효"를 반환한다</code> — 짝지을 여는 괄호가 하나도 없음 → 짝 없는 닫는 괄호
-                        <ul>
-                            <li>예: "())"의 세 번째 ')'가 왔을 때 스택이 이미 비어 있음</li>
-                        </ul>
-                    </li>
-                    <li><code>open ← S에서 pop한 값</code> — 맨 위의 여는 괄호를 꺼내 open에 저장</li>
-                    <li><code>open과 ch가 짝이 아니면 "무효"를 반환한다</code> — '('와 ']'처럼 종류가 다르면 무효 (예: "([)]")</li>
-                    <li><code>반복이 끝난 뒤: S가 비어 있으면 "유효", 아니면 "무효"</code> — 다 읽었는데 스택에 여는 괄호가 남아 있으면 끝내 닫히지 않은 괄호가 있다는 뜻 (예: "(()")</li>
-                    <li>글자 하나당 push 또는 pop이 최대 1번 → 길이 n인 문자열이면 전체 일의 양은 n에 비례</li>
-                </ul>
 
                 <p><strong>괄호 검사 정리</strong></p>
                 <ul>
@@ -412,19 +329,19 @@ isEmpty():
                             <li>(3) 끝났는데 여는 괄호가 남음</li>
                         </ul>
                     </li>
-                    <li><em>세 경우 모두 06 단계별 동작 과정의 시각화에서 "새 데이터"로 확인할 수 있는 상황</em></li>
+                    <li><em>세 경우 모두 05 단계별 동작 과정의 시각화에서 "새 데이터"로 확인할 수 있는 상황</em></li>
                 </ul>
             </section>
 
-            <!-- 8. 실습 코드 -->
+            <!-- 7. 실습 코드 -->
             <section class="lesson-section" id="sec-complete" aria-labelledby="h-complete">
-                <h2 id="h-complete" data-toc-label="실습 코드"><span class="section-no">08</span>실습 코드</h2>
-                <p class="lecture-lead">의사코드(07)를 실제 Java 프로그램으로 옮깁니다. 스택과 큐를 각각 <strong>독립된 클래스</strong>(<code>ArrayCharStack</code>, <code>ArrayStringQueue</code>)로 묶어,
-                    05 핵심 개념에서 배운 "자료구조 = 데이터(배열) + 규칙(LIFO/FIFO)"을 그대로 클래스 하나로 구현했습니다.</p>
+                <h2 id="h-complete" data-toc-label="실습 코드"><span class="section-no">07</span>실습 코드</h2>
+                <p class="lecture-lead">의사코드(06)를 실제 Java 프로그램으로 옮깁니다. 스택과 큐를 각각 <strong>독립된 클래스</strong>(<code>ArrayCharStack</code>, <code>ArrayStringQueue</code>)로 묶어,
+                    04 핵심 개념에서 배운 "자료구조 = 데이터(배열) + 규칙(LIFO/FIFO)"을 그대로 클래스 하나로 구현했습니다.</p>
                 <ul>
-                    <li><code>push</code>/<code>pop</code>/<code>peek</code>는 07 의사코드의 스택 네 연산을, <code>enqueue</code>/<code>dequeue</code>/<code>peek</code>는 큐의 네 연산을 그대로 옮긴 것 —
+                    <li><code>push</code>/<code>pop</code>/<code>peek</code>는 06 의사코드의 스택 네 연산을, <code>enqueue</code>/<code>dequeue</code>/<code>peek</code>는 큐의 네 연산을 그대로 옮긴 것 —
                         차이는 잘못된 사용(빈 스택에서 pop 등)을 <strong>예외를 던지는 방식</strong>으로 알린다는 점뿐, 라이브러리처럼 구성</li>
-                    <li>괄호 검사는 07 의사코드의 <code>CheckBrackets</code> 절차를 직접 구현한 스택과 표준 라이브러리 <code>ArrayDeque</code> 두 방식으로 풀어 결과가 항상 같은지 검증</li>
+                    <li>괄호 검사는 06 의사코드의 <code>CheckBrackets</code> 절차를 직접 구현한 스택과 표준 라이브러리 <code>ArrayDeque</code> 두 방식으로 풀어 결과가 항상 같은지 검증</li>
                     <li>주문 대기열은 직접 구현한 배열 큐로 처리한 뒤, 같은 작업을 <code>ArrayDeque</code>로도 수행</li>
                 </ul>
                 <article class="code-card">
@@ -647,9 +564,9 @@ public class StackQueueComplete {
                 </div>
             </section>
 
-            <!-- 9. 잘못된 코드와 오류 찾기 -->
+            <!-- 8. 잘못된 코드와 오류 찾기 -->
             <section class="lesson-section" id="sec-bugs" aria-labelledby="h-bugs">
-                <h2 id="h-bugs" data-toc-label="잘못된 코드와 오류 찾기"><span class="section-no">09</span>잘못된 코드와 오류 찾기</h2>
+                <h2 id="h-bugs" data-toc-label="잘못된 코드와 오류 찾기"><span class="section-no">08</span>잘못된 코드와 오류 찾기</h2>
                 <p class="lecture-lead">초보자가 스택·큐에서 자주 만드는 오류 두 가지. 먼저 코드를 읽고 무엇이 잘못됐는지 생각한 뒤 해설을 여세요.</p>
 
                 <article class="bug-card">
@@ -811,9 +728,9 @@ Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: Index -1 ou
                 </article>
             </section>
 
-            <!-- 10. 복잡도 및 특성 분석 -->
+            <!-- 9. 복잡도 및 특성 분석 -->
             <section class="lesson-section" id="sec-complexity" aria-labelledby="h-complexity">
-                <h2 id="h-complexity" data-toc-label="복잡도 및 특성 분석"><span class="section-no">10</span>복잡도 및 특성 분석</h2>
+                <h2 id="h-complexity" data-toc-label="복잡도 및 특성 분석"><span class="section-no">09</span>복잡도 및 특성 분석</h2>
                 <p class="lecture-lead">복잡도 분석 = <strong>"데이터가 많아지면 일이 얼마나 늘어나는가?"</strong>를 따져 보는 것. 어려운 수식 대신 <strong>"넣고 꺼내기를 몇 번 하는가"</strong>만 세어 봅니다.</p>
 
                 <h3>입력 크기 — 무엇이 많아지는가?</h3>
@@ -880,9 +797,9 @@ Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: Index -1 ou
                 </ul>
             </section>
 
-            <!-- 11. 실제 데이터 응용 예제 -->
+            <!-- 10. 실제 데이터 응용 예제 -->
             <section class="lesson-section" id="sec-application" aria-labelledby="h-application">
-                <h2 id="h-application" data-toc-label="실제 데이터 응용 예제"><span class="section-no">11</span>실제 데이터 응용 예제</h2>
+                <h2 id="h-application" data-toc-label="실제 데이터 응용 예제"><span class="section-no">10</span>실제 데이터 응용 예제</h2>
 
                 <h3>문제 상황</h3>
                 <ul>
@@ -1017,9 +934,9 @@ public class BankQueueApplication {
                 </ul>
             </section>
 
-            <!-- 12. 확인 퀴즈 -->
+            <!-- 11. 확인 퀴즈 -->
             <section class="lesson-section lesson-section--quiz" id="sec-quiz" aria-labelledby="h-quiz">
-                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">12</span>확인 퀴즈</h2>
+                <h2 id="h-quiz" data-toc-label="확인 퀴즈"><span class="section-no">11</span>확인 퀴즈</h2>
                 <div id="quiz-root"></div>
             </section>
 
@@ -1028,9 +945,9 @@ public class BankQueueApplication {
                 <p>지금까지 배운 내용을 직접 코드로 적용해 보는 과제입니다. 두 과제로 구성되며, 각 과제의 정답은 이 강의를 완료로 표시해야 열립니다.</p>
             </div>
 
-            <!-- 13. 따라 하기 실습 -->
+            <!-- 12. 따라 하기 실습 -->
             <section class="lesson-section lesson-section--assignment" id="sec-practice" aria-labelledby="h-practice">
-                <h2 id="h-practice" data-toc-label="따라 하기 실습"><span class="section-no">13</span>따라 하기 실습</h2>
+                <h2 id="h-practice" data-toc-label="따라 하기 실습"><span class="section-no">12</span>따라 하기 실습</h2>
 
                 <h3>실습 1 — 데이터 변경</h3>
                 <p>
@@ -1118,9 +1035,9 @@ public class BankQueueApplication {
                 </details>
             </section>
 
-            <!-- 14. 최종 프로그램 작성 문제 -->
+            <!-- 13. 최종 프로그램 작성 문제 -->
             <section class="lesson-section lesson-section--assignment" id="sec-final" aria-labelledby="h-final">
-                <h2 id="h-final" data-toc-label="최종 프로그램 작성 문제"><span class="section-no">14</span>최종 프로그램 작성 문제</h2>
+                <h2 id="h-final" data-toc-label="최종 프로그램 작성 문제"><span class="section-no">13</span>최종 프로그램 작성 문제</h2>
 
                 <h3>문제 제목 — 미니 작업 관리기 "TaskFlow"</h3>
 
@@ -1506,9 +1423,9 @@ public class TaskManagerSolution {
                 </details>
             </section>
 
-            <!-- 15. 오늘의 핵심 정리 -->
+            <!-- 14. 오늘의 핵심 정리 -->
             <section class="lesson-section" id="sec-summary" aria-labelledby="h-summary">
-                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">15</span>오늘의 핵심 정리</h2>
+                <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">14</span>오늘의 핵심 정리</h2>
                 <ul class="summary-list">
                     <li><strong>자료구조 = 데이터 + 규칙.</strong> 스택과 큐는 배열 위에 "넣고 꺼내는 규칙"을 얹은 것이다.</li>
                     <li><strong>스택은 LIFO</strong> — 맨 위(top)에서만 push/pop. <code>top = -1</code>이 빈 스택,
@@ -1525,9 +1442,9 @@ public class TaskManagerSolution {
                 <div id="lesson-complete-slot"></div>
             </section>
 
-            <!-- 16. 다음 강의 연결 -->
+            <!-- 15. 다음 강의 연결 -->
             <section class="lesson-section" id="sec-next" aria-labelledby="h-next">
-                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">16</span>다음 강의 연결</h2>
+                <h2 id="h-next" data-toc-label="다음 강의 연결"><span class="section-no">15</span>다음 강의 연결</h2>
                 <p>
                     다음 강의는 <strong>7강. 재귀와 백트래킹</strong>입니다.
                     오늘 배운 스택이 다음 강의의 문을 여는 열쇠입니다 —
