@@ -1,121 +1,52 @@
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 /**
  * 5강 「람다·스트림 변경」.
  *
- * SearchAlgorithmsComplete.java(실습 코드)를 같은 결과가 나오도록 람다와 스트림으로 다시 쓴 것이다.
+ * 도서 번호를 배열 대신 List에 담고, 람다·스트림(순차 탐색)과
+ * Collections.binarySearch(이진 탐색)로 같은 번호를 찾아 본다.
  */
 public class ModernizeSolution {
 
-    // SearchResult 클래스는 같은 폴더의 SearchResult.java에 정의되어 있다.
-
-    /** 순차 탐색: 조건에 맞는 첫 인덱스를 findFirst로 찾는다. */
-    static SearchResult linearSearch(int[] arr, int target) {
-        int index = IntStream.range(0, arr.length)
-                .filter(i -> arr[i] == target)
-                .findFirst()                     // 찾는 즉시 멈춘다 (조기 중단)
-                .orElse(-1);
-
-        // findFirst는 찾은 칸까지만 비교하므로 비교 횟수는 index + 1, 못 찾으면 n번 전부
-        int comparisons = (index >= 0) ? index + 1 : arr.length;
-        return new SearchResult(index, comparisons);
-    }
-
-    /** 반복문 기반 이진 탐색: low·mid·high가 매번 바뀌므로 반복문 그대로 둔다. */
-    static SearchResult binarySearchLoop(int[] arr, int target) {
-        int low = 0;
-        int high = arr.length - 1;
-        int comparisons = 0;
-        while (low <= high) {
-            int mid = (low + high) / 2;
-            comparisons++;                       // 핵심 연산: 비교
-            if (arr[mid] == target) {
-                return new SearchResult(mid, comparisons);
-            } else if (arr[mid] < target) {
-                low = mid + 1;                   // 왼쪽 절반 버리기
-            } else {
-                high = mid - 1;                  // 오른쪽 절반 버리기
-            }
-        }
-        return new SearchResult(-1, comparisons);
-    }
-
-    /** 재귀 기반 이진 탐색: 같은 알고리즘을 "자기 자신 호출"로 표현한다. (7강에서 심화) */
-    static SearchResult binarySearchRecursive(int[] arr, int target,
-                                              int low, int high, int comparisons) {
-        if (low > high) {
-            return new SearchResult(-1, comparisons);      // 범위가 비면 실패
-        }
-        int mid = (low + high) / 2;
-        comparisons++;
-        if (arr[mid] == target) {
-            return new SearchResult(mid, comparisons);
-        } else if (arr[mid] < target) {
-            return binarySearchRecursive(arr, target, mid + 1, high, comparisons);
-        } else {
-            return binarySearchRecursive(arr, target, low, mid - 1, comparisons);
-        }
-    }
-
-    /** 중복이 있을 때 첫 번째 위치를 찾는다 (lower bound의 기초). */
-    static SearchResult firstOccurrence(int[] arr, int target) {
-        int low = 0;
-        int high = arr.length - 1;
-        int comparisons = 0;
-        int answer = -1;
-        while (low <= high) {
-            int mid = (low + high) / 2;
-            comparisons++;
-            if (arr[mid] == target) {
-                answer = mid;        // 일단 기록하고,
-                high = mid - 1;      // 더 왼쪽에도 있는지 계속 확인한다
-            } else if (arr[mid] < target) {
-                low = mid + 1;
-            } else {
-                high = mid - 1;
-            }
-        }
-        return new SearchResult(answer, comparisons);
-    }
-
     public static void main(String[] args) {
-        int[] bookNumbers = {1001, 1203, 1450, 2088, 2311, 2754,
-                             3106, 3502, 3860, 4213, 4771, 5090};
-        int[] targets = {1001, 3106, 5090, 2500};   // 2500은 없는 번호
+        List<Integer> bookNumbers = List.of(1001, 1203, 1450, 2088, 2311, 2754,
+                                            3106, 3502, 3860, 4213, 4771, 5090);
+        List<Integer> targets = List.of(1001, 3106, 5090, 2500);   // 2500은 없는 번호
 
-        System.out.println("도서 " + bookNumbers.length + "권에서 번호 찾기 — 순차 vs 이진(반복) vs 이진(재귀)");
-        System.out.println("찾는 번호 | 순차 위치 | 순차 비교 | 이진 위치 | 이진 비교 | 재귀 비교");
-        System.out.println("---------+----------+----------+----------+----------+----------");
+        System.out.println("도서 " + bookNumbers.size() + "권에서 번호 찾기");
+        System.out.println();
 
-        Arrays.stream(targets).forEach(target -> {
-            SearchResult lin = linearSearch(bookNumbers, target);
-            SearchResult bin = binarySearchLoop(bookNumbers, target);
-            SearchResult rec = binarySearchRecursive(bookNumbers, target,
-                    0, bookNumbers.length - 1, 0);
-
-            System.out.printf("%-9d| %-9d| %-9d| %-9d| %-9d| %d%n",
-                    target, lin.index, lin.comparisons, bin.index, bin.comparisons, rec.comparisons);
-
-            // 세 방법의 위치를 모아 중복을 없앴을 때 하나만 남아야 정확하다
-            boolean allSame = Stream.of(lin, bin, rec)
-                    .map(r -> r.index)
-                    .distinct()
-                    .count() == 1;
-            if (!allSame) {
-                System.out.println("경고: 세 방법의 결과가 다릅니다! 알고리즘에 오류가 있습니다.");
-            }
+        // 1) 람다 + 스트림 순차 탐색: 조건에 맞는 첫 인덱스를 findFirst로 찾는다.
+        System.out.println("[1] 스트림 순차 탐색");
+        targets.forEach(target -> {
+            int index = IntStream.range(0, bookNumbers.size())
+                    .filter(i -> bookNumbers.get(i).equals(target))
+                    .findFirst()                 // 찾는 즉시 멈춘다 (조기 중단)
+                    .orElse(-1);
+            System.out.println(target + " -> 인덱스 " + index);
         });
 
+        // 2) 스트림 필터: 목록에 실제로 있는 번호만 골라낸다.
+        List<Integer> found = targets.stream()
+                .filter(bookNumbers::contains)
+                .toList();
+        System.out.println("목록에 있는 번호: " + found);
         System.out.println();
-        int[] withDuplicates = {1001, 2311, 2311, 2311, 2754, 3106, 3106, 3860};
-        System.out.println("중복이 있는 배열: " + Arrays.toString(withDuplicates));
-        SearchResult any = binarySearchLoop(withDuplicates, 2311);
-        SearchResult first = firstOccurrence(withDuplicates, 2311);
-        System.out.println("2311을 일반 이진 탐색으로: 인덱스 " + any.index
-                + " (비교 " + any.comparisons + "번) — 중복 중 '어느 하나'에서 멈춘다");
-        System.out.println("2311을 firstOccurrence로 : 인덱스 " + first.index
-                + " (비교 " + first.comparisons + "번) — 항상 '첫 번째' 위치를 보장한다");
+
+        // 3) 기본 API 이진 탐색: Collections.binarySearch (정렬된 List 필요)
+        //    찾으면 인덱스, 못 찾으면 -(삽입 위치) - 1 을 돌려준다.
+        System.out.println("[2] Collections.binarySearch");
+        targets.forEach(target -> {
+            int result = Collections.binarySearch(bookNumbers, target);
+            if (result >= 0) {
+                System.out.println(target + " -> 인덱스 " + result);
+            } else {
+                int insertionPoint = -(result + 1);
+                System.out.println(target + " -> 없음 (반환값 " + result
+                        + ", 넣을 위치 " + insertionPoint + ")");
+            }
+        });
     }
 }

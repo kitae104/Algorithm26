@@ -632,26 +632,11 @@ low + (high - low) / 2 = 1550000000</code></pre>
             <!-- 10. 람다·스트림 변경 -->
             <section class="lesson-section" id="sec-modernize" aria-labelledby="h-modernize">
                 <h2 id="h-modernize" data-toc-label="람다·스트림 변경"><span class="section-no">10</span>람다·스트림 변경</h2>
-                <p class="lecture-lead">07 실습 코드(<code>SearchAlgorithmsComplete.java</code>)를 <strong>람다와 스트림</strong>으로 다시 쓴 코드입니다. 문법은 추가 정보의 <a href="../supplements/lambda-expressions.html">람다식</a>·<a href="../supplements/java-streams.html">자바 스트림</a> 문서를 참고하세요.</p>
-                <article class="code-card">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">Java</span>
-                            <strong class="code-card__filename">SearchResult.java</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="code-modernize-searchresult" aria-label="SearchResult.java 코드 복사">코드 복사</button>
-                    </header>
-                    <pre><code id="code-modernize-searchresult" class="language-java">/** 탐색 결과: 찾은 위치와 비교 횟수를 함께 담는 기록용 클래스 */
-public class SearchResult {
-    int index;        // 찾은 위치 (없으면 -1)
-    int comparisons;  // 비교 횟수
-
-    SearchResult(int index, int comparisons) {
-        this.index = index;
-        this.comparisons = comparisons;
-    }
-}</code></pre>
-                </article>
+                <p class="lecture-lead">도서 번호를 <strong>배열 대신 List</strong>에 담고, <strong>람다와 스트림</strong>으로 순차 탐색을 하고, 자바 기본 API인 <code>Collections.binarySearch</code>로 이진 탐색을 해 봅니다. 문법은 추가 정보의 <a href="../supplements/lambda-expressions.html">람다식</a>·<a href="../supplements/java-streams.html">자바 스트림</a> 문서를 참고하세요.</p>
+                <ul>
+                    <li><strong>스트림 순차 탐색:</strong> <code>IntStream.range</code> + <code>filter</code> + <code>findFirst</code> — 찾는 즉시 멈춘다</li>
+                    <li><strong>기본 API 이진 탐색:</strong> <code>Collections.binarySearch(list, key)</code> — 정렬된 List 필요, 찾으면 인덱스, 못 찾으면 <code>-(넣을 위치) - 1</code> 반환</li>
+                </ul>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -660,125 +645,56 @@ public class SearchResult {
                         </div>
                         <button type="button" class="copy-code-button" data-copy-target="code-modernize" aria-label="ModernizeSolution.java 코드 복사">코드 복사</button>
                     </header>
-                    <pre><code id="code-modernize" class="language-java">import java.util.Arrays;
+                    <pre><code id="code-modernize" class="language-java">import java.util.Collections;
+import java.util.List;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 /**
  * 5강 「람다·스트림 변경」.
  *
- * SearchAlgorithmsComplete.java(실습 코드)를 같은 결과가 나오도록 람다와 스트림으로 다시 쓴 것이다.
+ * 도서 번호를 배열 대신 List에 담고, 람다·스트림(순차 탐색)과
+ * Collections.binarySearch(이진 탐색)로 같은 번호를 찾아 본다.
  */
 public class ModernizeSolution {
 
-    // SearchResult 클래스는 같은 폴더의 SearchResult.java에 정의되어 있다.
-
-    /** 순차 탐색: 조건에 맞는 첫 인덱스를 findFirst로 찾는다. */
-    static SearchResult linearSearch(int[] arr, int target) {
-        int index = IntStream.range(0, arr.length)
-                .filter(i -&gt; arr[i] == target)
-                .findFirst()                     // 찾는 즉시 멈춘다 (조기 중단)
-                .orElse(-1);
-
-        // findFirst는 찾은 칸까지만 비교하므로 비교 횟수는 index + 1, 못 찾으면 n번 전부
-        int comparisons = (index &gt;= 0) ? index + 1 : arr.length;
-        return new SearchResult(index, comparisons);
-    }
-
-    /** 반복문 기반 이진 탐색: low·mid·high가 매번 바뀌므로 반복문 그대로 둔다. */
-    static SearchResult binarySearchLoop(int[] arr, int target) {
-        int low = 0;
-        int high = arr.length - 1;
-        int comparisons = 0;
-        while (low &lt;= high) {
-            int mid = (low + high) / 2;
-            comparisons++;                       // 핵심 연산: 비교
-            if (arr[mid] == target) {
-                return new SearchResult(mid, comparisons);
-            } else if (arr[mid] &lt; target) {
-                low = mid + 1;                   // 왼쪽 절반 버리기
-            } else {
-                high = mid - 1;                  // 오른쪽 절반 버리기
-            }
-        }
-        return new SearchResult(-1, comparisons);
-    }
-
-    /** 재귀 기반 이진 탐색: 같은 알고리즘을 "자기 자신 호출"로 표현한다. (7강에서 심화) */
-    static SearchResult binarySearchRecursive(int[] arr, int target,
-                                              int low, int high, int comparisons) {
-        if (low &gt; high) {
-            return new SearchResult(-1, comparisons);      // 범위가 비면 실패
-        }
-        int mid = (low + high) / 2;
-        comparisons++;
-        if (arr[mid] == target) {
-            return new SearchResult(mid, comparisons);
-        } else if (arr[mid] &lt; target) {
-            return binarySearchRecursive(arr, target, mid + 1, high, comparisons);
-        } else {
-            return binarySearchRecursive(arr, target, low, mid - 1, comparisons);
-        }
-    }
-
-    /** 중복이 있을 때 첫 번째 위치를 찾는다 (lower bound의 기초). */
-    static SearchResult firstOccurrence(int[] arr, int target) {
-        int low = 0;
-        int high = arr.length - 1;
-        int comparisons = 0;
-        int answer = -1;
-        while (low &lt;= high) {
-            int mid = (low + high) / 2;
-            comparisons++;
-            if (arr[mid] == target) {
-                answer = mid;        // 일단 기록하고,
-                high = mid - 1;      // 더 왼쪽에도 있는지 계속 확인한다
-            } else if (arr[mid] &lt; target) {
-                low = mid + 1;
-            } else {
-                high = mid - 1;
-            }
-        }
-        return new SearchResult(answer, comparisons);
-    }
-
     public static void main(String[] args) {
-        int[] bookNumbers = {1001, 1203, 1450, 2088, 2311, 2754,
-                             3106, 3502, 3860, 4213, 4771, 5090};
-        int[] targets = {1001, 3106, 5090, 2500};   // 2500은 없는 번호
+        List&lt;Integer&gt; bookNumbers = List.of(1001, 1203, 1450, 2088, 2311, 2754,
+                                            3106, 3502, 3860, 4213, 4771, 5090);
+        List&lt;Integer&gt; targets = List.of(1001, 3106, 5090, 2500);   // 2500은 없는 번호
 
-        System.out.println("도서 " + bookNumbers.length + "권에서 번호 찾기 — 순차 vs 이진(반복) vs 이진(재귀)");
-        System.out.println("찾는 번호 | 순차 위치 | 순차 비교 | 이진 위치 | 이진 비교 | 재귀 비교");
-        System.out.println("---------+----------+----------+----------+----------+----------");
+        System.out.println("도서 " + bookNumbers.size() + "권에서 번호 찾기");
+        System.out.println();
 
-        Arrays.stream(targets).forEach(target -&gt; {
-            SearchResult lin = linearSearch(bookNumbers, target);
-            SearchResult bin = binarySearchLoop(bookNumbers, target);
-            SearchResult rec = binarySearchRecursive(bookNumbers, target,
-                    0, bookNumbers.length - 1, 0);
-
-            System.out.printf("%-9d| %-9d| %-9d| %-9d| %-9d| %d%n",
-                    target, lin.index, lin.comparisons, bin.index, bin.comparisons, rec.comparisons);
-
-            // 세 방법의 위치를 모아 중복을 없앴을 때 하나만 남아야 정확하다
-            boolean allSame = Stream.of(lin, bin, rec)
-                    .map(r -&gt; r.index)
-                    .distinct()
-                    .count() == 1;
-            if (!allSame) {
-                System.out.println("경고: 세 방법의 결과가 다릅니다! 알고리즘에 오류가 있습니다.");
-            }
+        // 1) 람다 + 스트림 순차 탐색: 조건에 맞는 첫 인덱스를 findFirst로 찾는다.
+        System.out.println("[1] 스트림 순차 탐색");
+        targets.forEach(target -&gt; {
+            int index = IntStream.range(0, bookNumbers.size())
+                    .filter(i -&gt; bookNumbers.get(i).equals(target))
+                    .findFirst()                 // 찾는 즉시 멈춘다 (조기 중단)
+                    .orElse(-1);
+            System.out.println(target + " -&gt; 인덱스 " + index);
         });
 
+        // 2) 스트림 필터: 목록에 실제로 있는 번호만 골라낸다.
+        List&lt;Integer&gt; found = targets.stream()
+                .filter(bookNumbers::contains)
+                .toList();
+        System.out.println("목록에 있는 번호: " + found);
         System.out.println();
-        int[] withDuplicates = {1001, 2311, 2311, 2311, 2754, 3106, 3106, 3860};
-        System.out.println("중복이 있는 배열: " + Arrays.toString(withDuplicates));
-        SearchResult any = binarySearchLoop(withDuplicates, 2311);
-        SearchResult first = firstOccurrence(withDuplicates, 2311);
-        System.out.println("2311을 일반 이진 탐색으로: 인덱스 " + any.index
-                + " (비교 " + any.comparisons + "번) — 중복 중 '어느 하나'에서 멈춘다");
-        System.out.println("2311을 firstOccurrence로 : 인덱스 " + first.index
-                + " (비교 " + first.comparisons + "번) — 항상 '첫 번째' 위치를 보장한다");
+
+        // 3) 기본 API 이진 탐색: Collections.binarySearch (정렬된 List 필요)
+        //    찾으면 인덱스, 못 찾으면 -(삽입 위치) - 1 을 돌려준다.
+        System.out.println("[2] Collections.binarySearch");
+        targets.forEach(target -&gt; {
+            int result = Collections.binarySearch(bookNumbers, target);
+            if (result &gt;= 0) {
+                System.out.println(target + " -&gt; 인덱스 " + result);
+            } else {
+                int insertionPoint = -(result + 1);
+                System.out.println(target + " -&gt; 없음 (반환값 " + result
+                        + ", 넣을 위치 " + insertionPoint + ")");
+            }
+        });
     }
 }</code></pre>
                 </article>
@@ -790,17 +706,20 @@ public class ModernizeSolution {
                         </div>
                         <button type="button" class="copy-code-button" data-copy-target="out-modernize" aria-label="람다·스트림 변경 코드 실행 결과 복사">복사</button>
                     </header>
-                    <pre><code id="out-modernize">도서 12권에서 번호 찾기 — 순차 vs 이진(반복) vs 이진(재귀)
-찾는 번호 | 순차 위치 | 순차 비교 | 이진 위치 | 이진 비교 | 재귀 비교
----------+----------+----------+----------+----------+----------
-1001     | 0        | 1        | 0        | 3        | 3
-3106     | 6        | 7        | 6        | 3        | 3
-5090     | 11       | 12       | 11       | 4        | 4
-2500     | -1       | 12       | -1       | 4        | 4
+                    <pre><code id="out-modernize">도서 12권에서 번호 찾기
 
-중복이 있는 배열: [1001, 2311, 2311, 2311, 2754, 3106, 3106, 3860]
-2311을 일반 이진 탐색으로: 인덱스 3 (비교 1번) — 중복 중 '어느 하나'에서 멈춘다
-2311을 firstOccurrence로 : 인덱스 1 (비교 3번) — 항상 '첫 번째' 위치를 보장한다</code></pre>
+[1] 스트림 순차 탐색
+1001 -> 인덱스 0
+3106 -> 인덱스 6
+5090 -> 인덱스 11
+2500 -> 인덱스 -1
+목록에 있는 번호: [1001, 3106, 5090]
+
+[2] Collections.binarySearch
+1001 -> 인덱스 0
+3106 -> 인덱스 6
+5090 -> 인덱스 11
+2500 -> 없음 (반환값 -6, 넣을 위치 5)</code></pre>
                 </article>
             </section>
 
