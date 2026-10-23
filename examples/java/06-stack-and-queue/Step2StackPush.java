@@ -1,30 +1,32 @@
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.Iterator;
+
 public class Step2StackPush {
 
-    static char[] stack = new char[8];
-    static int top = -1;
+    static Deque<Character> stack = new ArrayDeque<>();
 
-    /** push: top을 한 칸 올리고, 그 자리에 값을 넣는다 */
+    /** push: 맨 위에 값을 올린다 */
     static void push(char value) {
-        top++;
-        stack[top] = value;
-        System.out.println("push '" + value + "' -> top = " + top
-                + ", 개수 = " + (top + 1));
+        stack.push(value);
+        System.out.println("push '" + value + "' -> 개수 = " + stack.size());
     }
 
     public static void main(String[] args) {
-        System.out.println("시작: top = " + top + " (비어 있음)");
+        System.out.println("시작: 개수 = " + stack.size() + " (비어 있음)");
 
         push('(');
         push('(');
         push('[');
 
-        // 바닥(0번 칸)부터 꼭대기(top번 칸)까지 순서대로 확인한다
+        // ArrayDeque의 push는 앞쪽에 쌓이므로, 바닥부터 보려면 거꾸로 순회한다
         StringBuilder state = new StringBuilder();
-        for (int i = 0; i <= top; i++) {
-            if (i > 0) state.append(' ');
-            state.append(stack[i]);
+        Iterator<Character> it = stack.descendingIterator();
+        while (it.hasNext()) {
+            state.append(it.next());
+            if (it.hasNext()) state.append(' ');
         }
         System.out.println("스택 상태(바닥 -> 꼭대기): " + state);
-        System.out.println("맨 위(top)의 값 = " + stack[top]);
+        System.out.println("맨 위의 값 = " + stack.peek());
     }
 }

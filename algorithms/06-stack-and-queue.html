@@ -37,7 +37,7 @@
             <p class="lesson-hero__desc">
                 데이터를 "어떤 순서로 꺼내느냐"는 규칙 하나가 자료구조를 결정합니다.
                 이번 강의에서는 나중에 넣은 것을 먼저 꺼내는 <strong>스택(LIFO)</strong>과
-                먼저 넣은 것을 먼저 꺼내는 <strong>큐(FIFO)</strong>를 배열로 직접 구현하고,
+                먼저 넣은 것을 먼저 꺼내는 <strong>큐(FIFO)</strong>를 자바 표준 라이브러리 <code>ArrayDeque</code>로 사용하고,
                 괄호 짝 검사와 고객 대기열 처리 같은 실제 작업에 적용합니다.
             </p>
         </section>
@@ -67,10 +67,10 @@
                             <li><strong>스택(Stack, LIFO)</strong> — 나중에 넣은 것을 먼저 꺼냄</li>
                             <li><strong>큐(Queue, FIFO)</strong> — 먼저 넣은 것을 먼저 꺼냄</li>
                         </ul>
-                        2강에서 배운 배열 위에 직접 구현
+                        자바 표준 라이브러리 <code>ArrayDeque</code> 하나로 두 가지 모두 사용
                     </li>
                     <li>실습: 스택으로 <strong>괄호 짝 검사기</strong>, 큐로 <strong>주문·고객 대기열 처리</strong>를 만들고, 마지막에 둘을 합친 <strong>미니 작업 관리기</strong> 완성</li>
-                    <li>맛보기: 표준 라이브러리 <code>ArrayDeque</code>, "중요한 순서"로 꺼내는 <strong>우선순위 큐(PriorityQueue)</strong></li>
+                    <li>맛보기: "중요한 순서"로 꺼내는 <strong>우선순위 큐(PriorityQueue)</strong></li>
                 </ul>
             </section>
 
@@ -80,11 +80,11 @@
                 <p>이 강의를 마치면 다음을 할 수 있습니다.</p>
                 <ul class="objective-list">
                     <li>학생은 스택의 LIFO 규칙과 큐의 FIFO 규칙을 실생활 예와 함께 설명할 수 있다.</li>
-                    <li>학생은 배열과 top 변수로 push, pop, peek, isEmpty를 가진 스택을 구현할 수 있다.</li>
-                    <li>학생은 배열과 front·rear 변수로 enqueue, dequeue를 가진 큐를 구현할 수 있다.</li>
+                    <li>학생은 <code>ArrayDeque</code>의 push, pop, peek, isEmpty로 스택을 사용할 수 있다.</li>
+                    <li>학생은 <code>ArrayDeque</code>의 offer, poll, peek, isEmpty로 큐를 사용할 수 있다.</li>
                     <li>학생은 스택을 이용해 괄호 문자열의 짝이 맞는지 검사하는 프로그램을 작성할 수 있다.</li>
                     <li>학생은 빈 스택·빈 큐에서 꺼내려는 시도를 검사 코드로 안전하게 처리할 수 있다.</li>
-                    <li>학생은 직접 구현한 스택·큐와 <code>ArrayDeque</code>, <code>PriorityQueue</code>의 용도 차이를 설명할 수 있다.</li>
+                    <li>학생은 스택·큐로 쓰는 <code>ArrayDeque</code>와 <code>PriorityQueue</code>의 용도 차이를 설명할 수 있다.</li>
                 </ul>
             </section>
 
@@ -114,7 +114,7 @@
                 <h3>자료구조 = 데이터 + 규칙</h3>
                 <ul>
                     <li><strong>자료구조</strong> = 데이터를 담는 그릇 + 그 그릇을 다루는 <strong>규칙</strong>의 묶음</li>
-                    <li>스택과 큐는 저장 공간으로 똑같이 배열을 쓸 수 있음. 다른 것은 규칙뿐 —
+                    <li>스택과 큐는 자바에서 똑같이 <code>ArrayDeque</code> 하나로 만들 수 있음. 다른 것은 규칙뿐 —
                         <strong>어디에 넣고, 어디서 꺼내는가</strong></li>
                     <li><em>규칙을 좁게 제한한 대가로, 남은 연산들은 전부 O(1)로 빨라지고 코드의 의도가 분명해짐</em></li>
                 </ul>
@@ -128,20 +128,20 @@
                 <div class="table-scroll">
                     <table class="data-table">
                         <thead>
-                            <tr><th scope="col">연산</th><th scope="col">하는 일</th><th scope="col">배열 구현에서는</th><th scope="col">시간</th></tr>
+                            <tr><th scope="col">연산</th><th scope="col">하는 일</th><th scope="col">ArrayDeque 메서드</th><th scope="col">시간</th></tr>
                         </thead>
                         <tbody>
-                            <tr><td><code>push(v)</code></td><td>맨 위에 v를 올린다</td><td><code>top</code>을 1 올리고 <code>stack[top] = v</code></td><td>O(1)</td></tr>
-                            <tr><td><code>pop()</code></td><td>맨 위 값을 꺼내 제거한다</td><td><code>stack[top]</code>을 읽고 <code>top</code>을 1 내림</td><td>O(1)</td></tr>
-                            <tr><td><code>peek()</code></td><td>맨 위 값을 보기만 한다</td><td><code>stack[top]</code> 읽기 (top 유지)</td><td>O(1)</td></tr>
-                            <tr><td><code>isEmpty()</code></td><td>비었는지 확인한다</td><td><code>top == -1</code> 인지 검사</td><td>O(1)</td></tr>
+                            <tr><td><code>push(v)</code></td><td>맨 위에 v를 올린다</td><td><code>stack.push(v)</code></td><td>O(1)</td></tr>
+                            <tr><td><code>pop()</code></td><td>맨 위 값을 꺼내 제거한다</td><td><code>stack.pop()</code> (비어 있으면 예외)</td><td>O(1)</td></tr>
+                            <tr><td><code>peek()</code></td><td>맨 위 값을 보기만 한다</td><td><code>stack.peek()</code> (비어 있으면 null)</td><td>O(1)</td></tr>
+                            <tr><td><code>isEmpty()</code></td><td>비었는지 확인한다</td><td><code>stack.isEmpty()</code></td><td>O(1)</td></tr>
                         </tbody>
                     </table>
                 </div>
                 <ul>
-                    <li><code>top</code> = "맨 위 칸의 인덱스"</li>
-                    <li>비어 있을 때는 가리킬 칸이 없음 → <strong><code>top = -1</code>을 "비어 있음"의 약속</strong>으로 정함</li>
-                    <li>쌓인 개수는 언제나 <code>top + 1</code></li>
+                    <li><code>push</code>·<code>pop</code>·<code>peek</code>는 모두 덱의 <strong>같은 쪽 끝</strong>만 건드림 → 그래서 LIFO</li>
+                    <li><code>pop()</code>은 빈 스택에서 <strong>예외(NoSuchElementException)</strong>를 던지므로, 꺼내기 전에 <code>isEmpty()</code>로 검사하는 습관이 필요</li>
+                    <li>쌓인 개수는 <code>size()</code>로 확인</li>
                 </ul>
 
                 <h3>큐 (Queue) — FIFO</h3>
@@ -153,20 +153,19 @@
                 <div class="table-scroll">
                     <table class="data-table">
                         <thead>
-                            <tr><th scope="col">연산</th><th scope="col">하는 일</th><th scope="col">배열 구현에서는</th><th scope="col">시간</th></tr>
+                            <tr><th scope="col">연산</th><th scope="col">하는 일</th><th scope="col">ArrayDeque 메서드</th><th scope="col">시간</th></tr>
                         </thead>
                         <tbody>
-                            <tr><td><code>enqueue(v)</code></td><td>맨 뒤에 v를 세운다</td><td><code>queue[rear] = v</code> 후 <code>rear</code>를 1 올림</td><td>O(1)</td></tr>
-                            <tr><td><code>dequeue()</code></td><td>맨 앞 값을 꺼내 제거한다</td><td><code>queue[front]</code>를 읽고 <code>front</code>를 1 올림</td><td>O(1)</td></tr>
-                            <tr><td><code>peek()</code></td><td>맨 앞 값을 보기만 한다</td><td><code>queue[front]</code> 읽기 (front 유지)</td><td>O(1)</td></tr>
-                            <tr><td><code>isEmpty()</code></td><td>비었는지 확인한다</td><td><code>front == rear</code> 인지 검사</td><td>O(1)</td></tr>
+                            <tr><td><code>enqueue(v)</code></td><td>맨 뒤에 v를 세운다</td><td><code>queue.offer(v)</code></td><td>O(1)</td></tr>
+                            <tr><td><code>dequeue()</code></td><td>맨 앞 값을 꺼내 제거한다</td><td><code>queue.poll()</code> (비어 있으면 null)</td><td>O(1)</td></tr>
+                            <tr><td><code>peek()</code></td><td>맨 앞 값을 보기만 한다</td><td><code>queue.peek()</code> (비어 있으면 null)</td><td>O(1)</td></tr>
+                            <tr><td><code>isEmpty()</code></td><td>비었는지 확인한다</td><td><code>queue.isEmpty()</code></td><td>O(1)</td></tr>
                         </tbody>
                     </table>
                 </div>
                 <ul>
-                    <li><code>front</code> = "다음에 꺼낼 자리", <code>rear</code> = "다음에 넣을 자리"</li>
-                    <li>두 값이 같으면 꺼낼 것이 없다는 뜻 → <strong><code>front == rear</code>가 "비어 있음"의 약속</strong></li>
-                    <li>대기 중인 개수는 <code>rear - front</code></li>
+                    <li><code>offer</code>는 덱의 <strong>맨 뒤</strong>에 넣고, <code>poll</code>·<code>peek</code>는 <strong>맨 앞</strong>에서 꺼내거나 봄 → 그래서 FIFO</li>
+                    <li>대기 중인 개수는 <code>size()</code>, 비어 있는지는 <code>isEmpty()</code>로 확인</li>
                 </ul>
 
                 <h3>스택 vs 큐 — 한눈에 비교</h3>
@@ -177,25 +176,26 @@
                         </thead>
                         <tbody>
                             <tr><td>규칙</td><td>LIFO (후입선출)</td><td>FIFO (선입선출)</td></tr>
-                            <tr><td>넣는 곳</td><td>맨 위 (top)</td><td>맨 뒤 (rear)</td></tr>
-                            <tr><td>꺼내는 곳</td><td>맨 위 (top) — 같은 쪽</td><td>맨 앞 (front) — 반대쪽</td></tr>
-                            <tr><td>상태 변수</td><td><code>top</code> 하나 (-1이면 빈 스택)</td><td><code>front</code>, <code>rear</code> 둘 (같으면 빈 큐)</td></tr>
+                            <tr><td>넣는 곳</td><td>맨 위 (<code>push</code>)</td><td>맨 뒤 (<code>offer</code>)</td></tr>
+                            <tr><td>꺼내는 곳</td><td>맨 위 (<code>pop</code>) — 같은 쪽</td><td>맨 앞 (<code>poll</code>) — 반대쪽</td></tr>
+                            <tr><td>주로 쓰는 메서드</td><td><code>push</code> / <code>pop</code> / <code>peek</code></td><td><code>offer</code> / <code>poll</code> / <code>peek</code></td></tr>
                             <tr><td>대표 용도</td><td>실행 취소, 괄호 검사, 호출 스택(7강)</td><td>대기열, 작업 순서 처리, BFS(9강)</td></tr>
                         </tbody>
                     </table>
                 </div>
 
-                <h3>표준 라이브러리는? — Deque와 ArrayDeque (비교 소개)</h3>
+                <h3>표준 라이브러리 — Deque와 ArrayDeque</h3>
                 <ul>
-                    <li>실무 Java에서는 스택·큐 둘 다 <code>java.util.Deque</code> 인터페이스의 구현체 <code>ArrayDeque</code>를 주로 씀 —
+                    <li>자바에서는 스택·큐 둘 다 <code>java.util.Deque</code> 인터페이스의 구현체 <code>ArrayDeque</code>를 씀 —
                         Deque(덱)는 양쪽 끝에서 넣고 꺼낼 수 있어 한쪽만 쓰면 스택, 반대쪽으로 흘리면 큐가 됨</li>
+                    <li>선언: <code>Deque&lt;Character&gt; stack = new ArrayDeque&lt;&gt;();</code> /
+                        <code>Deque&lt;String&gt; queue = new ArrayDeque&lt;&gt;();</code></li>
                     <li>스택처럼: <code>push(v)</code> / <code>pop()</code> / <code>peek()</code></li>
                     <li>큐처럼: <code>offer(v)</code>(뒤에 넣기) / <code>poll()</code>(앞에서 꺼내기) / <code>peek()</code></li>
                     <li><code>pop()</code>은 비어 있으면 <strong>예외를 던지고</strong>, <code>poll()</code>은 <strong>null을 반환</strong></li>
                     <li><em>옛날 클래스 <code>java.util.Stack</code>도 있지만, 불필요한 동기화 비용 때문에
                         공식 문서도 <code>ArrayDeque</code> 사용을 권장</em></li>
-                    <li>오늘은 원리 이해를 위해 <strong>배열로 직접 구현</strong>하고, 실습 코드에서 직접 구현과
-                        <code>ArrayDeque</code>의 결과가 같은지 비교만 함</li>
+                    <li>오늘은 스택·큐를 직접 만들지 않고, <strong>라이브러리의 메서드만으로</strong> LIFO·FIFO 규칙을 그대로 활용</li>
                 </ul>
 
                 <h3>우선순위 큐 (PriorityQueue) 기초 — 세 번째 규칙 맛보기</h3>
@@ -222,7 +222,7 @@
                 <div id="viz-bracket" aria-label="스택으로 괄호 짝 검사 시각화"></div>
 
                 <h3>시각화 2 — 큐로 주문 대기열 처리</h3>
-                <p class="lecture-lead">enqueue는 항상 <strong>뒤(rear)</strong>에, dequeue는 항상 <strong>앞(front)</strong>에서 일어납니다.
+                <p class="lecture-lead">enqueue(offer)는 항상 <strong>뒤</strong>에, dequeue(poll)는 항상 <strong>앞</strong>에서 일어납니다.
                     중간에 새 손님이 와도(enqueue) 처리 순서는 온 순서 그대로임을 확인하세요.</p>
                 <div id="viz-queue" aria-label="큐로 주문 대기열 처리 시각화"></div>
                 <p><em>두 시각화 모두 각 단계에서 <strong>연산 횟수</strong>를 함께 셉니다 —
@@ -232,92 +232,33 @@
             <!-- 6. 의사코드 -->
             <section class="lesson-section" id="sec-pseudo" aria-labelledby="h-pseudo">
                 <h2 id="h-pseudo" data-toc-label="의사코드"><span class="section-no">06</span>의사코드</h2>
-                <p class="lecture-lead">코드를 쓰기 전에, 배열 위의 두 규칙과 괄호 검사 절차를 언어 중립적인 의사코드로 정리합니다.</p>
+                <p class="lecture-lead">코드를 쓰기 전에, ArrayDeque로 스택을 사용하는 괄호 검사 절차를 언어 중립적인 의사코드로 정리합니다.</p>
                 <ul>
                     <li>의사코드 = 특정 언어 문법 대신 <strong>우리말에 가까운 문장</strong>으로 알고리즘의 순서를 적은 것</li>
-                    <li>읽는 법: <code>x ← 값</code>은 "x에 값을 저장한다", <code>top = -1</code>처럼 <code>=</code>는 "같은가?"를 묻는 비교, 들여쓰기는 "바로 위 줄 안에 포함된 작업", <code>//</code> 뒤는 설명(주석)</li>
-                    <li><code>push(v):</code>처럼 이름 뒤에 콜론이 붙은 줄은 <strong>연산(메서드) 하나의 시작</strong> — 그 아래 들여쓴 줄들이 그 연산이 하는 일</li>
+                    <li>읽는 법: <code>x ← 값</code>은 "x에 값을 저장한다", 들여쓰기는 "바로 위 줄 안에 포함된 작업", <code>//</code> 뒤는 설명(주석)</li>
+                    <li><code>deque.push(ch)</code>처럼 점(.)으로 이어 쓴 것은 <strong>ArrayDeque의 메서드 호출</strong> — push, pop, isEmpty는 04 핵심 개념의 표와 같은 뜻</li>
                 </ul>
 
-                <h3>배열 스택 (Array Stack)</h3>
+                <h3>괄호 짝 검사 (CheckBrackets) — ArrayDeque 사용</h3>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
                             <span class="code-card__language">Pseudo</span>
-                            <strong class="code-card__filename">배열 스택의 네 가지 연산</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="code-pseudo-stack" aria-label="배열 스택 의사코드 복사">코드 복사</button>
-                    </header>
-                    <pre><code id="code-pseudo-stack">준비: 배열 stack, top ← -1          // top = 맨 위 칸의 인덱스, -1이면 빈 스택
-
-push(v):
-    top ← top + 1                    // 맨 위 자리를 한 칸 올리고
-    stack[top] ← v                   // 그 자리에 넣는다
-
-pop():
-    top = -1 이면 "빈 스택 오류"      // 꺼내기 전에 반드시 검사!
-    v ← stack[top]                   // 맨 위 값을 읽고
-    top ← top - 1                    // 맨 위 자리를 한 칸 내린다
-    v를 반환한다
-
-peek():
-    top = -1 이면 "빈 스택 오류"
-    stack[top]을 반환한다             // top은 그대로 둔다
-
-isEmpty():
-    top = -1 인지를 반환한다</code></pre>
-                </article>
-
-                <h3>배열 큐 (Array Queue)</h3>
-                <article class="code-card">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">Pseudo</span>
-                            <strong class="code-card__filename">배열 큐의 네 가지 연산</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="code-pseudo-queue" aria-label="배열 큐 의사코드 복사">코드 복사</button>
-                    </header>
-                    <pre><code id="code-pseudo-queue">준비: 배열 queue, front ← 0, rear ← 0
-      // front = 다음에 꺼낼 자리, rear = 다음에 넣을 자리, 같으면 빈 큐
-
-enqueue(v):
-    queue[rear] ← v                  // 맨 뒤 자리에 넣고
-    rear ← rear + 1                  // 다음에 넣을 자리를 한 칸 뒤로
-
-dequeue():
-    front = rear 이면 "빈 큐 오류"    // 꺼내기 전에 반드시 검사!
-    v ← queue[front]                 // 맨 앞 값을 읽고
-    front ← front + 1                // 다음에 꺼낼 자리를 한 칸 뒤로
-    v를 반환한다
-
-peek():
-    front = rear 이면 "빈 큐 오류"
-    queue[front]를 반환한다           // front는 그대로 둔다
-
-isEmpty():
-    front = rear 인지를 반환한다</code></pre>
-                </article>
-
-                <h3>괄호 짝 검사 (CheckBrackets)</h3>
-                <article class="code-card">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">Pseudo</span>
-                            <strong class="code-card__filename">스택을 이용한 괄호 짝 검사</strong>
+                            <strong class="code-card__filename">ArrayDeque를 이용한 괄호 짝 검사</strong>
                         </div>
                         <button type="button" class="copy-code-button" data-copy-target="code-pseudo-bracket" aria-label="괄호 검사 의사코드 복사">코드 복사</button>
                     </header>
                     <pre><code id="code-pseudo-bracket">알고리즘 CheckBrackets(text)
-    빈 스택 S를 준비한다
+    deque ← 빈 ArrayDeque를 준비한다                  // 스택처럼 사용: 맨 위에서만 넣고 꺼낸다
     text의 각 문자 ch에 대해 순서대로 반복:
         ch가 여는 괄호 ( [ { 이면:
-            S에 ch를 push한다                        // 짝이 나올 때까지 쌓아 둔다
+            deque.push(ch)                            // 짝이 나올 때까지 쌓아 둔다
         ch가 닫는 괄호 ) ] } 이면:
-            S가 비어 있으면 "무효"를 반환한다        // 짝 없는 닫는 괄호
-            open ← S에서 pop한 값                   // 맨 위 = 가장 최근에 열린 괄호
-            open과 ch가 짝이 아니면 "무효"를 반환한다  // 종류가 다른 괄호
+            deque가 비어 있으면(deque.isEmpty()) "무효"를 반환한다   // 짝 없는 닫는 괄호
+            open ← deque.pop()                        // 맨 위 = 가장 최근에 열린 괄호
+            open과 ch가 짝이 아니면 "무효"를 반환한다    // 종류가 다른 괄호
     반복이 끝난 뒤:
-        S가 비어 있으면 "유효", 아니면 "무효"를 반환한다  // 여는 괄호가 남음</code></pre>
+        deque가 비어 있으면 "유효", 아니면 "무효"를 반환한다  // 여는 괄호가 남음</code></pre>
                 </article>
 
                 <p><strong>괄호 검사 정리</strong></p>
@@ -336,122 +277,13 @@ isEmpty():
             <!-- 7. 실습 코드 -->
             <section class="lesson-section" id="sec-complete" aria-labelledby="h-complete">
                 <h2 id="h-complete" data-toc-label="실습 코드"><span class="section-no">07</span>실습 코드</h2>
-                <p class="lecture-lead">의사코드(06)를 실제 Java 프로그램으로 옮깁니다. 스택과 큐를 각각 <strong>독립된 클래스</strong>(<code>ArrayCharStack</code>, <code>ArrayStringQueue</code>)로 묶어,
-                    04 핵심 개념에서 배운 "자료구조 = 데이터(배열) + 규칙(LIFO/FIFO)"을 그대로 클래스 하나로 구현했습니다.</p>
+                <p class="lecture-lead">의사코드(06)를 실제 Java 프로그램으로 옮깁니다. 스택과 큐를 직접 만들지 않고, 표준 라이브러리 <code>ArrayDeque</code> 하나를
+                    <strong>스택처럼, 큐처럼</strong> 사용합니다.</p>
                 <ul>
-                    <li><code>push</code>/<code>pop</code>/<code>peek</code>는 06 의사코드의 스택 네 연산을, <code>enqueue</code>/<code>dequeue</code>/<code>peek</code>는 큐의 네 연산을 그대로 옮긴 것 —
-                        차이는 잘못된 사용(빈 스택에서 pop 등)을 <strong>예외를 던지는 방식</strong>으로 알린다는 점뿐, 라이브러리처럼 구성</li>
-                    <li>괄호 검사는 06 의사코드의 <code>CheckBrackets</code> 절차를 직접 구현한 스택과 표준 라이브러리 <code>ArrayDeque</code> 두 방식으로 풀어 결과가 항상 같은지 검증</li>
-                    <li>주문 대기열은 직접 구현한 배열 큐로 처리한 뒤, 같은 작업을 <code>ArrayDeque</code>로도 수행</li>
+                    <li>괄호 검사는 06 의사코드의 <code>CheckBrackets</code> 절차를 그대로 옮긴 것 — <code>Deque&lt;Character&gt; stack = new ArrayDeque&lt;&gt;()</code>에 <code>push</code>/<code>pop</code>/<code>isEmpty</code>를 사용</li>
+                    <li>주문 대기열은 같은 <code>ArrayDeque</code>를 큐처럼 <code>offer</code>/<code>poll</code>/<code>peek</code>로 사용</li>
+                    <li>변수 타입을 인터페이스 <code>Deque</code>로 선언하면 "이 변수는 스택(또는 큐)처럼 쓴다"는 의도가 코드에 드러남</li>
                 </ul>
-                <article class="code-card">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">Java</span>
-                            <strong class="code-card__filename">ArrayCharStack.java</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="code-complete-arraycharstack" aria-label="ArrayCharStack.java 코드 복사">코드 복사</button>
-                    </header>
-                    <pre><code id="code-complete-arraycharstack" class="language-java">/** 배열로 직접 구현한 문자 스택 — "자료구조 = 데이터(배열) + 규칙(LIFO)" */
-public class ArrayCharStack {
-    private char[] data;
-    private int top = -1;
-
-    ArrayCharStack(int capacity) {
-        data = new char[capacity];
-    }
-
-    boolean isEmpty() {
-        return top == -1;
-    }
-
-    int size() {
-        return top + 1;
-    }
-
-    void push(char value) {
-        if (top == data.length - 1) {
-            throw new IllegalStateException("스택이 가득 찼습니다.");
-        }
-        data[++top] = value;
-    }
-
-    char pop() {
-        if (isEmpty()) {
-            throw new IllegalStateException("빈 스택에서는 pop할 수 없습니다.");
-        }
-        return data[top--];
-    }
-
-    char peek() {
-        if (isEmpty()) {
-            throw new IllegalStateException("빈 스택에서는 peek할 수 없습니다.");
-        }
-        return data[top];
-    }
-}</code></pre>
-                </article>
-                <article class="code-card">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">Java</span>
-                            <strong class="code-card__filename">ArrayStringQueue.java</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="code-complete-arraystringqueue" aria-label="ArrayStringQueue.java 코드 복사">코드 복사</button>
-                    </header>
-                    <pre><code id="code-complete-arraystringqueue" class="language-java">/** 배열로 직접 구현한 문자열 큐 — "자료구조 = 데이터(배열) + 규칙(FIFO)" */
-public class ArrayStringQueue {
-    private String[] data;
-    private int front = 0;   // 다음에 꺼낼 자리
-    private int rear = 0;    // 다음에 넣을 자리
-
-    ArrayStringQueue(int capacity) {
-        data = new String[capacity];
-    }
-
-    boolean isEmpty() {
-        return front == rear;
-    }
-
-    int size() {
-        return rear - front;
-    }
-
-    void enqueue(String value) {
-        if (rear == data.length) {
-            throw new IllegalStateException("큐가 가득 찼습니다.");
-        }
-        data[rear++] = value;
-    }
-
-    String dequeue() {
-        if (isEmpty()) {
-            throw new IllegalStateException("빈 큐에서는 dequeue할 수 없습니다.");
-        }
-        return data[front++];
-    }
-
-    String peek() {
-        if (isEmpty()) {
-            throw new IllegalStateException("빈 큐에서는 peek할 수 없습니다.");
-        }
-        return data[front];
-    }
-
-    /** 앞(front)부터 뒤(rear 직전)까지의 대기 상태 문자열 */
-    String state() {
-        if (isEmpty()) {
-            return "(비어 있음)";
-        }
-        StringBuilder sb = new StringBuilder("[");
-        for (int i = front; i &lt; rear; i++) {
-            if (i &gt; front) sb.append(", ");
-            sb.append(data[i]);
-        }
-        return sb.append("]").toString();
-    }
-}</code></pre>
-                </article>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
@@ -465,8 +297,6 @@ import java.util.Deque;
 
 public class StackQueueComplete {
 
-    // ArrayCharStack, ArrayStringQueue 클래스는 같은 폴더의 ArrayCharStack.java, ArrayStringQueue.java에 정의되어 있다.
-
     /** 여는 괄호 open과 닫는 괄호 close가 서로 짝인지 확인한다 */
     static boolean isPair(char open, char close) {
         return (open == '(' &amp;&amp; close == ')')
@@ -474,29 +304,13 @@ public class StackQueueComplete {
                 || (open == '{' &amp;&amp; close == '}');
     }
 
-    /** 방법 A: 직접 만든 배열 스택으로 괄호 검사 */
-    static boolean isValidWithArrayStack(String text) {
-        ArrayCharStack stack = new ArrayCharStack(text.length());
-        for (int i = 0; i &lt; text.length(); i++) {
-            char ch = text.charAt(i);
-            if (ch == '(' || ch == '[' || ch == '{') {
-                stack.push(ch);
-            } else if (ch == ')' || ch == ']' || ch == '}') {
-                if (stack.isEmpty() || !isPair(stack.pop(), ch)) {
-                    return false;
-                }
-            }
-        }
-        return stack.isEmpty();
-    }
-
-    /** 방법 B: 표준 라이브러리 ArrayDeque로 괄호 검사 — 실무 권장 방식 */
-    static boolean isValidWithDeque(String text) {
+    /** ArrayDeque를 스택으로 사용해 괄호 검사 */
+    static boolean isValid(String text) {
         Deque&lt;Character&gt; stack = new ArrayDeque&lt;&gt;();
         for (int i = 0; i &lt; text.length(); i++) {
             char ch = text.charAt(i);
             if (ch == '(' || ch == '[' || ch == '{') {
-                stack.push(ch);                       // 스택처럼 사용: 맨 앞에 쌓는다
+                stack.push(ch);                       // 스택처럼 사용: 맨 위에 쌓는다
             } else if (ch == ')' || ch == ']' || ch == '}') {
                 if (stack.isEmpty() || !isPair(stack.pop(), ch)) {
                     return false;
@@ -507,38 +321,24 @@ public class StackQueueComplete {
     }
 
     public static void main(String[] args) {
-        System.out.println("== 1) 괄호 유효성 검사: 직접 구현 스택 vs ArrayDeque ==");
+        System.out.println("== 1) ArrayDeque를 스택으로: 괄호 유효성 검사 ==");
         String[] tests = {"()", "{[()]}", "(a+b)*[c]", "(]", "())", "((("};
         for (String t : tests) {
-            boolean a = isValidWithArrayStack(t);
-            boolean b = isValidWithDeque(t);
-            System.out.println(t + " -&gt; " + (a ? "유효" : "무효")
-                    + " (두 방식 일치 = " + (a == b) + ")");
+            System.out.println(t + " -&gt; " + (isValid(t) ? "유효" : "무효"));
         }
 
         System.out.println();
-        System.out.println("== 2) 직접 구현한 배열 큐로 주문 대기열 처리 (FIFO) ==");
-        ArrayStringQueue orders = new ArrayStringQueue(8);
-        orders.enqueue("김하늘");                       // 뒤(rear)에 넣는다
-        orders.enqueue("이준호");
-        orders.enqueue("박서연");
-        System.out.println("대기열: " + orders.state() + " (대기 " + orders.size() + "명)");
+        System.out.println("== 2) ArrayDeque를 큐로: 주문 대기열 처리 (FIFO) ==");
+        Deque&lt;String&gt; orders = new ArrayDeque&lt;&gt;();
+        orders.offer("김하늘");                         // 큐처럼 사용: 뒤에 넣는다
+        orders.offer("이준호");
+        orders.offer("박서연");
+        System.out.println("대기열: " + orders + " (대기 " + orders.size() + "명)");
         System.out.println("맨 앞(peek) = " + orders.peek());
         while (!orders.isEmpty()) {
-            System.out.println("처리: " + orders.dequeue() + " -&gt; 남은 대기열 " + orders.state());
+            System.out.println("처리: " + orders.poll() + " -&gt; 남은 대기열 " + orders);
         }
-
-        System.out.println();
-        System.out.println("== 3) 같은 대기열을 표준 라이브러리 ArrayDeque로 (실무 권장) ==");
-        Deque&lt;String&gt; queue = new ArrayDeque&lt;&gt;();
-        queue.offer("김하늘");                          // 큐처럼 사용: 뒤에 넣는다
-        queue.offer("이준호");
-        queue.offer("박서연");
-        System.out.println("대기열: " + queue);
-        while (!queue.isEmpty()) {
-            System.out.println("처리: " + queue.poll() + " -&gt; 남은 대기열 " + queue);
-        }
-        System.out.println("빈 큐에서 poll() = " + queue.poll() + " (null 반환, 예외 없음)");
+        System.out.println("빈 큐에서 poll() = " + orders.poll() + " (null 반환, 예외 없음)");
     }
 }</code></pre>
                 </article>
@@ -550,34 +350,28 @@ public class StackQueueComplete {
                         </div>
                         <button type="button" class="copy-code-button" data-copy-target="out-complete" aria-label="실습 코드 실행 결과 복사">복사</button>
                     </header>
-                    <pre><code id="out-complete">== 1) 괄호 유효성 검사: 직접 구현 스택 vs ArrayDeque ==
-() -&gt; 유효 (두 방식 일치 = true)
-{[()]} -&gt; 유효 (두 방식 일치 = true)
-(a+b)*[c] -&gt; 유효 (두 방식 일치 = true)
-(] -&gt; 무효 (두 방식 일치 = true)
-()) -&gt; 무효 (두 방식 일치 = true)
-((( -&gt; 무효 (두 방식 일치 = true)
+                    <pre><code id="out-complete">== 1) ArrayDeque를 스택으로: 괄호 유효성 검사 ==
+() -&gt; 유효
+{[()]} -&gt; 유효
+(a+b)*[c] -&gt; 유효
+(] -&gt; 무효
+()) -&gt; 무효
+((( -&gt; 무효
 
-== 2) 직접 구현한 배열 큐로 주문 대기열 처리 (FIFO) ==
+== 2) ArrayDeque를 큐로: 주문 대기열 처리 (FIFO) ==
 대기열: [김하늘, 이준호, 박서연] (대기 3명)
 맨 앞(peek) = 김하늘
-처리: 김하늘 -&gt; 남은 대기열 [이준호, 박서연]
-처리: 이준호 -&gt; 남은 대기열 [박서연]
-처리: 박서연 -&gt; 남은 대기열 (비어 있음)
-
-== 3) 같은 대기열을 표준 라이브러리 ArrayDeque로 (실무 권장) ==
-대기열: [김하늘, 이준호, 박서연]
 처리: 김하늘 -&gt; 남은 대기열 [이준호, 박서연]
 처리: 이준호 -&gt; 남은 대기열 [박서연]
 처리: 박서연 -&gt; 남은 대기열 []
 빈 큐에서 poll() = null (null 반환, 예외 없음)</code></pre>
                 </article>
                 <div class="note-box">
-                    <span class="note-box__title">경고 출력 대신 예외를 던지는 이유</span>
+                    <span class="note-box__title">빈 스택 pop은 예외, 빈 큐 poll은 null</span>
                     <ul>
-                        <li>빈 스택에서 <code>pop</code>한 값을 그냥 <code>'?'</code> 같은 특수 문자로 돌려주면, 호출한 쪽이 '?'가 실제 데이터인지 오류 표시인지 구분할 수 없음</li>
-                        <li><em>실습 코드는 <code>IllegalStateException</code>을 던져 <strong>잘못된 사용을 즉시, 명확하게</strong> 알림</em></li>
-                        <li>반면 <code>ArrayDeque.poll()</code>은 null을 돌려주는 관대한 방식 — 출력 마지막 줄에서 두 철학의 차이를 확인</li>
+                        <li><code>ArrayDeque.pop()</code>은 비어 있으면 <code>NoSuchElementException</code>을 던짐 — 그래서 괄호 검사에서 <code>stack.isEmpty()</code>를 <strong>pop보다 먼저</strong> 확인</li>
+                        <li><code>poll()</code>과 <code>peek()</code>는 비어 있으면 예외 대신 <code>null</code>을 돌려주는 관대한 방식 — 출력 마지막 줄에서 확인</li>
+                        <li><em>null을 받은 쪽이 그대로 사용하면 <code>NullPointerException</code>이 나므로, <strong>꺼내기 전 isEmpty 검사</strong>는 어느 쪽이든 필요</em></li>
                     </ul>
                 </div>
             </section>
@@ -598,13 +392,10 @@ public class StackQueueComplete {
                                 </div>
                                 <button type="button" class="copy-code-button" data-copy-target="code-bug1" aria-label="오류 1 코드 복사">코드 복사</button>
                             </header>
-                            <pre><code id="code-bug1" class="language-java">public class BuggyBracketPop {
+                            <pre><code id="code-bug1" class="language-java">import java.util.ArrayDeque;
+import java.util.Deque;
 
-    static char[] stack = new char[100];
-    static int top = -1;
-
-    static void push(char value) { stack[++top] = value; }
-    static char pop() { return stack[top--]; }
+public class BuggyBracketPop {
 
     /** 여는 괄호 open과 닫는 괄호 close가 서로 짝인지 확인한다 */
     static boolean isPair(char open, char close) {
@@ -614,18 +405,18 @@ public class StackQueueComplete {
     }
 
     static boolean isValid(String text) {
-        top = -1;
+        Deque&lt;Character&gt; stack = new ArrayDeque&lt;&gt;();
         for (int i = 0; i &lt; text.length(); i++) {
             char ch = text.charAt(i);
             if (ch == '(' || ch == '[' || ch == '{') {
-                push(ch);
+                stack.push(ch);
             } else if (ch == ')' || ch == ']' || ch == '}') {
-                if (!isPair(pop(), ch)) {
+                if (!isPair(stack.pop(), ch)) {
                     return false;
                 }
             }
         }
-        return top == -1;
+        return stack.isEmpty();
     }
 
     public static void main(String[] args) {
@@ -641,25 +432,26 @@ public class StackQueueComplete {
                                     <li><strong>발생하는 문제:</strong> "()"까지는 잘 동작하지만, "())"를 검사하는 순간 프로그램이 예외로 죽음</li>
                                 </ul>
                                 <pre class="quiz-code">() -&gt; true
-Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: Index -1 out of bounds for length 100
-	at BuggyBracketPop.pop(BuggyBracketPop.java:7)
-	at BuggyBracketPop.isValid(BuggyBracketPop.java:23)
-	at BuggyBracketPop.main(BuggyBracketPop.java:33)
+Exception in thread "main" java.util.NoSuchElementException
+	at java.base/java.util.ArrayDeque.removeFirst(ArrayDeque.java:361)
+	at java.base/java.util.ArrayDeque.pop(ArrayDeque.java:592)
+	at BuggyBracketPop.isValid(BuggyBracketPop.java:20)
+	at BuggyBracketPop.main(BuggyBracketPop.java:30)
 </pre>
                                 <ul>
                                     <li><strong>오류가 나타나는 입력:</strong> "())", ")("처럼 <strong>짝 없는 닫는 괄호</strong>가 있는 모든 문자열 —
                                         유효한 문자열만 테스트하면 통과한 것처럼 보이는 것이 함정</li>
                                     <li><strong>원인:</strong> 닫는 괄호를 만났을 때 <strong>스택이 비었는지 확인하지 않고</strong> 바로
-                                        <code>pop()</code>을 호출 — top이 -1인 상태에서 <code>stack[top--]</code>은
-                                        <code>stack[-1]</code>을 읽으므로 <code>ArrayIndexOutOfBoundsException</code>이 발생
+                                        <code>stack.pop()</code>을 호출 — 빈 <code>ArrayDeque</code>에서 <code>pop()</code>은
+                                        <code>NoSuchElementException</code>을 던짐
                                         (접시가 하나도 없는 더미에서 접시를 내리려는 것과 같은 상황)</li>
                                     <li><strong>수정 방법:</strong> pop 전에 빈 스택이면 "무효"로 판정하고 반환</li>
                                 </ul>
                                 <pre class="quiz-code">} else if (ch == ')' || ch == ']' || ch == '}') {
-    if (top == -1) {          // 빈 스택 검사가 pop보다 먼저!
+    if (stack.isEmpty()) {    // 빈 스택 검사가 pop보다 먼저!
         return false;         // 짝 없는 닫는 괄호 → 무효
     }
-    if (!isPair(pop(), ch)) {
+    if (!isPair(stack.pop(), ch)) {
         return false;
     }
 }</pre>
@@ -673,7 +465,7 @@ Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: Index -1 ou
                 </article>
 
                 <article class="bug-card">
-                    <h3 class="bug-card__title">오류 2 — front를 옮기지 않는 dequeue</h3>
+                    <h3 class="bug-card__title">오류 2 — 꺼내지 않고 보기만 하는 dequeue</h3>
                     <div class="bug-card__body">
                         <article class="code-card">
                             <header class="code-card__header">
@@ -683,17 +475,20 @@ Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: Index -1 ou
                                 </div>
                                 <button type="button" class="copy-code-button" data-copy-target="code-bug2" aria-label="오류 2 코드 복사">코드 복사</button>
                             </header>
-                            <pre><code id="code-bug2" class="language-java">public class BuggyQueueFront {
+                            <pre><code id="code-bug2" class="language-java">import java.util.ArrayDeque;
+import java.util.Deque;
 
-    static String[] queue = new String[8];
-    static int front = 0;
-    static int rear = 0;
+public class BuggyQueueFront {
 
-    static void enqueue(String name) { queue[rear++] = name; }
+    static Deque&lt;String&gt; queue = new ArrayDeque&lt;&gt;();
+
+    static void enqueue(String name) {
+        queue.offer(name);
+    }
 
     /** 맨 앞 고객을 꺼낸다 */
     static String dequeue() {
-        return queue[front];
+        return queue.peek();
     }
 
     public static void main(String[] args) {
@@ -704,7 +499,7 @@ Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: Index -1 ou
         for (int i = 1; i &lt;= 3; i++) {
             System.out.println(i + "번째 처리: " + dequeue());
         }
-        System.out.println("남은 대기 인원 = " + (rear - front));
+        System.out.println("남은 대기 인원 = " + queue.size());
     }
 }</code></pre>
                         </article>
@@ -722,23 +517,21 @@ Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: Index -1 ou
                                 <ul>
                                     <li><strong>오류가 나타나는 입력:</strong> dequeue를 2번 이상 호출하는 모든 경우 —
                                         예외가 나지 않고 <strong>조용히 틀린 결과</strong>가 나오므로 오류 1보다 발견하기 어려움</li>
-                                    <li><strong>원인:</strong> <code>dequeue()</code>가 <code>queue[front]</code> 값을 돌려주기만 하고
-                                        <strong><code>front</code>를 한 칸 뒤로 옮기지 않음</strong> — "꺼낸다"는 것은 값 읽기 + 자리 이동, 두 동작의 묶음
+                                    <li><strong>원인:</strong> <code>dequeue()</code>가 <code>queue.peek()</code>로 맨 앞 값을 <strong>보기만 하고 제거하지 않음</strong> —
+                                        "꺼낸다"는 것은 값을 돌려주는 것 + 큐에서 빼는 것, 두 동작의 묶음이며 이 둘을 한 번에 하는 메서드가 <code>poll()</code>
                                         (줄 맨 앞 손님이 주문만 하고 비켜 주지 않는 것과 같음)</li>
-                                    <li><strong>수정 방법:</strong> 값을 읽은 뒤 front를 이동 (빈 큐 검사도 함께)</li>
+                                    <li><strong>수정 방법:</strong> <code>peek()</code> 대신 <code>poll()</code>을 사용 (빈 큐 검사도 함께)</li>
                                 </ul>
                                 <pre class="quiz-code">static String dequeue() {
-    if (front == rear) {
+    if (queue.isEmpty()) {
         System.out.println("경고: 빈 큐는 dequeue할 수 없습니다.");
         return "?";
     }
-    String value = queue[front];
-    front++;                  // 맨 앞 자리를 한 칸 뒤로 — 이 줄이 핵심!
-    return value;
+    return queue.poll();      // 값을 돌려주면서 큐에서 제거 — peek()와의 차이!
 }</pre>
                                 <ul>
                                     <li>수정 후 출력은 김하늘 → 이준호 → 박서연 순서가 되고, 남은 대기 인원은 0명이 됨</li>
-                                    <li><em>스택에서 <code>top--</code>를 빼먹는 실수도 완전히 같은 유형</em></li>
+                                    <li><em>스택에서 <code>pop()</code> 대신 <code>peek()</code>를 쓰는 실수도 완전히 같은 유형</em></li>
                                 </ul>
                             </div>
                         </details>
@@ -758,7 +551,7 @@ Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: Index -1 ou
                             <tr><th scope="col">작업</th><th scope="col">Big-O</th><th scope="col">쉽게 말하면</th></tr>
                         </thead>
                         <tbody>
-                            <tr><td>push / pop, enqueue / dequeue (1번)</td><td><code>O(1)</code></td><td>접시가 3장이든 300장이든 맨 위 접시를 드는 수고는 같음</td></tr>
+                            <tr><td>push / pop, offer / poll (1번)</td><td><code>O(1)</code></td><td>접시가 3장이든 300장이든 맨 위 접시를 드는 수고는 같음</td></tr>
                             <tr><td>괄호 검사 (길이 n)</td><td><code>O(n)</code></td><td>글자마다 push 또는 pop 1번</td></tr>
                             <tr><td>대기열 n명 전체 처리</td><td><code>O(n)</code></td><td>사람마다 넣고 꺼내기 1번씩</td></tr>
                         </tbody>
@@ -772,7 +565,7 @@ Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: Index -1 ou
                 <h3>공간 복잡도 — 메모리를 얼마나 더 쓰는가?</h3>
                 <ul>
                     <li>괄호 검사의 스택: 여는 괄호만 있으면 모두 쌓임 → <code>O(n)</code> / 대기열: n명이 줄 서면 n칸 → <code>O(n)</code></li>
-                    <li>관리 변수 <code>top</code>, <code>front</code>, <code>rear</code>: 데이터가 늘어도 그대로 → <code>O(1)</code></li>
+                    <li>넣고 꺼내는 데 따로 필요한 관리 공간(앞·뒤 위치 등)은 ArrayDeque가 알아서 관리하며 데이터가 늘어도 일정 → <code>O(1)</code></li>
                 </ul>
                 <div class="note-box">
                     <span class="note-box__title">한 줄 정리 — 규칙을 좁히면 빨라진다</span>
@@ -955,12 +748,12 @@ public class BankQueueApplication {
 
                 <h3>실습 2 — 조건 변경</h3>
                 <p>
-                    <code>examples/java/06-stack-and-queue/Step6QueueDequeue.java</code>의 <code>main</code>에서 dequeue를 2번만 하도록 줄이고,
+                    <code>examples/java/06-stack-and-queue/Step6QueueDequeue.java</code>의 <code>main</code>에서 poll을 2번만 하도록 줄이고,
                     그 뒤에 <code>enqueue("최민재")</code>를 추가한 다음
-                    <code>front</code>, <code>rear</code>, 대기 인원을 출력해 보세요.
-                    예상: front = 2, rear = 4, 대기 2명(박서연, 최민재).
-                    이때 <code>queue[0]</code>, <code>queue[1]</code> 칸이 다시 쓰이지 않는 것 —
-                    단순 배열 큐가 갖는 공간 낭비 문제입니다.
+                    큐 상태(<code>queue</code>)와 대기 인원(<code>queue.size()</code>)을 출력해 보세요.
+                    예상: 대기 2명, [박서연, 최민재].
+                    앞에서 꺼낸 자리를 신경 쓰지 않아도 새 손님이 자연스럽게 맨 뒤에 이어 붙습니다 —
+                    <code>ArrayDeque</code>가 내부의 앞·뒤 위치 관리를 대신해 주기 때문입니다.
                 </p>
 
                 <h3>실습 3 — 코드 완성: 스택으로 문자열 뒤집기</h3>
@@ -977,19 +770,21 @@ public class BankQueueApplication {
                         </div>
                         <button type="button" class="copy-code-button" data-copy-target="code-practice3" aria-label="StringReversePractice.java 코드 복사">코드 복사</button>
                     </header>
-                    <pre><code id="code-practice3" class="language-java">public class StringReversePractice {
+<pre><code id="code-practice3" class="language-java">import java.util.ArrayDeque;
+import java.util.Deque;
+
+public class StringReversePractice {
 
     /** 스택을 이용해 text를 뒤집은 문자열을 반환한다 */
     static String reverse(String text) {
-        char[] stack = new char[text.length()];
-        int top = -1;
+        Deque&lt;Character&gt; stack = new ArrayDeque&lt;&gt;();
 
         // TODO 1: text의 모든 문자를 앞에서부터 순서대로 스택에 push하세요.
-        //         (힌트: stack[++top] = text.charAt(i))
+        //         (힌트: stack.push(text.charAt(i)))
 
         StringBuilder result = new StringBuilder();
-        // TODO 2: 스택이 빌 때까지(top != -1) pop한 문자를 result에 붙이세요.
-        //         (힌트: result.append(stack[top--]))
+        // TODO 2: 스택이 빌 때까지(!stack.isEmpty()) pop한 문자를 result에 붙이세요.
+        //         (힌트: result.append(stack.pop()))
 
         return result.toString();
     }
@@ -1005,17 +800,16 @@ public class BankQueueApplication {
                 <details class="answer-box" data-locked-until-complete>
                     <summary>실습 3 정답 확인</summary>
                     <div class="answer-box__content">
-                        <pre class="quiz-code">static String reverse(String text) {
-    char[] stack = new char[text.length()];
-    int top = -1;
+<pre class="quiz-code">static String reverse(String text) {
+    Deque&lt;Character&gt; stack = new ArrayDeque&lt;&gt;();
 
     for (int i = 0; i &lt; text.length(); i++) {
-        stack[++top] = text.charAt(i);      // 앞에서부터 전부 push
+        stack.push(text.charAt(i));         // 앞에서부터 전부 push
     }
 
     StringBuilder result = new StringBuilder();
-    while (top != -1) {
-        result.append(stack[top--]);        // 빌 때까지 pop — 역순으로 나온다
+    while (!stack.isEmpty()) {
+        result.append(stack.pop());         // 빌 때까지 pop — 역순으로 나온다
     }
 
     return result.toString();
@@ -1410,8 +1204,8 @@ public class TaskManagerSolution {
 
                         <h4>다른 해결 방법</h4>
                         <p>
-                            이번 강의 전반부처럼 <strong>배열 + top/front/rear</strong>로 스택·큐를 직접 만들어 풀 수도 있습니다 —
-                            동작은 같고, 용량 관리(가득 참 처리)를 직접 해야 한다는 점만 다릅니다.
+                            <code>undoStack</code>과 <code>waitQueue</code>를 <code>ArrayDeque</code> 대신 <code>LinkedList</code>로 바꿔도 같은 메서드(push/pop/offer/poll)로 풀 수 있습니다 —
+                            동작은 같고, 내부 저장 방식과 메모리 사용만 다릅니다.
                             또 <code>undoStack</code>에 문자열 대신 "문서 전체의 스냅숏"을 저장하는 방법도 있습니다.
                             <em>구현은 더 단순하지만 문서가 길어질수록 메모리를 많이 쓰는 교환 관계가 있습니다.</em>
                         </p>
@@ -1423,13 +1217,13 @@ public class TaskManagerSolution {
             <section class="lesson-section" id="sec-summary" aria-labelledby="h-summary">
                 <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">14</span>오늘의 핵심 정리</h2>
                 <ul class="summary-list">
-                    <li><strong>자료구조 = 데이터 + 규칙.</strong> 스택과 큐는 배열 위에 "넣고 꺼내는 규칙"을 얹은 것이다.</li>
-                    <li><strong>스택은 LIFO</strong> — 맨 위(top)에서만 push/pop. <code>top = -1</code>이 빈 스택,
-                        개수는 <code>top + 1</code>. 실행 취소, 괄호 검사, 호출 스택에 쓰인다.</li>
-                    <li><strong>큐는 FIFO</strong> — 뒤(rear)로 넣고 앞(front)에서 꺼낸다. <code>front == rear</code>가 빈 큐,
-                        개수는 <code>rear - front</code>. 대기열과 순서 보장 작업에 쓰인다.</li>
-                    <li>push/pop/enqueue/dequeue는 모두 <strong>O(1)</strong> — 규칙을 제한한 대가로 얻는 속도다.</li>
-                    <li><strong>꺼내기 전에는 반드시 빈 검사</strong> — 빈 스택 pop, 빈 큐 dequeue는 예외 또는 조용한 오류의 원인이다.</li>
+                    <li><strong>자료구조 = 데이터 + 규칙.</strong> 스택과 큐는 같은 보관함(<code>ArrayDeque</code>)에 "넣고 꺼내는 규칙"을 얹은 것이다.</li>
+                    <li><strong>스택은 LIFO</strong> — 맨 위에서만 <code>push</code>/<code>pop</code>. 비었는지는 <code>isEmpty()</code>, 개수는 <code>size()</code>.
+                        실행 취소, 괄호 검사, 호출 스택에 쓰인다.</li>
+                    <li><strong>큐는 FIFO</strong> — <code>offer</code>로 뒤에 넣고 <code>poll</code>로 앞에서 꺼낸다.
+                        대기열과 순서 보장 작업에 쓰인다.</li>
+                    <li>push/pop/offer/poll은 모두 <strong>O(1)</strong> — 규칙을 제한한 대가로 얻는 속도다.</li>
+                    <li><strong>꺼내기 전에는 반드시 빈 검사</strong> — 빈 스택의 <code>pop()</code>은 예외, 빈 큐의 <code>poll()</code>은 null을 돌려주어 오류의 원인이 된다.</li>
                     <li>괄호 검사의 핵심: 닫는 괄호의 짝은 <strong>가장 최근에 열린 괄호</strong> — 그래서 스택이 정답이다.
                         무효 판정은 세 갈래(빈 스택 pop, 짝 불일치, 여는 괄호 남음)임을 기억하자.</li>
                     <li>실무에서는 <code>ArrayDeque</code>를 스택·큐로 쓰고, "중요한 순서"가 필요하면
@@ -1452,7 +1246,7 @@ public class TaskManagerSolution {
                     <li><em>재귀 호출이 "가장 최근 호출부터 되돌아오는" 이유가 바로 <strong>LIFO</strong>입니다 —
                         실습 3에서 본 "넣은 순서의 반대로 나온다"가 재귀의 풀림 순서가 됩니다.</em></li>
                     <li>재귀를 너무 깊이 들어가면 만나는 <code>StackOverflowError</code>는
-                        말 그대로 "호출 스택이 가득 찼다"는 뜻입니다 — 배열 스택이 가득 차던 상황과 같습니다.</li>
+                        말 그대로 "호출 스택이 가득 찼다"는 뜻입니다 — 호출 정보가 너무 깊게 쌓인 상황입니다.</li>
                     <li>백트래킹의 "선택 → 진행 → 취소"에서 취소가 곧 pop입니다 —
                         오늘의 실행 취소(undo) 패턴이 탐색 알고리즘으로 확장됩니다.</li>
                     <li>오늘 맛본 큐는 8강 트리의 레벨 순회, 9강 BFS에서 주인공이 됩니다.</li>
@@ -1533,7 +1327,7 @@ public class TaskManagerSolution {
                         stack.push(ch);
                         pushCount++;
                         steps.push({
-                            caption: i + "번 문자 '" + ch + "'는 여는 괄호 → push합니다. 맨 위(top)가 '" + ch + "'가 됩니다.",
+                            caption: i + "번 문자 '" + ch + "'는 여는 괄호 → push합니다. 맨 위가 '" + ch + "'가 됩니다.",
                             counters: counters(),
                             view: [textView(i, i, -1), stackView("current")]
                         });
@@ -1642,7 +1436,7 @@ public class TaskManagerSolution {
                         queue.push(op.name);
                         enqueueCount++;
                         steps.push({
-                            caption: "enqueue: " + op.name + " 님이 대기열 맨 뒤(rear)에 섭니다. 대기 " + queue.length + "명.",
+                            caption: "enqueue: " + op.name + " 님이 대기열 맨 뒤에 섭니다. 대기 " + queue.length + "명.",
                             counters: counters(),
                             view: [queueView(queue.length - 1)]
                         });
@@ -1657,7 +1451,7 @@ public class TaskManagerSolution {
                             var served = queue.shift();
                             dequeueCount++;
                             steps.push({
-                                caption: "dequeue: 맨 앞(front)의 " + served + " 님 주문을 처리합니다. 남은 대기 " + queue.length + "명.",
+                                caption: "dequeue: 맨 앞의 " + served + " 님 주문을 처리합니다. 남은 대기 " + queue.length + "명.",
                                 counters: counters(),
                                 view: [queueView(null),
                                        { type: "note", text: "먼저 온 " + served + " 님이 먼저 나갑니다 (FIFO)." }]
@@ -1717,15 +1511,15 @@ public class TaskManagerSolution {
             },
             {
                 type: "mc",
-                q: "배열로 구현한 큐에서 enqueue와 dequeue가 일어나는 위치를 옳게 짝지은 것은 무엇인가요?",
+                q: "큐에서 새 데이터를 넣는 위치와 꺼내는 위치를 옳게 짝지은 것은 무엇인가요?",
                 choices: [
-                    "rear에 넣고 front에서 꺼낸다",
-                    "front에 넣고 rear에서 꺼낸다",
-                    "둘 다 front에서 일어난다",
-                    "둘 다 rear에서 일어난다"
+                    "뒤에 넣고 앞에서 꺼낸다 (offer / poll)",
+                    "앞에 넣고 뒤에서 꺼낸다",
+                    "둘 다 앞에서 일어난다",
+                    "둘 다 뒤에서 일어난다"
                 ],
                 answer: 0,
-                explain: "큐는 뒤(rear)로 넣고 앞(front)에서 꺼냅니다. 넣는 곳과 꺼내는 곳이 반대쪽 끝이라서 FIFO가 보장됩니다. 둘 다 같은 쪽이면 그것은 스택입니다."
+                explain: "큐는 뒤로 넣고(offer) 앞에서 꺼냅니다(poll). 넣는 곳과 꺼내는 곳이 반대쪽 끝이라서 FIFO가 보장됩니다. 둘 다 같은 쪽이면 그것은 스택입니다."
             },
             {
                 type: "mc",
@@ -1769,22 +1563,22 @@ public class TaskManagerSolution {
             },
             {
                 type: "fill",
-                q: "배열 스택에서 '비어 있음'을 검사하는 코드의 빈칸을 채우세요. static boolean isEmpty() { return top == ____; }",
-                accept: ["-1", "(-1)", "- 1"],
-                explain: "top은 맨 위 칸의 인덱스이므로, 아무것도 없을 때는 가리킬 칸이 없다는 뜻으로 -1을 약속합니다. push하면 0이 되고, 모두 pop하면 다시 -1로 돌아갑니다."
+                q: "ArrayDeque를 스택으로 쓸 때, 맨 위 값을 꺼내면서 제거하는 메서드의 빈칸을 채우세요. Deque<Character> stack = new ArrayDeque<>(); char c = stack.____();",
+                accept: ["pop", "pop()", ".pop()"],
+                explain: "스택에서 맨 위 값을 꺼내 제거하는 메서드는 pop()입니다. peek()는 보기만 하고 제거하지 않으며, 빈 스택에서 pop()을 호출하면 NoSuchElementException이 발생하므로 isEmpty() 검사가 먼저 필요합니다."
             },
             {
                 type: "debug",
                 q: "다음 pop 메서드를 호출해도 스택의 데이터 개수가 줄어들지 않습니다. 원인은 무엇인가요?",
-                code: "static char pop() {\n    char value = stack[top];\n    return value;\n}",
+                code: "static char pop() {\n    char value = stack.peek();\n    return value;\n}",
                 choices: [
                     "value 변수를 거치지 말고 바로 return해야 한다",
-                    "top을 한 칸 내리는 top-- 가 빠져 있다",
-                    "stack[top] 대신 stack[0]을 읽어야 한다",
+                    "peek()는 맨 위 값을 보기만 하고 제거하지 않으므로 pop()을 써야 한다",
+                    "stack.peek() 대신 stack.size()를 써야 한다",
                     "반환형을 char가 아니라 int로 해야 한다"
                 ],
                 answer: 1,
-                explain: "'꺼낸다'는 값 읽기 + top 이동의 묶음입니다. top을 내리지 않으면 같은 값이 계속 맨 위로 남습니다. 오류 2의 front를 옮기지 않는 dequeue와 같은 유형의 실수입니다."
+                explain: "'꺼낸다'는 값 읽기 + 제거의 묶음이고, 그 일을 한 번에 하는 것이 pop()입니다. peek()는 보기만 하므로 같은 값이 계속 맨 위에 남습니다. 오류 2의 peek()로 dequeue를 흉내 낸 실수와 같은 유형입니다."
             },
             {
                 type: "think",
