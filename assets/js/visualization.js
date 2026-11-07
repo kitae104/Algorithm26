@@ -75,6 +75,61 @@
         }
     }
 
+    /* ---------- 하노이 탑 (가로 기둥 3개 + 크기·색이 다른 원반) ----------
+     * group: { type:"hanoi", n, pegs:{A:[],B:[],C:[]}(바닥→top 원반 번호), moved, scope, arrow:{from,to}, done }
+     * 원반은 번호(1=가장 작음)별로 고정된 <g>이고, 위치만 transform으로 바뀌어
+     * CSS transition이 "옮겨 가는" 모션을 만든다. */
+    var HANOI_NAMES = ["A", "B", "C"];
+
+    function hanoiGeom(group) {
+        var w = group.w || 640;
+        var h = group.h || ((group.n || 3) * 26 + 125);
+        var n = group.n || 3;
+        var diskH = 24;
+        var baseY = h - 36;
+        var pegX = { A: w * 0.17, B: w * 0.5, C: w * 0.83 };
+        var minW = 44;
+        var maxW = Math.min(170, w * 0.27);
+        return {
+            w: w, h: h, n: n, diskH: diskH, baseY: baseY, pegX: pegX,
+            poleH: n * diskH + 26,
+            widthOf: function (d) {
+                return minW + (maxW - minW) * (d - 1) / Math.max(n - 1, 1);
+            }
+        };
+    }
+
+    function hanoiPlace(diskEl, d, group, geom) {
+        var peg = null;
+        var level = 0;
+        HANOI_NAMES.forEach(function (name) {
+            var idx = (group.pegs[name] || []).indexOf(d);
+            if (idx !== -1) { peg = name; level = idx; }
+        });
+        if (peg === null) return;
+        var dw = geom.widthOf(d);
+        var x = geom.pegX[peg] - dw / 2;
+        var y = geom.baseY - (level + 1) * (geom.diskH + 2);
+        diskEl.style.transform = "translate(" + x + "px," + y + "px)";
+        var cls = "hanoi-disk hanoi-disk--c" + (((d - 1) % 5) + 1);
+        if (group.moved === d) cls += " is-moved";
+        if (group.scope && d > group.scope) cls += " is-dim";
+        if (group.done) cls += " is-done";
+        setClass(diskEl, cls);
+    }
+
+    function hanoiArrow(pathEl, group, geom) {
+        if (group.arrow && geom.pegX[group.arrow.from] !== undefined) {
+            var x1 = geom.pegX[group.arrow.from];
+            var x2 = geom.pegX[group.arrow.to];
+            var top = geom.baseY - geom.poleH - 8;
+            pathEl.setAttribute("d", "M " + x1 + " " + (top + 4) + " C " + x1 + " " + (top - 30) + ", " + x2 + " " + (top - 30) + ", " + x2 + " " + (top + 4));
+            setClass(pathEl, "hanoi-arrow");
+        } else {
+            setClass(pathEl, "hanoi-arrow is-hidden");
+        }
+    }
+
     var GROUP_RENDERERS = {
         array: function (group) {
             var wrap = el("div", "viz-array");
@@ -225,6 +280,82 @@
             return svg;
         },
 
+        hanoi: function (group) {
+            var geom = hanoiGeom(group);
+            var svg = svgEl("svg");
+            svg.setAttribute("class", "viz-svg viz-hanoi");
+            svg.setAttribute("viewBox", "0 0 " + geom.w + " " + geom.h);
+            svg.setAttribute("role", "img");
+            svg.setAttribute("aria-label", group.alt || "하노이 탑: 기둥 A, B, C와 원반");
+
+            var defs = svgEl("defs");
+            var marker = svgEl("marker");
+            var markerId = "viz-hanoi-arrow-" + Math.floor(Math.random() * 1e9);
+            marker.setAttribute("id", markerId);
+            marker.setAttribute("viewBox", "0 0 10 10");
+            marker.setAttribute("refX", "8");
+            marker.setAttribute("refY", "5");
+            marker.setAttribute("markerWidth", "4");
+            marker.setAttribute("markerHeight", "4");
+            marker.setAttribute("orient", "auto");
+            var head = svgEl("path");
+            head.setAttribute("d", "M 0 0 L 10 5 L 0 10 z");
+            head.setAttribute("fill", "currentColor");
+            marker.appendChild(head);
+            defs.appendChild(marker);
+            svg.appendChild(defs);
+
+            var labels = { A: "기둥 A (출발)", B: "기둥 B (보조)", C: "기둥 C (목적지)" };
+            HANOI_NAMES.forEach(function (name) {
+                var x = geom.pegX[name];
+                var pole = svgEl("rect");
+                pole.setAttribute("class", "hanoi-pole");
+                pole.setAttribute("x", x - 4);
+                pole.setAttribute("y", geom.baseY - geom.poleH);
+                pole.setAttribute("width", 8);
+                pole.setAttribute("height", geom.poleH);
+                pole.setAttribute("rx", 3);
+                svg.appendChild(pole);
+                var base = svgEl("rect");
+                base.setAttribute("class", "hanoi-base");
+                base.setAttribute("x", x - geom.widthOf(geom.n) / 2 - 10);
+                base.setAttribute("y", geom.baseY);
+                base.setAttribute("width", geom.widthOf(geom.n) + 20);
+                base.setAttribute("height", 7);
+                base.setAttribute("rx", 3);
+                svg.appendChild(base);
+                var label = svgEl("text");
+                label.setAttribute("class", "hanoi-peg-label");
+                label.setAttribute("x", x);
+                label.setAttribute("y", geom.baseY + 26);
+                label.textContent = labels[name];
+                svg.appendChild(label);
+            });
+
+            var arrow = svgEl("path");
+            arrow.setAttribute("marker-end", "url(#" + markerId + ")");
+            svg.appendChild(arrow);
+            hanoiArrow(arrow, group, geom);
+
+            for (var d = geom.n; d >= 1; d -= 1) {
+                var g = svgEl("g");
+                g.setAttribute("data-disk", d);
+                var rect = svgEl("rect");
+                rect.setAttribute("width", geom.widthOf(d));
+                rect.setAttribute("height", geom.diskH);
+                rect.setAttribute("rx", 7);
+                g.appendChild(rect);
+                var text = svgEl("text");
+                text.setAttribute("x", geom.widthOf(d) / 2);
+                text.setAttribute("y", geom.diskH / 2 + 1);
+                text.textContent = String(d);
+                g.appendChild(text);
+                hanoiPlace(g, d, group, geom);
+                svg.appendChild(g);
+            }
+            return svg;
+        },
+
         frames: function (group) {
             var wrap = el("div", "viz-frames");
             (group.items || []).forEach(function (item) {
@@ -260,6 +391,8 @@
             parts.push((group.nodes || []).map(function (n) { return n.id; }).join(","));
             parts.push((group.edges || []).map(function (e) { return e.from + ">" + e.to; }).join(","));
             parts.push(String(group.w || 560), String(group.h || 300));
+        } else if (group.type === "hanoi") {
+            parts.push(String(group.n), String(group.w || 640), String(group.h || 0));
         } else if (group.type === "note") {
             parts.push("note");
         } else {
@@ -370,6 +503,15 @@
                     edgeEls[i].setAttribute("class", cls);
                 }
             });
+        },
+        hanoi: function (body, group) {
+            var geom = hanoiGeom(group);
+            var disks = body.querySelectorAll("g[data-disk]");
+            Array.prototype.forEach.call(disks, function (diskEl) {
+                hanoiPlace(diskEl, Number(diskEl.getAttribute("data-disk")), group, geom);
+            });
+            var arrow = body.querySelector("path.hanoi-arrow");
+            if (arrow) hanoiArrow(arrow, group, geom);
         },
         note: function (body, group) {
             if (body.textContent !== String(group.text)) {

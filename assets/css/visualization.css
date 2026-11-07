@@ -468,3 +468,83 @@
         width: 100%;
     }
 }
+
+/* ---------- 하노이 탑: 가로 기둥 3개 + 크기·색이 다른 원반 ---------- */
+.viz-hanoi {
+    display: block;
+    width: 100%;
+    max-width: 700px;
+    height: auto;
+    margin: 0 auto;
+}
+
+.viz-hanoi .hanoi-pole,
+.viz-hanoi .hanoi-base {
+    fill: var(--line-strong);
+}
+
+.viz-hanoi .hanoi-peg-label {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 700;
+    fill: var(--ink-faint);
+    text-anchor: middle;
+}
+
+.viz-hanoi .hanoi-arrow {
+    fill: none;
+    stroke: var(--state-visit);
+    stroke-width: 2.5;
+    stroke-dasharray: 6 4;
+    color: var(--state-visit);
+    transition: opacity 0.3s ease;
+}
+
+.viz-hanoi .hanoi-arrow.is-hidden {
+    opacity: 0;
+}
+
+.viz-hanoi .hanoi-disk {
+    transition: transform 0.5s ease, opacity 0.3s ease;
+}
+
+.viz-hanoi .hanoi-disk rect {
+    stroke: rgba(20, 24, 31, 0.35);
+    stroke-width: 1.5;
+}
+
+.viz-hanoi .hanoi-disk text {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 700;
+    fill: #14181f;
+    text-anchor: middle;
+    dominant-baseline: central;
+    pointer-events: none;
+}
+
+/* 원반 색은 테마와 무관하게 고정 — 번호(크기)와 색이 1:1로 대응한다 */
+.viz-hanoi .hanoi-disk--c1 rect { fill: #f5b942; }
+.viz-hanoi .hanoi-disk--c2 rect { fill: #6fa8ff; }
+.viz-hanoi .hanoi-disk--c3 rect { fill: #4cc9a0; }
+.viz-hanoi .hanoi-disk--c4 rect { fill: #ff8a8a; }
+.viz-hanoi .hanoi-disk--c5 rect { fill: #c3a1ff; }
+
+.viz-hanoi .hanoi-disk.is-dim { opacity: 0.5; filter: saturate(0.25); }
+
+.viz-hanoi .hanoi-disk.is-moved rect {
+    stroke: var(--ink);
+    stroke-width: 3.5;
+}
+
+.viz-hanoi .hanoi-disk.is-done rect {
+    stroke: var(--state-done);
+    stroke-width: 2.5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .viz-hanoi .hanoi-disk,
+    .viz-hanoi .hanoi-arrow {
+        transition: none;
+    }
+}

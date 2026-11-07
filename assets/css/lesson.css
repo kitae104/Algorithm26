@@ -370,9 +370,10 @@
 }
 
 /* ---------- 선택·진행·취소 미니 다이어그램 (7강 핵심 개념) ----------
-   장식용 자동 재생 루프. transform/opacity/fill/stroke만 애니메이션한다.
-   재생 제어(뷰포트 진입 시에만 재생)는 common.js가 담당한다 — 위 히어로
-   모티프와 같은 근거(본문을 읽는 동안 무관한 곳에서 움직이지 않게). */
+   {a,b,c} 순열에서 b를 골랐다가 되돌리는 한 사이클을 보여 주는 자동 재생 루프.
+   남은 문자 → chosen → 호출 스택이 함께 움직여 "무엇이 바뀌고 무엇이 복구되는가"를 보인다.
+   transform/opacity/fill/stroke만 애니메이션한다. 재생 제어(뷰포트 진입 시에만
+   재생)는 common.js가 담당한다 — 위 히어로 모티프와 같은 근거. */
 .concept-loop {
     margin: 18px 0 24px;
     padding: 16px;
@@ -387,44 +388,112 @@
 
 .concept-loop__svg {
     width: 100%;
-    max-width: 340px;
+    max-width: 440px;
     height: auto;
 }
 
-.concept-loop__bracket {
+.concept-loop__svg text {
+    font-family: var(--font-mono);
+    text-anchor: start;
+}
+
+.cl-label {
+    font-size: 11px;
+    fill: var(--ink-faint);
+}
+
+.cl-label--mid { text-anchor: middle !important; }
+
+.cl-cell,
+.cl-slot {
     fill: var(--surface-2);
     stroke: var(--line-strong);
     stroke-width: 1.5;
 }
 
-.concept-loop__bracket-label {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    fill: var(--ink-faint);
-    text-anchor: middle;
+.cl-slot { stroke-dasharray: 4 3; }
+
+.cl-ghost {
+    fill: none;
+    stroke: var(--state-compare);
+    stroke-width: 1.5;
+    stroke-dasharray: 4 3;
+    opacity: 0;
 }
 
-.concept-loop__token-circle {
+.cl-used {
+    font-size: 10px;
+    font-weight: 700;
+    fill: var(--state-compare);
+    text-anchor: middle !important;
+    opacity: 0;
+}
+
+.cl-tok circle {
+    fill: var(--surface);
+    stroke: var(--line-strong);
     stroke-width: 2;
 }
 
-.concept-loop__token-label {
-    font-family: var(--font-mono);
-    font-size: 13px;
+.cl-tok text {
+    font-size: 14px;
     font-weight: 700;
-    text-anchor: middle;
-    dominant-baseline: central;
     fill: var(--ink);
+    text-anchor: middle !important;
+    dominant-baseline: central;
 }
 
-.concept-loop__frame-label {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    font-weight: 700;
-    fill: var(--state-visit);
-    text-anchor: middle;
+.cl-probe {
+    fill: none;
+    stroke: var(--state-done);
+    stroke-width: 2;
+    stroke-dasharray: 5 3;
     opacity: 0;
 }
+
+.cl-probe-q {
+    font-size: 18px;
+    font-weight: 700;
+    fill: var(--state-done);
+    text-anchor: middle !important;
+    dominant-baseline: central;
+    opacity: 0;
+}
+
+.cl-frame,
+.cl-frame-new rect {
+    fill: var(--surface-2);
+    stroke: var(--line-strong);
+    stroke-width: 1.5;
+}
+
+.cl-frame-new rect {
+    fill: var(--state-done-bg);
+    stroke: var(--state-done);
+}
+
+.cl-frame-text,
+.cl-frame-new text {
+    font-size: 11px;
+    font-weight: 700;
+    fill: var(--ink);
+    text-anchor: middle !important;
+    dominant-baseline: central;
+}
+
+.cl-frame-new { opacity: 0; }
+
+.cl-status {
+    font-size: 12px;
+    font-weight: 700;
+    text-anchor: middle !important;
+    opacity: 0;
+}
+
+.cl-status--1 { fill: var(--state-visit); }
+.cl-status--2 { fill: var(--state-done); }
+.cl-status--3 { fill: var(--state-compare); }
+.cl-status--4 { fill: var(--ink); }
 
 .concept-loop__steps {
     display: flex;
@@ -444,12 +513,13 @@
     font-size: 0.8rem;
     color: var(--ink-faint);
     text-align: center;
+    max-width: 52ch;
 }
 
 /* 재생 제어 — common.js가 뷰포트 진입 시 .is-playing을 토글한다.
    기본은 정지라서 스크롤해서 보기 전에는 아무것도 움직이지 않는다. */
 .concept-loop [class*="cl-anim"] {
-    animation-duration: 6s;
+    animation-duration: 10s;
     animation-iteration-count: infinite;
     animation-timing-function: var(--ease-in-out);
     animation-play-state: paused;
@@ -459,64 +529,104 @@
     animation-play-state: running;
 }
 
+/* 움직임 줄이기: 정지 프레임 = "② 진행" 장면
+   (b는 chosen 첫 칸, 다음 칸에 ?, 호출 스택에 프레임 하나 더) */
 @media (prefers-reduced-motion: reduce) {
     .concept-loop [class*="cl-anim"] {
         animation: none !important;
     }
-    /* 정지 프레임 = "① 선택" 직후: 토큰이 chosen 안, ①만 밝음 */
-    .concept-loop__token {
-        transform: translateX(206px);
-    }
-    .concept-loop__token-circle {
-        fill: var(--state-visit-bg);
-        stroke: var(--state-visit);
-    }
-    .concept-loop__step--1 {
-        color: var(--state-visit);
-        opacity: 1;
-    }
+    .cl-tok--b { transform: translate(-70px, 94px); }
+    .cl-tok--b circle { fill: var(--state-visit-bg); stroke: var(--state-visit); }
+    .cl-ghost, .cl-used, .cl-probe, .cl-probe-q, .cl-frame-new, .cl-status--2 { opacity: 1; }
+    .concept-loop__step--2 { color: var(--state-done); opacity: 1; }
 }
 
-.concept-loop__token.cl-anim-move { animation-name: cl-token-move; }
-.concept-loop__token-circle.cl-anim-fill { animation-name: cl-token-fill; }
-.concept-loop__frame-label.cl-anim-frame { animation-name: cl-frame; }
+.cl-ghost.cl-anim-ghost,
+.cl-used.cl-anim-ghost { animation-name: cl-ghost; }
+.cl-probe.cl-anim-probe,
+.cl-probe-q.cl-anim-probe { animation-name: cl-probe; }
+.cl-tok--b.cl-anim-move { animation-name: cl-b-move; }
+.cl-tok--b circle.cl-anim-fill { animation-name: cl-b-fill; }
+.cl-frame-new.cl-anim-frame { animation-name: cl-frame; }
+.cl-status--1.cl-anim-s1 { animation-name: cl-s1; }
+.cl-status--2.cl-anim-s2 { animation-name: cl-s2; }
+.cl-status--3.cl-anim-s3 { animation-name: cl-s3; }
+.cl-status--4.cl-anim-s4 { animation-name: cl-s4; }
 .concept-loop__step--1.cl-anim-step1 { animation-name: cl-step-1; }
 .concept-loop__step--2.cl-anim-step2 { animation-name: cl-step-2; }
 .concept-loop__step--3.cl-anim-step3 { animation-name: cl-step-3; }
 
-@keyframes cl-token-move {
-    0%, 2%    { transform: translateX(0); }
-    20%, 53%  { transform: translateX(206px); }
-    76%, 100% { transform: translateX(0); }
+/* 시간표(10s): 0~10% 대기 · ① 10~26% · ② 28~60% · ③ 62~78% · 마무리 80~96% */
+@keyframes cl-b-move {
+    0%, 10%   { transform: translate(0, 0); }
+    22%, 62%  { transform: translate(-70px, 94px); }
+    76%, 100% { transform: translate(0, 0); }
 }
 
-@keyframes cl-token-fill {
-    0%, 2%    { fill: var(--surface-2); stroke: var(--line-strong); }
-    20%, 53%  { fill: var(--state-visit-bg); stroke: var(--state-visit); }
-    76%, 100% { fill: var(--surface-2); stroke: var(--line-strong); }
+@keyframes cl-b-fill {
+    0%, 10%   { fill: var(--surface); stroke: var(--line-strong); }
+    22%, 62%  { fill: var(--state-visit-bg); stroke: var(--state-visit); }
+    76%, 100% { fill: var(--surface); stroke: var(--line-strong); }
+}
+
+@keyframes cl-ghost {
+    0%, 12%   { opacity: 0; }
+    20%, 72%  { opacity: 1; }
+    78%, 100% { opacity: 0; }
+}
+
+@keyframes cl-probe {
+    0%, 26%   { opacity: 0; }
+    32%, 58%  { opacity: 1; }
+    62%, 100% { opacity: 0; }
 }
 
 @keyframes cl-frame {
-    0%, 20%   { opacity: 0; }
-    30%, 45%  { opacity: 1; }
-    53%, 100% { opacity: 0; }
+    0%, 28%   { opacity: 0; transform: translateY(-12px); }
+    36%, 58%  { opacity: 1; transform: translateY(0); }
+    66%, 100% { opacity: 0; transform: translateY(-12px); }
+}
+
+@keyframes cl-s1 {
+    0%, 10%   { opacity: 0; }
+    14%, 24%  { opacity: 1; }
+    27%, 100% { opacity: 0; }
+}
+
+@keyframes cl-s2 {
+    0%, 28%   { opacity: 0; }
+    32%, 58%  { opacity: 1; }
+    61%, 100% { opacity: 0; }
+}
+
+@keyframes cl-s3 {
+    0%, 62%   { opacity: 0; }
+    66%, 76%  { opacity: 1; }
+    79%, 100% { opacity: 0; }
+}
+
+@keyframes cl-s4 {
+    0%, 80%   { opacity: 0; }
+    84%, 96%  { opacity: 1; }
+    100%      { opacity: 0; }
 }
 
 @keyframes cl-step-1 {
-    0%, 20%   { color: var(--state-visit); opacity: 1; }
-    22%, 100% { color: var(--ink-faint); opacity: 0.55; }
+    0%, 10%   { color: var(--ink-faint); opacity: 0.55; }
+    14%, 24%  { color: var(--state-visit); opacity: 1; }
+    27%, 100% { color: var(--ink-faint); opacity: 0.55; }
 }
 
 @keyframes cl-step-2 {
-    0%, 20%   { color: var(--ink-faint); opacity: 0.55; }
-    22%, 53%  { color: var(--state-visit); opacity: 1; }
-    55%, 100% { color: var(--ink-faint); opacity: 0.55; }
+    0%, 28%   { color: var(--ink-faint); opacity: 0.55; }
+    32%, 58%  { color: var(--state-done); opacity: 1; }
+    61%, 100% { color: var(--ink-faint); opacity: 0.55; }
 }
 
 @keyframes cl-step-3 {
-    0%, 53%   { color: var(--ink-faint); opacity: 0.55; }
-    55%, 76%  { color: var(--state-visit); opacity: 1; }
-    78%, 100% { color: var(--ink-faint); opacity: 0.55; }
+    0%, 62%   { color: var(--ink-faint); opacity: 0.55; }
+    66%, 76%  { color: var(--state-compare); opacity: 1; }
+    79%, 100% { color: var(--ink-faint); opacity: 0.55; }
 }
 
 /* ---------- 내부 목차 (사이드바) ---------- */

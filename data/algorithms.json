@@ -80,7 +80,7 @@
         "difficulty": "중급",
         "examples": 10,
         "language": "Java",
-        "description": "종료 조건과 호출 스택을 이해하고 선택-진행-취소 구조의 백트래킹으로 조합 생성과 미로 탈출 프로그램을 구현합니다.",
+        "description": "하노이 탑으로 종료 조건과 호출 스택을 이해하고, 상태 공간 트리와 선택-진행-취소 구조의 백트래킹으로 순열 문제를 풀며 가지치기를 적용합니다.",
         "path": "algorithms/07-recursion-and-backtracking.html"
     },
     {

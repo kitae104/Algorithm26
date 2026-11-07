@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>7강. 재귀 호출과 백트래킹 — 고급알고리즘</title>
-    <meta name="description" content="종료 조건과 호출 스택으로 재귀의 동작을 이해하고, 선택-진행-취소 구조의 백트래킹으로 부분집합·순열·조합을 나열하며 가지치기까지 적용한 비밀번호 후보 생성 프로그램을 만듭니다.">
+    <meta name="description" content="하노이 탑으로 종료 조건과 호출 스택을 이해하고, 순열 문제를 상태 공간 트리와 선택-진행-취소 구조의 백트래킹으로 풀며 가지치기까지 적용한 비밀번호 후보 생성 프로그램을 만듭니다.">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect x='8' y='55' width='20' height='38' rx='5' fill='%23e28800'/><rect x='40' y='25' width='20' height='68' rx='5' fill='%232b50e0'/><rect x='72' y='40' width='20' height='53' rx='5' fill='%230e9f6e'/></svg>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -66,8 +66,8 @@
                     <li>그런데 반복 깊이가 실행 중에 정해지는 문제라면? 코드는 실행 중에 자기 몸을 늘릴 수 없음</li>
                     <li>오늘 강의 구성
                         <ul>
-                            <li>앞부분 — 팩토리얼(n!)로 <strong>종료 조건</strong>과 <strong>호출 스택</strong>이라는 재귀의 두 기둥을 세우고, 종료 조건이 없으면 <code>StackOverflowError</code>로 죽는 것도 직접 확인</li>
-                            <li>뒷부분 — <strong>선택(choose) → 진행(explore) → 취소(unchoose)</strong> 백트래킹 패턴을 얹어 부분집합·순열·조합을 빠짐없이 나열하고, <strong>가지치기(pruning)</strong>까지 적용</li>
+                            <li>앞부분 — 하노이 탑을 재귀로 풀며 <strong>종료 조건</strong>과 <strong>호출 스택</strong>이라는 재귀의 두 기둥을 세우고, 종료 조건이 없으면 <code>StackOverflowError</code>로 죽는 것도 직접 확인</li>
+                            <li>뒷부분 — <strong>선택(choose) → 진행(explore) → 취소(unchoose)</strong> 백트래킹 패턴을 얹고, <strong>상태 공간 트리</strong>를 그려 가며 <strong>순열</strong>을 빠짐없이 나열한 뒤 <strong>가지치기(pruning)</strong>까지 적용</li>
                             <li>마지막 — 잊어버린 자물쇠 비밀번호의 후보를 모두 생성하는 프로그램을 직접 작성</li>
                         </ul>
                     </li>
@@ -79,11 +79,12 @@
                 <h2 id="h-objectives" data-toc-label="학습 목표"><span class="section-no">02</span>학습 목표</h2>
                 <p class="lecture-lead">이 강의를 마치면 다음을 할 수 있습니다.</p>
                 <ul class="objective-list">
-                    <li>학생은 재귀 메서드에서 종료 조건(base case)과 재귀 단계(recursive step)를 구분하여 설명할 수 있다.</li>
-                    <li>학생은 factorial(4)의 호출과 반환 순서를 호출 스택 그림으로 추적할 수 있다.</li>
+                    <li>학생은 하노이 탑에서 종료 조건(base case)과 재귀 단계(recursive step)를 구분하여 설명할 수 있다.</li>
+                    <li>학생은 하노이 탑 hanoi(3, A, C, B)의 호출과 이동 순서를 호출 스택 그림으로 추적할 수 있다.</li>
                     <li>학생은 종료 조건이 없거나 도달할 수 없을 때 StackOverflowError가 발생하는 이유를 설명할 수 있다.</li>
-                    <li>학생은 선택-진행-취소 구조의 백트래킹으로 부분집합·순열·조합을 나열하는 Java 코드를 작성할 수 있다.</li>
-                    <li>학생은 조건 검사를 추가해 불필요한 가지를 잘라내는 가지치기를 구현하고 그 효과를 개수로 확인할 수 있다.</li>
+                    <li>학생은 순열 문제를 상태 공간 트리(노드 = 상태, 간선 = 선택, 리프 = 해)로 그리고, 백트래킹이 이 트리를 깊이 우선으로 훑는 일임을 설명할 수 있다.</li>
+                    <li>학생은 선택-진행-취소 구조의 순열 백트래킹 Java 코드를 작성하고, 재귀 호출 횟수가 트리의 노드 수와 같음을 확인할 수 있다.</li>
+                    <li>학생은 조건 검사를 추가해 불필요한 서브트리를 잘라내는 가지치기를 구현하고 그 효과를 개수로 확인할 수 있다.</li>
                     <li>학생은 재귀 피보나치의 호출 횟수를 측정해 중복 호출 문제를 설명할 수 있다.</li>
                 </ul>
             </section>
@@ -96,6 +97,7 @@
                     <li>동아리 방 사물함 다이얼 자물쇠의 비밀번호는 <strong>"버튼은 1, 3, 7, 9 네 개만 사용했다"</strong>는 것만 기억날 뿐, 자리 수는 2자리인지 3자리인지도 확실하지 않음</li>
                     <li>후보 비밀번호를 <strong>빠짐없이, 중복 없이</strong> 뽑아야 하는데, 자리 수가 2, 3, 4로 바뀔 때마다 <strong>for문을 한 겹씩 더 쓸 수는 없음</strong></li>
                     <li><em>반복의 깊이 자체가 입력에 따라 변하는 문제 — 오늘 배울 재귀와 백트래킹이 정확히 이 문제를 풀어냄</em></li>
+                    <li>비밀번호 생성은 오늘 실습할 <strong>순열</strong>에서 "이미 쓴 문자는 못 쓴다(<code>used[]</code>)"는 제한만 빼면 되는 문제 — 걷는 상태 공간 트리의 모양만 다를 뿐 뼈대는 같음</li>
                 </ul>
                 <div class="note-box">
                     <span class="note-box__title">오늘의 핵심 질문</span>
@@ -110,29 +112,29 @@
                 <h3>재귀 호출이란?</h3>
                 <p class="lecture-lead"><strong>재귀 호출</strong>은 메서드가 <strong>자기 자신을 호출</strong>하는 것 —
                     "큰 문제를 <strong>같은 구조의 더 작은 문제</strong>에 맡기고 돌아온 답으로 내 답을 완성한다"는 뜻입니다.
-                    factorial(4)는 factorial(3)에게 "3!을 구해 줘"라고 맡기고, 돌아온 6에 4를 곱해 24를 완성합니다.</p>
+                    하노이 탑에서 원반 3개를 옮기려면, <strong>위의 원반 2개를 먼저 치우고, 가장 큰 원반을 옮기고, 치워 둔 2개를 다시 올리면</strong> 됩니다 — "원반 2개 옮기기"는 "원반 3개 옮기기"와 같은 모양의 <strong>더 작은 문제</strong>이므로 자기 자신에게 맡길 수 있습니다.</p>
 
                 <h3>재귀의 두 부분 — 이 중 하나라도 없으면 재귀가 아니다</h3>
                 <div class="table-scroll">
                     <table class="data-table">
                         <thead>
-                            <tr><th scope="col">구성 요소</th><th scope="col">역할</th><th scope="col">팩토리얼에서는</th></tr>
+                            <tr><th scope="col">구성 요소</th><th scope="col">역할</th><th scope="col">하노이 탑에서는</th></tr>
                         </thead>
                         <tbody>
-                            <tr><td><strong>종료 조건</strong> (base case)</td><td>더 쪼개지 않고 즉시 답하는 가장 작은 문제. <strong>재귀를 멈추는 브레이크.</strong></td><td><code>if (n &lt;= 1) return 1;</code></td></tr>
-                            <tr><td><strong>재귀 단계</strong> (recursive step)</td><td>문제를 <strong>더 작게 만들어</strong> 자기 자신에게 맡기고, 결과를 조합한다.</td><td><code>return n * factorial(n - 1);</code></td></tr>
+                            <tr><td><strong>종료 조건</strong> (base case)</td><td>더 쪼개지 않고 즉시 답하는 가장 작은 문제. <strong>재귀를 멈추는 브레이크.</strong></td><td><code>if (n == 1)</code> 이면 원반 하나를 바로 옮기고 끝냄</td></tr>
+                            <tr><td><strong>재귀 단계</strong> (recursive step)</td><td>문제를 <strong>더 작게 만들어</strong> 자기 자신에게 맡기고, 결과를 조합한다.</td><td><code>hanoi(n - 1, …)</code>로 위의 원반 n-1개를 <strong>두 번</strong> 맡김 (가장 큰 원반을 옮기기 전과 후)</td></tr>
                         </tbody>
                     </table>
                 </div>
                 <p class="lecture-lead">재귀 단계에는 숨은 조건이 하나 더 있습니다 — 호출할 때마다 문제가 <strong>종료 조건 쪽으로 가까워져야</strong> 합니다.
-                    <code>factorial(n - 1)</code>은 n이 1씩 줄어 언젠가 종료 조건에 닿지만,
-                    <em>실수로 <code>factorial(n)</code>을 호출하면 문제가 작아지지 않아 영원히 끝나지 않습니다.</em></p>
+                    <code>hanoi(n - 1, …)</code>은 원반이 매번 하나씩 줄어 언젠가 <code>n == 1</code>에 닿지만,
+                    <em>실수로 <code>hanoi(n, …)</code>을 호출하면 문제가 작아지지 않아 영원히 끝나지 않습니다.</em></p>
 
                 <h3>호출 스택과 StackOverflowError</h3>
                 <ul>
                     <li>JVM은 메서드가 호출될 때마다 그 메서드의 매개변수·지역 변수를 담은 <strong>스택 프레임</strong>을 호출 스택에 push하고, 메서드가 반환되면 pop</li>
                     <li>6강에서 배운 LIFO 그대로 — <strong>가장 나중에 호출된 메서드가 가장 먼저 반환</strong></li>
-                    <li>예: factorial(4)를 부르면 스택에는 factorial(4) → factorial(3) → factorial(2) → factorial(1)이 차례로 쌓였다가, 위에서부터 1 → 2 → 6 → 24를 반환하며 무너짐</li>
+                    <li>예: hanoi(3)을 부르면 스택에는 hanoi(3) → hanoi(2) → hanoi(1)이 쌓이고, 맨 위 hanoi(1)이 원반을 옮기고 반환하면 위에서부터 풀림 — 풀린 hanoi(2)는 <strong>두 번째 자기 호출</strong>로 스택을 다시 쌓음</li>
                 </ul>
                 <p class="lecture-lead">호출 스택의 크기는 유한합니다(기본 설정에서 대략 수천~수만 프레임).
                     <em>종료 조건이 없거나 도달할 수 없으면 프레임이 무한히 쌓이다가 스택이 넘쳐 <strong><code>StackOverflowError</code></strong>가 발생합니다</em> — 오류 찾기 섹션에서 실제로 터뜨려 봅니다.</p>
@@ -142,14 +144,46 @@
                     한 가지를 끝까지 시도한 뒤에는 <strong>반드시 상태를 원래대로 되돌리고</strong>
                     다음 선택지를 시도하는 기법 — 모든 백트래킹 코드는 아래 3단계 패턴을 따릅니다.</p>
                 <figure class="concept-loop" aria-hidden="true">
-                    <svg class="concept-loop__svg" viewBox="0 0 320 130" role="presentation">
-                        <rect class="concept-loop__bracket" x="212" y="28" width="78" height="58" rx="10"></rect>
-                        <text class="concept-loop__bracket-label" x="251" y="20">chosen</text>
-                        <g class="concept-loop__token cl-anim-move">
-                            <circle class="concept-loop__token-circle cl-anim-fill" cx="45" cy="57" r="16"></circle>
-                            <text class="concept-loop__token-label" x="45" y="57">x</text>
+                    <svg class="concept-loop__svg" viewBox="0 0 380 210" role="presentation">
+                        <!-- 왼쪽 위: 남은 문자(아직 안 쓴 후보) -->
+                        <text class="cl-label" x="8" y="14">남은 문자 (used = false)</text>
+                        <rect class="cl-cell" x="23" y="22" width="44" height="44" rx="8"></rect>
+                        <rect class="cl-cell" x="93" y="22" width="44" height="44" rx="8"></rect>
+                        <rect class="cl-cell" x="163" y="22" width="44" height="44" rx="8"></rect>
+                        <!-- b가 빠져나간 자리: 점선 빈칸 + used 표시 -->
+                        <rect class="cl-ghost cl-anim-ghost" x="93" y="22" width="44" height="44" rx="8"></rect>
+                        <text class="cl-used cl-anim-ghost" x="115" y="80">used</text>
+                        <g class="cl-tok"><circle cx="45" cy="44" r="16"></circle><text x="45" y="44">a</text></g>
+                        <g class="cl-tok"><circle cx="185" cy="44" r="16"></circle><text x="185" y="44">c</text></g>
+
+                        <!-- 왼쪽 아래: chosen(지금까지 고른 순서) -->
+                        <text class="cl-label" x="8" y="108">chosen (고른 순서)</text>
+                        <rect class="cl-slot" x="23" y="116" width="44" height="44" rx="8"></rect>
+                        <rect class="cl-slot" x="93" y="116" width="44" height="44" rx="8"></rect>
+                        <rect class="cl-slot" x="163" y="116" width="44" height="44" rx="8"></rect>
+                        <!-- 다음 자리를 채우려는 표시 -->
+                        <rect class="cl-probe cl-anim-probe" x="93" y="116" width="44" height="44" rx="8"></rect>
+                        <text class="cl-probe-q cl-anim-probe" x="115" y="138">?</text>
+                        <!-- 움직이는 토큰 b: 남은 문자 → chosen 첫 칸 → 되돌아옴 -->
+                        <g class="cl-tok cl-tok--b cl-anim-move">
+                            <circle class="cl-anim-fill" cx="115" cy="44" r="16"></circle>
+                            <text x="115" y="44">b</text>
                         </g>
-                        <text class="concept-loop__frame-label cl-anim-frame" x="251" y="112">↓ 재귀 호출</text>
+
+                        <!-- 오른쪽: 호출 스택 (아래에서 위로 쌓임) -->
+                        <text class="cl-label cl-label--mid" x="298" y="108">호출 스택</text>
+                        <rect class="cl-frame" x="240" y="152" width="116" height="30" rx="6"></rect>
+                        <text class="cl-frame-text" x="298" y="167">permutation()</text>
+                        <g class="cl-frame-new cl-anim-frame">
+                            <rect x="240" y="118" width="116" height="30" rx="6"></rect>
+                            <text x="298" y="133">permutation()</text>
+                        </g>
+
+                        <!-- 단계별 설명 (한 번에 하나만 보임) -->
+                        <text class="cl-status cl-status--1 cl-anim-s1" x="190" y="202" text-anchor="middle">① 선택: b를 chosen에 넣는다</text>
+                        <text class="cl-status cl-status--2 cl-anim-s2" x="190" y="202" text-anchor="middle">② 진행: 남은 a, c로 다음 자리 채우기</text>
+                        <text class="cl-status cl-status--3 cl-anim-s3" x="190" y="202" text-anchor="middle">③ 취소: b를 빼고 원래대로 복구</text>
+                        <text class="cl-status cl-status--4 cl-anim-s4" x="190" y="202" text-anchor="middle">처음과 같은 상태 → 다음 후보 c 시도</text>
                     </svg>
                     <div class="concept-loop__steps">
                         <span class="concept-loop__step concept-loop__step--1 cl-anim-step1">① 선택</span>
@@ -157,8 +191,8 @@
                         <span class="concept-loop__step concept-loop__step--3 cl-anim-step3">③ 취소</span>
                     </div>
                     <figcaption class="concept-loop__caption">
-                        원소 x를 chosen에 넣었다가(선택), 재귀 호출로 내려갔다가(진행),
-                        되돌아오며 다시 빼는(취소) 한 사이클이 반복 재생됩니다.
+                        {a, b, c}로 한 줄을 만드는 예. ① 남은 문자 중 b를 골라 chosen에 넣고 → ② 재귀 호출로 다음 자리를 채우러 내려갔다가
+                        → ③ 돌아오면 b를 다시 빼서 <strong>상태를 처음과 똑같이</strong> 되돌립니다. 그래야 다음 후보(c)를 공정하게 시도할 수 있습니다.
                     </figcaption>
                 </figure>
                 <div class="table-scroll">
@@ -177,7 +211,30 @@
                     <strong>함께 쓰는 공유 상태</strong>이기 때문 —
                     <em>형제 가지를 탐색하러 가기 전에 내가 남긴 흔적을 지우지 않으면, 다음 가지가 오염된 상태에서 출발합니다.</em></p>
 
-                <h3>세 가지 대표 나열 패턴</h3>
+                <h3>상태 공간 트리 — 백트래킹이 걷는 지도</h3>
+                <p class="lecture-lead">백트래킹이 무슨 일을 하는지 한눈에 보려면, 가능한 모든 선택의 흐름을 <strong>트리</strong>로 그려 봅니다.
+                    이것이 <strong>상태 공간 트리</strong>(state-space tree)입니다. 예를 들어 {a, b, c}를 한 줄로 세우는 <strong>순열</strong> 문제라면:</p>
+                <div class="table-scroll">
+                    <table class="data-table">
+                        <thead>
+                            <tr><th scope="col">트리의 요소</th><th scope="col">의미</th><th scope="col">순열 {a, b, c}에서는</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><strong>노드</strong> (상태)</td><td>"지금까지 무엇을 골랐는가"</td><td><code>current</code> = "", "a", "ab", "abc" …</td></tr>
+                            <tr><td><strong>간선</strong> (선택)</td><td>다음에 고르는 후보 하나</td><td>아직 안 쓴 문자 하나를 붙이기</td></tr>
+                            <tr><td><strong>루트</strong></td><td>아직 아무것도 고르지 않은 시작 상태</td><td><code>current</code> = "" (깊이 0)</td></tr>
+                            <tr><td><strong>리프</strong> (잎)</td><td>더 고를 것이 없는 상태 = <strong>해</strong></td><td>길이 3인 문자열 6개 (깊이 3)</td></tr>
+                            <tr><td><strong>깊이</strong></td><td>지금까지 고른 횟수</td><td>= 재귀 호출 깊이 = 호출 스택의 높이</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <ul>
+                    <li>깊이마다 노드 수는 1 → 3 → 6 → 6개 (첫 자리 3가지, 둘째 자리 2가지, 셋째 자리 1가지) — 전체 <strong>16개 노드</strong> 중 리프 6개가 순열</li>
+                    <li>백트래킹 = <strong>이 트리를 깊이 우선으로 한 바퀴 훑는 것</strong> — 선택은 자식으로 <em>내려가는</em> 일, 취소는 부모로 <em>올라오는</em> 일이며 올라올 때 상태도 부모의 것으로 복원</li>
+                    <li>노드 하나를 방문할 때마다 재귀 호출이 한 번 일어나므로 <strong>호출 횟수 = 방문한 노드 수</strong></li>
+                </ul>
+
+                <h3>대표 나열 패턴 비교 — 이번 강의의 주인공은 순열</h3>
                 <div class="table-scroll">
                     <table class="data-table">
                         <thead>
@@ -193,7 +250,7 @@
 
                 <h3>가지치기 (pruning)</h3>
                 <ul>
-                    <li>경우의 수가 2ⁿ, n!처럼 폭발하므로, <strong>조건에 어긋나는 것이 확실해진 가지는 끝까지 내려가지 않고 그 자리에서 잘라냄</strong></li>
+                    <li>경우의 수가 2ⁿ, n!처럼 폭발하므로, <strong>조건에 어긋나는 것이 확실해진 가지는 끝까지 내려가지 않고 그 자리에서 잘라냄</strong> — 상태 공간 트리에서 그 노드 아래 <strong>서브트리 전체를 통째로 건너뛰는 것</strong></li>
                     <li>선택하기 전에 조건을 검사해 <code>continue</code>로 건너뛰는 한 줄이면 충분</li>
                     <li><em>잘라낸 가지 아래의 모든 경우가 통째로 생략되므로 효과가 큼</em></li>
                 </ul>
@@ -204,87 +261,102 @@
                 <h2 id="h-steps" data-toc-label="단계별 동작 과정"><span class="section-no">05</span>단계별 동작 과정</h2>
                 <ul>
                     <li>세 개의 시각화로 오늘의 핵심을 확인 — <strong>다음 단계 ▶</strong> 버튼으로 한 단계씩 진행</li>
+                    <li>앞의 하나는 재귀의 기본 동작(호출 스택), 뒤의 둘은 <strong>순열 문제를 백트래킹으로 푸는 과정</strong> — 곧 작성할 실습 코드와 같은 절차</li>
                     <li>파란색 테두리 = <strong>현재 실행 중인 프레임/위치</strong>, 초록색 = <strong>완료</strong> (캡션 텍스트로도 상태를 설명)</li>
                 </ul>
 
-                <h3>시각화 1 — factorial(4)의 호출 스택</h3>
+                <h3>시각화 1 — 하노이 탑의 호출 스택</h3>
                 <ul>
-                    <li>4! = 4 × 3! — 3!을 아직 모르므로 <strong>계산을 미루고</strong>, 3! = 3 × 2! → 2! = 2 × 1!로 계속 미룸</li>
-                    <li><strong>1! = 1</strong>(종료 조건)에서 멈춘 뒤, 미뤄 둔 계산을 <strong>가장 최근 것부터</strong> 거꾸로 처리: 2 → 6 → <strong>24</strong></li>
+                    <li>규칙: 기둥 A에 쌓인 원반 3개를 기둥 C로 옮기되, <strong>한 번에 원반 하나만</strong> 옮기고 <strong>큰 원반을 작은 원반 위에 올릴 수 없음</strong> (보조 기둥 B 사용)</li>
+                    <li>원반 3개 = <strong>① 위의 2개를 B로 치움 → ② 가장 큰 원반 3을 C로 옮김 → ③ B의 2개를 C로 옮김</strong> — ①과 ③은 "원반 2개 옮기기"라는 같은 문제를 <strong>자기 자신에게 두 번 맡기는 것</strong></li>
+                    <li>원반이 1개가 되면(<strong>종료 조건</strong>) 더 쪼개지 않고 바로 옮기고 반환 — 그 뒤 반환이 거꾸로 풀리며 다음 단계가 이어짐</li>
+                    <li><strong>새 데이터</strong> 버튼으로 원반 수를 바꿔 이동 횟수가 2ⁿ − 1로 늘어나는 것도 확인</li>
                 </ul>
-                <p class="lecture-lead">프레임이 아래에서 위로 쌓이고(호출), 종료 조건에서 방향을 바꿔 위에서부터 사라지는(반환) 모습을 관찰하세요 — 이 "미루기 → 거꾸로 처리"가 곧 6강의 스택(LIFO)입니다.</p>
-                <div id="viz-factorial" aria-label="팩토리얼 재귀의 호출 스택 시각화"></div>
+                <p class="lecture-lead">호출 스택이 쌓이고(호출), 종료 조건에서 방향을 바꿔 위에서부터 사라지는(반환) 모습을 관찰하세요 — 이 "미루기 → 거꾸로 처리"가 곧 6강의 스택(LIFO)입니다.
+                    <em>자기 호출이 두 번이라 스택은 "쌓였다 풀렸다"를 반복합니다.</em></p>
+                <div id="viz-hanoi" aria-label="하노이 탑의 호출 스택 시각화"></div>
 
-                <h3>시각화 2 — {1, 2, 3} 부분집합 백트래킹</h3>
+                <h3>시각화 2 — {a, b, c} 순열 백트래킹</h3>
                 <ul>
-                    <li>카드 세 장 {1, 2, 3}의 모든 <strong>부분집합</strong>을 나열 — 원소를 한 장씩 차례로 "넣는다 / 안 넣는다"로 결정하며 결정 트리를 내려감</li>
-                    <li>한 가지를 끝까지 시도한 뒤에는 <strong>한 단계 되돌아가</strong> 마지막 결정을 바꿈 — 이 "되돌아가기"가 <strong>백트래킹</strong>이라는 이름의 유래</li>
-                    <li><strong>chosen 스택에 선택이 쌓이고, 되돌아올 때 정확히 반대로 빠지는 것</strong>을 확인</li>
-                    <li>호출 스택의 깊이가 결정한 원소 개수와 같다는 것도 확인</li>
+                    <li>세 문자 {a, b, c}를 한 줄로 세우는 모든 방법(<strong>순열</strong>)을 나열 — 자리를 앞에서부터 한 칸씩 채우며, 아직 안 쓴 문자를 하나 골라 붙임</li>
+                    <li>한 가지를 끝까지 시도한 뒤에는 <strong>한 단계 되돌아가</strong> 마지막 선택을 바꿈 — 이 "되돌아가기"가 <strong>백트래킹</strong>이라는 이름의 유래</li>
+                    <li><strong>current 스택에 선택이 쌓이고, 되돌아올 때 정확히 반대로 빠지는 것</strong>과 <strong>used 표시가 켜졌다 꺼지는 것</strong>을 확인</li>
+                    <li>호출 스택의 깊이는 "지금까지 고른 문자 수 + 1"이라는 것도 확인</li>
                 </ul>
-                <div id="viz-subsets" aria-label="부분집합 백트래킹의 선택-진행-취소 시각화"></div>
-                <p class="lecture-lead">원소마다 2갈래이므로 부분집합은 2 × 2 × 2 = <strong>8개</strong> — 시각화 마지막 단계에서 {1,2,3}, {1,2}, {1,3}, {1}, {2,3}, {2}, {3}, {} 순서로 나열됩니다.
+                <div id="viz-permutation" aria-label="순열 백트래킹의 선택-진행-취소 시각화"></div>
+                <p class="lecture-lead">첫 자리 3가지 × 둘째 자리 2가지 × 셋째 자리 1가지 = <strong>6개</strong> — 시각화 마지막 단계에서 abc, acb, bac, bca, cab, cba 순서로 나열됩니다.
                     <em><strong>시각화 = 잠시 후 작성할 의사코드·코드</strong>가 모두 같은 절차입니다.</em></p>
 
-                <h3>시각화 3 — {1, 2, 3} 부분집합의 결정 트리</h3>
-                <p class="lecture-lead">같은 재귀를 이번엔 트리 전체 관점에서 봅니다. 미리 다 그려둔 트리 위를 재귀가 어떻게 훑고 지나가는지 관찰하세요 —
-                    <strong>파란 경로는 지금 내려가 있는 가지</strong>, <strong>초록 노드는 이미 확정된 부분집합</strong>입니다.</p>
-                <div id="viz-tree" aria-label="부분집합 백트래킹의 결정 트리 시각화"></div>
+                <h3>시각화 3 — 순열의 상태 공간 트리</h3>
+                <p class="lecture-lead">같은 재귀를 이번엔 <strong>트리 전체 관점</strong>에서 봅니다. 백트래킹이 걷는 길을 미리 다 그려둔 지도가 <strong>상태 공간 트리</strong>입니다 —
+                    노드 하나는 "지금까지 이렇게 골랐다"는 <strong>상태</strong>, 간선 하나는 문자를 하나 고르는 <strong>선택</strong>, 맨 아래 리프는 완성된 <strong>해(순열)</strong>입니다.
+                    <strong>파란 경로는 지금 서 있는 상태</strong>, <strong>회색 노드는 탐색을 마치고 돌아온 곳</strong>, <strong>초록 노드는 확정된 순열</strong>입니다.</p>
+                <div id="viz-tree" aria-label="순열 백트래킹의 상태 공간 트리 시각화"></div>
+                <p class="lecture-lead">선택(①)은 아래 자식으로 <strong>내려가는</strong> 일, 취소(③)는 위 부모로 <strong>올라오는</strong> 일입니다 —
+                    <em>백트래킹은 이 트리를 깊이 우선으로 한 바퀴 훑는 것</em>이고, 노드를 한 번 방문할 때마다 <code>permutation()</code>이 한 번 호출됩니다.</p>
             </section>
 
             <!-- 6. 의사코드 -->
             <section class="lesson-section" id="sec-pseudo" aria-labelledby="h-pseudo">
                 <h2 id="h-pseudo" data-toc-label="의사코드"><span class="section-no">06</span>의사코드</h2>
-                <p class="lecture-lead">코드를 쓰기 전에, 두 알고리즘의 절차를 언어 중립적인 의사코드로 정리합니다.</p>
+                <p class="lecture-lead">코드를 쓰기 전에, 두 알고리즘의 절차를 언어 중립적인 의사코드로 정리합니다. 이 의사코드는 <strong>바로 다음 실습 코드(07)를 한 줄씩 옮기면 완성되도록</strong> 썼습니다.</p>
                 <ul>
                     <li>의사코드 = 특정 언어 문법 대신 <strong>우리말에 가까운 문장</strong>으로 알고리즘의 순서를 적은 것</li>
                     <li>읽는 법: <code>x ← 값</code>은 "x에 값을 저장한다", 들여쓰기는 "바로 위 줄(<code>만약 … 이면:</code>) 안에 포함된 작업", <code>//</code> 뒤는 설명(주석)</li>
-                    <li><code>Factorial(n − 1)</code>처럼 <strong>알고리즘이 자기 이름을 다시 부르는 줄</strong>이 재귀 호출 — 그 줄에서 멈춰 답이 돌아올 때까지 기다린 뒤 다음 줄로 넘어감</li>
+                    <li><code>Hanoi(n − 1, from, via, to)</code>처럼 <strong>알고리즘이 자기 이름을 다시 부르는 줄</strong>이 재귀 호출 — 그 줄에서 멈춰 답이 돌아올 때까지 기다린 뒤 다음 줄로 넘어감</li>
                 </ul>
 
-                <h3>재귀 팩토리얼 (Recursive Factorial)</h3>
+                <h3>하노이 탑 (Tower of Hanoi)</h3>
                 <article class="code-card">
                     <header class="code-card__header">
                         <div class="code-card__info">
                             <span class="code-card__language">Pseudo</span>
-                            <strong class="code-card__filename">재귀 팩토리얼</strong>
+                            <strong class="code-card__filename">재귀 하노이 탑</strong>
                         </div>
-                        <button type="button" class="copy-code-button" data-copy-target="code-pseudo-fact" aria-label="재귀 팩토리얼 의사코드 복사">코드 복사</button>
+                        <button type="button" class="copy-code-button" data-copy-target="code-pseudo-bs" aria-label="하노이 탑 의사코드 복사">코드 복사</button>
                     </header>
-                    <pre><code id="code-pseudo-fact">알고리즘 Factorial(n)
-    만약 n ≤ 1 이면:                     // 종료 조건 (브레이크)
-        1을 반환한다
-    smaller ← Factorial(n − 1)           // 더 작은 같은 문제에 맡긴다
-    n × smaller 를 반환한다              // 돌아온 답으로 내 답을 완성한다</code></pre>
-                </article>
-
-                <h3>부분집합 백트래킹 (Subset Backtracking)</h3>
-                <article class="code-card">
-                    <header class="code-card__header">
-                        <div class="code-card__info">
-                            <span class="code-card__language">Pseudo</span>
-                            <strong class="code-card__filename">부분집합 백트래킹 — 선택·진행·취소</strong>
-                        </div>
-                        <button type="button" class="copy-code-button" data-copy-target="code-pseudo-subset" aria-label="부분집합 백트래킹 의사코드 복사">코드 복사</button>
-                    </header>
-                    <pre><code id="code-pseudo-subset">알고리즘 Subsets(index)
-    만약 index = 원소 개수 이면:          // 종료 조건: 모든 원소를 결정했다
-        chosen 을 부분집합 하나로 기록한다
+                    <pre><code id="code-pseudo-bs">알고리즘 Hanoi(n, from, to, via)         // 원반 n개를 from 기둥에서 to 기둥으로 옮긴다
+    만약 n = 1 이면:                       // 종료 조건: 원반 1개는 바로 옮긴다
+        원반 1 을 from 에서 to 로 옮긴다
         돌아간다
 
-    // 경우 1: index번째 원소를 넣는 가지
-    chosen 에 원소[index] 를 추가한다     // (1) 선택
-    Subsets(index + 1) 을 호출한다        // (2) 진행
-    chosen 에서 마지막 원소를 제거한다    // (3) 취소 — 상태 복원!
+    Hanoi(n − 1, from, via, to) 를 호출한다   // ① 위의 n−1개를 보조 기둥 via 로 치운다
+    원반 n 을 from 에서 to 로 옮긴다           // ② 가장 큰 원반을 목적지로 옮긴다
+    Hanoi(n − 1, via, to, from) 를 호출한다   // ③ 치워 둔 n−1개를 목적지 위로 옮긴다</code></pre>
+                </article>
 
-    // 경우 2: index번째 원소를 넣지 않는 가지
-    Subsets(index + 1) 을 호출한다        // 넣은 것이 없으니 취소도 없다</code></pre>
+                <h3>순열 백트래킹 (Permutation Backtracking)</h3>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Pseudo</span>
+                            <strong class="code-card__filename">순열 백트래킹 — 선택·진행·취소</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-pseudo-perm" aria-label="순열 백트래킹 의사코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-pseudo-perm">알고리즘 Permutation(depth)           // depth = 상태 공간 트리의 깊이 = 호출 스택의 깊이
+    nodeCount ← nodeCount + 1              // 트리의 노드(= 호출) 하나를 방문했다
+
+    만약 current 의 길이 = 문자 개수 이면:  // 종료 조건: 리프 노드 — 순열 완성
+        current 를 순열 하나로 기록한다
+        돌아간다                           // 부모 노드로 복귀
+
+    i 를 0 부터 문자 개수 − 1 까지 반복한다:
+        만약 used[i] 가 참이면:            // 이미 쓴 문자는 가지를 만들지 않는다
+            다음 i 로 넘어간다
+
+        used[i] ← 참                       // (1) 선택: 자식 노드로 내려갈 준비
+        current 끝에 문자[i] 를 붙인다
+        Permutation(depth + 1) 을 호출한다 // (2) 진행: 자식 노드 탐색
+        current 의 마지막 문자를 지운다    // (3) 취소: 부모 노드의 상태로 복원
+        used[i] ← 거짓</code></pre>
                 </article>
 
                 <p><strong>두 의사코드 정리</strong></p>
                 <ul>
-                    <li>두 알고리즘 모두 <strong>종료 조건을 먼저</strong> 검사하고, 그다음에 더 작은 문제로 자기 자신을 호출</li>
-                    <li>백트래킹 의사코드에서 (1)과 (3)이 <strong>정확히 대칭</strong> — add에는 remove, <code>used[i] = true</code>에는 <code>used[i] = false</code></li>
+                    <li>두 알고리즘 모두 <strong>종료 조건을 먼저</strong> 검사하고, 그다음에 더 작은 문제로 자기 자신을 호출 — 하노이는 원반이, 순열은 남은 자리가 하나씩 줄어듦</li>
+                    <li>순열 의사코드의 한 호출 = 상태 공간 트리의 <strong>노드 하나</strong>, <code>used[i]</code> 검사를 통과해 자기 호출까지 가는 한 번의 반복 = <strong>간선 하나</strong></li>
+                    <li>(1)과 (3)이 <strong>정확히 대칭</strong> — "붙인다"에는 "지운다", <code>used[i] ← 참</code>에는 <code>used[i] ← 거짓</code></li>
                     <li><em>선택에서 한 일을 취소에서 그대로 되돌려야 모든 가지가 깨끗한 상태에서 출발</em></li>
                 </ul>
             </section>
@@ -292,12 +364,89 @@
             <!-- 7. 실습 코드 -->
             <section class="lesson-section" id="sec-complete" aria-labelledby="h-complete">
                 <h2 id="h-complete" data-toc-label="실습 코드"><span class="section-no">07</span>실습 코드</h2>
-                <p class="lecture-lead">의사코드(06)를 Java로 옮깁니다. 부분집합에 이어 나머지 두 나열 패턴 —
-                    <strong>순열</strong>(used[] 방문 배열)과 <strong>조합</strong>(start 인덱스)을 구현한 프로그램입니다.</p>
+                <p class="lecture-lead">의사코드(06)를 Java로 옮깁니다. 먼저 <strong>재귀의 기본(종료 조건 + 호출 스택)</strong>을 하노이 탑으로 확인하고,
+                    이어서 <strong>순열 문제를 상태 공간 트리로 풀어</strong> 나열 결과와 트리 모양을 함께 출력합니다.</p>
                 <ul>
-                    <li><code>permutation</code>·<code>combination</code> 모두 04 핵심 개념·06 의사코드의 <strong>선택(choose) → 진행(explore) → 취소(unchoose)</strong> 3단계 구조를 그대로 메서드로 옮긴 것</li>
-                    <li><code>permutation</code>의 <code>used[]</code>는 04에서 배운 <strong>방문 배열 중복 방지</strong> 장치를, <code>combination</code>의 <code>start</code>는 <strong>인덱스로 순서를 고정</strong>하는 중복 방지 장치를 코드로 옮긴 것 — 둘의 차이가 곧 순열과 조합의 차이</li>
-                    <li>두 메서드 모두 선택·취소가 정확히 대칭이라는 점(append ↔ deleteCharAt, used[i]=true ↔ used[i]=false)에 주목하세요</li>
+                    <li>같은 폴더(<code>examples/java/07-recursion-and-backtracking/</code>)에 <code>Step1</code> → <code>Step4</code> 단계별 파일이 있어, 데이터 → 종료 조건 → 재귀 호출 → 백트래킹 순으로 한 단계씩 따라 만들 수 있음</li>
+                    <li>아래 두 프로그램은 각각 의사코드의 <code>Hanoi</code>, <code>Permutation</code>을 거의 한 줄씩 옮긴 것</li>
+                </ul>
+
+                <h3>실습 코드 1 — 하노이 탑과 호출 스택</h3>
+                <ul>
+                    <li><code>depth</code> 매개변수는 "지금 호출 스택에 프레임이 몇 장 쌓여 있는가"를 들여쓰기로 보여 주기 위한 용도 — 알고리즘 자체에는 필요 없음</li>
+                    <li>출력의 <strong>이동 4번(가장 큰 원반 3)</strong>이 정확히 한가운데 — 자기 호출 두 번 사이에서 일어나기 때문</li>
+                    <li>호출 7번 = 이동 7번 = 2³ − 1 — 원반이 하나 늘 때마다 호출과 이동이 2배 + 1로 늘어남 (09 복잡도에서 계속)</li>
+                </ul>
+                <article class="code-card">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">Java</span>
+                            <strong class="code-card__filename">Step3HanoiRecursion.java</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="code-complete-bs" aria-label="Step3HanoiRecursion.java 코드 복사">코드 복사</button>
+                    </header>
+                    <pre><code id="code-complete-bs" class="language-java">public class Step3HanoiRecursion {
+
+    static int moveCount = 0;   // 지금까지 옮긴 횟수
+
+    /** 완성된 하노이 탑. 호출 깊이를 들여쓰기로, 원반 이동을 한 줄로 출력한다. */
+    static void hanoi(int n, char from, char to, char via, int depth) {
+        String indent = "  ".repeat(depth);   // 깊이 = 호출 스택에 쌓인 프레임 수
+        System.out.println(indent + "호출: hanoi(" + n + ", " + from + " -&gt; " + to + ")");
+
+        if (n == 1) {                         // 종료 조건: 원반 1개는 바로 옮긴다
+            moveCount++;
+            System.out.println(indent + "  이동 " + moveCount + ": 원반 1 (" + from + " -&gt; " + to + ")");
+            return;
+        }
+
+        hanoi(n - 1, from, via, to, depth + 1);   // 1) 위의 n-1개를 보조 기둥 via로 치운다
+        moveCount++;
+        System.out.println(indent + "  이동 " + moveCount + ": 원반 " + n + " (" + from + " -&gt; " + to + ")");   // 2) 가장 큰 원반을 옮긴다
+        hanoi(n - 1, via, to, from, depth + 1);   // 3) 치워 둔 n-1개를 목적지 위로 옮긴다
+    }
+
+    public static void main(String[] args) {
+        int n = 3;
+        System.out.println("원반 " + n + "개: A -&gt; C (보조 B)");
+        hanoi(n, 'A', 'C', 'B', 0);
+        System.out.println("총 이동 " + moveCount + "번 (2^" + n + " - 1 = " + ((1 &lt;&lt; n) - 1) + ")");
+    }
+}</code></pre>
+                </article>
+                <article class="code-card code-card--output">
+                    <header class="code-card__header">
+                        <div class="code-card__info">
+                            <span class="code-card__language">출력</span>
+                            <strong class="code-card__filename">실행 결과</strong>
+                        </div>
+                        <button type="button" class="copy-code-button" data-copy-target="out-complete-bs" aria-label="하노이 탑 실행 결과 복사">복사</button>
+                    </header>
+                    <pre><code id="out-complete-bs">원반 3개: A -&gt; C (보조 B)
+호출: hanoi(3, A -&gt; C)
+  호출: hanoi(2, A -&gt; B)
+    호출: hanoi(1, A -&gt; C)
+      이동 1: 원반 1 (A -&gt; C)
+    이동 2: 원반 2 (A -&gt; B)
+    호출: hanoi(1, C -&gt; B)
+      이동 3: 원반 1 (C -&gt; B)
+  이동 4: 원반 3 (A -&gt; C)
+  호출: hanoi(2, B -&gt; C)
+    호출: hanoi(1, B -&gt; A)
+      이동 5: 원반 1 (B -&gt; A)
+    이동 6: 원반 2 (B -&gt; C)
+    호출: hanoi(1, A -&gt; C)
+      이동 7: 원반 1 (A -&gt; C)
+총 이동 7번 (2^3 - 1 = 7)</code></pre>
+                </article>
+
+                <h3>실습 코드 2 — 순열 문제를 상태 공간 트리로 풀기</h3>
+                <p class="lecture-lead">문제: <strong>{a, b, c}를 한 줄로 세우는 모든 방법을 빠짐없이, 중복 없이 나열하라.</strong>
+                    <code>permutation(depth)</code>는 상태 공간 트리의 노드 하나를 방문하는 메서드이고, 출력의 <strong>들여쓰기가 곧 트리의 깊이</strong>입니다.</p>
+                <ul>
+                    <li><code>current</code>와 <code>used[]</code>가 지금 서 있는 노드의 <strong>상태</strong> — 모든 재귀 호출이 함께 쓰는 공유 상태</li>
+                    <li>선택(<code>append</code>, <code>used[i] = true</code>)은 자식 노드로 <strong>내려가기 직전</strong>의 상태 변경, 취소(<code>deleteCharAt</code>, <code>used[i] = false</code>)는 <strong>부모 노드로 올라온 뒤</strong>의 상태 복원</li>
+                    <li><code>nodeCount</code>는 호출 횟수 = 방문한 노드 수 — 트리 그림의 노드를 직접 세어 비교해 보세요</li>
                 </ul>
                 <article class="code-card">
                     <header class="code-card__header">
@@ -311,52 +460,41 @@
 
     static char[] letters = {'a', 'b', 'c'};
     static boolean[] used = new boolean[letters.length];   // 문자 사용(방문) 여부 관리
-    static StringBuilder current = new StringBuilder();    // 지금까지 만든 문자열 (공유 상태)
-    static int permCount = 0;
-    static int comboCount = 0;
+    static StringBuilder current = new StringBuilder();    // 지금 트리의 어느 노드인지 = 지금까지의 선택
+    static int nodeCount = 0;    // 방문한 상태 공간 트리의 노드 수
+    static int permCount = 0;    // 완성된 순열(리프) 수
 
-    /** 순열: 아직 안 쓴 문자를 하나 골라 붙이고, 재귀가 돌아오면 반드시 되돌린다. */
-    static void permutation() {
-        if (current.length() == letters.length) {          // 종료 조건: 전부 골랐다
+    /** 상태 공간 트리를 깊이 우선으로 훑으며 순열을 만든다. depth = 트리의 깊이 = 호출 스택의 깊이. */
+    static void permutation(int depth) {
+        nodeCount++;                                       // 이 호출 하나가 트리의 노드 하나
+        String indent = "  ".repeat(depth);                // 깊이만큼 들여써서 트리 모양을 만든다
+
+        if (current.length() == letters.length) {          // 종료 조건: 리프(잎) 노드 = 순열 완성
             permCount++;
-            System.out.println("  순열 " + permCount + ": " + current);
+            System.out.println(indent + current + "   &lt;- 순열 " + permCount);
             return;
         }
+        System.out.println(indent + (depth == 0 ? "(시작)" : current.toString()));
 
         for (int i = 0; i &lt; letters.length; i++) {
             if (used[i]) {
-                continue;                                  // 이미 쓴 문자는 건너뛴다
+                continue;                                  // 이미 쓴 문자는 가지를 만들지 않는다
             }
-            used[i] = true;                                // (1) 선택
+            used[i] = true;                                // (1) 선택: 자식 노드로 내려갈 준비
             current.append(letters[i]);
-            permutation();                                 // (2) 진행
-            current.deleteCharAt(current.length() - 1);    // (3) 취소: 상태 복원
+            permutation(depth + 1);                        // (2) 진행: 자식 노드 탐색
+            current.deleteCharAt(current.length() - 1);    // (3) 취소: 부모 노드의 상태로 복원
             used[i] = false;
         }
     }
 
-    /** 조합: start 이후의 문자만 고르므로 순서만 다른 중복이 생기지 않는다. */
-    static void combination(int start, int k) {
-        if (current.length() == k) {                       // 종료 조건: k개를 골랐다
-            comboCount++;
-            System.out.println("  조합 " + comboCount + ": " + current);
-            return;
-        }
-
-        for (int i = start; i &lt; letters.length; i++) {
-            current.append(letters[i]);                    // 선택
-            combination(i + 1, k);                         // 진행: 다음은 i + 1부터만
-            current.deleteCharAt(current.length() - 1);    // 취소
-        }
-    }
-
     public static void main(String[] args) {
-        System.out.println("[1] {a, b, c}의 모든 순열 (3! = 6개)");
-        permutation();
+        System.out.println("{a, b, c}의 상태 공간 트리 (들여쓰기 = 깊이)");
+        permutation(0);
 
         System.out.println();
-        System.out.println("[2] {a, b, c}에서 2개를 고르는 조합 (3C2 = 3개)");
-        combination(0, 2);
+        System.out.println("방문한 노드(= 재귀 호출 횟수): " + nodeCount + "개");
+        System.out.println("그중 리프(순열 완성): " + permCount + "개");
     }
 }</code></pre>
                 </article>
@@ -368,24 +506,49 @@
                         </div>
                         <button type="button" class="copy-code-button" data-copy-target="out-complete" aria-label="실습 코드 실행 결과 복사">복사</button>
                     </header>
-                    <pre><code id="out-complete">[1] {a, b, c}의 모든 순열 (3! = 6개)
-  순열 1: abc
-  순열 2: acb
-  순열 3: bac
-  순열 4: bca
-  순열 5: cab
-  순열 6: cba
+                    <pre><code id="out-complete">{a, b, c}의 상태 공간 트리 (들여쓰기 = 깊이)
+(시작)
+  a
+    ab
+      abc   &lt;- 순열 1
+    ac
+      acb   &lt;- 순열 2
+  b
+    ba
+      bac   &lt;- 순열 3
+    bc
+      bca   &lt;- 순열 4
+  c
+    ca
+      cab   &lt;- 순열 5
+    cb
+      cba   &lt;- 순열 6
 
-[2] {a, b, c}에서 2개를 고르는 조합 (3C2 = 3개)
-  조합 1: ab
-  조합 2: ac
-  조합 3: bc</code></pre>
+방문한 노드(= 재귀 호출 횟수): 16개
+그중 리프(순열 완성): 6개</code></pre>
                 </article>
+
+                <h3>의사코드 ↔ 상태 공간 트리 ↔ Java 코드</h3>
+                <div class="table-scroll">
+                    <table class="data-table">
+                        <thead>
+                            <tr><th scope="col">의사코드</th><th scope="col">상태 공간 트리에서는</th><th scope="col">Java 코드</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>current 의 길이 = 문자 개수 이면</td><td>리프 노드에 도착 — 해(순열) 완성</td><td><code>if (current.length() == letters.length)</code></td></tr>
+                            <tr><td>used[i] 가 참이면 넘어간다</td><td>이미 쓴 문자 — 이 자리에는 가지가 없음</td><td><code>if (used[i]) continue;</code></td></tr>
+                            <tr><td>(1) 선택</td><td>간선을 따라 자식 노드로 내려갈 준비</td><td><code>used[i] = true; current.append(...)</code></td></tr>
+                            <tr><td>(2) 진행</td><td>자식 노드를 방문 (깊이 +1)</td><td><code>permutation(depth + 1)</code></td></tr>
+                            <tr><td>(3) 취소</td><td>부모 노드로 올라오며 상태 복원</td><td><code>current.deleteCharAt(...); used[i] = false;</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
                 <div class="note-box">
-                    <span class="note-box__title">순열과 조합의 결정적 차이</span>
+                    <span class="note-box__title">출력으로 확인하는 트리의 성질</span>
                     <ul>
-                        <li><strong>순열</strong>은 매번 <strong>전체 후보</strong>에서 고르되 <code>used[]</code>로 재사용을 막습니다 — ab와 ba를 모두 만듭니다.</li>
-                        <li><strong>조합</strong>은 <strong>start 이후</strong>에서만 고릅니다 — a를 고른 뒤에는 b, c만 볼 수 있으므로 ba처럼 순서만 다른 중복이 아예 생기지 않아 <code>used[]</code>도 필요 없습니다.</li>
+                        <li>깊이 0에 1개, 깊이 1에 3개(a, b, c), 깊이 2에 6개(ab, ac, …), 깊이 3에 6개(순열) — 합계 <strong>1 + 3 + 6 + 6 = 16개</strong> 노드, 즉 <code>permutation</code> 호출 16번</li>
+                        <li>가지 수는 <strong>깊이가 깊어질수록 줄어듭니다</strong>(3 → 2 → 1) — 앞에서 쓴 문자는 <code>used[]</code> 때문에 가지가 생기지 않기 때문</li>
+                        <li>리프의 개수가 곧 순열의 개수 <strong>n!</strong> — 문자가 하나만 늘어도 트리가 순식간에 커집니다 (09 복잡도에서 계속)</li>
                     </ul>
                 </div>
             </section>
@@ -402,20 +565,26 @@
                             <header class="code-card__header">
                                 <div class="code-card__info">
                                     <span class="code-card__language">Java</span>
-                                    <strong class="code-card__filename">BuggyFactorialNoBase.java (오류 있음)</strong>
+                                    <strong class="code-card__filename">BuggyHanoiNoBase.java (오류 있음)</strong>
                                 </div>
                                 <button type="button" class="copy-code-button" data-copy-target="code-bug1" aria-label="오류 1 코드 복사">코드 복사</button>
                             </header>
-                            <pre><code id="code-bug1" class="language-java">public class BuggyFactorialNoBase {
+                            <pre><code id="code-bug1" class="language-java">public class BuggyHanoiNoBase {
 
-    /** 팩토리얼을 재귀로 구한다 */
-    static long factorial(int n) {
-        return n * factorial(n - 1);
+    static int moveCount = 0;
+
+    /** 하노이 탑: n개의 원반을 from에서 to로 옮긴다 */
+    static void hanoi(int n, char from, char to, char via) {
+        hanoi(n - 1, from, via, to);
+        moveCount++;
+        System.out.println("이동 " + moveCount + ": 원반 " + n + " (" + from + " -&gt; " + to + ")");
+        hanoi(n - 1, via, to, from);
     }
 
     public static void main(String[] args) {
-        System.out.println("4! 계산을 시작합니다.");
-        System.out.println("4! = " + factorial(4));
+        System.out.println("원반 3개 옮기기를 시작합니다.");
+        hanoi(3, 'A', 'C', 'B');
+        System.out.println("총 " + moveCount + "번 이동");
     }
 }</code></pre>
                         </article>
@@ -423,28 +592,34 @@
                             <summary>발생하는 문제와 수정 방법 확인</summary>
                             <div class="answer-box__content">
                                 <ul>
-                                    <li><strong>발생하는 문제:</strong> 컴파일은 정상적으로 되지만, 실행하면 답이 나오지 않고 프로그램이 죽음</li>
+                                    <li><strong>발생하는 문제:</strong> 컴파일은 정상적으로 되지만, 실행하면 <strong>원반 이동이 한 줄도 출력되기 전에</strong> 프로그램이 죽음</li>
                                 </ul>
-                                <pre class="quiz-code">4! 계산을 시작합니다.
+                                <pre class="quiz-code">원반 3개 옮기기를 시작합니다.
 Exception in thread "main" java.lang.StackOverflowError
-	at BuggyFactorialNoBase.factorial(BuggyFactorialNoBase.java:5)
-	at BuggyFactorialNoBase.factorial(BuggyFactorialNoBase.java:5)
-	at BuggyFactorialNoBase.factorial(BuggyFactorialNoBase.java:5)</pre>
+	at BuggyHanoiNoBase.hanoi(BuggyHanoiNoBase.java:7)
+	at BuggyHanoiNoBase.hanoi(BuggyHanoiNoBase.java:7)
+	at BuggyHanoiNoBase.hanoi(BuggyHanoiNoBase.java:7)</pre>
                                 <ul>
-                                    <li>같은 <code>at BuggyFactorialNoBase.factorial</code> 줄이 스택 깊이만큼 수천 줄 반복해서 출력됨</li>
-                                    <li><strong>오류가 나타나는 입력:</strong> 모든 입력 — factorial(4)든 factorial(1)이든 반드시 죽음</li>
-                                    <li><strong>원인:</strong> 멈추는 조건이 없으므로 factorial(4) → factorial(3) → … → factorial(0) → factorial(-1) → … 호출이 영원히 이어짐 —
+                                    <li>같은 <code>at BuggyHanoiNoBase.hanoi</code> 줄이 스택 깊이만큼 수천 줄 반복해서 출력됨</li>
+                                    <li><strong>오류가 나타나는 입력:</strong> 모든 입력 — 원반이 1개든 3개든 반드시 죽음</li>
+                                    <li><strong>원인:</strong> 멈추는 조건이 없으므로 hanoi(3) → hanoi(2) → hanoi(1) → hanoi(0) → hanoi(-1) → … 호출이 영원히 이어짐 —
+                                        <code>n - 1</code>로 문제가 "작아지기는" 하지만 <strong>멈출 곳이 없고</strong>, 첫 줄의 재귀 호출이 끝없이 내려가 이동을 출력하는 줄까지 한 번도 도달하지 못함 —
                                         호출마다 스택 프레임이 하나씩 쌓이는데 호출 스택의 크기는 유한하므로, 결국 스택이 넘쳐 <strong><code>StackOverflowError</code></strong>가 발생 —
                                         오류 메시지에 같은 줄이 끝없이 반복되는 것이 "재귀가 멈추지 않았다"는 결정적 증거</li>
                                     <li><strong>수정 방법:</strong> 자기 호출보다 <strong>먼저</strong> 종료 조건을 검사</li>
                                 </ul>
-                                <pre class="quiz-code">static long factorial(int n) {
-    if (n &lt;= 1) {      // 종료 조건: 여기서 재귀가 멈춘다
-        return 1;
+                                <pre class="quiz-code">static void hanoi(int n, char from, char to, char via) {
+    if (n == 1) {      // 종료 조건: 원반 1개는 바로 옮기고 재귀를 멈춘다
+        moveCount++;
+        System.out.println("이동 " + moveCount + ": 원반 1 (" + from + " -&gt; " + to + ")");
+        return;
     }
-    return n * factorial(n - 1);
+    hanoi(n - 1, from, via, to);
+    moveCount++;
+    System.out.println("이동 " + moveCount + ": 원반 " + n + " (" + from + " -&gt; " + to + ")");
+    hanoi(n - 1, via, to, from);
 }</pre>
-                                <p>수정 후 출력: <code>4! = 24</code>.
+                                <p>수정 후 출력: <code>총 7번 이동</code>.
                                 <em>재귀를 쓸 때는 항상 <strong>"종료 조건이 있는가?"</strong>와
                                 <strong>"매 호출마다 종료 조건에 가까워지는가?"</strong> 두 가지를 확인하세요.</em></p>
                             </div>
@@ -459,36 +634,37 @@ Exception in thread "main" java.lang.StackOverflowError
                             <header class="code-card__header">
                                 <div class="code-card__info">
                                     <span class="code-card__language">Java</span>
-                                    <strong class="code-card__filename">BuggySubsetsNoRestore.java (오류 있음)</strong>
+                                    <strong class="code-card__filename">BuggyPermutationNoRestore.java (오류 있음)</strong>
                                 </div>
                                 <button type="button" class="copy-code-button" data-copy-target="code-bug2" aria-label="오류 2 코드 복사">코드 복사</button>
                             </header>
-                            <pre><code id="code-bug2" class="language-java">import java.util.ArrayList;
-import java.util.List;
+                            <pre><code id="code-bug2" class="language-java">public class BuggyPermutationNoRestore {
 
-public class BuggySubsetsNoRestore {
+    static char[] letters = {'a', 'b', 'c'};
+    static boolean[] used = new boolean[letters.length];
+    static StringBuilder current = new StringBuilder();
+    static int permCount = 0;
 
-    static int[] numbers = {1, 2, 3};
-    static List&lt;Integer&gt; chosen = new ArrayList&lt;&gt;();
-    static int subsetCount = 0;
-
-    static void subsets(int index) {
-        if (index == numbers.length) {
-            subsetCount++;
-            System.out.println("부분집합 " + subsetCount + ": " + chosen);
+    static void permutation() {
+        if (current.length() == letters.length) {
+            permCount++;
+            System.out.println("순열 " + permCount + ": " + current);
             return;
         }
 
-        chosen.add(numbers[index]);   // 넣는 경우
-        subsets(index + 1);
-
-        subsets(index + 1);           // 넣지 않는 경우
+        for (int i = 0; i &lt; letters.length; i++) {
+            if (used[i]) continue;
+            used[i] = true;                                // (1) 선택
+            current.append(letters[i]);
+            permutation();                                 // (2) 진행
+            current.deleteCharAt(current.length() - 1);
+        }
     }
 
     public static void main(String[] args) {
-        System.out.println("{1, 2, 3}의 모든 부분집합:");
-        subsets(0);
-        System.out.println("총 " + subsetCount + "개 (기대값 8개)");
+        System.out.println("{a, b, c}의 모든 순열:");
+        permutation();
+        System.out.println("총 " + permCount + "개 (기대값 6개)");
     }
 }</code></pre>
                         </article>
@@ -496,33 +672,27 @@ public class BuggySubsetsNoRestore {
                             <summary>발생하는 문제와 수정 방법 확인</summary>
                             <div class="answer-box__content">
                                 <ul>
-                                    <li><strong>발생하는 문제:</strong> 오류 없이 실행되고 개수도 8개로 맞지만, <strong>내용이 전부 엉터리</strong></li>
+                                    <li><strong>발생하는 문제:</strong> 오류 없이 실행되지만 <strong>순열이 6개가 아니라 1개만</strong> 나오고 조용히 끝남</li>
                                 </ul>
-                                <pre class="quiz-code">{1, 2, 3}의 모든 부분집합:
-부분집합 1: [1, 2, 3]
-부분집합 2: [1, 2, 3]
-부분집합 3: [1, 2, 3, 3]
-부분집합 4: [1, 2, 3, 3]
-부분집합 5: [1, 2, 3, 3, 2, 3]
-부분집합 6: [1, 2, 3, 3, 2, 3]
-부분집합 7: [1, 2, 3, 3, 2, 3, 3]
-부분집합 8: [1, 2, 3, 3, 2, 3, 3]
-총 8개 (기대값 8개)</pre>
+                                <pre class="quiz-code">{a, b, c}의 모든 순열:
+순열 1: abc
+총 1개 (기대값 6개)</pre>
                                 <ul>
-                                    <li><strong>원인:</strong> <code>chosen</code>은 모든 재귀 호출이 함께 쓰는 <strong>공유 상태</strong> —
-                                        "넣는 가지"를 다녀온 뒤 add한 원소를 remove하지 않으면, 이어지는 "안 넣는 가지"가 <strong>오염된 상태에서 출발</strong> —
-                                        한 번 남은 흔적이 그 아래 모든 가지로 번지면서 리스트가 점점 길어짐 —
+                                    <li><strong>원인:</strong> <code>used[]</code>는 모든 재귀 호출이 함께 쓰는 <strong>공유 상태</strong> —
+                                        선택에서 켠 <code>used[i] = true</code>를 취소에서 끄지 않으면, 첫 순열 abc를 완성하고 돌아오는 동안 <code>used</code>가 모두 true인 채로 남음 —
+                                        그 뒤 어느 노드에서도 "아직 안 쓴 문자"가 없어 <strong>새로운 가지가 하나도 만들어지지 않고</strong> 탐색이 거기서 끝남 —
+                                        상태 공간 트리로 보면 첫 번째 가지만 걷고 나머지 모든 서브트리를 통째로 놓친 것 —
                                         예외가 나지 않아 얼핏 성공한 것처럼 보이는, 백트래킹에서 가장 위험한 유형의 버그</li>
-                                    <li><strong>수정 방법:</strong> 선택과 정확히 대칭인 취소를 진행 직후에 넣음</li>
+                                    <li><strong>수정 방법:</strong> 선택과 정확히 대칭인 취소를 진행 직후에 넣음 (<code>current</code>를 되돌린 것처럼 <code>used</code>도 되돌린다)</li>
                                 </ul>
-                                <pre class="quiz-code">chosen.add(numbers[index]);         // (1) 선택
-subsets(index + 1);                 // (2) 진행
-chosen.remove(chosen.size() - 1);   // (3) 취소: 선택을 정확히 반대로 되돌린다
-
-subsets(index + 1);                 // 넣지 않는 경우</pre>
-                                <p>수정 후에는 의사코드(06)대로 서로 다른 부분집합 8개가 올바르게 나옵니다.
-                                <em><strong>선택한 것은 반드시 취소한다</strong> — add에는 remove,
-                                <code>used[i] = true</code>에는 <code>used[i] = false</code>를 짝으로 쓰는 습관을 들이세요.</em></p>
+                                <pre class="quiz-code">used[i] = true;                                // (1) 선택
+current.append(letters[i]);
+permutation();                                 // (2) 진행
+current.deleteCharAt(current.length() - 1);    // (3) 취소: current 복원
+used[i] = false;                               //          used 복원</pre>
+                                <p>수정 후에는 의사코드(06)대로 서로 다른 순열 6개가 올바르게 나옵니다.
+                                <em><strong>선택한 것은 반드시 취소한다</strong> — 선택에서 바꾼 상태가 둘이면 취소에서도 둘 다 되돌려야 합니다.
+                                <code>append</code>에는 <code>deleteCharAt</code>, <code>used[i] = true</code>에는 <code>used[i] = false</code>를 짝으로 쓰는 습관을 들이세요.</em></p>
                             </div>
                         </details>
                     </div>
@@ -541,28 +711,26 @@ subsets(index + 1);                 // 넣지 않는 경우</pre>
                             <tr><th scope="col">알고리즘</th><th scope="col">경우(호출)의 수</th><th scope="col">Big-O</th><th scope="col">쉽게 말하면</th></tr>
                         </thead>
                         <tbody>
-                            <tr><td>재귀 팩토리얼</td><td>n번</td><td><code>O(n)</code></td><td>계단을 한 칸씩 내려가기</td></tr>
-                            <tr><td>부분집합 나열</td><td>2ⁿ개</td><td><code>O(2ⁿ · n)</code></td><td>종이를 한 번 접을 때마다 두께 2배 — 원소 1개 늘면 경우 2배</td></tr>
-                            <tr><td>순열 나열</td><td>n!개</td><td><code>O(n! · n)</code></td><td>n명을 한 줄로 세우는 방법 수 — 2ⁿ보다 훨씬 빨리 커짐</td></tr>
-                            <tr><td>조합 (k개 고르기)</td><td>nCk개</td><td><code>O(nCk · k)</code></td><td>k개를 고르면 멈추므로 순열보다 훨씬 적음</td></tr>
+                            <tr><td>하노이 탑</td><td>이동·호출 2ⁿ − 1번</td><td><code>O(2ⁿ)</code></td><td>원반 1개 늘면 이동이 2배 + 1 — 64개를 초당 1번 옮기면 약 5,800억 년</td></tr>
+                            <tr><td>순열 나열</td><td>리프 n!개 (노드는 약 2.7 × n!개)</td><td><code>O(n! · n)</code></td><td>n명을 한 줄로 세우는 방법 수 — 상태 공간 트리의 리프 수</td></tr>
                         </tbody>
                     </table>
                 </div>
                 <ul>
-                    <li>n = 10: 부분집합 1,024개, 순열 3,628,800개 / n = 20: 부분집합 약 105만 개, 순열 약 243경 개</li>
+                    <li>n = 3: 순열 6개(노드 16개) / n = 4: 24개(노드 65개) / n = 10: 3,628,800개 / n = 20: 약 243경 개</li>
                     <li>나열은 모든 경우를 다 만들어야 끝남 → <strong>가지치기</strong>를 넣을 때만 실제 탐색량이 줄어듦</li>
                 </ul>
 
                 <h3>공간 복잡도 — 메모리를 얼마나 더 쓰는가?</h3>
                 <ul>
                     <li>재귀는 호출마다 호출 스택에 한 장씩 쌓임 → 메모리 = <strong>가장 깊이 쌓였을 때의 높이</strong></li>
-                    <li>팩토리얼·부분집합·순열: 깊이 n → <code>O(n)</code> / 조합: 깊이 k → <code>O(k)</code></li>
+                    <li>하노이 탑: 깊이 n → <code>O(n)</code> / 순열: 트리의 깊이 n → <code>O(n)</code> (트리 전체를 저장하지 않고 <strong>지금 걷는 한 경로</strong>만 스택에 있음)</li>
                     <li>깊이가 수만을 넘으면 <code>StackOverflowError</code> → 반복문이나 6강의 명시적 스택으로 바꿈</li>
                 </ul>
                 <div class="note-box">
                     <span class="note-box__title">한 줄 정리 — 코드는 짧지만 경우의 수는 폭발한다</span>
                     <ul>
-                        <li>현실적인 한계: 부분집합은 n ≈ 20, 순열은 n ≈ 10 안팎까지</li>
+                        <li>현실적인 한계: 순열은 n ≈ 10 안팎까지 (부분집합도 2ⁿ이라 n ≈ 20이 한계)</li>
                         <li>메모리는 깊이만큼만 쓰지만, <strong>깊이가 너무 깊으면 스택이 넘침</strong></li>
                         <li>자기 호출이 두 번씩 일어나는 재귀(아래 피보나치)는 호출 수가 폭발하므로 조심</li>
                     </ul>
@@ -656,8 +824,8 @@ n이 10 커질 때마다 호출 횟수가 약 120배씩 폭발한다.
                 <h3>데이터 모델과 알고리즘 적용 기준</h3>
                 <ul>
                     <li><strong>데이터:</strong> 학생 이름 배열 <code>students</code>, 좌석 배열 <code>seats</code> (seats[i] = i번 좌석의 학생), 방문 배열 <code>used</code></li>
-                    <li><strong>알고리즘:</strong> 좌석 0번부터 차례로 학생을 고르는 순열 백트래킹 — 실습 코드의 <code>permutation()</code>과 같은 구조</li>
-                    <li><strong>가지치기:</strong> 학생을 앉히기 <em>전에</em> 바로 왼쪽 좌석과 금지된 짝인지 검사, 어긋나면 <code>continue</code></li>
+                    <li><strong>알고리즘:</strong> 좌석 0번부터 차례로 학생을 고르는 순열 백트래킹 — 실습 코드의 <code>permutation(depth)</code>와 같은 구조 (깊이 = 좌석 번호)</li>
+                    <li><strong>가지치기:</strong> 학생을 앉히기 <em>전에</em> 바로 왼쪽 좌석과 금지된 짝인지 검사, 어긋나면 <code>continue</code> — 상태 공간 트리에서 그 가지(서브트리)를 통째로 건너뜀</li>
                 </ul>
 
                 <article class="code-card">
@@ -800,11 +968,11 @@ n이 10 커질 때마다 호출 횟수가 약 120배씩 폭발한다.
                     3 × 2 × 1 = 6과 일치하는지, 들여쓰기의 최대 깊이가 한 단계 깊어졌는지 확인하세요.
                 </p>
 
-                <h3>실습 2 — 부분집합 원소 늘리기</h3>
+                <h3>실습 2 — 순열 문자 늘리기</h3>
                 <p>
-                    <code>examples/java/07-recursion-and-backtracking/Step4BacktrackingSkeleton.java</code>의 배열을 <code>{1, 2, 3, 4}</code>로 바꾸고 실행하세요.
-                    부분집합이 2⁴ = 16개가 되는지, 첫 번째 출력이 <code>[1, 2, 3, 4]</code>(모두 넣는 가지)인지 확인하세요.
-                    원소 하나에 경우가 2배 — 지수 증가를 직접 체험할 수 있습니다.
+                    <code>examples/java/07-recursion-and-backtracking/PermutationComplete.java</code>의 배열을 <code>{'a', 'b', 'c', 'd'}</code>로 바꾸고 실행하세요.
+                    리프(순열)가 4! = 24개가 되는지, 방문한 노드가 <strong>1 + 4 + 12 + 24 + 24 = 65개</strong>로 늘었는지 확인하세요.
+                    문자 하나만 늘렸는데 트리가 4배 가까이 커집니다 — 순열이 왜 n ≈ 10 안팎에서 한계에 부딪히는지 직접 체험할 수 있습니다.
                 </p>
 
                 <h3>실습 3 — 코드 완성</h3>
@@ -1226,7 +1394,7 @@ reverse("recursion") = noisrucer (기대값 noisrucer)</pre>
 
                         <h4>구현 순서와 핵심 알고리즘 적용 부분</h4>
                         <ol>
-                            <li><code>generateAll</code>은 부분집합 의사코드(06)와 뼈대가 같습니다.
+                            <li><code>generateAll</code>은 순열 의사코드(06)와 뼈대가 같습니다 (<code>used[]</code> 검사만 빠진 형태).
                                 다른 점은 "넣는다/안 넣는다" 2갈래 대신 <strong>후보 4개를 도는 for문</strong>이라는 것뿐입니다 —
                                 가지 수가 후보 수(4)인 결정 트리입니다.</li>
                             <li>재귀 호출이 <code>generateAll(k)</code>로 <strong>k를 그대로 전달</strong>하는 것에 주목하세요.
@@ -1271,15 +1439,16 @@ reverse("recursion") = noisrucer (기대값 noisrucer)</pre>
             <section class="lesson-section" id="sec-summary" aria-labelledby="h-summary">
                 <h2 id="h-summary" data-toc-label="오늘의 핵심 정리"><span class="section-no">14</span>오늘의 핵심 정리</h2>
                 <ul class="summary-list">
-                    <li><strong>재귀 호출</strong>은 큰 문제를 같은 구조의 더 작은 문제에 맡기는 것 —
+                    <li><strong>재귀 호출</strong>은 큰 문제를 같은 구조의 더 작은 문제에 맡기는 것(하노이 탑: 원반 n개를 n-1개짜리 두 문제로) —
                         <strong>종료 조건</strong>(브레이크)과 <strong>재귀 단계</strong>(더 작아지는 자기 호출)가 둘 다 있어야 한다.</li>
                     <li>메서드 호출은 <strong>호출 스택</strong>에 프레임으로 쌓이고(6강 스택의 LIFO),
                         나중에 호출된 것이 먼저 반환된다. 종료 조건이 없으면 <strong>StackOverflowError</strong>.</li>
-                    <li><strong>백트래킹</strong>은 재귀 완전 탐색(3강의 확장)이며, 모든 코드는
-                        <strong>선택 → 진행 → 취소</strong> 3단계 패턴을 따른다. 선택에서 바꾼 상태는 취소에서 정확히 되돌린다.</li>
-                    <li>나열 3패턴: <strong>부분집합</strong>(넣는다/안 넣는다, 2ⁿ), <strong>순열</strong>(used[] 방문 관리, n!),
-                        <strong>조합</strong>(start 인덱스, nCk).</li>
-                    <li><strong>가지치기</strong>는 조건에 어긋나는 가지를 선택하기 전에 잘라 탐색량을 줄인다 —
+                    <li><strong>상태 공간 트리</strong>는 노드 = 상태, 간선 = 선택, 리프 = 해인 지도 —
+                        <strong>백트래킹은 이 트리를 깊이 우선으로 훑는 재귀</strong>이며(3강 완전 탐색의 확장),
+                        모든 코드는 <strong>선택 → 진행 → 취소</strong> 3단계 패턴을 따른다. 선택에서 바꾼 상태는 취소에서 정확히 되돌린다.</li>
+                    <li><strong>순열</strong>은 <code>used[]</code>로 이미 쓴 원소를 막으며 n!개의 리프를 만들고,
+                        재귀 호출 횟수는 트리의 노드 수와 같다 ({a, b, c}라면 호출 16번, 순열 6개).</li>
+                    <li><strong>가지치기</strong>는 조건에 어긋나는 가지(서브트리)를 선택하기 전에 잘라 탐색량을 줄인다 —
                         비밀번호 k = 3에서 64개 중 28개를 만들기 전에 걸렀다.</li>
                     <li>재귀 피보나치의 호출 폭발(fibo(30) = 2,692,537번)은 <strong>중복 계산</strong> 때문 —
                         저장해서 재사용하는 해결책은 11강 동적 계획법에서.</li>
@@ -1320,132 +1489,145 @@ reverse("recursion") = noisrucer (기대값 noisrucer)</pre>
     <script src="../assets/js/visualization.js"></script>
     <script src="../assets/js/quiz.js"></script>
     <script>
-        /* ===== 시각화 1: factorial(n)의 호출 스택 ===== */
+        /* ===== 시각화 1: 하노이 탑의 호출 스택 ===== */
         (function () {
             function makeSteps(n) {
                 var steps = [];
-                var frames = [];          // 아래(바닥)부터 위(top) 순서의 프레임 이름들
+                var pegs = { A: [], B: [], C: [] };      // 아래(바닥) -> 위(top) 순서의 원반 번호
+                for (var d = n; d >= 1; d -= 1) pegs.A.push(d);
+                var frames = [];
                 var callCount = 0;
+                var moveCount = 0;
                 var returnCount = 0;
 
-                function framesView(topCls) {
+                var frameData = [];                      // frames와 나란히: { k, from, to }
+
+                function hanoiView(movedDisk, allDone) {
+                    var top = frameData.length ? frameData[frameData.length - 1] : null;
+                    return {
+                        type: "hanoi",
+                        label: "원반 이동 — 번호가 클수록 큰 원반, 윤곽이 굵은 원반 = 방금 옮긴 원반, 흐린 원반 = 현재 호출이 다루지 않는 원반",
+                        n: n,
+                        pegs: { A: pegs.A.slice(), B: pegs.B.slice(), C: pegs.C.slice() },
+                        moved: movedDisk,
+                        scope: top ? top.k : null,
+                        arrow: top ? { from: top.from, to: top.to } : null,
+                        done: !!allDone
+                    };
+                }
+
+                function framesView() {
                     return {
                         type: "frames",
                         label: "호출 스택 (아래가 바닥, 위가 top)",
                         items: frames.map(function (name, i) {
-                            var cls = "";
-                            if (i === frames.length - 1) cls = topCls || "current";
-                            return { v: name, cls: cls };
+                            return { v: name, cls: i === frames.length - 1 ? "current" : "" };
                         }),
                         emptyText: "(호출 스택이 비어 있음)"
                     };
                 }
 
-                function snap(caption, noteText) {
-                    var view = [framesView("current")];
+                function snap(caption, movedDisk, noteText, allDone) {
+                    var view = [hanoiView(movedDisk, allDone), framesView()];
                     if (noteText) view.push({ type: "note", text: noteText });
                     steps.push({
                         caption: caption,
-                        counters: { "호출": callCount, "반환": returnCount },
+                        counters: { "호출": callCount, "이동": moveCount, "반환": returnCount },
                         view: view
                     });
                 }
 
                 steps.push({
-                    caption: "factorial(" + n + ")을 호출하기 직전입니다. 호출 스택은 비어 있습니다.",
-                    counters: { "호출": 0, "반환": 0 },
-                    view: [framesView(), { type: "note", text: "재귀는 [호출로 쌓이기] -> [종료 조건] -> [반환으로 풀리기] 3막으로 진행됩니다." }]
+                    caption: "원반 " + n + "개가 모두 기둥 A에 쌓여 있습니다. hanoi(" + n + ", A -> C)를 호출하기 직전이며 호출 스택은 비어 있습니다.",
+                    counters: { "호출": 0, "이동": 0, "반환": 0 },
+                    view: [hanoiView(0, false), framesView(),
+                        { type: "note", text: "재귀는 [호출로 쌓이기] -> [종료 조건] -> [반환으로 풀리기]를 반복합니다. 최소 이동 횟수는 2^" + n + " - 1 = " + (Math.pow(2, n) - 1) + "번입니다." }]
                 });
 
-                // 실제 재귀 팩토리얼을 그대로 수행하며 단계를 기록한다
-                function factorial(k) {
-                    callCount++;
-                    frames.push("factorial(" + k + ")");
-                    snap("호출: factorial(" + k + ") — 프레임이 스택에 쌓입니다(push).",
-                        k <= 1 ? null : "factorial(" + k + ")는 " + k + " x factorial(" + (k - 1) + ")을 계산해야 하므로, 더 작은 문제를 먼저 호출합니다.");
+                function moveDisk(disk, from, to) {
+                    var moved = pegs[from].pop();
+                    pegs[to].push(moved);
+                    moveCount++;
+                }
 
-                    var result;
-                    if (k <= 1) {                          // 종료 조건
-                        result = 1;
-                        snap("종료 조건 도달: n <= 1 이므로 더 내려가지 않고 1을 반환할 준비를 합니다.",
+                // 실제 재귀 하노이를 그대로 수행하며 단계를 기록한다
+                function hanoi(k, from, to, via) {
+                    callCount++;
+                    frames.push("hanoi(" + k + ", " + from + " -> " + to + ")");
+                    frameData.push({ k: k, from: from, to: to });
+                    snap("호출: hanoi(" + k + ", " + from + " -> " + to + ") — 프레임이 스택에 쌓입니다(push).", 0,
+                        k === 1 ? null : "원반 " + k + "개 = ① 위의 " + (k - 1) + "개를 " + via + "로 치움 → ② 원반 " + k + "을 " + to + "로 → ③ " + (k - 1) + "개를 " + to + "로.");
+
+                    if (k === 1) {                                   // 종료 조건
+                        moveDisk(1, from, to);
+                        snap("종료 조건: 원반이 1개 — 더 쪼개지 않고 원반 1을 " + from + " -> " + to + "로 옮깁니다. (이동 " + moveCount + "번째)", 1,
                             "이 브레이크가 없으면 프레임이 무한히 쌓여 StackOverflowError가 납니다.");
                     } else {
-                        var smaller = factorial(k - 1);    // 자기 호출
-                        result = k * smaller;
-                        snap("계산: factorial(" + k + ") = " + k + " x " + smaller + " = " + result,
-                            "아래 문제의 답 " + smaller + "이(가) 돌아와서 내 답을 완성했습니다.");
+                        hanoi(k - 1, from, via, to);                 // ① 위의 k-1개를 치운다
+                        moveDisk(k, from, to);                       // ② 가장 큰 원반을 옮긴다
+                        snap("② 가장 큰 원반 " + k + "을 " + from + " -> " + to + "로 옮깁니다. (이동 " + moveCount + "번째)", k,
+                            "치워 둔 " + (k - 1) + "개가 " + via + "에 있어서 길이 비었습니다. 이제 ③을 위해 두 번째 자기 호출로 갑니다.");
+                        hanoi(k - 1, via, to, from);                 // ③ 치워 둔 k-1개를 올린다
                     }
 
                     returnCount++;
-                    frames.pop();
-                    steps.push({
-                        caption: "반환: factorial(" + k + ") -> " + result + " — 프레임이 스택에서 제거됩니다(pop).",
-                        counters: { "호출": callCount, "반환": returnCount },
-                        view: [framesView("current"), { type: "note", text: "나중에 호출된 것이 먼저 반환됩니다 (LIFO)." }]
-                    });
-                    return result;
+                    var finished = frames.pop();
+                    frameData.pop();
+                    snap("반환: " + finished + " 끝 — 프레임이 스택에서 제거됩니다(pop).", 0,
+                        "나중에 호출된 것이 먼저 반환됩니다 (LIFO).");
                 }
 
-                var answer = factorial(n);
+                hanoi(n, "A", "C", "B");
 
-                steps.push({
-                    caption: "완료! " + n + "! = " + answer + " — 호출 " + callCount + "번, 반환 " + callCount + "번으로 스택이 완전히 비었습니다.",
-                    counters: { "호출": callCount, "반환": returnCount },
-                    view: [
-                        framesView(),
-                        {
-                            type: "array",
-                            label: "최종 결과",
-                            cells: [{ v: n + "! = " + answer, cls: "done" }]
-                        }
-                    ]
-                });
+                snap("완료! 원반 " + n + "개가 모두 기둥 C로 옮겨졌습니다 — 이동 " + moveCount + "번 = 2^" + n + " - 1, 호출 " + callCount + "번으로 스택이 완전히 비었습니다.", 0,
+                    "원반이 하나 늘면 이동 횟수가 2배 + 1로 늘어납니다.", true);
 
                 return steps;
             }
 
             AlgoViz.create({
-                mount: "#viz-factorial",
-                title: "factorial(n) — 호출 스택의 쌓임과 풀림",
-                legend: ["current", "done"],
-                initialInput: 4,
+                mount: "#viz-hanoi",
+                title: "하노이 탑 — 호출 스택의 쌓임과 풀림",
+                initialInput: 3,
                 makeSteps: makeSteps,
                 makeInput: function () {
-                    return 3 + Math.floor(Math.random() * 3); // 3 ~ 5
+                    return 2 + Math.floor(Math.random() * 3); // 2 ~ 4
                 }
             });
         })();
 
-        /* ===== 시각화 2: {1,2,3} 부분집합 백트래킹 (선택-진행-취소) ===== */
+        /* ===== 시각화 2: {a,b,c} 순열 백트래킹 (선택-진행-취소) ===== */
         (function () {
-            function makeSteps(numbers) {
+            function makeSteps(letters) {
                 var steps = [];
-                var chosen = [];
+                var n = letters.length;
+                var used = letters.map(function () { return false; });
+                var current = [];
                 var frames = [];
                 var found = [];
-                var subsetCount = 0;
+                var nodeCount = 0;
 
-                function view(currentIndex, noteText) {
+                function view(tryIndex, noteText) {
                     var groups = [
                         {
                             type: "array",
-                            label: "원소 (index 순서로 넣을지/뺄지 결정)",
-                            cells: numbers.map(function (v, i) {
+                            label: "후보 문자 (초록 = used[i]가 true, 이미 사용 중)",
+                            cells: letters.map(function (v, i) {
                                 var cls = "";
-                                if (i < currentIndex) cls = "done";
-                                if (i === currentIndex) cls = "current";
-                                return { v: v, sub: "i=" + i, cls: cls };
+                                if (used[i]) cls = "done";
+                                if (i === tryIndex) cls = "current";
+                                return { v: v, sub: used[i] ? "used" : "free", cls: cls };
                             })
                         },
                         {
                             type: "stack",
-                            label: "chosen — 지금까지의 선택 (공유 상태)",
-                            items: chosen.map(function (v) { return { v: v, cls: "current" }; }),
+                            label: "current — 지금까지의 선택 (공유 상태)",
+                            items: current.map(function (v) { return { v: v, cls: "current" }; }),
                             emptyText: "(아직 선택 없음)"
                         },
                         {
                             type: "frames",
-                            label: "호출 스택",
+                            label: "호출 스택 (깊이 = 고른 문자 수 + 1)",
                             items: frames.map(function (name, i) {
                                 return { v: name, cls: i === frames.length - 1 ? "current" : "" };
                             }),
@@ -1453,7 +1635,7 @@ reverse("recursion") = noisrucer (기대값 noisrucer)</pre>
                         },
                         {
                             type: "array",
-                            label: "발견된 부분집합 (지금까지 " + found.length + "개)",
+                            label: "완성된 순열 (지금까지 " + found.length + "개)",
                             cells: found.map(function (label, i) {
                                 return { v: label, sub: (i + 1) + "번째", cls: "done" };
                             }),
@@ -1464,60 +1646,66 @@ reverse("recursion") = noisrucer (기대값 noisrucer)</pre>
                     return groups;
                 }
 
-                function snap(caption, currentIndex, noteText) {
+                function snap(caption, tryIndex, noteText) {
                     steps.push({
                         caption: caption,
-                        counters: { "부분집합": subsetCount },
-                        view: view(currentIndex, noteText)
+                        counters: { "노드 방문": nodeCount, "순열": found.length },
+                        view: view(tryIndex, noteText)
                     });
                 }
 
                 steps.push({
-                    caption: "subsets(0)을 호출해 0번 원소부터 '넣는다 / 안 넣는다'를 결정합니다.",
-                    counters: { "부분집합": 0 },
-                    view: view(0, "각 원소마다 2갈래 -> 부분집합은 모두 2^" + numbers.length + " = " + Math.pow(2, numbers.length) + "개가 나올 것입니다.")
+                    caption: "permutation()을 호출해 첫 번째 자리부터 채웁니다. 아직 아무것도 고르지 않은 상태가 상태 공간 트리의 루트입니다.",
+                    counters: { "노드 방문": 0, "순열": 0 },
+                    view: view(-1, "n = " + n + "이면 순열은 " + factorial(n) + "개 — 첫 자리 " + n + "가지 x 둘째 자리 " + (n - 1) + "가지 x … 입니다.")
                 });
 
-                // 실제 백트래킹 로직을 그대로 수행하며 기록한다
-                function subsets(index) {
-                    frames.push("subsets(" + index + ")");
+                function factorial(k) { return k <= 1 ? 1 : k * factorial(k - 1); }
 
-                    if (index === numbers.length) {        // 종료 조건
-                        subsetCount++;
-                        var label = "[" + chosen.join(", ") + "]";
-                        found.push(label);
-                        snap("종료 조건: 모든 원소를 결정 -> 부분집합 " + subsetCount + ": " + label, index,
-                            "chosen을 그대로 기록하고 되돌아갑니다.");
+                // 실제 순열 백트래킹을 그대로 수행하며 기록한다
+                function permutation() {
+                    nodeCount++;
+                    var label = current.length === 0 ? "\"\"" : "\"" + current.join("") + "\"";
+                    frames.push("permutation(" + label + ")");
+
+                    if (current.length === n) {                    // 종료 조건: 리프
+                        found.push(current.join(""));
+                        snap("종료 조건: 모든 자리를 채웠습니다 -> 순열 " + found.length + ": " + current.join(""), -1,
+                            "리프에 도착했습니다. current를 순열로 기록하고 부모로 되돌아갑니다.");
                         frames.pop();
                         return;
                     }
+                    snap("노드 도착: 지금까지 " + (current.length === 0 ? "아무것도 고르지 않았습니다" : label + "을(를) 골랐습니다") +
+                        ". 아직 안 쓴 문자마다 자식 가지를 만듭니다.", -1, null);
 
-                    chosen.push(numbers[index]);           // (1) 선택
-                    snap("(1) 선택: " + numbers[index] + "을(를) 넣기로 하고, (2) 진행: subsets(" + (index + 1) + ")로 내려갑니다.", index, null);
-                    subsets(index + 1);                    // (2) 진행
+                    for (var i = 0; i < n; i++) {
+                        if (used[i]) continue;                     // 이미 쓴 문자는 가지를 만들지 않는다
+                        used[i] = true;                            // (1) 선택
+                        current.push(letters[i]);
+                        permutation();                             // (2) 진행
 
-                    chosen.pop();                          // (3) 취소
-                    snap("(3) 취소: " + numbers[index] + "을(를) 빼서 상태를 복원 — 이제 '넣지 않는' 가지를 진행합니다.", index,
-                        "취소를 잊으면 다음 가지가 오염된 chosen에서 출발합니다!");
-                    subsets(index + 1);                    // 넣지 않는 경우
-
+                        current.pop();                             // (3) 취소
+                        used[i] = false;
+                        snap("(3) 취소: " + letters[i] + "을(를) 빼고 used[" + i + "] = false — 부모 노드의 상태로 복원했습니다.", i,
+                            "취소를 잊으면 다음 형제 가지가 오염된 current·used에서 출발합니다!");
+                    }
                     frames.pop();
                 }
 
-                subsets(0);
+                permutation();
 
                 steps.push({
-                    caption: "완료! 부분집합 " + subsetCount + "개를 빠짐없이, 중복 없이 나열했고 chosen과 호출 스택은 완전히 비었습니다.",
-                    counters: { "부분집합": subsetCount },
+                    caption: "완료! 순열 " + found.length + "개를 빠짐없이, 중복 없이 나열했고 노드 " + nodeCount + "개(재귀 호출 " + nodeCount + "번)를 방문했습니다.",
+                    counters: { "노드 방문": nodeCount, "순열": found.length },
                     view: [
                         {
                             type: "array",
-                            label: "나열된 부분집합 (생성 순서)",
+                            label: "나열된 순열 (생성 순서)",
                             cells: found.map(function (label, i) {
                                 return { v: label, sub: (i + 1) + "번째", cls: "done" };
                             })
                         },
-                        { type: "note", text: "마지막 상태가 시작과 같다(빈 chosen) = 모든 선택이 정확히 취소되었다는 증거입니다." }
+                        { type: "note", text: "used[]가 모두 free, current가 비어 있다 = 모든 선택이 정확히 취소되었다는 증거입니다." }
                     ]
                 });
 
@@ -1525,68 +1713,65 @@ reverse("recursion") = noisrucer (기대값 noisrucer)</pre>
             }
 
             AlgoViz.create({
-                mount: "#viz-subsets",
-                title: "부분집합 백트래킹 — 선택 · 진행 · 취소",
+                mount: "#viz-permutation",
+                title: "순열 백트래킹 — 선택 · 진행 · 취소",
                 legend: ["current", "done"],
-                initialInput: [1, 2, 3],
+                initialInput: ["a", "b", "c"],
                 makeSteps: makeSteps,
                 makeInput: function () {
-                    var pool = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+                    var pool = ["a", "b", "c", "d", "e", "x", "y", "z"];
                     var size = 2 + Math.floor(Math.random() * 2); // 2 ~ 3개
                     var picked = [];
                     while (picked.length < size) {
                         var v = pool[Math.floor(Math.random() * pool.length)];
                         if (picked.indexOf(v) === -1) picked.push(v);
                     }
-                    picked.sort(function (a, b) { return a - b; });
+                    picked.sort();
                     return picked;
                 }
             });
         })();
 
-        /* ===== 시각화 3: 부분집합 결정 트리 (같은 재귀를 트리 관점에서) ===== */
+        /* ===== 시각화 3: 순열의 상태 공간 트리 (같은 재귀를 트리 관점에서) ===== */
         (function () {
-            function buildTree(numbers) {
-                var n = numbers.length;
-                var w = 640, h = 300;
-                var marginX = 30, marginTop = 40, marginBottom = 50;
-                var leafCount = Math.pow(2, n);
-                var slot = (w - marginX * 2) / leafCount;
+            function buildTree(letters) {
+                var n = letters.length;
+                var w = 640, h = 320;
+                var marginX = 30, marginTop = 36, marginBottom = 50;
+                var leafTotal = 1;
+                for (var k = 2; k <= n; k += 1) leafTotal *= k;
+                var slot = (w - marginX * 2) / leafTotal;
                 var levelGap = (h - marginTop - marginBottom) / n;
                 var nodeById = {};
                 var leafIndex = 0;
 
-                function subsetLabel(id) {
-                    var parts = [];
-                    for (var i = 0; i < id.length; i += 1) {
-                        if (id.charAt(i) === "1") parts.push(numbers[i]);
-                    }
-                    return "{" + parts.join(", ") + "}";
-                }
-
-                function nodeLabel(id) {
-                    if (id === "") return "∅";
-                    var depth = id.length;
-                    var bit = id.charAt(depth - 1);
-                    return bit === "1" ? String(numbers[depth - 1]) : "×";
-                }
-
-                function visit(id) {
-                    var depth = id.length;
+                function visit(prefix, usedFlags) {
+                    var depth = prefix.length;
                     var y = marginTop + depth * levelGap;
                     var x;
                     if (depth === n) {
                         x = marginX + (leafIndex + 0.5) * slot;
                         leafIndex += 1;
                     } else {
-                        var xIn = visit(id + "1");
-                        var xOut = visit(id + "0");
-                        x = (xIn + xOut) / 2;
+                        var xs = [];
+                        for (var i = 0; i < n; i += 1) {
+                            if (usedFlags[i]) continue;
+                            usedFlags[i] = true;
+                            xs.push(visit(prefix + letters[i], usedFlags));
+                            usedFlags[i] = false;
+                        }
+                        x = (xs[0] + xs[xs.length - 1]) / 2;
                     }
-                    nodeById[id] = { id: id, x: x, y: y, label: nodeLabel(id), sub: subsetLabel(id) };
+                    nodeById[prefix] = {
+                        id: prefix,
+                        x: x,
+                        y: y,
+                        label: depth === 0 ? "∅" : prefix.charAt(depth - 1),
+                        sub: depth === n ? prefix : null
+                    };
                     return x;
                 }
-                visit("");
+                visit("", letters.map(function () { return false; }));
 
                 var edges = [];
                 Object.keys(nodeById).forEach(function (id) {
@@ -1598,14 +1783,14 @@ reverse("recursion") = noisrucer (기대값 noisrucer)</pre>
                 return { w: w, h: h, nodeById: nodeById, edges: edges };
             }
 
-            function makeSteps(numbers) {
+            function makeSteps(letters) {
                 var steps = [];
-                var tree = buildTree(numbers);
-                var chosen = [];
-                var pathBits = [];
-                var found = [];
-                var foundIds = [];
-                var subsetCount = 0;
+                var n = letters.length;
+                var tree = buildTree(letters);
+                var used = letters.map(function () { return false; });
+                var finishedIds = [];      // 탐색이 끝나 부모로 돌아간 노드
+                var leafIds = [];          // 확정된 순열(리프)
+                var nodeCount = 0;
 
                 function nodesView(currentId) {
                     var prefixes = {};
@@ -1617,8 +1802,9 @@ reverse("recursion") = noisrucer (기대값 noisrucer)</pre>
                     return Object.keys(tree.nodeById).map(function (id) {
                         var node = tree.nodeById[id];
                         var cls = "";
-                        if (foundIds.indexOf(id) !== -1) cls = "done";
+                        if (leafIds.indexOf(id) !== -1) cls = "done";
                         else if (prefixes[id]) cls = "current";
+                        else if (finishedIds.indexOf(id) !== -1) cls = "visited";
                         return { id: id, x: node.x, y: node.y, label: node.label, sub: node.sub, cls: cls };
                     });
                 }
@@ -1634,7 +1820,7 @@ reverse("recursion") = noisrucer (기대값 noisrucer)</pre>
                     var groups = [
                         {
                             type: "graph",
-                            label: "결정 트리 — 파란 경로 = 지금 위치, 초록 = 확정된 부분집합",
+                            label: "상태 공간 트리 — 파란 경로 = 지금 상태, 회색 = 탐색 끝난 노드, 초록 = 완성된 순열",
                             w: tree.w,
                             h: tree.h,
                             nodeRadius: 15,
@@ -1649,47 +1835,50 @@ reverse("recursion") = noisrucer (기대값 noisrucer)</pre>
                 function snap(caption, currentId, noteText) {
                     steps.push({
                         caption: caption,
-                        counters: { "부분집합": subsetCount },
+                        counters: { "노드 방문": nodeCount, "순열": leafIds.length },
                         view: view(currentId, noteText)
                     });
                 }
 
+                var totalNodes = 0;
+                Object.keys(tree.nodeById).forEach(function () { totalNodes += 1; });
+
                 steps.push({
-                    caption: "루트(빈 집합)에서 시작합니다. 0번 원소부터 넣을지/뺄지 결정하며 트리를 내려갑니다.",
-                    counters: { "부분집합": 0 },
-                    view: view("", "리프(잎) 노드는 모두 " + Math.pow(2, numbers.length) + "개 — 원소마다 두 갈래로 갈라지기 때문입니다.")
+                    caption: "루트(아무것도 고르지 않은 상태)에서 시작합니다. 한 글자씩 골라 자식 노드로 내려가며 트리를 깊이 우선으로 훑습니다.",
+                    counters: { "노드 방문": 0, "순열": 0 },
+                    view: view("", "트리의 노드는 모두 " + totalNodes + "개, 리프는 " + tree.edges.filter(function (e) { return e.to.length === n; }).length +
+                        "개입니다. 노드 하나 = 재귀 호출 한 번입니다.")
                 });
 
-                function walk(index) {
-                    if (index === numbers.length) {
-                        var id = pathBits.join("");
-                        subsetCount += 1;
-                        var label = "[" + chosen.join(", ") + "]";
-                        found.push(label);
-                        foundIds.push(id);
-                        snap("리프 노드 도달 — 부분집합 " + subsetCount + ": " + label + " 확정, 초록으로 칠해집니다.", id, null);
+                function walk(prefix) {
+                    nodeCount += 1;
+                    if (prefix.length === n) {
+                        leafIds.push(prefix);
+                        snap("리프 도달 — 순열 " + leafIds.length + ": " + prefix + " 확정, 초록으로 칠해집니다.", prefix,
+                            "종료 조건: 더 이상 고를 문자가 없습니다. 이제 부모 노드로 되돌아갑니다.");
                         return;
                     }
+                    snap(prefix === "" ? "루트 노드 방문 — 첫 자리에 올 수 있는 문자마다 가지가 뻗습니다." :
+                        "(1) 선택 + (2) 진행: '" + prefix.charAt(prefix.length - 1) + "'을(를) 골라 노드 " + prefix + "로 내려왔습니다.", prefix, null);
 
-                    chosen.push(numbers[index]);
-                    pathBits.push("1");
-                    snap("(1) 선택 + (2) 진행: " + numbers[index] + "을(를) 넣고 파란 경로를 따라 자식 노드로 내려갑니다.", pathBits.join(""), null);
-                    walk(index + 1);
-                    pathBits.pop();
-                    chosen.pop();
-
-                    pathBits.push("0");
-                    snap("(3) 취소: " + numbers[index] + "을(를) 넣지 않는 반대쪽(×) 가지로 이동합니다.", pathBits.join(""), null);
-                    walk(index + 1);
-                    pathBits.pop();
+                    for (var i = 0; i < n; i += 1) {
+                        if (used[i]) continue;                    // 이미 쓴 문자는 가지가 없다
+                        used[i] = true;
+                        var child = prefix + letters[i];
+                        walk(child);
+                        used[i] = false;
+                        finishedIds.push(child);
+                        snap("(3) 취소: " + letters[i] + "을(를) 되돌려 부모 노드 " + (prefix === "" ? "루트" : prefix) + "(으)로 올라왔습니다.", prefix,
+                            "상태(current, used)도 부모 노드의 것으로 복원됩니다. 다음 형제 가지로 이동합니다.");
+                    }
                 }
 
-                walk(0);
+                walk("");
 
                 steps.push({
-                    caption: "완료! 트리의 모든 리프 " + subsetCount + "개가 초록으로 칠해졌습니다 — 나열이 빠짐없고 중복 없음을 뜻합니다.",
-                    counters: { "부분집합": subsetCount },
-                    view: view(null, "같은 나무를 시각화 2 · 이 트리 · 잠시 후 작성할 코드가 모두 같은 순서로 훑습니다.")
+                    caption: "완료! 노드 " + nodeCount + "개를 모두 방문했고 리프 " + leafIds.length + "개가 순열로 확정되었습니다 — 나열이 빠짐없고 중복 없음을 뜻합니다.",
+                    counters: { "노드 방문": nodeCount, "순열": leafIds.length },
+                    view: view(null, "시각화 2 · 이 트리 · 잠시 후 작성할 코드가 모두 같은 순서로 같은 나무를 훑습니다.")
                 });
 
                 return steps;
@@ -1697,19 +1886,19 @@ reverse("recursion") = noisrucer (기대값 noisrucer)</pre>
 
             AlgoViz.create({
                 mount: "#viz-tree",
-                title: "부분집합 결정 트리 — 경로와 확정된 리프",
+                title: "순열 상태 공간 트리 — 경로와 확정된 리프",
                 legend: ["current", "done"],
-                initialInput: [1, 2, 3],
+                initialInput: ["a", "b", "c"],
                 makeSteps: makeSteps,
                 makeInput: function () {
-                    var pool = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+                    var pool = ["a", "b", "c", "d", "e", "x", "y", "z"];
                     var size = 2 + Math.floor(Math.random() * 2); // 2 ~ 3개
                     var picked = [];
                     while (picked.length < size) {
                         var v = pool[Math.floor(Math.random() * pool.length)];
                         if (picked.indexOf(v) === -1) picked.push(v);
                     }
-                    picked.sort(function (a, b) { return a - b; });
+                    picked.sort();
                     return picked;
                 }
             });
@@ -1731,10 +1920,10 @@ reverse("recursion") = noisrucer (기대값 noisrucer)</pre>
             },
             {
                 type: "mc",
-                q: "factorial(4)를 실행할 때 호출 스택이 가장 깊은 순간, 스택에 쌓여 있는 factorial 프레임은 몇 개인가요?",
-                choices: ["1개", "3개", "4개", "24개"],
+                q: "하노이 탑 hanoi(3, A, C, B)를 실행할 때(종료 조건은 n == 1), 호출 스택이 가장 깊은 순간 쌓여 있는 프레임은 몇 개인가요?",
+                choices: ["1개", "2개", "3개", "7개"],
                 answer: 2,
-                explain: "factorial(4) → factorial(3) → factorial(2) → factorial(1)까지 4개의 프레임이 동시에 쌓입니다. 종료 조건 factorial(1)에서 방향을 바꿔 반환이 시작됩니다."
+                explain: "hanoi(3) → hanoi(2) → hanoi(1)까지 3개의 프레임이 동시에 쌓입니다. 호출은 모두 7번이지만 동시에 쌓이는 것은 최대 3개 — 호출 횟수와 스택 깊이는 다릅니다."
             },
             {
                 type: "mc",
@@ -1756,17 +1945,17 @@ reverse("recursion") = noisrucer (기대값 noisrucer)</pre>
             },
             {
                 type: "tf",
-                q: "부분집합을 나열할 때 원소가 하나 늘어나면 부분집합의 개수는 2배가 된다.",
-                answer: true,
-                explain: "새 원소를 '넣는 경우'와 '안 넣는 경우'가 기존 모든 부분집합마다 생기므로 2ⁿ에서 2ⁿ⁺¹로 2배가 됩니다."
+                q: "순열을 나열할 때 원소가 하나 늘어나면(예: 3개 → 4개) 순열의 개수는 2배가 된다.",
+                answer: false,
+                explain: "n!에서 (n+1)!로 늘어나므로 (n+1)배가 됩니다. 3개는 6개, 4개는 24개로 4배입니다. 상태 공간 트리의 리프가 그만큼 늘어나는 것입니다."
             },
             {
                 type: "predict",
                 q: "다음 코드의 출력은 무엇인가요?",
-                code: "static int f(int n) {\n    if (n <= 1) {\n        return 1;\n    }\n    return n * f(n - 1);\n}\n\nSystem.out.println(f(3));",
-                choices: ["3", "6", "9", "1"],
+                code: "static int f(int low, int high) {\n    if (low > high) {\n        return 0;\n    }\n    return 1 + f(low + 1, high);\n}\n\nSystem.out.println(f(2, 5));",
+                choices: ["3", "4", "5", "0"],
                 answer: 1,
-                explain: "f(3) = 3 × f(2) = 3 × (2 × f(1)) = 3 × 2 × 1 = 6. 팩토리얼 재귀입니다."
+                explain: "f(2,5) = 1 + f(3,5) = 1 + (1 + f(4,5)) = 1 + 1 + 1 + f(5,5) = 4 + f(6,5), 그리고 f(6,5)는 low > high라 0입니다. 즉 2, 3, 4, 5 네 칸을 센 결과 4입니다."
             },
             {
                 type: "predict",
@@ -1789,17 +1978,31 @@ reverse("recursion") = noisrucer (기대값 noisrucer)</pre>
                 explain: "선택에서 true로 바꾼 used[i]는 취소에서 false로 되돌려야 합니다. append ↔ deleteCharAt처럼 선택과 취소는 항상 정확히 대칭입니다."
             },
             {
+                type: "mc",
+                q: "하노이 탑에서 원반이 4개일 때 필요한 최소 이동 횟수는 몇 번인가요? (원반 3개는 7번)",
+                choices: ["8번", "14번", "15번", "16번"],
+                answer: 2,
+                explain: "원반 n개의 이동 횟수는 2ⁿ − 1입니다. n = 4이면 2⁴ − 1 = 15번 — 원반 3개 옮기기(7번) + 가장 큰 원반(1번) + 원반 3개 다시 옮기기(7번) = 15번으로도 확인됩니다."
+            },
+            {
+                type: "mc",
+                q: "{a, b, c}의 순열을 구하는 백트래킹의 상태 공간 트리에는 루트를 포함해 노드가 모두 몇 개인가요? (이는 permutation()이 호출되는 횟수와 같습니다.)",
+                choices: ["6개 (리프만)", "10개", "16개", "27개"],
+                answer: 2,
+                explain: "깊이 0에 1개, 깊이 1에 3개, 깊이 2에 3 x 2 = 6개, 깊이 3에 3 x 2 x 1 = 6개로 1 + 3 + 6 + 6 = 16개입니다. 그중 리프 6개가 완성된 순열이고, 노드 하나가 재귀 호출 한 번입니다."
+            },
+            {
                 type: "debug",
-                q: "다음 부분집합 코드는 실행은 되지만 [1, 2, 3], [1, 2, 3], [1, 2, 3, 3]… 처럼 틀린 내용을 출력합니다. 원인은 무엇인가요?",
-                code: "static void subsets(int index) {\n    if (index == numbers.length) {\n        System.out.println(chosen);\n        return;\n    }\n    chosen.add(numbers[index]);\n    subsets(index + 1);\n    subsets(index + 1);   // 넣지 않는 경우\n}",
+                q: "다음 순열 코드는 예외 없이 실행되지만 {a, b, c}에서 abc 하나만 출력하고 끝납니다. 원인은 무엇인가요?",
+                code: "static void permutation() {\n    if (current.length() == letters.length) {\n        System.out.println(current);\n        return;\n    }\n    for (int i = 0; i < letters.length; i++) {\n        if (used[i]) continue;\n        used[i] = true;\n        current.append(letters[i]);\n        permutation();\n        current.deleteCharAt(current.length() - 1);\n    }\n}",
                 choices: [
                     "종료 조건의 == 를 >= 로 바꿔야 한다",
-                    "진행 후 chosen.remove(chosen.size() - 1)로 취소하는 코드가 없다",
-                    "재귀 호출을 한 번만 해야 한다",
-                    "chosen을 지역 변수로 선언해야 한다"
+                    "진행 후 used[i] = false로 사용 표시를 되돌리는 취소 코드가 없다",
+                    "재귀 호출을 두 번 해야 한다",
+                    "current를 지역 변수로 선언해야 한다"
                 ],
                 answer: 1,
-                explain: "add(선택)만 있고 remove(취소)가 없어 공유 상태 chosen이 복원되지 않습니다. '넣는 가지'를 다녀온 흔적이 남은 채 '안 넣는 가지'가 진행되어 내용이 오염됩니다."
+                explain: "current는 복원하지만 used[i]는 true인 채로 남습니다. 첫 순열 abc를 만들고 돌아오면 모든 문자가 '사용 중'이라 새 가지가 하나도 만들어지지 않습니다. 선택에서 바꾼 상태(current, used)는 취소에서 모두 되돌려야 합니다."
             },
             {
                 type: "think",
